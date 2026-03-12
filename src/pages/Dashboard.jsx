@@ -1,59 +1,11 @@
-import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { DUMMY_USER } from '../data/dummyData';
+import BarChart from '../components/BarChart';
+import StatCard from '../components/StatCard';
 import {
   Eye, MessageCircle, Heart, TrendingUp, Globe,
   MapPin, Calendar, Star, ArrowUpRight, Zap
 } from 'lucide-react';
-
-// Simple bar chart component
-function BarChart({ data }) {
-  const max = Math.max(...data.map(d => d.views));
-  return (
-    <div className="flex items-end gap-2 h-32">
-      {data.map((d, i) => {
-        const height = Math.round((d.views / max) * 100);
-        const isLast = i === data.length - 1;
-        return (
-          <div key={d.month} className="flex-1 flex flex-col items-center gap-1.5">
-            <span className={`text-[10px] font-semibold transition-all ${isLast ? 'text-black' : 'text-black/30'}`}>
-              {d.views}
-            </span>
-            <div className="w-full relative group">
-              <div
-                className={`w-full rounded-t-md transition-all duration-500 cursor-default
-                  ${isLast ? 'bg-[#d4f53c]' : 'bg-black/10 group-hover:bg-black/20'}`}
-                style={{ height: `${Math.max(height * 0.8, 6)}px` }}
-              />
-            </div>
-            <span className="text-[9px] text-black/40 tracking-wider">{d.month}</span>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function StatCard({ icon: Icon, label, value, sub, color = 'black', trend }) {
-  return (
-    <div className="bg-white rounded-2xl p-5 border border-black/6">
-      <div className="flex items-start justify-between mb-4">
-        <div className={`w-9 h-9 rounded-xl flex items-center justify-center`}
-          style={{ background: color === 'lime' ? '#d4f53c' : color === 'orange' ? '#e8834a20' : '#f0f0ec' }}>
-          <Icon size={16} className={color === 'lime' ? 'text-black' : color === 'orange' ? 'text-[#e8834a]' : 'text-black/50'} />
-        </div>
-        {trend && (
-          <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-            <TrendingUp size={9} /> +{trend}%
-          </span>
-        )}
-      </div>
-      <p className="font-['Unbounded'] text-2xl font-black text-black mb-1">{value}</p>
-      <p className="text-xs font-semibold text-black/60">{label}</p>
-      {sub && <p className="text-[10px] text-black/30 mt-0.5">{sub}</p>}
-    </div>
-  );
-}
 
 export default function Dashboard() {
   const { user } = useAuth();
