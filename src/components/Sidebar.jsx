@@ -8,8 +8,8 @@ import {
 const NAV = [
   { to: '/portal/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/portal/profile', icon: User, label: 'My Profile' },
-  { to: '/portal/subscription', icon: Star, label: 'Subscription' },
-  { to: '/portal/payments', icon: CreditCard, label: 'Payment History' },
+  // { to: '/portal/subscription', icon: Star, label: 'Subscription' },
+  // { to: '/portal/payments', icon: CreditCard, label: 'Payment History' },
 ];
 
 export default function Sidebar({ mobileOpen, onClose }) {

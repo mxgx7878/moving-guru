@@ -30,8 +30,8 @@ export default function App() {
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="profile" element={<ProfilePage />} />
-            <Route path="subscription" element={<Subscription />} />
-            <Route path="payments" element={<Payments />} />
+            {/* <Route path="subscription" element={<Subscription />} />
+            <Route path="payments" element={<Payments />} /> */}
           </Route>
 
           {/* Default redirect */}
