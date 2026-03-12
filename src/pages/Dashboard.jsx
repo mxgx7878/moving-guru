@@ -17,7 +17,7 @@ export default function Dashboard() {
   const growth = lastMonth > 0 ? Math.round(((thisMonth - lastMonth) / lastMonth) * 100) : 0;
 
   return (
-    <div className="space-y-6 max-w-5xl">
+    <div className="space-y-6 max-w-5xl mx-auto">
       {/* Welcome */}
       <div className="bg-[#0f0f0f] rounded-2xl p-6 flex items-center justify-between overflow-hidden relative">
         <div className="absolute inset-0 opacity-20"
