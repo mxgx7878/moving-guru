@@ -8,7 +8,7 @@ export default function Payments() {
   const total = payments.reduce((s, p) => s + p.amount, 0);
 
   return (
-    <div className="max-w-3xl space-y-6">
+    <div className="max-w-3xl mx-auto space-y-6">
       <div>
         <h1 className="font-['Unbounded'] text-xl font-black text-black">Payment History</h1>
         <p className="text-black/40 text-sm mt-1">Your billing history and invoices</p>
