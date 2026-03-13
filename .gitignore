@@ -20,3 +20,4 @@ package-lock.json
 yarn.lock
 # Ignore test files
 __tests__/
+config.bat
