@@ -6,7 +6,7 @@ import Field from '../components/Field';
 import { Save, Upload, X, Check, User, MapPin, Globe, Calendar, Edit3, Eye, EyeOff } from 'lucide-react';
 
 const PRONOUNS = ['He/Him', 'She/Her', 'They/Them', 'He/They', 'She/They', 'Prefer not to say'];
-const LANGUAGES = ['English', 'Spanish', 'French', 'Portuguese', 'Italian', 'German', 'Japanese', 'Mandarin', 'Arabic', 'Hindi'];
+const LANGUAGES = ['English', 'Spanish', 'French', 'Portuguese', 'Italian', 'German', 'Japanese', 'Mandarin', 'Arabic', 'Hindi', 'Korean', 'Indonesian', 'Russian', 'Polish', 'Cantonese', 'Ukrainian', 'Nigerian', 'Thai'];
 const OPEN_TO = ['Direct Hire', 'Swaps', 'Both', 'Energy Exchange'];
 
 export default function ProfilePage() {
@@ -67,13 +67,13 @@ export default function ProfilePage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-['Unbounded'] text-xl font-black text-black">Edit Profile</h1>
-          <p className="text-black/40 text-sm mt-1">Manage how studios and instructors find you</p>
+          <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">Edit Profile</h1>
+          <p className="text-[#9A9A94] text-sm mt-1">Manage how studios and instructors find you</p>
         </div>
         <div className="flex items-center gap-3">
           <button
             onClick={() => setShowPreview(!showPreview)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm border border-black/15 text-black/60 hover:border-black/30 hover:text-black transition-all"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm border border-[#E5E0D8] text-[#6B6B66] hover:border-[#CE4F56] hover:text-[#3E3D38] transition-all"
           >
             {showPreview ? <><EyeOff size={15} /> Hide Preview</> : <><Eye size={15} /> Preview</>}
           </button>
@@ -82,7 +82,7 @@ export default function ProfilePage() {
             className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300
               ${saved
                 ? 'bg-emerald-500 text-white'
-                : 'bg-[#d4f53c] text-black hover:bg-[#c4e530]'
+                : 'bg-[#CE4F56] text-white hover:bg-[#b8454c]'
               }`}
           >
             {saved ? <><Check size={15} /> Saved!</> : <><Save size={15} /> Save Changes</>}
@@ -92,23 +92,23 @@ export default function ProfilePage() {
 
       {/* Profile Preview */}
       {showPreview && (
-        <div className="bg-white rounded-2xl border border-black/6 overflow-hidden">
-          <div className="px-6 py-4 border-b border-black/6 flex items-center gap-2">
-            <Eye size={15} className="text-black/40" />
-            <h3 className="font-['Unbounded'] text-xs font-bold text-black tracking-wider uppercase">Profile Preview</h3>
-            <span className="text-[10px] text-black/30 ml-auto">This is how others see your profile</span>
+        <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
+          <div className="px-6 py-4 border-b border-[#E5E0D8] flex items-center gap-2">
+            <Eye size={15} className="text-[#9A9A94]" />
+            <h3 className="font-['Unbounded'] text-xs font-bold text-[#3E3D38] tracking-wider uppercase">Profile Preview</h3>
+            <span className="text-[10px] text-[#9A9A94] ml-auto">This is how others see your profile</span>
           </div>
           <div className="p-6">
             <div className="max-w-md mx-auto">
               {/* Preview Card */}
-              <div className="bg-gradient-to-br from-[#0f0f0f] to-[#1a1a1a] rounded-2xl overflow-hidden">
+              <div className="bg-gradient-to-br from-[#FDFCF8] to-[#f5fca6]/30 rounded-2xl overflow-hidden border border-[#E5E0D8]">
                 {/* Cover / Avatar area */}
-                <div className="relative h-28 bg-gradient-to-r from-[#d4f53c]/30 to-[#e8834a]/30">
+                <div className="relative h-28 bg-gradient-to-r from-[#CE4F56]/20 to-[#E89560]/20">
                   <div className="absolute -bottom-10 left-1/2 -translate-x-1/2">
-                    <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gradient-to-br from-[#d4f53c] to-[#e8834a] flex items-center justify-center border-4 border-[#0f0f0f]">
+                    <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center border-4 border-[#FDFCF8]">
                       {form.avatarPreview
                         ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
-                        : <span className="font-['Unbounded'] text-xl font-black text-black/70">{initials}</span>
+                        : <span className="font-['Unbounded'] text-xl font-black text-white">{initials}</span>
                       }
                     </div>
                   </div>
@@ -116,58 +116,58 @@ export default function ProfilePage() {
 
                 <div className="pt-14 pb-6 px-6 text-center">
                   {/* Name & basics */}
-                  <h2 className="font-['Unbounded'] text-lg font-black text-white">
+                  <h2 className="font-['Unbounded'] text-lg font-black text-[#3E3D38]">
                     {form.name || 'Your Name'}
                   </h2>
                   <div className="flex items-center justify-center gap-2 mt-1">
-                    {form.age && <span className="text-white/40 text-xs">{form.age} yrs</span>}
-                    {form.pronouns && <span className="text-white/40 text-xs">{form.pronouns}</span>}
+                    {form.age && <span className="text-[#9A9A94] text-xs">{form.age} yrs</span>}
+                    {form.pronouns && <span className="text-[#9A9A94] text-xs">{form.pronouns}</span>}
                   </div>
                   {form.studio && (
-                    <p className="text-[#d4f53c] text-xs font-semibold mt-1">{form.studio}</p>
+                    <p className="text-[#CE4F56] text-xs font-semibold mt-1">{form.studio}</p>
                   )}
 
                   {/* Status */}
                   <div className="flex justify-center mt-3">
                     <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold
                       ${form.profileStatus === 'active'
-                        ? 'bg-[#d4f53c]/20 text-[#d4f53c]'
-                        : 'bg-white/10 text-white/40'
+                        ? 'bg-[#6BE6A4]/20 text-[#3E3D38]'
+                        : 'bg-[#EDE8DF] text-[#9A9A94]'
                       }`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${form.profileStatus === 'active' ? 'bg-[#d4f53c]' : 'bg-white/30'}`} />
+                      <span className={`w-1.5 h-1.5 rounded-full ${form.profileStatus === 'active' ? 'bg-[#6BE6A4]' : 'bg-[#9A9A94]'}`} />
                       {form.profileStatus === 'active' ? 'Actively Seeking' : 'Not Seeking'}
                     </span>
                   </div>
 
                   {/* Bio */}
                   {form.bio && (
-                    <p className="text-white/50 text-xs leading-relaxed mt-4 text-left">{form.bio}</p>
+                    <p className="text-[#6B6B66] text-xs leading-relaxed mt-4 text-left">{form.bio}</p>
                   )}
 
                   {/* Location info */}
                   <div className="grid grid-cols-2 gap-3 mt-5">
                     {form.location && (
-                      <div className="bg-white/5 rounded-xl p-3 text-left">
-                        <p className="text-[9px] text-white/30 uppercase tracking-wider">Location</p>
-                        <p className="text-white/70 text-xs mt-0.5">{form.location}</p>
+                      <div className="bg-[#EDE8DF]/50 rounded-xl p-3 text-left">
+                        <p className="text-[9px] text-[#9A9A94] uppercase tracking-wider">Location</p>
+                        <p className="text-[#3E3D38] text-xs mt-0.5">{form.location}</p>
                       </div>
                     )}
                     {form.countryFrom && (
-                      <div className="bg-white/5 rounded-xl p-3 text-left">
-                        <p className="text-[9px] text-white/30 uppercase tracking-wider">From</p>
-                        <p className="text-white/70 text-xs mt-0.5">{form.countryFrom}</p>
+                      <div className="bg-[#EDE8DF]/50 rounded-xl p-3 text-left">
+                        <p className="text-[9px] text-[#9A9A94] uppercase tracking-wider">From</p>
+                        <p className="text-[#3E3D38] text-xs mt-0.5">{form.countryFrom}</p>
                       </div>
                     )}
                     {form.travelingTo && (
-                      <div className="bg-white/5 rounded-xl p-3 text-left">
-                        <p className="text-[9px] text-white/30 uppercase tracking-wider">Traveling To</p>
-                        <p className="text-white/70 text-xs mt-0.5">{form.travelingTo}</p>
+                      <div className="bg-[#EDE8DF]/50 rounded-xl p-3 text-left">
+                        <p className="text-[9px] text-[#9A9A94] uppercase tracking-wider">Traveling To</p>
+                        <p className="text-[#3E3D38] text-xs mt-0.5">{form.travelingTo}</p>
                       </div>
                     )}
                     {form.availability && (
-                      <div className="bg-white/5 rounded-xl p-3 text-left">
-                        <p className="text-[9px] text-white/30 uppercase tracking-wider">Available</p>
-                        <p className="text-white/70 text-xs mt-0.5">{form.availability}</p>
+                      <div className="bg-[#EDE8DF]/50 rounded-xl p-3 text-left">
+                        <p className="text-[9px] text-[#9A9A94] uppercase tracking-wider">Available</p>
+                        <p className="text-[#3E3D38] text-xs mt-0.5">{form.availability}</p>
                       </div>
                     )}
                   </div>
@@ -175,10 +175,10 @@ export default function ProfilePage() {
                   {/* Open To */}
                   {(form.openTo || []).length > 0 && (
                     <div className="mt-4">
-                      <p className="text-[9px] text-white/30 uppercase tracking-wider mb-2">Open To</p>
+                      <p className="text-[9px] text-[#9A9A94] uppercase tracking-wider mb-2">Open To</p>
                       <div className="flex flex-wrap justify-center gap-1.5">
                         {(Array.isArray(form.openTo) ? form.openTo : [form.openTo]).map(o => (
-                          <span key={o} className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-[#e8834a]/20 text-[#e8834a]">{o}</span>
+                          <span key={o} className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-[#E89560]/15 text-[#E89560]">{o}</span>
                         ))}
                       </div>
                     </div>
@@ -187,10 +187,10 @@ export default function ProfilePage() {
                   {/* Disciplines */}
                   {(form.disciplines || []).length > 0 && (
                     <div className="mt-4">
-                      <p className="text-[9px] text-white/30 uppercase tracking-wider mb-2">Disciplines</p>
+                      <p className="text-[9px] text-[#9A9A94] uppercase tracking-wider mb-2">Disciplines</p>
                       <div className="flex flex-wrap justify-center gap-1.5">
                         {(form.disciplines || []).map(d => (
-                          <span key={d} className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-[#d4f53c]/15 text-[#d4f53c]">{d}</span>
+                          <span key={d} className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-[#CE4F56]/10 text-[#CE4F56]">{d}</span>
                         ))}
                       </div>
                     </div>
@@ -199,10 +199,10 @@ export default function ProfilePage() {
                   {/* Languages */}
                   {(form.languages || []).length > 0 && (
                     <div className="mt-4">
-                      <p className="text-[9px] text-white/30 uppercase tracking-wider mb-2">Languages</p>
+                      <p className="text-[9px] text-[#9A9A94] uppercase tracking-wider mb-2">Languages</p>
                       <div className="flex flex-wrap justify-center gap-1.5">
                         {(form.languages || []).map(l => (
-                          <span key={l} className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-white/10 text-white/60">{l}</span>
+                          <span key={l} className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-[#EDE8DF] text-[#6B6B66]">{l}</span>
                         ))}
                       </div>
                     </div>
@@ -236,31 +236,31 @@ export default function ProfilePage() {
             >
               {form.avatarPreview
                 ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
-                : <span className="font-['Unbounded'] text-2xl font-black text-black/70">{initials}</span>
+                : <span className="font-['Unbounded'] text-2xl font-black text-[#3E3D38]">{initials}</span>
               }
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="absolute inset-0 bg-[#3E3D38]/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                 <Upload size={20} className="text-white" />
               </div>
             </div>
             <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatar} />
-            <p className="text-[10px] text-black/30 text-center mt-2">Click to change</p>
+            <p className="text-[10px] text-[#9A9A94] text-center mt-2">Click to change</p>
           </div>
 
           <div className="flex-1 space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <Field label="Full Name">
                 <input value={form.name || ''} onChange={e => set('name', e.target.value)}
-                  className="w-full border border-black/15 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-black/30 bg-white" />
+                  className="w-full border border-[#E5E0D8] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#CE4F56] bg-white" />
               </Field>
               <Field label="Age">
                 <input type="number" value={form.age || ''} onChange={e => set('age', e.target.value)}
-                  className="w-full border border-black/15 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-black/30 bg-white" />
+                  className="w-full border border-[#E5E0D8] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#CE4F56] bg-white" />
               </Field>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <Field label="Pronouns">
                 <select value={form.pronouns || ''} onChange={e => set('pronouns', e.target.value)}
-                  className="w-full border border-black/15 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-black/30 bg-white">
+                  className="w-full border border-[#E5E0D8] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#CE4F56] bg-white">
                   <option value="">Select...</option>
                   {PRONOUNS.map(p => <option key={p}>{p}</option>)}
                 </select>
@@ -268,24 +268,24 @@ export default function ProfilePage() {
               <Field label="Studio / Workplace">
                 <input value={form.studio || ''} onChange={e => set('studio', e.target.value)}
                   placeholder="Optional"
-                  className="w-full border border-black/15 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-black/30 bg-white" />
+                  className="w-full border border-[#E5E0D8] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#CE4F56] bg-white" />
               </Field>
             </div>
           </div>
         </div>
 
         {/* Status toggle */}
-        <div className="mt-5 pt-5 border-t border-black/6">
+        <div className="mt-5 pt-5 border-t border-[#E5E0D8]">
           <Field label="Profile Status" hint="Active profiles appear in search results">
             <div className="flex gap-2 mt-1 justify-center">
               {['active', 'inactive'].map(s => (
                 <button key={s} type="button" onClick={() => set('profileStatus', s)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold border transition-all
                     ${form.profileStatus === s
-                      ? s === 'active' ? 'bg-[#d4f53c] border-[#d4f53c] text-black' : 'bg-black border-black text-white'
-                      : 'border-black/15 text-black/40 hover:border-black/30'
+                      ? s === 'active' ? 'bg-[#CE4F56] border-[#CE4F56] text-[#3E3D38]' : 'bg-[#3E3D38] border-[#3E3D38] text-white'
+                      : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#CE4F56]'
                     }`}>
-                  <span className={`w-2 h-2 rounded-full ${s === 'active' ? 'bg-emerald-500' : 'bg-black/20'}`} />
+                  <span className={`w-2 h-2 rounded-full ${s === 'active' ? 'bg-emerald-500' : 'bg-[#9A9A94]'}`} />
                   {s === 'active' ? 'Actively Seeking' : 'Not Seeking'}
                 </button>
               ))}
@@ -300,7 +300,7 @@ export default function ProfilePage() {
           <textarea value={form.bio || ''} onChange={e => set('bio', e.target.value)}
             rows={5} maxLength={500}
             placeholder="Tell studios and instructors about yourself, your style, and what you're looking for..."
-            className="w-full border border-black/15 rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:border-black/30 bg-white" />
+            className="w-full border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:border-[#CE4F56] bg-white" />
         </Field>
       </Section>
 
@@ -311,24 +311,24 @@ export default function ProfilePage() {
             <Field label="Current Location">
               <input value={form.location || ''} onChange={e => set('location', e.target.value)}
                 placeholder="City, Country"
-                className="w-full border border-black/15 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-black/30 bg-white" />
+                className="w-full border border-[#E5E0D8] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#CE4F56] bg-white" />
             </Field>
             <Field label="Country From">
               <input value={form.countryFrom || ''} onChange={e => set('countryFrom', e.target.value)}
                 placeholder="e.g. Australia"
-                className="w-full border border-black/15 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-black/30 bg-white" />
+                className="w-full border border-[#E5E0D8] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#CE4F56] bg-white" />
             </Field>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <Field label="Traveling To">
               <input value={form.travelingTo || ''} onChange={e => set('travelingTo', e.target.value)}
                 placeholder="e.g. South America, Italy"
-                className="w-full border border-black/15 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-black/30 bg-white" />
+                className="w-full border border-[#E5E0D8] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#CE4F56] bg-white" />
             </Field>
             <Field label="Availability">
               <input value={form.availability || ''} onChange={e => set('availability', e.target.value)}
                 placeholder="e.g. Aug – Oct 2026"
-                className="w-full border border-black/15 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-black/30 bg-white" />
+                className="w-full border border-[#E5E0D8] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#CE4F56] bg-white" />
             </Field>
           </div>
 
@@ -338,8 +338,8 @@ export default function ProfilePage() {
                 <button key={opt} type="button" onClick={() => toggle('openTo', opt)}
                   className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
                     ${(form.openTo || []).includes(opt)
-                      ? 'bg-black border-black text-[#d4f53c]'
-                      : 'border-black/15 text-black/50 hover:border-black/30'
+                      ? 'bg-[#3E3D38] border-[#3E3D38] text-white'
+                      : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#CE4F56]'
                     }`}>
                   {opt}
                 </button>
@@ -356,8 +356,8 @@ export default function ProfilePage() {
             <button key={lang} type="button" onClick={() => toggle('languages', lang)}
               className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
                 ${(form.languages || []).includes(lang)
-                  ? 'bg-[#d4f53c] border-[#d4f53c] text-black'
-                  : 'border-black/15 text-black/50 hover:border-black/30'
+                  ? 'bg-[#CE4F56] border-[#CE4F56] text-[#3E3D38]'
+                  : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#CE4F56]'
                 }`}>
               {lang}
             </button>
@@ -369,9 +369,9 @@ export default function ProfilePage() {
       <Section title="Disciplines" icon={Calendar}>
         {/* Selected */}
         {(form.disciplines || []).length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-4 p-3 bg-[#d4f53c]/15 rounded-xl border border-[#d4f53c]/30 justify-center">
+          <div className="flex flex-wrap gap-2 mb-4 p-3 bg-[#CE4F56]/15 rounded-xl border border-[#CE4F56]/30 justify-center">
             {(form.disciplines || []).map(d => (
-              <span key={d} className="flex items-center gap-1 bg-[#d4f53c] text-black text-xs font-medium px-2.5 py-1 rounded-full">
+              <span key={d} className="flex items-center gap-1 bg-[#CE4F56] text-[#3E3D38] text-xs font-medium px-2.5 py-1 rounded-full">
                 {d}
                 <button type="button" onClick={() => toggle('disciplines', d)}><X size={9} /></button>
               </span>
@@ -381,7 +381,7 @@ export default function ProfilePage() {
 
         <input type="text" value={discSearch} onChange={e => setDiscSearch(e.target.value)}
           placeholder="Search disciplines..."
-          className="w-full border border-black/15 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-black/30 bg-white mb-4" />
+          className="w-full border border-[#E5E0D8] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#CE4F56] bg-white mb-4" />
 
         <div className="space-y-5 max-h-80 overflow-y-auto pr-1">
           {filteredCats.map(cat => {
@@ -389,7 +389,7 @@ export default function ProfilePage() {
             return (
               <div key={cat.id}>
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-[9px] font-bold text-black/30 tracking-widest uppercase">
+                  <p className="text-[9px] font-bold text-[#9A9A94] tracking-widest uppercase">
                     {cat.emoji} {cat.label}
                   </p>
                   <button
@@ -397,8 +397,8 @@ export default function ProfilePage() {
                     onClick={() => toggleSelectAll(cat.items)}
                     className={`text-[10px] font-semibold px-2.5 py-1 rounded-lg transition-all
                       ${allSelected
-                        ? 'bg-black text-[#d4f53c]'
-                        : 'bg-black/5 text-black/40 hover:bg-black/10 hover:text-black/60'
+                        ? 'bg-[#3E3D38] text-white'
+                        : 'bg-[#EDE8DF] text-[#6B6B66] hover:bg-[#E5E0D8] hover:text-[#3E3D38]'
                       }`}
                   >
                     {allSelected ? 'Deselect All' : 'Select All'}
@@ -409,8 +409,8 @@ export default function ProfilePage() {
                     <button key={d} type="button" onClick={() => toggle('disciplines', d)}
                       className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
                         ${(form.disciplines || []).includes(d)
-                          ? 'bg-black border-black text-[#d4f53c]'
-                          : 'border-black/15 text-black/60 hover:border-black/30 hover:bg-black/5'
+                          ? 'bg-[#3E3D38] border-[#3E3D38] text-white'
+                          : 'border-[#E5E0D8] text-[#3E3D38] hover:border-[#CE4F56] hover:bg-[#EDE8DF]'
                         }`}>
                       {d}
                     </button>
@@ -426,12 +426,12 @@ export default function ProfilePage() {
       <Section title="Gallery Photos" icon={Upload}>
         <div className="grid grid-cols-4 gap-3 mb-4">
           {(form.photos || []).map((p, i) => (
-            <div key={i} className="aspect-square rounded-xl overflow-hidden bg-black/5 relative group">
+            <div key={i} className="aspect-square rounded-xl overflow-hidden bg-[#EDE8DF] relative group">
               <img src={p} alt="" className="w-full h-full object-cover" />
               <button
                 type="button"
                 onClick={() => set('photos', form.photos.filter((_, j) => j !== i))}
-                className="absolute top-1 right-1 w-5 h-5 bg-black/70 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute top-1 right-1 w-5 h-5 bg-[#3E3D38]/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
               >
                 <X size={10} className="text-white" />
               </button>
@@ -439,16 +439,16 @@ export default function ProfilePage() {
           ))}
           {(form.photos || []).length < 4 && (
             <div
-              className="aspect-square rounded-xl border-2 border-dashed border-black/15 flex flex-col items-center justify-center cursor-pointer hover:border-black/30 transition-colors"
+              className="aspect-square rounded-xl border-2 border-dashed border-[#E5E0D8] flex flex-col items-center justify-center cursor-pointer hover:border-[#CE4F56] transition-colors"
               onClick={() => photosRef.current?.click()}
             >
-              <Upload size={18} className="text-black/25" />
-              <p className="text-[10px] text-black/25 mt-1">Add</p>
+              <Upload size={18} className="text-[#3E3D38]/25" />
+              <p className="text-[10px] text-[#3E3D38]/25 mt-1">Add</p>
             </div>
           )}
         </div>
         <input ref={photosRef} type="file" accept="image/*" multiple className="hidden" onChange={handlePhotos} />
-        <p className="text-[10px] text-black/30 text-center">Up to 4 gallery photos + 1 main profile photo</p>
+        <p className="text-[10px] text-[#9A9A94] text-center">Up to 4 gallery photos + 1 main profile photo</p>
       </Section>
 
       {/* Save bottom */}
@@ -456,7 +456,7 @@ export default function ProfilePage() {
         <button
           onClick={handleSave}
           className={`flex items-center gap-2 px-8 py-3 rounded-xl font-bold text-sm transition-all duration-300
-            ${saved ? 'bg-emerald-500 text-white' : 'bg-[#d4f53c] text-black hover:bg-[#c4e530]'}`}
+            ${saved ? 'bg-emerald-500 text-white' : 'bg-[#CE4F56] text-[#3E3D38] hover:bg-[#c4e530]'}`}
         >
           {saved ? <><Check size={15} /> Changes Saved!</> : <><Save size={15} /> Save All Changes</>}
         </button>
