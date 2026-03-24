@@ -1,21 +1,57 @@
+import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { DUMMY_USER } from '../data/dummyData';
 import BarChart from '../components/BarChart';
 import StatCard from '../components/StatCard';
 import {
   Eye, MessageCircle, Heart, TrendingUp, Globe,
-  MapPin, Calendar, Star, ArrowUpRight, Zap, Megaphone
+  MapPin, Calendar, Star, ArrowUpRight, Zap, Megaphone,
+  Mail, Lock, Settings, Check, EyeOff
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const profileData = user || DUMMY_USER;
 
   const totalViews = profileData.profileViews?.reduce((s, d) => s + d.views, 0) || 0;
   const thisMonth = profileData.profileViews?.[profileData.profileViews.length - 1]?.views || 0;
   const lastMonth = profileData.profileViews?.[profileData.profileViews.length - 2]?.views || 0;
   const growth = lastMonth > 0 ? Math.round(((thisMonth - lastMonth) / lastMonth) * 100) : 0;
+
+  // Account settings state
+  const [email, setEmail] = useState(user?.email || '');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [emailSaved, setEmailSaved] = useState(false);
+  const [passwordSaved, setPasswordSaved] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
+  const [pwError, setPwError] = useState('');
+
+  const handleEmailSave = () => {
+    if (!email.trim()) return;
+    updateUser({ email });
+    setEmailSaved(true);
+    setTimeout(() => setEmailSaved(false), 2500);
+  };
+
+  const handlePasswordSave = () => {
+    setPwError('');
+    if (!currentPassword) { setPwError('Please enter your current password'); return; }
+    if (newPassword.length < 6) { setPwError('New password must be at least 6 characters'); return; }
+    if (newPassword !== confirmPassword) { setPwError('Passwords do not match'); return; }
+    setCurrentPassword(''); setNewPassword(''); setConfirmPassword('');
+    setPasswordSaved(true);
+    setTimeout(() => setPasswordSaved(false), 2500);
+  };
+
+  const handlePasswordReset = () => {
+    setResetSent(true);
+    setTimeout(() => setResetSent(false), 3000);
+  };
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
@@ -152,6 +188,155 @@ export default function Dashboard() {
         <button className="bg-white text-[#E89560] font-bold text-xs px-4 py-2 rounded-xl hover:bg-white/90 transition-colors whitespace-nowrap flex items-center gap-1.5">
           Boost <ArrowUpRight size={12} />
         </button>
+      </div>
+
+      {/* ═══════════════════════════════════════
+           ACCOUNT SETTINGS SECTION
+         ═══════════════════════════════════════ */}
+      <div className="pt-2">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-9 h-9 bg-[#CE4F56]/10 rounded-xl flex items-center justify-center">
+            <Settings size={16} className="text-[#CE4F56]" />
+          </div>
+          <div>
+            <h2 className="font-['Unbounded'] text-base font-black text-[#3E3D38]">Account Settings</h2>
+            <p className="text-[#9A9A94] text-xs mt-0.5">Manage your email, password, and security</p>
+          </div>
+        </div>
+
+        <div className="grid lg:grid-cols-2 gap-4">
+          {/* Email */}
+          <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-[#E5E0D8] flex items-center gap-2.5">
+              <Mail size={14} className="text-[#CE4F56]" />
+              <h3 className="font-['Unbounded'] text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Email Address</h3>
+            </div>
+            <div className="p-5 space-y-3">
+              <div>
+                <label className="block text-[10px] font-bold text-[#9A9A94] uppercase tracking-wider mb-1.5">Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  className="w-full border border-[#E5E0D8] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#CE4F56] bg-[#FDFCF8] text-[#3E3D38]"
+                />
+              </div>
+              <button
+                onClick={handleEmailSave}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all duration-300
+                  ${emailSaved
+                    ? 'bg-emerald-500 text-white'
+                    : 'bg-[#CE4F56] text-white hover:bg-[#b8454c]'
+                  }`}
+              >
+                {emailSaved ? <><Check size={13} /> Saved!</> : 'Update Email'}
+              </button>
+            </div>
+          </div>
+
+          {/* Password Reset */}
+          <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-[#E5E0D8] flex items-center gap-2.5">
+              <Settings size={14} className="text-[#E89560]" />
+              <h3 className="font-['Unbounded'] text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Password Reset</h3>
+            </div>
+            <div className="p-5">
+              <p className="text-sm text-[#6B6B66] mb-3">
+                Forgot your password? We'll send a reset link to your email.
+              </p>
+              {resetSent ? (
+                <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5 flex items-center gap-2">
+                  <Check size={13} className="text-emerald-600" />
+                  <p className="text-emerald-700 text-xs font-medium">Reset link sent to {user?.email}</p>
+                </div>
+              ) : (
+                <button
+                  onClick={handlePasswordReset}
+                  className="px-4 py-2 rounded-xl font-bold text-xs border border-[#E5E0D8] text-[#6B6B66] hover:border-[#CE4F56] hover:text-[#CE4F56] transition-all"
+                >
+                  Send Password Reset Link
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Change Password — full width */}
+        <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden mt-4">
+          <div className="px-5 py-3.5 border-b border-[#E5E0D8] flex items-center gap-2.5">
+            <Lock size={14} className="text-[#CE4F56]" />
+            <h3 className="font-['Unbounded'] text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Change Password</h3>
+          </div>
+          <div className="p-5 space-y-3">
+            {pwError && (
+              <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-2 text-xs text-red-600">
+                {pwError}
+              </div>
+            )}
+
+            <div className="grid sm:grid-cols-3 gap-3">
+              <div>
+                <label className="block text-[10px] font-bold text-[#9A9A94] uppercase tracking-wider mb-1.5">Current Password</label>
+                <div className="relative">
+                  <input
+                    type={showCurrent ? 'text' : 'password'}
+                    value={currentPassword}
+                    onChange={e => setCurrentPassword(e.target.value)}
+                    placeholder="Current"
+                    className="w-full border border-[#E5E0D8] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#CE4F56] bg-[#FDFCF8] text-[#3E3D38] pr-9"
+                  />
+                  <button type="button" onClick={() => setShowCurrent(!showCurrent)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A9A94] hover:text-[#6B6B66]">
+                    {showCurrent ? <EyeOff size={14} /> : <Eye size={14} />}
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-[#9A9A94] uppercase tracking-wider mb-1.5">New Password</label>
+                <div className="relative">
+                  <input
+                    type={showNew ? 'text' : 'password'}
+                    value={newPassword}
+                    onChange={e => setNewPassword(e.target.value)}
+                    placeholder="New"
+                    className="w-full border border-[#E5E0D8] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#CE4F56] bg-[#FDFCF8] text-[#3E3D38] pr-9"
+                  />
+                  <button type="button" onClick={() => setShowNew(!showNew)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A9A94] hover:text-[#6B6B66]">
+                    {showNew ? <EyeOff size={14} /> : <Eye size={14} />}
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-[#9A9A94] uppercase tracking-wider mb-1.5">Confirm Password</label>
+                <div className="relative">
+                  <input
+                    type={showConfirm ? 'text' : 'password'}
+                    value={confirmPassword}
+                    onChange={e => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm"
+                    className="w-full border border-[#E5E0D8] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#CE4F56] bg-[#FDFCF8] text-[#3E3D38] pr-9"
+                  />
+                  <button type="button" onClick={() => setShowConfirm(!showConfirm)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A9A94] hover:text-[#6B6B66]">
+                    {showConfirm ? <EyeOff size={14} /> : <Eye size={14} />}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={handlePasswordSave}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all duration-300
+                ${passwordSaved
+                  ? 'bg-emerald-500 text-white'
+                  : 'bg-[#CE4F56] text-white hover:bg-[#b8454c]'
+                }`}
+            >
+              {passwordSaved ? <><Check size={13} /> Password Updated!</> : 'Update Password'}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

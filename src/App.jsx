@@ -9,7 +9,6 @@ import ProfilePage from './pages/ProfilePage';
 import Subscription from './pages/Subscription';
 import Payments from './pages/Payments';
 import Messages from './pages/Messages';
-import AccountSettings from './pages/AccountSettings';
 
 export default function App() {
   return (
@@ -35,7 +34,6 @@ export default function App() {
             <Route path="messages" element={<Messages />} />
             <Route path="subscription" element={<Subscription />} />
             <Route path="payments" element={<Payments />} />
-            <Route path="settings" element={<AccountSettings />} />
           </Route>
 
           {/* Default redirect */}

@@ -2,7 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import {
   LayoutDashboard, User, CreditCard, Star, LogOut,
-  Globe, ChevronRight, Bell, MessageCircle, Settings
+  Globe, ChevronRight, Bell, MessageCircle
 } from 'lucide-react';
 
 const NAV = [
@@ -11,7 +11,6 @@ const NAV = [
   { to: '/portal/messages', icon: MessageCircle, label: 'Messages' },
   { to: '/portal/subscription', icon: Star, label: 'Subscription' },
   { to: '/portal/payments', icon: CreditCard, label: 'Payment History' },
-  { to: '/portal/settings', icon: Settings, label: 'Account Settings' },
 ];
 
 export default function Sidebar({ mobileOpen, onClose }) {
