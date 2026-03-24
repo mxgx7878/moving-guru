@@ -19,7 +19,7 @@ const STEPS = [
 
 const PRONOUNS = ['He/Him', 'She/Her', 'They/Them', 'He/They', 'She/They', 'Prefer not to say'];
 const OPEN_TO = ['Direct Hire', 'Swaps', 'Both', 'Energy Exchange'];
-const LANGUAGES = ['English', 'Spanish', 'French', 'Portuguese', 'Italian', 'German', 'Japanese', 'Mandarin', 'Arabic', 'Hindi'];
+const LANGUAGES = ['English', 'Spanish', 'French', 'Portuguese', 'Italian', 'German', 'Japanese', 'Mandarin', 'Arabic', 'Hindi', 'Korean', 'Indonesian', 'Russian', 'Polish', 'Cantonese', 'Ukrainian', 'Nigerian', 'Thai'];
 
 export default function Register() {
   const [step, setStep] = useState(1);
@@ -101,25 +101,25 @@ export default function Register() {
 
 
   return (
-    <div className="min-h-screen bg-[#f0f5d8] font-['DM_Sans'] py-8 px-4">
+    <div className="min-h-screen bg-[#FDFCF8] font-['DM_Sans'] py-8 px-4">
       {/* Header */}
       <div className="max-w-2xl mx-auto mb-8">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <Globe size={18} className="text-black/60" />
-            <span className="font-['Unbounded'] text-sm font-bold text-black/70 tracking-wider">
-              MOVING <em className="not-italic text-black">GURU</em>
+            <Globe size={18} className="text-[#CE4F56]" />
+            <span className="font-['Unbounded'] text-sm font-bold text-[#3E3D38] tracking-wider">
+              MOVING <em className="not-italic text-[#CE4F56]">GURU</em>
             </span>
           </Link>
-          <Link to="/login" className="text-sm text-black/40 hover:text-black/70">Already a member? Sign in →</Link>
+          <Link to="/login" className="text-sm text-[#9A9A94] hover:text-[#3E3D38]">Already a member? Sign in &rarr;</Link>
         </div>
       </div>
 
       {/* Card */}
       <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-sm border border-black/8 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm border border-[#E5E0D8] overflow-hidden">
           {/* Stepper header */}
-          <div className="bg-[#0f0f0f] px-6 py-5">
+          <div className="bg-[#CE4F56] px-6 py-5">
             <h1 className="font-['Unbounded'] text-lg font-black text-white mb-5">
               Join Moving Guru
             </h1>
@@ -132,16 +132,16 @@ export default function Register() {
                   <div key={s.id} className="flex items-center flex-1 last:flex-none">
                     <div className="flex flex-col items-center gap-1">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all
-                        ${done ? 'bg-[#d4f53c] text-black' : active ? 'bg-[#d4f53c] text-black' : 'bg-white/10 text-white/30'}`}>
+                        ${done ? 'bg-[#f5fca6] text-[#3E3D38]' : active ? 'bg-white text-[#CE4F56]' : 'bg-white/15 text-white/40'}`}>
                         {done ? <Check size={14} /> : <span className="font-['Unbounded'] text-[10px]">{s.id}</span>}
                       </div>
                       <span className={`text-[9px] tracking-wider uppercase hidden sm:block
-                        ${active || done ? 'text-[#d4f53c]' : 'text-white/20'}`}>
+                        ${active ? 'text-white' : done ? 'text-[#f5fca6]' : 'text-white/30'}`}>
                         {s.label}
                       </span>
                     </div>
                     {i < STEPS.length - 1 && (
-                      <div className={`h-px flex-1 mx-1 transition-all ${step > s.id ? 'bg-[#d4f53c]' : 'bg-white/10'}`} />
+                      <div className={`h-px flex-1 mx-1 transition-all ${step > s.id ? 'bg-[#f5fca6]' : 'bg-white/15'}`} />
                     )}
                   </div>
                 );
@@ -156,8 +156,8 @@ export default function Register() {
             {step === 1 && (
               <div className="space-y-5">
                 <div>
-                  <h2 className="font-['Unbounded'] text-xl font-black text-black mb-1">Create your account</h2>
-                  <p className="text-black/40 text-sm">Start your global wellness journey</p>
+                  <h2 className="font-['Unbounded'] text-xl font-black text-[#3E3D38] mb-1">Create your account</h2>
+                  <p className="text-[#9A9A94] text-sm">Start your global wellness journey</p>
                 </div>
                 <Input label="Full Name" name="name" form={form} update={update} errors={errors} placeholder="Your full name" />
                 <Input label="Email" name="email" type="email" form={form} update={update} errors={errors} placeholder="you@example.com" />
@@ -170,32 +170,32 @@ export default function Register() {
             {step === 2 && (
               <div className="space-y-5">
                 <div>
-                  <h2 className="font-['Unbounded'] text-xl font-black text-black mb-1">Personal details</h2>
-                  <p className="text-black/40 text-sm">Tell the community about yourself</p>
+                  <h2 className="font-['Unbounded'] text-xl font-black text-[#3E3D38] mb-1">Personal details</h2>
+                  <p className="text-[#9A9A94] text-sm">Tell the community about yourself</p>
                 </div>
 
                 {/* Avatar upload */}
                 <div>
-                  <label className="block text-black/50 text-xs font-semibold tracking-wider uppercase mb-2">Profile Photo</label>
+                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Profile Photo</label>
                   <div className="flex items-center gap-4">
                     <div
-                      className="w-20 h-20 rounded-full border-2 border-dashed border-black/20 flex items-center justify-center cursor-pointer hover:border-black/40 transition-colors overflow-hidden bg-black/5"
+                      className="w-20 h-20 rounded-full border-2 border-dashed border-[#E5E0D8] flex items-center justify-center cursor-pointer hover:border-[#CE4F56] transition-colors overflow-hidden bg-[#FDFCF8]"
                       onClick={() => fileRef.current?.click()}
                     >
                       {form.avatarPreview
                         ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
-                        : <Upload size={20} className="text-black/30" />
+                        : <Upload size={20} className="text-[#9A9A94]" />
                       }
                     </div>
                     <div>
                       <button
                         type="button"
                         onClick={() => fileRef.current?.click()}
-                        className="text-sm font-medium text-black/70 hover:text-black border border-black/20 rounded-lg px-3 py-1.5 hover:border-black/40 transition-colors"
+                        className="text-sm font-medium text-[#6B6B66] hover:text-[#3E3D38] border border-[#E5E0D8] rounded-lg px-3 py-1.5 hover:border-[#CE4F56] transition-colors"
                       >
                         Upload photo
                       </button>
-                      <p className="text-xs text-black/30 mt-1">JPG, PNG up to 5MB</p>
+                      <p className="text-xs text-[#9A9A94] mt-1">JPG, PNG up to 5MB</p>
                     </div>
                     <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
                   </div>
@@ -204,11 +204,11 @@ export default function Register() {
                 <div className="grid grid-cols-2 gap-4">
                   <Input label="Age" name="age" form={form} update={update} errors={errors} type="number" placeholder="30" />
                   <div>
-                    <label className="block text-black/50 text-xs font-semibold tracking-wider uppercase mb-2">Pronouns</label>
+                    <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Pronouns</label>
                     <select
                       value={form.pronouns}
                       onChange={e => update('pronouns', e.target.value)}
-                      className="w-full border border-black/15 rounded-xl px-4 py-3 text-sm text-black focus:outline-none focus:border-black/40 bg-white"
+                      className="w-full border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#CE4F56] bg-white"
                     >
                       <option value="">Select...</option>
                       {PRONOUNS.map(p => <option key={p}>{p}</option>)}
@@ -219,7 +219,7 @@ export default function Register() {
                 <Input label="Studio / Workplace (optional)" name="studio" form={form} update={update} errors={errors} placeholder="Studio or gym name" />
 
                 <div>
-                  <label className="block text-black/50 text-xs font-semibold tracking-wider uppercase mb-2">Languages</label>
+                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Languages</label>
                   <div className="flex flex-wrap gap-2">
                     {LANGUAGES.map(lang => (
                       <button
@@ -228,8 +228,8 @@ export default function Register() {
                         onClick={() => toggleItem('languages', lang)}
                         className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
                           ${form.languages.includes(lang)
-                            ? 'bg-[#d4f53c] border-[#d4f53c] text-black'
-                            : 'border-black/15 text-black/50 hover:border-black/30'
+                            ? 'bg-[#CE4F56] border-[#CE4F56] text-white'
+                            : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#CE4F56]'
                           }`}
                       >
                         {lang}
@@ -244,8 +244,8 @@ export default function Register() {
             {step === 3 && (
               <div className="space-y-5">
                 <div>
-                  <h2 className="font-['Unbounded'] text-xl font-black text-black mb-1">Location & Travel</h2>
-                  <p className="text-black/40 text-sm">Where are you from? Where are you going?</p>
+                  <h2 className="font-['Unbounded'] text-xl font-black text-[#3E3D38] mb-1">Location & Travel</h2>
+                  <p className="text-[#9A9A94] text-sm">Where are you from? Where are you going?</p>
                 </div>
                 <Input label="Current Location" name="location" form={form} update={update} errors={errors} placeholder="City, Country" />
                 <Input label="Country From" name="countryFrom" form={form} update={update} errors={errors} placeholder="e.g. Australia" />
@@ -253,7 +253,7 @@ export default function Register() {
                 <Input label="Availability / Dates" name="availability" form={form} update={update} errors={errors} placeholder="e.g. August – October 2026" />
 
                 <div>
-                  <label className="block text-black/50 text-xs font-semibold tracking-wider uppercase mb-2">Open To</label>
+                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Open To</label>
                   <div className="flex flex-wrap gap-2">
                     {OPEN_TO.map(opt => (
                       <button
@@ -262,8 +262,8 @@ export default function Register() {
                         onClick={() => toggleItem('openTo', opt)}
                         className={`px-4 py-2 rounded-full text-xs font-medium border transition-all
                           ${form.openTo.includes(opt)
-                            ? 'bg-black text-[#d4f53c] border-black'
-                            : 'border-black/15 text-black/50 hover:border-black/30'
+                            ? 'bg-[#3E3D38] text-white border-[#3E3D38]'
+                            : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#CE4F56]'
                           }`}
                       >
                         {opt}
@@ -273,7 +273,7 @@ export default function Register() {
                 </div>
 
                 <div>
-                  <label className="block text-black/50 text-xs font-semibold tracking-wider uppercase mb-2">Profile Status</label>
+                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Profile Status</label>
                   <div className="flex gap-3">
                     {['active', 'inactive'].map(s => (
                       <button
@@ -282,11 +282,11 @@ export default function Register() {
                         onClick={() => update('profileStatus', s)}
                         className={`flex-1 py-2.5 rounded-xl text-xs font-semibold border capitalize transition-all
                           ${form.profileStatus === s
-                            ? 'bg-[#d4f53c] border-[#d4f53c] text-black'
-                            : 'border-black/15 text-black/40 hover:border-black/30'
+                            ? 'bg-[#CE4F56] border-[#CE4F56] text-white'
+                            : 'border-[#E5E0D8] text-[#9A9A94] hover:border-[#CE4F56]'
                           }`}
                       >
-                        {s === 'active' ? '🟢 Actively Seeking' : '⚪ Not Seeking'}
+                        {s === 'active' ? 'Actively Seeking' : 'Not Seeking'}
                       </button>
                     ))}
                   </div>
@@ -298,15 +298,15 @@ export default function Register() {
             {step === 4 && (
               <div className="space-y-4">
                 <div>
-                  <h2 className="font-['Unbounded'] text-xl font-black text-black mb-1">Your Disciplines</h2>
-                  <p className="text-black/40 text-sm">Select all that apply — what do you teach or practise?</p>
+                  <h2 className="font-['Unbounded'] text-xl font-black text-[#3E3D38] mb-1">Your Disciplines</h2>
+                  <p className="text-[#9A9A94] text-sm">Select all that apply — what do you teach or practise?</p>
                 </div>
 
                 {/* Selected pills */}
                 {form.disciplines.length > 0 && (
-                  <div className="flex flex-wrap gap-2 p-3 bg-[#d4f53c]/20 rounded-xl border border-[#d4f53c]/30">
+                  <div className="flex flex-wrap gap-2 p-3 bg-[#CE4F56]/10 rounded-xl border border-[#CE4F56]/20">
                     {form.disciplines.map(d => (
-                      <span key={d} className="flex items-center gap-1 bg-[#d4f53c] text-black text-xs font-medium px-2.5 py-1 rounded-full">
+                      <span key={d} className="flex items-center gap-1 bg-[#CE4F56] text-white text-xs font-medium px-2.5 py-1 rounded-full">
                         {d}
                         <button onClick={() => toggleItem('disciplines', d)}><X size={10} /></button>
                       </span>
@@ -321,14 +321,14 @@ export default function Register() {
                   value={disciplineSearch}
                   onChange={e => setDisciplineSearch(e.target.value)}
                   placeholder="Search disciplines..."
-                  className="w-full border border-black/15 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-black/40 bg-white"
+                  className="w-full border border-[#E5E0D8] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#CE4F56] bg-white"
                 />
 
                 {/* Categories */}
                 <div className="space-y-4 max-h-72 overflow-y-auto pr-1">
                   {filteredDisciplines.map(cat => (
                     <div key={cat.id}>
-                      <p className="text-[10px] font-bold text-black/40 tracking-widest uppercase mb-2">
+                      <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">
                         {cat.emoji} {cat.label}
                       </p>
                       <div className="flex flex-wrap gap-1.5">
@@ -339,8 +339,8 @@ export default function Register() {
                             onClick={() => toggleItem('disciplines', d)}
                             className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
                               ${form.disciplines.includes(d)
-                                ? 'bg-black text-[#d4f53c] border-black'
-                                : 'border-black/15 text-black/60 hover:border-black/30 hover:bg-black/5'
+                                ? 'bg-[#3E3D38] text-white border-[#3E3D38]'
+                                : 'border-[#E5E0D8] text-[#3E3D38] hover:border-[#CE4F56] hover:bg-[#FDFCF8]'
                               }`}
                           >
                             {d}
@@ -357,13 +357,13 @@ export default function Register() {
             {step === 5 && (
               <div className="space-y-5">
                 <div>
-                  <h2 className="font-['Unbounded'] text-xl font-black text-black mb-1">Bio & Photos</h2>
-                  <p className="text-black/40 text-sm">Let studios and instructors get to know you</p>
+                  <h2 className="font-['Unbounded'] text-xl font-black text-[#3E3D38] mb-1">Bio & Photos</h2>
+                  <p className="text-[#9A9A94] text-sm">Let studios and instructors get to know you</p>
                 </div>
 
                 <div>
-                  <label className="block text-black/50 text-xs font-semibold tracking-wider uppercase mb-2">
-                    Bio <span className="text-black/20 normal-case">({form.bio.length}/500)</span>
+                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">
+                    Bio <span className="text-[#C4BCB4] normal-case">({form.bio.length}/500)</span>
                   </label>
                   <textarea
                     value={form.bio}
@@ -371,27 +371,27 @@ export default function Register() {
                     rows={5}
                     maxLength={500}
                     placeholder="Tell the community about yourself, your style, experience and what you're looking for..."
-                    className="w-full border border-black/15 rounded-xl px-4 py-3 text-sm text-black placeholder-black/30 focus:outline-none focus:border-black/40 resize-none bg-white"
+                    className="w-full border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-[#CE4F56] resize-none bg-white"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-black/50 text-xs font-semibold tracking-wider uppercase mb-2">
-                    Gallery Photos <span className="text-black/20 normal-case">(up to 4)</span>
+                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">
+                    Gallery Photos <span className="text-[#C4BCB4] normal-case">(up to 4)</span>
                   </label>
                   <div
-                    className="border-2 border-dashed border-black/15 rounded-xl p-6 text-center cursor-pointer hover:border-black/30 transition-colors"
+                    className="border-2 border-dashed border-[#E5E0D8] rounded-xl p-6 text-center cursor-pointer hover:border-[#CE4F56] transition-colors"
                     onClick={() => photosRef.current?.click()}
                   >
-                    <Upload size={24} className="text-black/30 mx-auto mb-2" />
-                    <p className="text-sm text-black/40">Click to upload photos</p>
-                    <p className="text-xs text-black/25 mt-1">JPG, PNG up to 5MB each</p>
+                    <Upload size={24} className="text-[#9A9A94] mx-auto mb-2" />
+                    <p className="text-sm text-[#6B6B66]">Click to upload photos</p>
+                    <p className="text-xs text-[#9A9A94] mt-1">JPG, PNG up to 5MB each</p>
                     <input ref={photosRef} type="file" accept="image/*" multiple className="hidden" onChange={handlePhotosChange} />
                   </div>
                   {form.photos.length > 0 && (
                     <div className="grid grid-cols-4 gap-2 mt-3">
                       {form.photos.map((p, i) => (
-                        <div key={i} className="aspect-square rounded-lg overflow-hidden bg-black/5">
+                        <div key={i} className="aspect-square rounded-lg overflow-hidden bg-[#EDE8DF]">
                           <img src={p} alt="" className="w-full h-full object-cover" />
                         </div>
                       ))}
@@ -405,14 +405,14 @@ export default function Register() {
             {step === 6 && (
               <div className="space-y-5">
                 <div>
-                  <h2 className="font-['Unbounded'] text-xl font-black text-black mb-1">Choose your plan</h2>
-                  <p className="text-black/40 text-sm">All plans include full access. Cancel anytime.</p>
+                  <h2 className="font-['Unbounded'] text-xl font-black text-[#3E3D38] mb-1">Choose your plan</h2>
+                  <p className="text-[#9A9A94] text-sm">All plans include full access. Cancel anytime.</p>
                 </div>
 
                 <div className="space-y-3">
                   {[
                     { id: 'monthly', label: 'Monthly', price: '$15', per: '/mo', badge: null },
-                    { id: 'biannual', label: '6 Months', price: '$45', per: '/6mo', badge: 'Save 50%', perMonth: '~$7.50/mo' },
+                    { id: 'biannual', label: '6 Months', price: '$45', per: '/6mo', badge: 'Most Popular', perMonth: '~$7.50/mo' },
                     { id: 'annual', label: '12 Months', price: '$60', per: '/yr', badge: 'Best Value', perMonth: '~$5/mo' },
                   ].map(plan => (
                     <button
@@ -421,24 +421,24 @@ export default function Register() {
                       onClick={() => update('plan', plan.id)}
                       className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all text-left
                         ${form.plan === plan.id
-                          ? 'border-black bg-black text-white'
-                          : 'border-black/10 hover:border-black/30 text-black'
+                          ? 'border-[#CE4F56] bg-[#CE4F56] text-white'
+                          : 'border-[#E5E0D8] hover:border-[#CE4F56]/40 text-[#3E3D38]'
                         }`}
                     >
                       <div className="flex items-center gap-3">
                         <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center
-                          ${form.plan === plan.id ? 'border-[#d4f53c]' : 'border-current opacity-30'}`}>
-                          {form.plan === plan.id && <div className="w-2 h-2 rounded-full bg-[#d4f53c]" />}
+                          ${form.plan === plan.id ? 'border-white' : 'border-[#E5E0D8]'}`}>
+                          {form.plan === plan.id && <div className="w-2 h-2 rounded-full bg-white" />}
                         </div>
                         <div>
                           <p className="font-semibold text-sm">{plan.label}</p>
-                          {plan.perMonth && <p className={`text-xs ${form.plan === plan.id ? 'text-white/50' : 'text-black/40'}`}>{plan.perMonth}</p>}
+                          {plan.perMonth && <p className={`text-xs ${form.plan === plan.id ? 'text-white/60' : 'text-[#9A9A94]'}`}>{plan.perMonth}</p>}
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
                         {plan.badge && (
                           <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full
-                            ${form.plan === plan.id ? 'bg-[#d4f53c] text-black' : 'bg-[#d4f53c]/20 text-black'}`}>
+                            ${form.plan === plan.id ? 'bg-[#f5fca6] text-[#3E3D38]' : 'bg-[#CE4F56]/10 text-[#CE4F56]'}`}>
                             {plan.badge}
                           </span>
                         )}
@@ -448,18 +448,18 @@ export default function Register() {
                   ))}
                 </div>
 
-                {/* Launch promo */}
-                <div className="bg-[#e8834a]/10 border border-[#e8834a]/20 rounded-xl p-4">
-                  <p className="text-[#e8834a] text-xs font-bold uppercase tracking-wider mb-2">🎉 Launch Promo</p>
-                  <p className="text-black/60 text-xs leading-relaxed">
-                    First 20,000 founding members get 3 months for just $2. Join during launch month to lock in this offer.
+                {/* Welcome promo */}
+                <div className="bg-[#f5fca6]/30 border border-[#E5E0D8] rounded-xl p-4">
+                  <p className="text-[#CE4F56] text-xs font-bold uppercase tracking-wider mb-2">Launch Offer</p>
+                  <p className="text-[#6B6B66] text-xs leading-relaxed">
+                    Hey Gurus! To help grow the community and celebrate the launch we&apos;re offering a one off subscription promo of $2 for your first 3 months.
                   </p>
                 </div>
 
                 <button
                   type="button"
                   onClick={handleSubmit}
-                  className="w-full bg-black text-[#d4f53c] font-bold py-4 rounded-xl hover:bg-black/90 transition-all flex items-center justify-center gap-2 font-['Unbounded'] text-sm"
+                  className="w-full bg-[#CE4F56] text-white font-bold py-4 rounded-xl hover:bg-[#b8454c] transition-all flex items-center justify-center gap-2 font-['Unbounded'] text-sm"
                 >
                   Complete Registration <ArrowRight size={16} />
                 </button>
@@ -473,7 +473,7 @@ export default function Register() {
                   <button
                     type="button"
                     onClick={prev}
-                    className="flex items-center gap-2 px-5 py-3 border border-black/15 rounded-xl text-sm font-medium text-black/60 hover:border-black/30 hover:text-black transition-all"
+                    className="flex items-center gap-2 px-5 py-3 border border-[#E5E0D8] rounded-xl text-sm font-medium text-[#6B6B66] hover:border-[#CE4F56] hover:text-[#3E3D38] transition-all"
                   >
                     <ArrowLeft size={16} /> Back
                   </button>
@@ -481,7 +481,7 @@ export default function Register() {
                 <button
                   type="button"
                   onClick={next}
-                  className="flex-1 flex items-center justify-center gap-2 bg-black text-[#d4f53c] font-bold text-sm py-3 rounded-xl hover:bg-black/90 transition-all"
+                  className="flex-1 flex items-center justify-center gap-2 bg-[#CE4F56] text-white font-bold text-sm py-3 rounded-xl hover:bg-[#b8454c] transition-all"
                 >
                   Continue <ArrowRight size={16} />
                 </button>
