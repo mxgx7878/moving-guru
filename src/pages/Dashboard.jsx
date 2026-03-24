@@ -1,14 +1,16 @@
+import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { DUMMY_USER } from '../data/dummyData';
 import BarChart from '../components/BarChart';
 import StatCard from '../components/StatCard';
 import {
   Eye, MessageCircle, Heart, TrendingUp, Globe,
-  MapPin, Calendar, Star, ArrowUpRight, Zap
+  MapPin, Calendar, Star, ArrowUpRight, Zap, Megaphone,
+  Mail, Lock, Settings, Check, EyeOff
 } from 'lucide-react';
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const profileData = user || DUMMY_USER;
 
   const totalViews = profileData.profileViews?.reduce((s, d) => s + d.views, 0) || 0;
@@ -16,21 +18,56 @@ export default function Dashboard() {
   const lastMonth = profileData.profileViews?.[profileData.profileViews.length - 2]?.views || 0;
   const growth = lastMonth > 0 ? Math.round(((thisMonth - lastMonth) / lastMonth) * 100) : 0;
 
+  // Account settings state
+  const [email, setEmail] = useState(user?.email || '');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [emailSaved, setEmailSaved] = useState(false);
+  const [passwordSaved, setPasswordSaved] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
+  const [pwError, setPwError] = useState('');
+
+  const handleEmailSave = () => {
+    if (!email.trim()) return;
+    updateUser({ email });
+    setEmailSaved(true);
+    setTimeout(() => setEmailSaved(false), 2500);
+  };
+
+  const handlePasswordSave = () => {
+    setPwError('');
+    if (!currentPassword) { setPwError('Please enter your current password'); return; }
+    if (newPassword.length < 6) { setPwError('New password must be at least 6 characters'); return; }
+    if (newPassword !== confirmPassword) { setPwError('Passwords do not match'); return; }
+    setCurrentPassword(''); setNewPassword(''); setConfirmPassword('');
+    setPasswordSaved(true);
+    setTimeout(() => setPasswordSaved(false), 2500);
+  };
+
+  const handlePasswordReset = () => {
+    setResetSent(true);
+    setTimeout(() => setResetSent(false), 3000);
+  };
+
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       {/* Welcome */}
-      <div className="bg-[#0f0f0f] rounded-2xl p-6 flex items-center justify-between overflow-hidden relative">
+      <div className="bg-gradient-to-br from-[#FDFCF8] to-[#f5fca6]/40 rounded-2xl p-6 flex items-center justify-between overflow-hidden relative border border-[#E5E0D8]">
         <div className="absolute inset-0 opacity-20"
           style={{
-            backgroundImage: `radial-gradient(circle at 80% 50%, #d4f53c 0%, transparent 60%)`
+            backgroundImage: `radial-gradient(circle at 80% 50%, #CE4F56 0%, transparent 60%)`
           }}
         />
         <div className="relative z-10">
-          <p className="text-[#d4f53c] text-xs font-semibold tracking-widest uppercase mb-2">Welcome back</p>
-          <h1 className="font-['Unbounded'] text-2xl font-black text-white mb-1">
-            {profileData.name?.split(' ')[0]} 👋
+          <p className="text-[#CE4F56] text-xs font-semibold tracking-widest uppercase mb-2">Welcome back</p>
+          <h1 className="font-['Unbounded'] text-2xl font-black text-[#3E3D38] mb-1">
+            {profileData.name?.split(' ')[0]}
           </h1>
-          <p className="text-white/40 text-sm">
+          <p className="text-[#6B6B66] text-sm">
             {profileData.profileStatus === 'active'
               ? 'Your profile is live and attracting studios'
               : 'Your profile is currently inactive'}
@@ -39,12 +76,12 @@ export default function Dashboard() {
         <div className="relative z-10 hidden sm:flex flex-col items-end gap-2">
           <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold
             ${profileData.profileStatus === 'active'
-              ? 'bg-[#d4f53c]/20 text-[#d4f53c]'
-              : 'bg-white/10 text-white/40'}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${profileData.profileStatus === 'active' ? 'bg-[#d4f53c]' : 'bg-white/30'}`} />
+              ? 'bg-[#6BE6A4]/20 text-[#3E3D38]'
+              : 'bg-[#EDE8DF] text-[#9A9A94]'}`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${profileData.profileStatus === 'active' ? 'bg-[#6BE6A4]' : 'bg-[#9A9A94]'}`} />
             {profileData.profileStatus === 'active' ? 'Actively Seeking' : 'Not Seeking'}
           </div>
-          <p className="text-white/20 text-xs">
+          <p className="text-[#9A9A94] text-xs">
             {profileData.subscription?.charAt(0).toUpperCase() + profileData.subscription?.slice(1)} Plan
           </p>
         </div>
@@ -52,7 +89,7 @@ export default function Dashboard() {
 
       {/* Stats grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={Eye} label="Profile Views" value={thisMonth} sub="This month" color="lime" trend={growth > 0 ? growth : null} />
+        <StatCard icon={Eye} label="Profile Views" value={thisMonth} sub="This month" color="coral" trend={growth > 0 ? growth : null} />
         <StatCard icon={TrendingUp} label="Total Views" value={totalViews} sub="All time" color="default" />
         <StatCard icon={MessageCircle} label="Messages" value="3" sub="Unread" color="orange" />
         <StatCard icon={Heart} label="Favourited" value="12" sub="Times saved" color="default" />
@@ -61,56 +98,56 @@ export default function Dashboard() {
       {/* Chart + Quick info */}
       <div className="grid lg:grid-cols-3 gap-4">
         {/* Chart */}
-        <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-black/6">
+        <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-[#E5E0D8]">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="font-['Unbounded'] text-sm font-bold text-black">Profile Views</h3>
-              <p className="text-xs text-black/40 mt-0.5">Monthly breakdown</p>
+              <h3 className="font-['Unbounded'] text-sm font-bold text-[#3E3D38]">Profile Views</h3>
+              <p className="text-xs text-[#9A9A94] mt-0.5">Monthly breakdown</p>
             </div>
-            <div className="flex items-center gap-1.5 bg-black/5 rounded-lg px-3 py-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#d4f53c]" />
-              <span className="text-xs text-black/50">Views</span>
+            <div className="flex items-center gap-1.5 bg-[#f5fca6]/50 rounded-lg px-3 py-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#CE4F56]" />
+              <span className="text-xs text-[#6B6B66]">Views</span>
             </div>
           </div>
           <BarChart data={profileData.profileViews || []} />
         </div>
 
         {/* Quick info */}
-        <div className="bg-white rounded-2xl p-5 border border-black/6 space-y-4">
-          <h3 className="font-['Unbounded'] text-sm font-bold text-black">Profile Snapshot</h3>
+        <div className="bg-white rounded-2xl p-5 border border-[#E5E0D8] space-y-4">
+          <h3 className="font-['Unbounded'] text-sm font-bold text-[#3E3D38]">Profile Snapshot</h3>
 
           <div className="space-y-3">
             <div className="flex items-start gap-3">
-              <MapPin size={14} className="text-black/30 mt-0.5 flex-shrink-0" />
+              <MapPin size={14} className="text-[#9A9A94] mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-[10px] text-black/30 uppercase tracking-wider">Location</p>
-                <p className="text-xs font-medium text-black/80">{profileData.location || '—'}</p>
+                <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider">Location</p>
+                <p className="text-xs font-medium text-[#3E3D38]">{profileData.location || '—'}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <Globe size={14} className="text-black/30 mt-0.5 flex-shrink-0" />
+              <Globe size={14} className="text-[#9A9A94] mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-[10px] text-black/30 uppercase tracking-wider">Traveling To</p>
-                <p className="text-xs font-medium text-black/80">{profileData.travelingTo || '—'}</p>
+                <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider">Traveling To</p>
+                <p className="text-xs font-medium text-[#3E3D38]">{profileData.travelingTo || '—'}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <Calendar size={14} className="text-black/30 mt-0.5 flex-shrink-0" />
+              <Calendar size={14} className="text-[#9A9A94] mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-[10px] text-black/30 uppercase tracking-wider">Availability</p>
-                <p className="text-xs font-medium text-black/80">{profileData.availability || '—'}</p>
+                <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider">Availability</p>
+                <p className="text-xs font-medium text-[#3E3D38]">{profileData.availability || '—'}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <Star size={14} className="text-black/30 mt-0.5 flex-shrink-0" />
+              <Star size={14} className="text-[#9A9A94] mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-[10px] text-black/30 uppercase tracking-wider">Disciplines</p>
+                <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider">Disciplines</p>
                 <div className="flex flex-wrap gap-1 mt-0.5">
                   {(profileData.disciplines || []).slice(0, 3).map(d => (
-                    <span key={d} className="text-[10px] bg-black/5 text-black/60 px-2 py-0.5 rounded-full">{d}</span>
+                    <span key={d} className="text-[10px] bg-[#f5fca6]/50 text-[#3E3D38] px-2 py-0.5 rounded-full">{d}</span>
                   ))}
                   {(profileData.disciplines || []).length > 3 && (
-                    <span className="text-[10px] bg-black/5 text-black/40 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] bg-[#EDE8DF] text-[#9A9A94] px-2 py-0.5 rounded-full">
                       +{profileData.disciplines.length - 3}
                     </span>
                   )}
@@ -121,8 +158,24 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Post on GROW banner */}
+      <div className="bg-gradient-to-r from-[#2DA4D6] to-[#2DA4D6]/80 rounded-2xl p-5 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+            <Megaphone size={18} className="text-white" />
+          </div>
+          <div>
+            <p className="font-['Unbounded'] text-sm font-bold text-white">Post on GROW</p>
+            <p className="text-white/70 text-xs mt-0.5">Advertise your retreat, event, or training program here</p>
+          </div>
+        </div>
+        <a href="/grow" className="bg-white text-[#2DA4D6] font-bold text-xs px-4 py-2 rounded-xl hover:bg-white/90 transition-colors whitespace-nowrap flex items-center gap-1.5">
+          Post Now <ArrowUpRight size={12} />
+        </a>
+      </div>
+
       {/* Boost banner */}
-      <div className="bg-[#e8834a] rounded-2xl p-5 flex items-center justify-between">
+      <div className="bg-[#E89560] rounded-2xl p-5 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
             <Zap size={18} className="text-white" />
@@ -132,9 +185,158 @@ export default function Dashboard() {
             <p className="text-white/60 text-xs mt-0.5">Get featured at the top of search results for $10/week</p>
           </div>
         </div>
-        <button className="bg-white text-[#e8834a] font-bold text-xs px-4 py-2 rounded-xl hover:bg-white/90 transition-colors whitespace-nowrap flex items-center gap-1.5">
+        <button className="bg-white text-[#E89560] font-bold text-xs px-4 py-2 rounded-xl hover:bg-white/90 transition-colors whitespace-nowrap flex items-center gap-1.5">
           Boost <ArrowUpRight size={12} />
         </button>
+      </div>
+
+      {/* ═══════════════════════════════════════
+           ACCOUNT SETTINGS SECTION
+         ═══════════════════════════════════════ */}
+      <div className="pt-2">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-9 h-9 bg-[#CE4F56]/10 rounded-xl flex items-center justify-center">
+            <Settings size={16} className="text-[#CE4F56]" />
+          </div>
+          <div>
+            <h2 className="font-['Unbounded'] text-base font-black text-[#3E3D38]">Account Settings</h2>
+            <p className="text-[#9A9A94] text-xs mt-0.5">Manage your email, password, and security</p>
+          </div>
+        </div>
+
+        <div className="grid lg:grid-cols-2 gap-4">
+          {/* Email */}
+          <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-[#E5E0D8] flex items-center gap-2.5">
+              <Mail size={14} className="text-[#CE4F56]" />
+              <h3 className="font-['Unbounded'] text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Email Address</h3>
+            </div>
+            <div className="p-5 space-y-3">
+              <div>
+                <label className="block text-[10px] font-bold text-[#9A9A94] uppercase tracking-wider mb-1.5">Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  className="w-full border border-[#E5E0D8] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#CE4F56] bg-[#FDFCF8] text-[#3E3D38]"
+                />
+              </div>
+              <button
+                onClick={handleEmailSave}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all duration-300
+                  ${emailSaved
+                    ? 'bg-emerald-500 text-white'
+                    : 'bg-[#CE4F56] text-white hover:bg-[#b8454c]'
+                  }`}
+              >
+                {emailSaved ? <><Check size={13} /> Saved!</> : 'Update Email'}
+              </button>
+            </div>
+          </div>
+
+          {/* Password Reset */}
+          <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-[#E5E0D8] flex items-center gap-2.5">
+              <Settings size={14} className="text-[#E89560]" />
+              <h3 className="font-['Unbounded'] text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Password Reset</h3>
+            </div>
+            <div className="p-5">
+              <p className="text-sm text-[#6B6B66] mb-3">
+                Forgot your password? We'll send a reset link to your email.
+              </p>
+              {resetSent ? (
+                <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5 flex items-center gap-2">
+                  <Check size={13} className="text-emerald-600" />
+                  <p className="text-emerald-700 text-xs font-medium">Reset link sent to {user?.email}</p>
+                </div>
+              ) : (
+                <button
+                  onClick={handlePasswordReset}
+                  className="px-4 py-2 rounded-xl font-bold text-xs border border-[#E5E0D8] text-[#6B6B66] hover:border-[#CE4F56] hover:text-[#CE4F56] transition-all"
+                >
+                  Send Password Reset Link
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Change Password — full width */}
+        <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden mt-4">
+          <div className="px-5 py-3.5 border-b border-[#E5E0D8] flex items-center gap-2.5">
+            <Lock size={14} className="text-[#CE4F56]" />
+            <h3 className="font-['Unbounded'] text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Change Password</h3>
+          </div>
+          <div className="p-5 space-y-3">
+            {pwError && (
+              <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-2 text-xs text-red-600">
+                {pwError}
+              </div>
+            )}
+
+            <div className="grid sm:grid-cols-3 gap-3">
+              <div>
+                <label className="block text-[10px] font-bold text-[#9A9A94] uppercase tracking-wider mb-1.5">Current Password</label>
+                <div className="relative">
+                  <input
+                    type={showCurrent ? 'text' : 'password'}
+                    value={currentPassword}
+                    onChange={e => setCurrentPassword(e.target.value)}
+                    placeholder="Current"
+                    className="w-full border border-[#E5E0D8] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#CE4F56] bg-[#FDFCF8] text-[#3E3D38] pr-9"
+                  />
+                  <button type="button" onClick={() => setShowCurrent(!showCurrent)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A9A94] hover:text-[#6B6B66]">
+                    {showCurrent ? <EyeOff size={14} /> : <Eye size={14} />}
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-[#9A9A94] uppercase tracking-wider mb-1.5">New Password</label>
+                <div className="relative">
+                  <input
+                    type={showNew ? 'text' : 'password'}
+                    value={newPassword}
+                    onChange={e => setNewPassword(e.target.value)}
+                    placeholder="New"
+                    className="w-full border border-[#E5E0D8] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#CE4F56] bg-[#FDFCF8] text-[#3E3D38] pr-9"
+                  />
+                  <button type="button" onClick={() => setShowNew(!showNew)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A9A94] hover:text-[#6B6B66]">
+                    {showNew ? <EyeOff size={14} /> : <Eye size={14} />}
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-[#9A9A94] uppercase tracking-wider mb-1.5">Confirm Password</label>
+                <div className="relative">
+                  <input
+                    type={showConfirm ? 'text' : 'password'}
+                    value={confirmPassword}
+                    onChange={e => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm"
+                    className="w-full border border-[#E5E0D8] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#CE4F56] bg-[#FDFCF8] text-[#3E3D38] pr-9"
+                  />
+                  <button type="button" onClick={() => setShowConfirm(!showConfirm)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A9A94] hover:text-[#6B6B66]">
+                    {showConfirm ? <EyeOff size={14} /> : <Eye size={14} />}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={handlePasswordSave}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all duration-300
+                ${passwordSaved
+                  ? 'bg-emerald-500 text-white'
+                  : 'bg-[#CE4F56] text-white hover:bg-[#b8454c]'
+                }`}
+            >
+              {passwordSaved ? <><Check size={13} /> Password Updated!</> : 'Update Password'}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

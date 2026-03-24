@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import ProfilePage from './pages/ProfilePage';
 import Subscription from './pages/Subscription';
 import Payments from './pages/Payments';
+import Messages from './pages/Messages';
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="profile" element={<ProfilePage />} />
+            <Route path="messages" element={<Messages />} />
             <Route path="subscription" element={<Subscription />} />
             <Route path="payments" element={<Payments />} />
           </Route>
