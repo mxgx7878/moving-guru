@@ -205,7 +205,7 @@ export default function Subscription() {
       )}
 
       {/* Launch promo — now a community welcome message */}
-      <div className="bg-gradient-to-br from-[#f5fca6]/30 to-[#CE4F56]/10 border border-[#E5E0D8] rounded-2xl p-6 text-center">
+      {/* <div className="bg-gradient-to-br from-[#f5fca6]/30 to-[#CE4F56]/10 border border-[#E5E0D8] rounded-2xl p-6 text-center">
         <div className="w-12 h-12 bg-[#CE4F56] rounded-2xl flex items-center justify-center mx-auto mb-4">
           <Heart size={22} className="text-white" />
         </div>
@@ -213,14 +213,14 @@ export default function Subscription() {
         <p className="text-sm text-[#6B6B66] leading-relaxed max-w-xl mx-auto">
           Hey Gurus! We&apos;re so excited to start building our new network, and to bring our vision to life we&apos;d love to have you on board. We want this to be huge! We want you to start making meaningful connections and securing dream jobs. To help grow the community and celebrate the launch we&apos;re offering a one off subscription promo of $2 for your first 3 months.
         </p>
-      </div>
+      </div> */}
 
       {/* Cancel */}
-      <div className="text-center pb-4">
+      {/* <div className="text-center pb-4">
         <button className="text-xs text-[#9A9A94] hover:text-red-400 transition-colors underline">
           Cancel subscription
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }
