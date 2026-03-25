@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { DISCIPLINE_CATEGORIES } from '../data/disciplines';
 import Section from '../components/Section';
 import Field from '../components/Field';
-import { Save, Upload, X, Check, User, MapPin, Globe, Calendar, Edit3, Eye, EyeOff } from 'lucide-react';
+import { Save, Upload, X, Check, User, MapPin, Globe, Calendar, Edit3, Eye, EyeOff, MessageCircle, Heart, Star, Image } from 'lucide-react';
 
 const PRONOUNS = ['He/Him', 'She/Her', 'They/Them', 'He/They', 'She/They', 'Prefer not to say'];
 const LANGUAGES = ['English', 'Spanish', 'French', 'Portuguese', 'Italian', 'German', 'Japanese', 'Mandarin', 'Arabic', 'Hindi', 'Korean', 'Indonesian', 'Russian', 'Polish', 'Cantonese', 'Ukrainian', 'Nigerian', 'Thai'];
@@ -15,8 +15,17 @@ export default function ProfilePage() {
   const [saved, setSaved] = useState(false);
   const [discSearch, setDiscSearch] = useState('');
   const [showPreview, setShowPreview] = useState(false);
+  const [isFavourited, setIsFavourited] = useState(false);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewText, setReviewText] = useState('');
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviews, setReviews] = useState([
+    { name: 'Lina Chen', rating: 5, text: 'Amazing energy and super professional. Made our studio swap seamless!', date: 'Mar 2026' },
+    { name: 'Studio Vinyasa Bali', rating: 4, text: 'Great instructor, students loved the classes. Would collaborate again.', date: 'Feb 2026' },
+  ]);
   const fileRef = useRef();
   const photosRef = useRef();
+  const coverRef = useRef();
 
   const set = (key, val) => setForm(f => ({ ...f, [key]: val }));
   const toggle = (key, val) => {
@@ -53,6 +62,20 @@ export default function ProfilePage() {
     const files = Array.from(e.target.files).slice(0, 4 - (form.photos?.length || 0));
     const previews = files.map(f => URL.createObjectURL(f));
     set('photos', [...(form.photos || []), ...previews]);
+  };
+
+  const handleCoverImage = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    set('coverImage', URL.createObjectURL(file));
+  };
+
+  const handleSubmitReview = () => {
+    if (!reviewText.trim() || reviewRating === 0) return;
+    setReviews(prev => [{ name: 'You', rating: reviewRating, text: reviewText, date: 'Just now' }, ...prev]);
+    setReviewText('');
+    setReviewRating(0);
+    setShowReviewForm(false);
   };
 
   const filteredCats = DISCIPLINE_CATEGORIES.map(c => ({
@@ -103,13 +126,33 @@ export default function ProfilePage() {
               {/* Preview Card */}
               <div className="bg-gradient-to-br from-[#FDFCF8] to-[#f5fca6]/30 rounded-2xl overflow-hidden border border-[#E5E0D8]">
                 {/* Cover / Avatar area */}
-                <div className="relative h-28 bg-gradient-to-r from-[#CE4F56]/20 to-[#E89560]/20">
+                <div className="relative h-32 overflow-hidden" style={{
+                  background: form.coverImage ? `url(${form.coverImage}) center/cover no-repeat` : 'linear-gradient(135deg, #CE4F56 0%, #E89560 40%, #f5fca6 70%, #6BE6A4 100%)'
+                }}>
+                  {/* Favourite button */}
+                  <button
+                    onClick={() => setIsFavourited(!isFavourited)}
+                    className={`absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 backdrop-blur-sm z-10
+                      ${isFavourited ? 'bg-[#CE4F56] scale-110' : 'bg-white/30 hover:bg-white/50'}`}
+                  >
+                    <Heart size={14} className={isFavourited ? 'text-white fill-white' : 'text-white'} />
+                  </button>
+
+                  {/* Funky profile picture frame */}
                   <div className="absolute -bottom-10 left-1/2 -translate-x-1/2">
-                    <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center border-4 border-[#FDFCF8]">
-                      {form.avatarPreview
-                        ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
-                        : <span className="font-['Unbounded'] text-xl font-black text-white">{initials}</span>
-                      }
+                    <div className="relative">
+                      {/* Outer animated ring */}
+                      <div className="absolute -inset-1.5 rounded-full animate-spin" style={{
+                        background: 'conic-gradient(from 0deg, #CE4F56, #E89560, #f5fca6, #6BE6A4, #2DA4D6, #CE4F56)',
+                        animationDuration: '6s'
+                      }} />
+                      {/* Inner white border */}
+                      <div className="relative w-20 h-20 rounded-full overflow-hidden border-[3px] border-[#FDFCF8] bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center z-10">
+                        {form.avatarPreview
+                          ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
+                          : <span className="font-['Unbounded'] text-xl font-black text-white">{initials}</span>
+                        }
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -127,8 +170,8 @@ export default function ProfilePage() {
                     <p className="text-[#CE4F56] text-xs font-semibold mt-1">{form.studio}</p>
                   )}
 
-                  {/* Status */}
-                  <div className="flex justify-center mt-3">
+                  {/* Status + Message button */}
+                  <div className="flex items-center justify-center gap-2 mt-3">
                     <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold
                       ${form.profileStatus === 'active'
                         ? 'bg-[#6BE6A4]/20 text-[#3E3D38]'
@@ -137,6 +180,10 @@ export default function ProfilePage() {
                       <span className={`w-1.5 h-1.5 rounded-full ${form.profileStatus === 'active' ? 'bg-[#6BE6A4]' : 'bg-[#9A9A94]'}`} />
                       {form.profileStatus === 'active' ? 'Actively Seeking' : 'Not Seeking'}
                     </span>
+                    <button className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold bg-[#CE4F56] text-white hover:bg-[#b8454c] transition-colors">
+                      <MessageCircle size={10} />
+                      Message
+                    </button>
                   </div>
 
                   {/* Bio */}
@@ -218,6 +265,64 @@ export default function ProfilePage() {
                       ))}
                     </div>
                   )}
+
+                  {/* Reviews Section */}
+                  <div className="mt-6 pt-5 border-t border-[#E5E0D8]">
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-[9px] text-[#9A9A94] uppercase tracking-wider font-bold">Reviews ({reviews.length})</p>
+                      <button
+                        onClick={() => setShowReviewForm(!showReviewForm)}
+                        className="text-[10px] font-semibold text-[#CE4F56] hover:underline"
+                      >
+                        {showReviewForm ? 'Cancel' : 'Write a Review'}
+                      </button>
+                    </div>
+
+                    {/* Review form */}
+                    {showReviewForm && (
+                      <div className="bg-[#EDE8DF]/50 rounded-xl p-3 mb-3 text-left">
+                        <div className="flex gap-1 mb-2">
+                          {[1, 2, 3, 4, 5].map(s => (
+                            <button key={s} onClick={() => setReviewRating(s)} type="button">
+                              <Star size={14} className={`transition-colors ${s <= reviewRating ? 'text-[#E89560] fill-[#E89560]' : 'text-[#E5E0D8]'}`} />
+                            </button>
+                          ))}
+                        </div>
+                        <textarea
+                          value={reviewText}
+                          onChange={e => setReviewText(e.target.value)}
+                          rows={2}
+                          maxLength={200}
+                          placeholder="How was your experience working together?"
+                          className="w-full border border-[#E5E0D8] rounded-lg px-3 py-2 text-[11px] resize-none focus:outline-none focus:border-[#CE4F56] bg-white"
+                        />
+                        <button
+                          onClick={handleSubmitReview}
+                          className="mt-2 px-3 py-1 rounded-lg text-[10px] font-bold bg-[#CE4F56] text-white hover:bg-[#b8454c] transition-colors"
+                        >
+                          Submit Review
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Review list */}
+                    <div className="space-y-2.5">
+                      {reviews.map((r, i) => (
+                        <div key={i} className="bg-[#EDE8DF]/30 rounded-xl p-3 text-left">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-[11px] font-semibold text-[#3E3D38]">{r.name}</span>
+                            <span className="text-[9px] text-[#9A9A94]">{r.date}</span>
+                          </div>
+                          <div className="flex gap-0.5 mb-1.5">
+                            {[1, 2, 3, 4, 5].map(s => (
+                              <Star key={s} size={9} className={s <= r.rating ? 'text-[#E89560] fill-[#E89560]' : 'text-[#E5E0D8]'} />
+                            ))}
+                          </div>
+                          <p className="text-[11px] text-[#6B6B66] leading-relaxed">{r.text}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -228,22 +333,26 @@ export default function ProfilePage() {
       {/* Avatar & Status */}
       <Section title="Profile Identity" icon={User}>
         <div className="flex flex-col sm:flex-row gap-6">
-          {/* Avatar */}
+          {/* Avatar with funky frame */}
           <div className="flex-shrink-0 flex flex-col items-center">
-            <div
-              className="w-24 h-24 rounded-2xl overflow-hidden bg-gradient-to-br from-[#d4f53c] to-[#e8834a] flex items-center justify-center cursor-pointer relative group"
-              onClick={() => fileRef.current?.click()}
-            >
-              {form.avatarPreview
-                ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
-                : <span className="font-['Unbounded'] text-2xl font-black text-[#3E3D38]">{initials}</span>
-              }
-              <div className="absolute inset-0 bg-[#3E3D38]/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <Upload size={20} className="text-white" />
+            <div className="relative cursor-pointer" onClick={() => fileRef.current?.click()}>
+              {/* Spinning rainbow ring */}
+              <div className="absolute -inset-1.5 rounded-full animate-spin" style={{
+                background: 'conic-gradient(from 0deg, #CE4F56, #E89560, #f5fca6, #6BE6A4, #2DA4D6, #CE4F56)',
+                animationDuration: '6s'
+              }} />
+              <div className="relative w-24 h-24 rounded-full overflow-hidden border-[3px] border-[#FDFCF8] bg-gradient-to-br from-[#d4f53c] to-[#e8834a] flex items-center justify-center group z-10">
+                {form.avatarPreview
+                  ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
+                  : <span className="font-['Unbounded'] text-2xl font-black text-[#3E3D38]">{initials}</span>
+                }
+                <div className="absolute inset-0 bg-[#3E3D38]/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Upload size={20} className="text-white" />
+                </div>
               </div>
             </div>
             <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatar} />
-            <p className="text-[10px] text-[#9A9A94] text-center mt-2">Click to change</p>
+            <p className="text-[10px] text-[#9A9A94] text-center mt-3">Click to change</p>
           </div>
 
           <div className="flex-1 space-y-4">
@@ -289,6 +398,38 @@ export default function ProfilePage() {
                   {s === 'active' ? 'Actively Seeking' : 'Not Seeking'}
                 </button>
               ))}
+            </div>
+          </Field>
+        </div>
+
+        {/* Background image upload */}
+        <div className="mt-5 pt-5 border-t border-[#E5E0D8]">
+          <Field label="Profile Background" hint="Upload a personalised cover image for your profile">
+            <div className="mt-2">
+              {form.coverImage ? (
+                <div className="relative rounded-xl overflow-hidden h-28 group">
+                  <img src={form.coverImage} alt="" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-[#3E3D38]/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                    <button type="button" onClick={() => coverRef.current?.click()}
+                      className="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-[#3E3D38] hover:bg-[#f5fca6] transition-colors">
+                      Change
+                    </button>
+                    <button type="button" onClick={() => set('coverImage', null)}
+                      className="px-3 py-1.5 rounded-lg text-xs font-bold bg-white/80 text-red-500 hover:bg-white transition-colors">
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className="h-28 rounded-xl border-2 border-dashed border-[#E5E0D8] flex flex-col items-center justify-center cursor-pointer hover:border-[#CE4F56] transition-colors bg-gradient-to-r from-[#CE4F56]/5 to-[#E89560]/5"
+                  onClick={() => coverRef.current?.click()}
+                >
+                  <Image size={22} className="text-[#3E3D38]/20" />
+                  <p className="text-[10px] text-[#3E3D38]/30 mt-1 font-medium">Upload Background Image</p>
+                </div>
+              )}
+              <input ref={coverRef} type="file" accept="image/*" className="hidden" onChange={handleCoverImage} />
             </div>
           </Field>
         </div>
