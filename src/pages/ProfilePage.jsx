@@ -81,6 +81,7 @@ export default function ProfilePage() {
   const [showPreview, setShowPreview] = useState(false);
   const [isFavourited, setIsFavourited] = useState(false);
   const [showAvatarModal, setShowAvatarModal] = useState(false);
+  const [showCoverModal, setShowCoverModal] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [reviewText, setReviewText] = useState('');
   const [reviewRating, setReviewRating] = useState(0);
@@ -192,10 +193,14 @@ export default function ProfilePage() {
               <div className="bg-gradient-to-br from-[#FDFCF8] to-[#f5fca6]/30 rounded-2xl border border-[#E5E0D8]">
                 {/* Cover + Avatar wrapper (no overflow-hidden so avatar can extend) */}
                 <div className="relative">
-                  {/* Cover image */}
-                  <div className="h-32 rounded-t-2xl overflow-hidden" style={{
-                    background: form.coverImage ? `url(${form.coverImage}) center/cover no-repeat` : 'linear-gradient(135deg, #CE4F56 0%, #E89560 40%, #f5fca6 70%, #6BE6A4 100%)'
-                  }}>
+                  {/* Cover image - click to preview */}
+                  <div
+                    className={`h-32 rounded-t-2xl overflow-hidden ${form.coverImage ? 'cursor-pointer' : ''}`}
+                    style={{
+                      background: form.coverImage ? `url(${form.coverImage}) center/cover no-repeat` : 'linear-gradient(135deg, #CE4F56 0%, #E89560 40%, #f5fca6 70%, #6BE6A4 100%)'
+                    }}
+                    onClick={() => form.coverImage && setShowCoverModal(true)}
+                  >
                     {/* Favourite button */}
                     <button
                       onClick={() => setIsFavourited(!isFavourited)}
@@ -741,6 +746,19 @@ export default function ProfilePage() {
                 ))}
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Cover Image Preview Modal */}
+      {showCoverModal && form.coverImage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#3E3D38]/80 backdrop-blur-sm p-4" onClick={() => setShowCoverModal(false)}>
+          <div className="relative max-w-2xl w-full" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setShowCoverModal(false)}
+              className="absolute -top-3 -right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg z-20 hover:bg-[#EDE8DF] transition-colors">
+              <X size={14} className="text-[#3E3D38]" />
+            </button>
+            <img src={form.coverImage} alt="Cover" className="w-full rounded-2xl border-2 border-[#3E3D38] shadow-2xl object-cover max-h-[70vh]" />
           </div>
         </div>
       )}
