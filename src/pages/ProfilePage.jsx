@@ -159,10 +159,10 @@ export default function ProfilePage() {
                     </button>
                   </div>
 
-                  {/* Avatar - click to view funky fullscreen */}
-                  <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 z-10">
-                    <button onClick={() => setShowAvatarModal(true)} className="block rounded-full focus:outline-none group">
-                      <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-[#FDFCF8] bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow">
+                  {/* Avatar - wavy blob frame with black border, click to view full */}
+                  <div className="absolute -bottom-11 left-1/2 -translate-x-1/2 z-10">
+                    <button onClick={() => setShowAvatarModal(true)} className="block focus:outline-none group">
+                      <div className="wavy-frame w-[88px] h-[88px] overflow-hidden border-[3px] border-[#3E3D38] bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all">
                         {form.avatarPreview
                           ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
                           : <span className="font-['Unbounded'] text-xl font-black text-white">{initials}</span>
@@ -366,10 +366,10 @@ export default function ProfilePage() {
       {/* Avatar & Status */}
       <Section title="Profile Identity" icon={User}>
         <div className="flex flex-col sm:flex-row gap-6">
-          {/* Avatar */}
+          {/* Avatar - wavy blob frame */}
           <div className="flex-shrink-0 flex flex-col items-center">
             <div
-              className="w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-[#d4f53c] to-[#e8834a] flex items-center justify-center cursor-pointer relative group border-3 border-[#E5E0D8]"
+              className="wavy-frame w-24 h-24 overflow-hidden bg-gradient-to-br from-[#d4f53c] to-[#e8834a] flex items-center justify-center cursor-pointer relative group border-[3px] border-[#3E3D38]"
               onClick={() => fileRef.current?.click()}
             >
               {form.avatarPreview
@@ -664,23 +664,12 @@ export default function ProfilePage() {
               <X size={14} className="text-[#3E3D38]" />
             </button>
 
-            {/* Funky spinning rainbow ring */}
-            <div className="relative">
-              <div className="absolute -inset-3 rounded-full animate-spin" style={{
-                background: 'conic-gradient(from 0deg, #CE4F56, #E89560, #f5fca6, #6BE6A4, #2DA4D6, #CE4F56)',
-                animationDuration: '4s'
-              }} />
-              <div className="absolute -inset-1.5 rounded-full animate-spin" style={{
-                background: 'conic-gradient(from 180deg, #2DA4D6, #6BE6A4, #f5fca6, #E89560, #CE4F56, #2DA4D6)',
-                animationDuration: '6s',
-                animationDirection: 'reverse'
-              }} />
-              <div className="relative w-52 h-52 rounded-full overflow-hidden border-4 border-[#FDFCF8] bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center z-10 shadow-2xl">
-                {form.avatarPreview
-                  ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
-                  : <span className="font-['Unbounded'] text-5xl font-black text-white">{initials}</span>
-                }
-              </div>
+            {/* Wavy blob frame - large */}
+            <div className="wavy-frame-lg w-56 h-56 overflow-hidden border-4 border-[#3E3D38] bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center shadow-2xl">
+              {form.avatarPreview
+                ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
+                : <span className="font-['Unbounded'] text-5xl font-black text-white">{initials}</span>
+              }
             </div>
 
             {/* Name below */}
