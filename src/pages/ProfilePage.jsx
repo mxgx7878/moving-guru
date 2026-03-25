@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useId } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { DISCIPLINE_CATEGORIES } from '../data/disciplines';
@@ -24,6 +24,53 @@ const SOCIAL_PLATFORMS = [
 const PRONOUNS = ['He/Him', 'She/Her', 'They/Them', 'He/They', 'She/They', 'Prefer not to say'];
 const LANGUAGES = ['English', 'Spanish', 'French', 'Portuguese', 'Italian', 'German', 'Japanese', 'Mandarin', 'Arabic', 'Hindi', 'Korean', 'Indonesian', 'Russian', 'Polish', 'Cantonese', 'Ukrainian', 'Nigerian', 'Thai'];
 const OPEN_TO = ['Direct Hire', 'Swaps', 'Both', 'Energy Exchange'];
+
+/* Scalloped / wavy-edge profile frame (SVG-based) */
+function ScallopedFrame({ size = 80, borderWidth = 2, children, className = '', onClick }) {
+  const uid = useId();
+  const s = size;
+  const cx = s / 2;
+  const cy = s / 2;
+  const r = s / 2 - borderWidth;
+  const bumps = 12;
+  const bumpDepth = r * 0.13;
+
+  let path = '';
+  for (let i = 0; i < bumps; i++) {
+    const a1 = (i / bumps) * Math.PI * 2;
+    const a2 = ((i + 1) / bumps) * Math.PI * 2;
+    const aMid = (a1 + a2) / 2;
+
+    const x1 = cx + r * Math.cos(a1);
+    const y1 = cy + r * Math.sin(a1);
+    const xMid = cx + (r - bumpDepth) * Math.cos(aMid);
+    const yMid = cy + (r - bumpDepth) * Math.sin(aMid);
+    const x2 = cx + r * Math.cos(a2);
+    const y2 = cy + r * Math.sin(a2);
+
+    if (i === 0) path += `M ${x1} ${y1} `;
+    path += `Q ${xMid} ${yMid} ${x2} ${y2} `;
+  }
+  path += 'Z';
+
+  const clipId = `scallop${uid}`;
+
+  return (
+    <div className={`relative ${className}`} style={{ width: s, height: s }} onClick={onClick}>
+      <svg width={s} height={s} viewBox={`0 0 ${s} ${s}`} className="absolute inset-0 z-[1]" style={{ pointerEvents: 'none' }}>
+        <defs>
+          <clipPath id={clipId}>
+            <path d={path} />
+          </clipPath>
+        </defs>
+        <path d={path} fill="none" stroke="#3E3D38" strokeWidth={borderWidth} />
+      </svg>
+      <div className="absolute inset-0 overflow-hidden" style={{ clipPath: `url(#${clipId})` }}>
+        {children}
+      </div>
+    </div>
+  );
+}
 
 export default function ProfilePage() {
   const { user, updateUser } = useAuth();
@@ -159,15 +206,17 @@ export default function ProfilePage() {
                     </button>
                   </div>
 
-                  {/* Avatar - wavy blob frame with black border, click to view full */}
+                  {/* Avatar - scalloped frame, click to view full */}
                   <div className="absolute -bottom-11 left-1/2 -translate-x-1/2 z-10">
-                    <button onClick={() => setShowAvatarModal(true)} className="block focus:outline-none group">
-                      <div className="wavy-frame w-[88px] h-[88px] overflow-hidden border-[3px] border-[#3E3D38] bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all">
-                        {form.avatarPreview
-                          ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
-                          : <span className="font-['Unbounded'] text-xl font-black text-white">{initials}</span>
-                        }
-                      </div>
+                    <button onClick={() => setShowAvatarModal(true)} className="block focus:outline-none group hover:scale-105 transition-transform">
+                      <ScallopedFrame size={88} borderWidth={2}>
+                        <div className="w-full h-full bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center">
+                          {form.avatarPreview
+                            ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
+                            : <span className="font-['Unbounded'] text-xl font-black text-white">{initials}</span>
+                          }
+                        </div>
+                      </ScallopedFrame>
                     </button>
                   </div>
                 </div>
@@ -366,19 +415,20 @@ export default function ProfilePage() {
       {/* Avatar & Status */}
       <Section title="Profile Identity" icon={User}>
         <div className="flex flex-col sm:flex-row gap-6">
-          {/* Avatar - wavy blob frame */}
+          {/* Avatar - scalloped frame */}
           <div className="flex-shrink-0 flex flex-col items-center">
-            <div
-              className="wavy-frame w-24 h-24 overflow-hidden bg-gradient-to-br from-[#d4f53c] to-[#e8834a] flex items-center justify-center cursor-pointer relative group border-[3px] border-[#3E3D38]"
-              onClick={() => fileRef.current?.click()}
-            >
-              {form.avatarPreview
-                ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
-                : <span className="font-['Unbounded'] text-2xl font-black text-[#3E3D38]">{initials}</span>
-              }
-              <div className="absolute inset-0 bg-[#3E3D38]/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <Upload size={20} className="text-white" />
-              </div>
+            <div className="cursor-pointer group" onClick={() => fileRef.current?.click()}>
+              <ScallopedFrame size={96} borderWidth={2}>
+                <div className="w-full h-full bg-gradient-to-br from-[#d4f53c] to-[#e8834a] flex items-center justify-center relative">
+                  {form.avatarPreview
+                    ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
+                    : <span className="font-['Unbounded'] text-2xl font-black text-[#3E3D38]">{initials}</span>
+                  }
+                  <div className="absolute inset-0 bg-[#3E3D38]/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Upload size={20} className="text-white" />
+                  </div>
+                </div>
+              </ScallopedFrame>
             </div>
             <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatar} />
             <p className="text-[10px] text-[#9A9A94] text-center mt-2">Click to change</p>
@@ -664,13 +714,15 @@ export default function ProfilePage() {
               <X size={14} className="text-[#3E3D38]" />
             </button>
 
-            {/* Wavy blob frame - large */}
-            <div className="wavy-frame-lg w-56 h-56 overflow-hidden border-4 border-[#3E3D38] bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center shadow-2xl">
-              {form.avatarPreview
-                ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
-                : <span className="font-['Unbounded'] text-5xl font-black text-white">{initials}</span>
-              }
-            </div>
+            {/* Scalloped frame - large */}
+            <ScallopedFrame size={224} borderWidth={2.5}>
+              <div className="w-full h-full bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center shadow-2xl">
+                {form.avatarPreview
+                  ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
+                  : <span className="font-['Unbounded'] text-5xl font-black text-white">{initials}</span>
+                }
+              </div>
+            </ScallopedFrame>
 
             {/* Name below */}
             <p className="text-center mt-5 font-['Unbounded'] text-lg font-black text-white">{form.name || 'Your Name'}</p>
