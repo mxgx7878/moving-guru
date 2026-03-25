@@ -26,7 +26,7 @@ const LANGUAGES = ['English', 'Spanish', 'French', 'Portuguese', 'Italian', 'Ger
 const OPEN_TO = ['Direct Hire', 'Swaps', 'Both', 'Energy Exchange'];
 
 /* Scalloped / wavy-edge profile frame (SVG-based) */
-function ScallopedFrame({ size = 80, borderWidth = 2, children, className = '', onClick }) {
+function ScallopedFrame({ size = 200, borderWidth = 2, children, className = '', onClick }) {
   const uid = useId();
   const s = size;
   const cx = s / 2;
@@ -715,7 +715,7 @@ export default function ProfilePage() {
             </button>
 
             {/* Scalloped frame - large */}
-            <ScallopedFrame size={224} borderWidth={2.5}>
+            <ScallopedFrame size={280} borderWidth={2.5}>
               <div className="w-full h-full bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center shadow-2xl">
                 {form.avatarPreview
                   ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
