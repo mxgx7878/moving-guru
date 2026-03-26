@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Eye, EyeOff, Globe, ArrowRight } from 'lucide-react';
+import logo from '../assets/logo.png';
 
 export default function Login() {
   const [email, setEmail] = useState('bambi@movingguru.co');
@@ -44,8 +45,8 @@ export default function Login() {
 
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-2">
-            <Globe size={20} className="text-white/70" />
-            <span className="font-['Unbounded'] text-sm font-bold text-white/70 tracking-wider">
+            <img src={logo} alt="Moving Guru Logo" height={80} width={80} />
+            <span className="font-['Unbounded'] text-lg font-bold text-white/70 tracking-wider">
               MOVING GURU
             </span>
           </div>

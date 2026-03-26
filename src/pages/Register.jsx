@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import Input from '../components/Input';
 
-const STEPS = [
+const STEPS = [ 
   { id: 1, label: 'Account', icon: User },
   { id: 2, label: 'Personal', icon: User },
   { id: 3, label: 'Location', icon: MapPin },

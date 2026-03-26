@@ -4,6 +4,7 @@ import {
   LayoutDashboard, User, CreditCard, Star, LogOut,
   Globe, ChevronRight, Bell, MessageCircle
 } from 'lucide-react';
+import logo from '../assets/logo.png';
 
 const NAV = [
   { to: '/portal/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -43,8 +44,8 @@ export default function Sidebar({ mobileOpen, onClose }) {
       `}>
         {/* Logo */}
         <div className="px-6 py-6 border-b border-[#E5E0D8]">
-          <a href="/" className="flex items-center gap-2">
-            <Globe size={18} className="text-[#CE4F56]" />
+          <a href="/" className="flex items-center gap-1">
+            <img src={logo} alt="Moving Guru Logo" height={60} width={60} />
             <span className="font-['Unbounded'] text-sm font-bold text-[#3E3D38] tracking-wider">
               MOVING <em className="not-italic text-[#CE4F56]">GURU</em>
             </span>
