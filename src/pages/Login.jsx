@@ -1,29 +1,34 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser, clearError } from '../store/slices/authSlice';
+import { STATUS } from '../constants/apiConstants';
 import { Eye, EyeOff, Globe, ArrowRight } from 'lucide-react';
 
 export default function Login() {
-  const [email, setEmail] = useState('bambi@movingguru.co');
-  const [password, setPassword] = useState('demo123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPw, setShowPw] = useState(false);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
-  const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { status, error, token } = useSelector((state) => state.auth);
+
+  const loading = status === STATUS.LOADING;
+
+  useEffect(() => {
+    if (token) navigate('/portal/dashboard');
+  }, [token, navigate]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearError());
+    };
+  }, [dispatch]);
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
-    await new Promise(r => setTimeout(r, 600));
-    const result = login(email, password);
-    setLoading(false);
-    if (result.success) {
-      navigate('/portal/dashboard');
-    } else {
-      setError(result.error);
-    }
+    dispatch(loginUser({ email, password }));
   };
 
   return (
@@ -94,13 +99,6 @@ export default function Login() {
           <div className="mb-8">
             <h2 className="font-['Unbounded'] text-2xl font-black text-[#3E3D38] mb-2">Welcome back</h2>
             <p className="text-[#9A9A94] text-sm">Sign in to your member portal</p>
-          </div>
-
-          {/* Demo hint */}
-          <div className="mb-6 px-4 py-3 bg-[#CE4F56]/8 border border-[#CE4F56]/15 rounded-xl">
-            <p className="text-[#CE4F56] text-xs font-medium">
-              Demo: <span className="opacity-70">bambi@movingguru.co / demo123</span>
-            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">

@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { Menu, Bell } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useSelector } from 'react-redux';
 
 export default function PortalLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { user } = useAuth();
+  const { user } = useSelector((state) => state.auth);
 
   return (
     <div className="flex h-screen bg-[#FDFCF8] font-['DM_Sans']">

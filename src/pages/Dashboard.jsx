@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { updateProfile, forgotPassword } from '../store/slices/authSlice';
 import { DUMMY_USER } from '../data/dummyData';
 import BarChart from '../components/BarChart';
 import StatCard from '../components/StatCard';
@@ -10,7 +11,8 @@ import {
 } from 'lucide-react';
 
 export default function Dashboard() {
-  const { user, updateUser } = useAuth();
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
   const profileData = user || DUMMY_USER;
 
   const totalViews = profileData.profileViews?.reduce((s, d) => s + d.views, 0) || 0;
@@ -33,7 +35,7 @@ export default function Dashboard() {
 
   const handleEmailSave = () => {
     if (!email.trim()) return;
-    updateUser({ email });
+    dispatch(updateProfile({ email }));
     setEmailSaved(true);
     setTimeout(() => setEmailSaved(false), 2500);
   };
@@ -49,6 +51,7 @@ export default function Dashboard() {
   };
 
   const handlePasswordReset = () => {
+    dispatch(forgotPassword({ email: user?.email }));
     setResetSent(true);
     setTimeout(() => setResetSent(false), 3000);
   };

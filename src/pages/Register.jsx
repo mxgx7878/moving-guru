@@ -1,6 +1,8 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { registerUser, clearError } from '../store/slices/authSlice';
+import { STATUS } from '../constants/apiConstants';
 import { DISCIPLINE_CATEGORIES } from '../data/disciplines';
 import {
   Globe, ArrowRight, ArrowLeft, Check, Upload, X,
@@ -36,8 +38,22 @@ export default function Register() {
   const [disciplineSearch, setDisciplineSearch] = useState('');
   const fileRef = useRef();
   const photosRef = useRef();
-  const { register } = useAuth();
+
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { status, error: apiError, token } = useSelector((state) => state.auth);
+
+  const loading = status === STATUS.LOADING;
+
+  useEffect(() => {
+    if (token) navigate('/portal/dashboard');
+  }, [token, navigate]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearError());
+    };
+  }, [dispatch]);
 
   const update = (key, val) => setForm(f => ({ ...f, [key]: val }));
 
@@ -88,8 +104,8 @@ export default function Register() {
   };
 
   const handleSubmit = () => {
-    const result = register(form);
-    if (result.success) navigate('/portal/dashboard');
+    const { confirmPassword, avatarPreview, photos, ...payload } = form;
+    dispatch(registerUser(payload));
   };
 
   const filteredDisciplines = DISCIPLINE_CATEGORIES.map(cat => ({
@@ -456,12 +472,23 @@ export default function Register() {
                   </p>
                 </div>
 
+                {apiError && (
+                  <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-xl">
+                    <p className="text-red-500 text-xs">{apiError}</p>
+                  </div>
+                )}
+
                 <button
                   type="button"
                   onClick={handleSubmit}
-                  className="w-full bg-[#CE4F56] text-white font-bold py-4 rounded-xl hover:bg-[#b8454c] transition-all flex items-center justify-center gap-2 font-['Unbounded'] text-sm"
+                  disabled={loading}
+                  className="w-full bg-[#CE4F56] text-white font-bold py-4 rounded-xl hover:bg-[#b8454c] transition-all flex items-center justify-center gap-2 font-['Unbounded'] text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Complete Registration <ArrowRight size={16} />
+                  {loading ? (
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <>Complete Registration <ArrowRight size={16} /></>
+                  )}
                 </button>
               </div>
             )}

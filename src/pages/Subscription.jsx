@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { updateProfile } from '../store/slices/authSlice';
 import { SUBSCRIPTION_PLANS } from '../data/dummyData';
 import { Check, Star, Zap, ArrowRight, AlertCircle, Crown, Shield, Sparkles, Heart } from 'lucide-react';
 
 const PLAN_ICONS = { monthly: Shield, biannual: Crown, annual: Sparkles };
 
 export default function Subscription() {
-  const { user, updateUser } = useAuth();
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
   const [selected, setSelected] = useState(user?.subscription || 'monthly');
   const [confirming, setConfirming] = useState(false);
   const [changed, setChanged] = useState(false);
@@ -20,7 +22,7 @@ export default function Subscription() {
   };
 
   const confirmChange = () => {
-    updateUser({ subscription: selected, subscriptionPrice: selectedPlan.price });
+    dispatch(updateProfile({ subscription: selected, subscriptionPrice: selectedPlan.price }));
     setConfirming(false);
     setChanged(true);
     setTimeout(() => setChanged(false), 3000);

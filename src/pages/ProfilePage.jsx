@@ -1,6 +1,8 @@
 import { useState, useRef, useId } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { updateProfile, clearError, clearMessage } from '../store/slices/authSlice';
+import { STATUS } from '../constants/apiConstants';
 import { DISCIPLINE_CATEGORIES } from '../data/disciplines';
 import Section from '../components/Section';
 import Field from '../components/Field';
@@ -73,7 +75,8 @@ function ScallopedFrame({ size = 200, borderWidth = 2, children, className = '',
 }
 
 export default function ProfilePage() {
-  const { user, updateUser } = useAuth();
+  const dispatch = useDispatch();
+  const { user, status } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const [form, setForm] = useState({ ...user });
   const [saved, setSaved] = useState(false);
@@ -112,10 +115,12 @@ export default function ProfilePage() {
     }
   };
 
-  const handleSave = () => {
-    updateUser(form);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+  const handleSave = async () => {
+    const result = await dispatch(updateProfile(form));
+    if (updateProfile.fulfilled.match(result)) {
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    }
   };
 
   const handleAvatar = (e) => {
