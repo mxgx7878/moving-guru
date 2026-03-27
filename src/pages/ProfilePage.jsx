@@ -82,19 +82,22 @@ export default function ProfilePage() {
   // Map API user fields into form-friendly flat structure
   const [form, setForm] = useState(() => {
     if (!user) return {};
-    const socials = user.social_links || {};
+    // social_links is array of { platform, url } — flatten into form keys
+    const socialsMap = {};
+    (user.social_links || []).forEach((s) => {
+      if (s.platform && s.url) socialsMap[s.platform] = s.url;
+    });
     return {
       ...user,
       avatarPreview: user.profile_picture || null,
       coverImage: user.background_image || null,
       photos: user.gallery_photos || [],
-      // flatten social_links into individual keys for form inputs
-      instagram: socials.instagram?.url || '',
-      facebook: socials.facebook?.url || '',
-      twitter: socials.twitter?.url || '',
-      tiktok: socials.tiktok?.url || '',
-      youtube: socials.youtube?.url || '',
-      linkedin: socials.linkedin?.url || '',
+      instagram: socialsMap.instagram || '',
+      facebook: socialsMap.facebook || '',
+      twitter: socialsMap.twitter || '',
+      tiktok: socialsMap.tiktok || '',
+      youtube: socialsMap.youtube || '',
+      linkedin: socialsMap.linkedin || '',
     };
   });
   const [saved, setSaved] = useState(false);
@@ -141,14 +144,14 @@ export default function ProfilePage() {
       profile_picture: avatarPreview,
       background_image: coverImage,
       gallery_photos: photos || [],
-      social_links: {
-        ...(instagram && { instagram: { url: instagram } }),
-        ...(facebook && { facebook: { url: facebook } }),
-        ...(twitter && { twitter: { url: twitter } }),
-        ...(tiktok && { tiktok: { url: tiktok } }),
-        ...(youtube && { youtube: { url: youtube } }),
-        ...(linkedin && { linkedin: { url: linkedin } }),
-      },
+      social_links: [
+        ...(instagram ? [{ platform: 'instagram', url: instagram }] : []),
+        ...(facebook ? [{ platform: 'facebook', url: facebook }] : []),
+        ...(twitter ? [{ platform: 'twitter', url: twitter }] : []),
+        ...(tiktok ? [{ platform: 'tiktok', url: tiktok }] : []),
+        ...(youtube ? [{ platform: 'youtube', url: youtube }] : []),
+        ...(linkedin ? [{ platform: 'linkedin', url: linkedin }] : []),
+      ],
     };
     const result = await dispatch(updateProfile(payload));
     if (updateProfile.fulfilled.match(result)) {

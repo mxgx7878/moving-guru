@@ -125,7 +125,7 @@ export default function Register() {
       plan: rest.plan,
       profile_picture: rest.avatar,
       gallery_photos: rest.photos,
-      social_links: {},
+      social_links: [],
     };
     dispatch(registerUser(payload));
   };
