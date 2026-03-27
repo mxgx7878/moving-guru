@@ -101,33 +101,39 @@ export default function Register() {
   const handlePhotosChange = (e) => {
     const files = Array.from(e.target.files).slice(0, 4);
     const previews = files.map(f => URL.createObjectURL(f));
+    update('photoFiles', files);
     update('photos', previews);
   };
 
   const handleSubmit = () => {
-    const { confirmPassword, avatarPreview, ...rest } = form;
-    const payload = {
-      name: rest.name,
-      email: rest.email,
-      password: rest.password,
-      age: rest.age,
-      pronouns: rest.pronouns,
-      studio: rest.studio,
-      location: rest.location,
-      countryFrom: rest.countryFrom,
-      travelingTo: rest.travelingTo,
-      availability: rest.availability,
-      disciplines: rest.disciplines,
-      languages: rest.languages,
-      openTo: rest.openTo,
-      profileStatus: rest.profileStatus,
-      bio: rest.bio,
-      plan: rest.plan,
-      profile_picture: rest.avatar,
-      gallery_photos: rest.photos,
-      social_links: [],
-    };
-    dispatch(registerUser(payload));
+    const fd = new FormData();
+    fd.append('name', form.name);
+    fd.append('email', form.email);
+    fd.append('password', form.password);
+    fd.append('age', form.age);
+    fd.append('pronouns', form.pronouns);
+    fd.append('studio', form.studio);
+    fd.append('location', form.location);
+    fd.append('countryFrom', form.countryFrom);
+    fd.append('travelingTo', form.travelingTo);
+    fd.append('availability', form.availability);
+    fd.append('profileStatus', form.profileStatus);
+    fd.append('bio', form.bio);
+    fd.append('plan', form.plan);
+
+    // Arrays
+    (form.disciplines || []).forEach((d, i) => fd.append(`disciplines[${i}]`, d));
+    (form.languages || []).forEach((l, i) => fd.append(`languages[${i}]`, l));
+    (form.openTo || []).forEach((o, i) => fd.append(`openTo[${i}]`, o));
+
+    // Files
+    if (form.avatar) fd.append('profile_picture', form.avatar);
+    (form.photoFiles || []).forEach((file, i) => fd.append(`gallery_photos[${i}]`, file));
+
+    // Social links (empty on register)
+    fd.append('social_links', JSON.stringify([]));
+
+    dispatch(registerUser(fd));
   };
 
   const filteredDisciplines = DISCIPLINE_CATEGORIES.map(cat => ({

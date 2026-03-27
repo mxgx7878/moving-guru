@@ -138,23 +138,43 @@ export default function ProfilePage() {
   };
 
   const handleSave = async () => {
-    // Build API-shaped payload from flat form
-    const { avatarPreview, coverImage, photos, instagram, facebook, twitter, tiktok, youtube, linkedin, ...rest } = form;
-    const payload = {
-      ...rest,
-      profile_picture: avatarPreview,
-      background_image: coverImage,
-      gallery_photos: photos || [],
-      social_links: [
-        ...(instagram ? [{ instagram }] : []),
-        ...(facebook ? [{ facebook }] : []),
-        ...(twitter ? [{ twitter }] : []),
-        ...(tiktok ? [{ tiktok }] : []),
-        ...(youtube ? [{ youtube }] : []),
-        ...(linkedin ? [{ linkedin }] : []),
-      ],
-    };
-    const result = await dispatch(updateProfile(payload));
+    const { avatarPreview, coverImage, photos, avatarFile, coverFile, photoFiles,
+      instagram, facebook, twitter, tiktok, youtube, linkedin,
+      // strip out fields that shouldn't go in payload
+      profile_picture, background_image, gallery_photos, social_links,
+      ...rest } = form;
+
+    const fd = new FormData();
+
+    // Append text fields
+    Object.entries(rest).forEach(([key, val]) => {
+      if (val == null) return;
+      if (Array.isArray(val)) {
+        val.forEach((item, i) => fd.append(`${key}[${i}]`, item));
+      } else {
+        fd.append(key, val);
+      }
+    });
+
+    // Files — only append if user picked a new file
+    if (avatarFile) fd.append('profile_picture', avatarFile);
+    if (coverFile) fd.append('background_image', coverFile);
+    (photoFiles || []).forEach((file, i) => {
+      if (file instanceof File) fd.append(`gallery_photos[${i}]`, file);
+    });
+
+    // Social links as JSON string
+    const socialsArr = [
+      ...(instagram ? [{ instagram }] : []),
+      ...(facebook ? [{ facebook }] : []),
+      ...(twitter ? [{ twitter }] : []),
+      ...(tiktok ? [{ tiktok }] : []),
+      ...(youtube ? [{ youtube }] : []),
+      ...(linkedin ? [{ linkedin }] : []),
+    ];
+    fd.append('social_links', JSON.stringify(socialsArr));
+
+    const result = await dispatch(updateProfile(fd));
     if (updateProfile.fulfilled.match(result)) {
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
@@ -165,18 +185,21 @@ export default function ProfilePage() {
     const file = e.target.files[0];
     if (!file) return;
     set('avatarPreview', URL.createObjectURL(file));
+    set('avatarFile', file);
   };
 
   const handlePhotos = (e) => {
-    const files = Array.from(e.target.files).slice(0, 4 - (form.photos?.length || 0));
-    const previews = files.map(f => URL.createObjectURL(f));
+    const newFiles = Array.from(e.target.files).slice(0, 4 - (form.photos?.length || 0));
+    const previews = newFiles.map(f => URL.createObjectURL(f));
     set('photos', [...(form.photos || []), ...previews]);
+    set('photoFiles', [...(form.photoFiles || []), ...newFiles]);
   };
 
   const handleCoverImage = (e) => {
     const file = e.target.files[0];
     if (!file) return;
     set('coverImage', URL.createObjectURL(file));
+    set('coverFile', file);
   };
 
   const handleSubmitReview = () => {

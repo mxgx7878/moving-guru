@@ -3,11 +3,21 @@ import axiosInstance from "../../config/axiosInstance";
 import { API_ENDPOINTS } from "../../constants/apiConstants";
 import { getErrorMessage } from "../../utils/errorUtils.js";
 
+// Helper — detect FormData and set proper headers
+const fileConfig = (payload) =>
+  payload instanceof FormData
+    ? { headers: { 'Content-Type': 'multipart/form-data' } }
+    : {};
+
 export const registerUser = createAsyncThunk(
   'auth/register',
   async (userData, { rejectWithValue }) => {
     try {
-      const { data } = await axiosInstance.post(API_ENDPOINTS.REGISTER, userData);
+      const { data } = await axiosInstance.post(
+        API_ENDPOINTS.REGISTER,
+        userData,
+        fileConfig(userData),
+      );
       if (data.data?.token) {
         localStorage.setItem('access_token', data.data.token);
       }
@@ -75,6 +85,13 @@ export const updateProfile = createAsyncThunk(
   'auth/updateProfile',
   async (profileData, { rejectWithValue }) => {
     try {
+      const config = fileConfig(profileData);
+      // Laravel doesn't support PATCH with FormData — use POST + _method override
+      if (profileData instanceof FormData) {
+        profileData.append('_method', 'PATCH');
+        const { data } = await axiosInstance.post(API_ENDPOINTS.PROFILE, profileData, config);
+        return data;
+      }
       const { data } = await axiosInstance.patch(API_ENDPOINTS.PROFILE, profileData);
       return data;
     } catch (error) {
