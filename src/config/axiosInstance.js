@@ -52,7 +52,6 @@ axiosInstance.interceptors.response.use(
         }
       } catch (refreshError) {
         localStorage.removeItem('access_token');
-        window.location.href = '/login';
         return Promise.reject(refreshError);
       }
     }

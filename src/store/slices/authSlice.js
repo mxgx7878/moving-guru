@@ -74,6 +74,10 @@ const authSlice = createSlice({
       .addCase(getMe.rejected, (state, { payload }) => {
         state.status = STATUS.FAILED;
         state.error = payload;
+        // Token is invalid/expired — clear auth so ProtectedRoute redirects
+        state.token = null;
+        state.user = null;
+        localStorage.removeItem('access_token');
       })
 
       // ── Logout ──
