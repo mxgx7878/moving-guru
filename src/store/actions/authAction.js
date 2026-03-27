@@ -8,6 +8,9 @@ export const registerUser = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const { data } = await axiosInstance.post(API_ENDPOINTS.REGISTER, userData);
+      if (data.data?.token) {
+        localStorage.setItem('access_token', data.data.token);
+      }
       return data;
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));
