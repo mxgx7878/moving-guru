@@ -40,7 +40,8 @@ const authSlice = createSlice({
       .addCase(registerUser.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
         state.user = payload.data?.user || null;
-        state.token = payload.data?.token || state.token;
+        state.token = payload.data?.access_token || state.token;
+        localStorage.setItem('access_token', payload.data?.access_token || state.token);
         state.message = payload.message;
       })
       .addCase(registerUser.rejected, (state, { payload }) => {
@@ -56,8 +57,9 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
         state.user = payload.data?.user || null;
-        state.token = payload.data?.token || state.token;
-        localStorage.setItem('access_token', payload.data?.token || state.token);
+        state.token = payload.data?.access_token || state.token;
+        console.log(payload);
+        localStorage.setItem('access_token', payload.data?.access_token || state.token);
         state.message = payload.message;
       })
       .addCase(loginUser.rejected, (state, { payload }) => {
