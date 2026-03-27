@@ -1,6 +1,9 @@
 // Base URL
 export const BASE_URL = 'http://localhost:8000/api';
 
+// Storage base — for images returned as /storage/... paths
+export const STORAGE_URL = 'http://localhost:8000';
+
 // API Endpoints
 export const API_ENDPOINTS = {
   REGISTER: '/register',
