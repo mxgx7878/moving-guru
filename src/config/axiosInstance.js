@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { BASE_URL } from '../constants/apiConstants';
+import { BASE_URL, API_ENDPOINTS } from '../constants/apiConstants';
 
 // Store reference — injected from main.jsx to avoid circular imports
 let store;
@@ -9,6 +9,15 @@ export const injectStore = (_store, _authActions) => {
   store = _store;
   authActions = _authActions;
 };
+
+// Routes that should NEVER trigger token refresh on 401
+// (these are public/auth routes — 401 here means bad credentials, not expired token)
+const SKIP_REFRESH_ROUTES = [
+  API_ENDPOINTS.LOGIN,
+  API_ENDPOINTS.REGISTER,
+  API_ENDPOINTS.FORGOT_PASSWORD,
+  API_ENDPOINTS.RESET_PASSWORD,
+];
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -52,8 +61,11 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Only handle 401 — skip if already retried
-    if (error.response?.status !== 401 || originalRequest._retry) {
+    // Only handle 401 — skip if already retried or if it's a public route
+    const requestUrl = originalRequest.url || '';
+    const isPublicRoute = SKIP_REFRESH_ROUTES.some((route) => requestUrl.includes(route));
+
+    if (error.response?.status !== 401 || originalRequest._retry || isPublicRoute) {
       return Promise.reject(error);
     }
 
