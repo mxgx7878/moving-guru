@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import {clearError, clearMessage } from '../store/slices/authSlice';
 import { updateProfile,} from '../store/actions/authAction';
 import { STATUS } from '../constants/apiConstants';
-import { getImageUrl } from '../utils/imageUtils';
 import { DISCIPLINE_CATEGORIES } from '../data/disciplines';
 import Section from '../components/Section';
 import Field from '../components/Field';
@@ -91,9 +90,9 @@ export default function ProfilePage() {
     });
     return {
       ...user,
-      avatarPreview: getImageUrl(user.profile_picture),
-      coverImage: getImageUrl(user.background_image),
-      photos: (user.gallery_photos || []).map((p) => getImageUrl(p)),
+      avatarPreview: user.profile_picture || null,
+      coverImage: user.background_image || null,
+      photos: user.gallery_photos || [],
       instagram: socialsMap.instagram || '',
       facebook: socialsMap.facebook || '',
       twitter: socialsMap.twitter || '',
