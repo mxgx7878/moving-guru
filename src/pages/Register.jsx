@@ -42,13 +42,9 @@ export default function Register() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { status, error: apiError, token } = useSelector((state) => state.auth);
+  const { status, error: apiError } = useSelector((state) => state.auth);
 
   const loading = status === STATUS.LOADING;
-
-  useEffect(() => {
-    if (token) navigate('/portal/dashboard');
-  }, [token, navigate]);
 
   useEffect(() => {
     return () => {
@@ -104,9 +100,12 @@ export default function Register() {
     update('photos', previews);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const { confirmPassword, avatarPreview, photos, ...payload } = form;
-    dispatch(registerUser(payload));
+    const result = await dispatch(registerUser(payload));
+    if (registerUser.fulfilled.match(result)) {
+      navigate('/login');
+    }
   };
 
   const filteredDisciplines = DISCIPLINE_CATEGORIES.map(cat => ({

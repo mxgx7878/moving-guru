@@ -1,6 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'sonner';
 import ProtectedRoute from './components/ProtectedRoute';
 import PortalLayout from './components/PortalLayout';
+import FullPageLoader from './components/FullPageLoader';
+import ToastListener from './components/ToastListener';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -12,6 +15,17 @@ import Messages from './pages/Messages';
 export default function App() {
   return (
     <BrowserRouter>
+      <Toaster
+        position="top-right"
+        richColors
+        toastOptions={{
+          duration: 3000,
+          style: { fontFamily: 'DM Sans, sans-serif' },
+        }}
+      />
+      <FullPageLoader />
+      <ToastListener />
+
       <Routes>
         {/* Public routes */}
         <Route path="/login" element={<Login />} />
