@@ -22,6 +22,9 @@ const authSlice = createSlice({
     clearMessage(state) {
       state.message = null;
     },
+    setToken(state, { payload }) {
+      state.token = payload;
+    },
     resetAuth() {
       localStorage.removeItem('access_token');
       return { ...initialState, token: null };
@@ -141,5 +144,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError, clearMessage, resetAuth } = authSlice.actions;
+export const { clearError, clearMessage, setToken, resetAuth } = authSlice.actions;
 export default authSlice.reducer;
