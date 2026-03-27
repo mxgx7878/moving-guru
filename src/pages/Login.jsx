@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginUser, clearError } from '../store/slices/authSlice';
+import { clearError } from '../store/slices/authSlice';
+import { loginUser } from '../store/actions/authAction';
 import { STATUS } from '../constants/apiConstants';
 import { Eye, EyeOff, Globe, ArrowRight } from 'lucide-react';
 

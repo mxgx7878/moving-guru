@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { logoutUser } from '../store/slices/authSlice';
+import { logoutUser } from '../store/actions/authAction';
 import {
   LayoutDashboard, User, CreditCard, Star, LogOut,
   Globe, ChevronRight, Bell, MessageCircle

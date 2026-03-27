@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { getMe } from '../store/slices/authSlice';
+import { getMe } from '../store/actions/authAction';
 import { STATUS } from '../constants/apiConstants';
 
 export default function ProtectedRoute({ children }) {

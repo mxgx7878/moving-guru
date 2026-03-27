@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { updateProfile } from '../store/slices/authSlice';
+import { updateProfile } from '../store/actions/authAction';
 import { SUBSCRIPTION_PLANS } from '../data/dummyData';
 import { Check, Star, Zap, ArrowRight, AlertCircle, Crown, Shield, Sparkles, Heart } from 'lucide-react';
 

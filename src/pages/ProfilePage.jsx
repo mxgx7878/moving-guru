@@ -1,7 +1,8 @@
 import { useState, useRef, useId } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { updateProfile, clearError, clearMessage } from '../store/slices/authSlice';
+import {clearError, clearMessage } from '../store/slices/authSlice';
+import { updateProfile,} from '../store/actions/authAction';
 import { STATUS } from '../constants/apiConstants';
 import { DISCIPLINE_CATEGORIES } from '../data/disciplines';
 import Section from '../components/Section';

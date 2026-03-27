@@ -1,129 +1,6 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axiosInstance from '../../config/axiosInstance';
-import { API_ENDPOINTS, STATUS } from '../../constants/apiConstants';
-
-// ─── Helper to extract error message from Laravel API responses ───
-const getErrorMessage = (error) => {
-  const res = error.response?.data;
-  if (res?.message) return res.message;
-  if (res?.errors) {
-    // Laravel validation: flatten first error of each field
-    const firstErrors = Object.values(res.errors).map((arr) =>
-      Array.isArray(arr) ? arr[0] : arr,
-    );
-    return firstErrors.join(', ');
-  }
-  return error.message || 'Something went wrong';
-};
-
-// ─── Async Thunks ─────────────────────────────────────────────────
-
-export const registerUser = createAsyncThunk(
-  'auth/register',
-  async (userData, { rejectWithValue }) => {
-    try {
-      const { data } = await axiosInstance.post(API_ENDPOINTS.REGISTER, userData);
-      if (data.data?.token) {
-        localStorage.setItem('access_token', data.data.token);
-      }
-      return data;
-    } catch (error) {
-      return rejectWithValue(getErrorMessage(error));
-    }
-  },
-);
-
-export const loginUser = createAsyncThunk(
-  'auth/login',
-  async (credentials, { rejectWithValue }) => {
-    try {
-      const { data } = await axiosInstance.post(API_ENDPOINTS.LOGIN, credentials);
-      if (data.data?.token) {
-        localStorage.setItem('access_token', data.data.token);
-      }
-      return data;
-    } catch (error) {
-      return rejectWithValue(getErrorMessage(error));
-    }
-  },
-);
-
-export const getMe = createAsyncThunk(
-  'auth/getMe',
-  async (_, { rejectWithValue }) => {
-    try {
-      const { data } = await axiosInstance.get(API_ENDPOINTS.ME);
-      return data;
-    } catch (error) {
-      return rejectWithValue(getErrorMessage(error));
-    }
-  },
-);
-
-export const logoutUser = createAsyncThunk(
-  'auth/logout',
-  async (_, { rejectWithValue }) => {
-    try {
-      const { data } = await axiosInstance.post(API_ENDPOINTS.LOGOUT);
-      localStorage.removeItem('access_token');
-      return data;
-    } catch (error) {
-      localStorage.removeItem('access_token');
-      return rejectWithValue(getErrorMessage(error));
-    }
-  },
-);
-
-export const refreshToken = createAsyncThunk(
-  'auth/refresh',
-  async (_, { rejectWithValue }) => {
-    try {
-      const { data } = await axiosInstance.post(API_ENDPOINTS.REFRESH);
-      if (data.data?.token) {
-        localStorage.setItem('access_token', data.data.token);
-      }
-      return data;
-    } catch (error) {
-      return rejectWithValue(getErrorMessage(error));
-    }
-  },
-);
-
-export const updateProfile = createAsyncThunk(
-  'auth/updateProfile',
-  async (profileData, { rejectWithValue }) => {
-    try {
-      const { data } = await axiosInstance.patch(API_ENDPOINTS.PROFILE, profileData);
-      return data;
-    } catch (error) {
-      return rejectWithValue(getErrorMessage(error));
-    }
-  },
-);
-
-export const forgotPassword = createAsyncThunk(
-  'auth/forgotPassword',
-  async (payload, { rejectWithValue }) => {
-    try {
-      const { data } = await axiosInstance.post(API_ENDPOINTS.FORGOT_PASSWORD, payload);
-      return data;
-    } catch (error) {
-      return rejectWithValue(getErrorMessage(error));
-    }
-  },
-);
-
-export const resetPassword = createAsyncThunk(
-  'auth/resetPassword',
-  async (payload, { rejectWithValue }) => {
-    try {
-      const { data } = await axiosInstance.post(API_ENDPOINTS.RESET_PASSWORD, payload);
-      return data;
-    } catch (error) {
-      return rejectWithValue(getErrorMessage(error));
-    }
-  },
-);
+import { createSlice } from '@reduxjs/toolkit';
+import { STATUS } from '../../constants/apiConstants';
+import { forgotPassword, getMe, loginUser, logoutUser, refreshToken, registerUser, resetPassword, updateProfile } from '../actions/authAction';
 
 // ─── Slice ────────────────────────────────────────────────────────
 
@@ -177,6 +54,7 @@ const authSlice = createSlice({
         state.status = STATUS.SUCCEEDED;
         state.user = payload.data?.user || null;
         state.token = payload.data?.token || state.token;
+        localStorage.setItem('access_token', payload.data?.token || state.token);
         state.message = payload.message;
       })
       .addCase(loginUser.rejected, (state, { payload }) => {

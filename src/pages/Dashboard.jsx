@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { updateProfile, forgotPassword } from '../store/slices/authSlice';
+import { updateProfile, forgotPassword } from '../store/actions/authAction';
 import { DUMMY_USER } from '../data/dummyData';
 import BarChart from '../components/BarChart';
 import StatCard from '../components/StatCard';
