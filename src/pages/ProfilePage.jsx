@@ -82,10 +82,11 @@ export default function ProfilePage() {
   // Map API user fields into form-friendly flat structure
   const [form, setForm] = useState(() => {
     if (!user) return {};
-    // social_links is array of { platform, url } — flatten into form keys
+    // social_links is array like [{ instagram: "url" }, { facebook: "url" }]
     const socialsMap = {};
-    (user.social_links || []).forEach((s) => {
-      if (s.platform && s.url) socialsMap[s.platform] = s.url;
+    (user.social_links || []).forEach((obj) => {
+      const key = Object.keys(obj)[0];
+      if (key) socialsMap[key] = obj[key];
     });
     return {
       ...user,
@@ -145,12 +146,12 @@ export default function ProfilePage() {
       background_image: coverImage,
       gallery_photos: photos || [],
       social_links: [
-        ...(instagram ? [{ platform: 'instagram', url: instagram }] : []),
-        ...(facebook ? [{ platform: 'facebook', url: facebook }] : []),
-        ...(twitter ? [{ platform: 'twitter', url: twitter }] : []),
-        ...(tiktok ? [{ platform: 'tiktok', url: tiktok }] : []),
-        ...(youtube ? [{ platform: 'youtube', url: youtube }] : []),
-        ...(linkedin ? [{ platform: 'linkedin', url: linkedin }] : []),
+        ...(instagram ? [{ instagram }] : []),
+        ...(facebook ? [{ facebook }] : []),
+        ...(twitter ? [{ twitter }] : []),
+        ...(tiktok ? [{ tiktok }] : []),
+        ...(youtube ? [{ youtube }] : []),
+        ...(linkedin ? [{ linkedin }] : []),
       ],
     };
     const result = await dispatch(updateProfile(payload));
