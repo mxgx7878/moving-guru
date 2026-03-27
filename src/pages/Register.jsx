@@ -130,8 +130,8 @@ export default function Register() {
     if (form.avatar) fd.append('profile_picture', form.avatar);
     (form.photoFiles || []).forEach((file, i) => fd.append(`gallery_photos[${i}]`, file));
 
-    // Social links (empty on register)
-    fd.append('social_links', JSON.stringify([]));
+    // Social links (empty array for register)
+    fd.append('social_links[]', '');
 
     dispatch(registerUser(fd));
   };

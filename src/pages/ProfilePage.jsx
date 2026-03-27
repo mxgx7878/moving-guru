@@ -163,16 +163,15 @@ export default function ProfilePage() {
       if (file instanceof File) fd.append(`gallery_photos[${i}]`, file);
     });
 
-    // Social links as JSON string
-    const socialsArr = [
-      ...(instagram ? [{ instagram }] : []),
-      ...(facebook ? [{ facebook }] : []),
-      ...(twitter ? [{ twitter }] : []),
-      ...(tiktok ? [{ tiktok }] : []),
-      ...(youtube ? [{ youtube }] : []),
-      ...(linkedin ? [{ linkedin }] : []),
-    ];
-    fd.append('social_links', JSON.stringify(socialsArr));
+    // Social links — each as social_links[index][platform] = url
+    const socials = { instagram, facebook, twitter, tiktok, youtube, linkedin };
+    let idx = 0;
+    Object.entries(socials).forEach(([platform, url]) => {
+      if (url) {
+        fd.append(`social_links[${idx}][${platform}]`, url);
+        idx++;
+      }
+    });
 
     const result = await dispatch(updateProfile(fd));
     if (updateProfile.fulfilled.match(result)) {
