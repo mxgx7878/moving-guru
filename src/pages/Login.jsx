@@ -159,7 +159,13 @@ export default function Login() {
             </button>
           </form>
 
-          <p className="text-center text-[#9A9A94] text-sm mt-6">
+          <p className="text-center mt-4">
+            <Link to="/forgot-password" className="text-[#9A9A94] text-xs hover:text-[#CE4F56] transition-colors">
+              Forgot your password?
+            </Link>
+          </p>
+
+          <p className="text-center text-[#9A9A94] text-sm mt-4">
             New to Moving Guru?{' '}
             <Link to="/register" className="text-[#CE4F56] font-medium hover:underline">
               Create account

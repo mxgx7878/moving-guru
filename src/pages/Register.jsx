@@ -105,7 +105,28 @@ export default function Register() {
   };
 
   const handleSubmit = () => {
-    const { confirmPassword, avatarPreview, photos, ...payload } = form;
+    const { confirmPassword, avatarPreview, ...rest } = form;
+    const payload = {
+      name: rest.name,
+      email: rest.email,
+      password: rest.password,
+      age: rest.age,
+      pronouns: rest.pronouns,
+      studio: rest.studio,
+      location: rest.location,
+      countryFrom: rest.countryFrom,
+      travelingTo: rest.travelingTo,
+      availability: rest.availability,
+      disciplines: rest.disciplines,
+      languages: rest.languages,
+      openTo: rest.openTo,
+      profileStatus: rest.profileStatus,
+      bio: rest.bio,
+      plan: rest.plan,
+      profile_picture: rest.avatar,
+      gallery_photos: rest.photos,
+      social_links: {},
+    };
     dispatch(registerUser(payload));
   };
 
