@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { updateProfile, forgotPassword } from '../store/actions/authAction';
 import { DUMMY_USER } from '../data/dummyData';
 import BarChart from '../components/BarChart';
 import StatCard from '../components/StatCard';
@@ -10,12 +11,15 @@ import {
 } from 'lucide-react';
 
 export default function Dashboard() {
-  const { user, updateUser } = useAuth();
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
   const profileData = user || DUMMY_USER;
 
-  const totalViews = profileData.profileViews?.reduce((s, d) => s + d.views, 0) || 0;
-  const thisMonth = profileData.profileViews?.[profileData.profileViews.length - 1]?.views || 0;
-  const lastMonth = profileData.profileViews?.[profileData.profileViews.length - 2]?.views || 0;
+  // API returns profile_views as a number; DUMMY_USER may have profileViews array
+  const viewsArray = profileData.profileViews || [];
+  const totalViews = profileData.profile_views || viewsArray.reduce((s, d) => s + d.views, 0) || 0;
+  const thisMonth = viewsArray[viewsArray.length - 1]?.views || 0;
+  const lastMonth = viewsArray[viewsArray.length - 2]?.views || 0;
   const growth = lastMonth > 0 ? Math.round(((thisMonth - lastMonth) / lastMonth) * 100) : 0;
 
   // Account settings state
@@ -33,7 +37,7 @@ export default function Dashboard() {
 
   const handleEmailSave = () => {
     if (!email.trim()) return;
-    updateUser({ email });
+    dispatch(updateProfile({ email }));
     setEmailSaved(true);
     setTimeout(() => setEmailSaved(false), 2500);
   };
@@ -49,6 +53,7 @@ export default function Dashboard() {
   };
 
   const handlePasswordReset = () => {
+    dispatch(forgotPassword({ email: user?.email }));
     setResetSent(true);
     setTimeout(() => setResetSent(false), 3000);
   };
@@ -68,18 +73,18 @@ export default function Dashboard() {
             {profileData.name?.split(' ')[0]}
           </h1>
           <p className="text-[#6B6B66] text-sm">
-            {profileData.profileStatus === 'active'
+            {(profileData.profileStatus || profileData.profile_status) === 'active'
               ? 'Your profile is live and attracting studios'
               : 'Your profile is currently inactive'}
           </p>
         </div>
         <div className="relative z-10 hidden sm:flex flex-col items-end gap-2">
           <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold
-            ${profileData.profileStatus === 'active'
+            ${(profileData.profileStatus || profileData.profile_status) === 'active'
               ? 'bg-[#6BE6A4]/20 text-[#3E3D38]'
               : 'bg-[#EDE8DF] text-[#9A9A94]'}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${profileData.profileStatus === 'active' ? 'bg-[#6BE6A4]' : 'bg-[#9A9A94]'}`} />
-            {profileData.profileStatus === 'active' ? 'Actively Seeking' : 'Not Seeking'}
+            <span className={`w-1.5 h-1.5 rounded-full ${(profileData.profileStatus || profileData.profile_status) === 'active' ? 'bg-[#6BE6A4]' : 'bg-[#9A9A94]'}`} />
+            {(profileData.profileStatus || profileData.profile_status) === 'active' ? 'Actively Seeking' : 'Not Seeking'}
           </div>
           <p className="text-[#9A9A94] text-xs">
             {profileData.subscription?.charAt(0).toUpperCase() + profileData.subscription?.slice(1)} Plan

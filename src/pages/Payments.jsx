@@ -1,9 +1,9 @@
-import { useAuth } from '../contexts/AuthContext';
+import { useSelector } from 'react-redux';
 import { DUMMY_PAYMENTS } from '../data/dummyData';
 import { Download, CreditCard, CheckCircle, Calendar, DollarSign } from 'lucide-react';
 
 export default function Payments() {
-  const { user } = useAuth();
+  const { user } = useSelector((state) => state.auth);
   const payments = DUMMY_PAYMENTS;
   const total = payments.reduce((s, p) => s + p.amount, 0);
 

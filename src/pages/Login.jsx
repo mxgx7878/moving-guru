@@ -1,30 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearError } from '../store/slices/authSlice';
+import { loginUser } from '../store/actions/authAction';
+import { STATUS } from '../constants/apiConstants';
 import { Eye, EyeOff, Globe, ArrowRight } from 'lucide-react';
 import logo from '../assets/logo.png';
 
 export default function Login() {
-  const [email, setEmail] = useState('bambi@movingguru.co');
-  const [password, setPassword] = useState('demo123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPw, setShowPw] = useState(false);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
-  const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { status, error, token } = useSelector((state) => state.auth);
+
+  const loading = status === STATUS.LOADING;
+
+  useEffect(() => {
+    if (token) navigate('/portal/dashboard');
+  }, [token, navigate]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearError());
+    };
+  }, [dispatch]);
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
-    await new Promise(r => setTimeout(r, 600));
-    const result = login(email, password);
-    setLoading(false);
-    if (result.success) {
-      navigate('/portal/dashboard');
-    } else {
-      setError(result.error);
-    }
+    dispatch(loginUser({ email, password }));
   };
 
   return (
@@ -97,13 +103,6 @@ export default function Login() {
             <p className="text-[#9A9A94] text-sm">Sign in to your member portal</p>
           </div>
 
-          {/* Demo hint */}
-          <div className="mb-6 px-4 py-3 bg-[#CE4F56]/8 border border-[#CE4F56]/15 rounded-xl">
-            <p className="text-[#CE4F56] text-xs font-medium">
-              Demo: <span className="opacity-70">bambi@movingguru.co / demo123</span>
-            </p>
-          </div>
-
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">
@@ -161,7 +160,13 @@ export default function Login() {
             </button>
           </form>
 
-          <p className="text-center text-[#9A9A94] text-sm mt-6">
+          <p className="text-center mt-4">
+            <Link to="/forgot-password" className="text-[#9A9A94] text-xs hover:text-[#CE4F56] transition-colors">
+              Forgot your password?
+            </Link>
+          </p>
+
+          <p className="text-center text-[#9A9A94] text-sm mt-4">
             New to Moving Guru?{' '}
             <Link to="/register" className="text-[#CE4F56] font-medium hover:underline">
               Create account

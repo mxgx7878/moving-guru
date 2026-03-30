@@ -1,6 +1,9 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useDispatch, useSelector } from 'react-redux';
+import {clearError } from '../store/slices/authSlice';
+import { registerUser } from '../store/actions/authAction';
+import { STATUS } from '../constants/apiConstants';
 import { DISCIPLINE_CATEGORIES } from '../data/disciplines';
 import {
   Globe, ArrowRight, ArrowLeft, Check, Upload, X,
@@ -36,8 +39,22 @@ export default function Register() {
   const [disciplineSearch, setDisciplineSearch] = useState('');
   const fileRef = useRef();
   const photosRef = useRef();
-  const { register } = useAuth();
+
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { status, error: apiError, token } = useSelector((state) => state.auth);
+
+  const loading = status === STATUS.LOADING;
+
+  useEffect(() => {
+    if (token) navigate('/portal/dashboard');
+  }, [token, navigate]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearError());
+    };
+  }, [dispatch]);
 
   const update = (key, val) => setForm(f => ({ ...f, [key]: val }));
 
@@ -84,12 +101,39 @@ export default function Register() {
   const handlePhotosChange = (e) => {
     const files = Array.from(e.target.files).slice(0, 4);
     const previews = files.map(f => URL.createObjectURL(f));
+    update('photoFiles', files);
     update('photos', previews);
   };
 
   const handleSubmit = () => {
-    const result = register(form);
-    if (result.success) navigate('/portal/dashboard');
+    const fd = new FormData();
+    fd.append('name', form.name);
+    fd.append('email', form.email);
+    fd.append('password', form.password);
+    fd.append('age', form.age);
+    fd.append('pronouns', form.pronouns);
+    fd.append('studio', form.studio);
+    fd.append('location', form.location);
+    fd.append('countryFrom', form.countryFrom);
+    fd.append('travelingTo', form.travelingTo);
+    fd.append('availability', form.availability);
+    fd.append('profileStatus', form.profileStatus);
+    fd.append('bio', form.bio);
+    fd.append('plan', form.plan);
+
+    // Arrays
+    (form.disciplines || []).forEach((d, i) => fd.append(`disciplines[${i}]`, d));
+    (form.languages || []).forEach((l, i) => fd.append(`languages[${i}]`, l));
+    (form.openTo || []).forEach((o, i) => fd.append(`openTo[${i}]`, o));
+
+    // Files
+    if (form.avatar) fd.append('profile_picture', form.avatar);
+    (form.photoFiles || []).forEach((file, i) => fd.append(`gallery_photos[${i}]`, file));
+
+    // Social links (empty array for register)
+    fd.append('social_links[]', '');
+
+    dispatch(registerUser(fd));
   };
 
   const filteredDisciplines = DISCIPLINE_CATEGORIES.map(cat => ({
@@ -456,12 +500,23 @@ export default function Register() {
                   </p>
                 </div>
 
+                {apiError && (
+                  <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-xl">
+                    <p className="text-red-500 text-xs">{apiError}</p>
+                  </div>
+                )}
+
                 <button
                   type="button"
                   onClick={handleSubmit}
-                  className="w-full bg-[#CE4F56] text-white font-bold py-4 rounded-xl hover:bg-[#b8454c] transition-all flex items-center justify-center gap-2 font-['Unbounded'] text-sm"
+                  disabled={loading}
+                  className="w-full bg-[#CE4F56] text-white font-bold py-4 rounded-xl hover:bg-[#b8454c] transition-all flex items-center justify-center gap-2 font-['Unbounded'] text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Complete Registration <ArrowRight size={16} />
+                  {loading ? (
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <>Complete Registration <ArrowRight size={16} /></>
+                  )}
                 </button>
               </div>
             )}

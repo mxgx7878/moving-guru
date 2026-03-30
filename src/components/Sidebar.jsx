@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { logoutUser } from '../store/actions/authAction';
 import {
   LayoutDashboard, User, CreditCard, Star, LogOut,
   Globe, ChevronRight, Bell, MessageCircle
@@ -15,12 +16,12 @@ const NAV = [
 ];
 
 export default function Sidebar({ mobileOpen, onClose }) {
-  const { user, logout } = useAuth();
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout();
-    navigate('/login');
+    dispatch(logoutUser()).then(() => navigate('/login'));
   };
 
   const initials = user?.name?.split(' ').map(n => n[0]).join('') || 'MG';

@@ -1,9 +1,13 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
+import { Toaster } from 'sonner';
 import ProtectedRoute from './components/ProtectedRoute';
 import PortalLayout from './components/PortalLayout';
+import FullPageLoader from './components/FullPageLoader';
+import ToastListener from './components/ToastListener';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import ProfilePage from './pages/ProfilePage';
 import Subscription from './pages/Subscription';
@@ -13,34 +17,45 @@ import Messages from './pages/Messages';
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          {/* Public routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+      <Toaster
+        position="top-right"
+        richColors
+        toastOptions={{
+          duration: 3000,
+          style: { fontFamily: 'DM Sans, sans-serif' },
+        }}
+      />
+      <FullPageLoader />
+      <ToastListener />
 
-          {/* Protected portal */}
-          <Route
-            path="/portal"
-            element={
-              <ProtectedRoute>
-                <PortalLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<Navigate to="dashboard" replace />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="profile" element={<ProfilePage />} />
-            <Route path="messages" element={<Messages />} />
-            <Route path="subscription" element={<Subscription />} />
-            <Route path="payments" element={<Payments />} />
-          </Route>
+      <Routes>
+        {/* Public routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
-          {/* Default redirect */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-      </AuthProvider>
+        {/* Protected portal */}
+        <Route
+          path="/portal"
+          element={
+            <ProtectedRoute>
+              <PortalLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="profile" element={<ProfilePage />} />
+          <Route path="messages" element={<Messages />} />
+          <Route path="subscription" element={<Subscription />} />
+          <Route path="payments" element={<Payments />} />
+        </Route>
+
+        {/* Default redirect */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
     </BrowserRouter>
   );
 }

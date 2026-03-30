@@ -1,6 +1,9 @@
 import { useState, useRef, useId } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useSelector, useDispatch } from 'react-redux';
+import {clearError, clearMessage } from '../store/slices/authSlice';
+import { updateProfile,} from '../store/actions/authAction';
+import { STATUS } from '../constants/apiConstants';
 import { DISCIPLINE_CATEGORIES } from '../data/disciplines';
 import Section from '../components/Section';
 import Field from '../components/Field';
@@ -73,9 +76,31 @@ function ScallopedFrame({ size = 200, borderWidth = 2, children, className = '',
 }
 
 export default function ProfilePage() {
-  const { user, updateUser } = useAuth();
+  const dispatch = useDispatch();
+  const { user, status } = useSelector((state) => state.auth);
   const navigate = useNavigate();
-  const [form, setForm] = useState({ ...user });
+  // Map API user fields into form-friendly flat structure
+  const [form, setForm] = useState(() => {
+    if (!user) return {};
+    // social_links is array like [{ instagram: "url" }, { facebook: "url" }]
+    const socialsMap = {};
+    (user.social_links || []).forEach((obj) => {
+      const key = Object.keys(obj)[0];
+      if (key) socialsMap[key] = obj[key];
+    });
+    return {
+      ...user,
+      avatarPreview: user.profile_picture || null,
+      coverImage: user.background_image || null,
+      photos: user.gallery_photos || [],
+      instagram: socialsMap.instagram || '',
+      facebook: socialsMap.facebook || '',
+      twitter: socialsMap.twitter || '',
+      tiktok: socialsMap.tiktok || '',
+      youtube: socialsMap.youtube || '',
+      linkedin: socialsMap.linkedin || '',
+    };
+  });
   const [saved, setSaved] = useState(false);
   const [discSearch, setDiscSearch] = useState('');
   const [showPreview, setShowPreview] = useState(false);
@@ -112,28 +137,68 @@ export default function ProfilePage() {
     }
   };
 
-  const handleSave = () => {
-    updateUser(form);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+  const handleSave = async () => {
+    const { avatarPreview, coverImage, photos, avatarFile, coverFile, photoFiles,
+      instagram, facebook, twitter, tiktok, youtube, linkedin,
+      // strip out fields that shouldn't go in payload
+      profile_picture, background_image, gallery_photos, social_links,
+      ...rest } = form;
+
+    const fd = new FormData();
+
+    // Append text fields
+    Object.entries(rest).forEach(([key, val]) => {
+      if (val == null) return;
+      if (Array.isArray(val)) {
+        val.forEach((item, i) => fd.append(`${key}[${i}]`, item));
+      } else {
+        fd.append(key, val);
+      }
+    });
+
+    // Files — only append if user picked a new file
+    if (avatarFile) fd.append('profile_picture', avatarFile);
+    if (coverFile) fd.append('background_image', coverFile);
+    (photoFiles || []).forEach((file, i) => {
+      if (file instanceof File) fd.append(`gallery_photos[${i}]`, file);
+    });
+
+    // Social links — each as social_links[index][platform] = url
+    const socials = { instagram, facebook, twitter, tiktok, youtube, linkedin };
+    let idx = 0;
+    Object.entries(socials).forEach(([platform, url]) => {
+      if (url) {
+        fd.append(`social_links[${idx}][${platform}]`, url);
+        idx++;
+      }
+    });
+
+    const result = await dispatch(updateProfile(fd));
+    if (updateProfile.fulfilled.match(result)) {
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    }
   };
 
   const handleAvatar = (e) => {
     const file = e.target.files[0];
     if (!file) return;
     set('avatarPreview', URL.createObjectURL(file));
+    set('avatarFile', file);
   };
 
   const handlePhotos = (e) => {
-    const files = Array.from(e.target.files).slice(0, 4 - (form.photos?.length || 0));
-    const previews = files.map(f => URL.createObjectURL(f));
+    const newFiles = Array.from(e.target.files).slice(0, 4 - (form.photos?.length || 0));
+    const previews = newFiles.map(f => URL.createObjectURL(f));
     set('photos', [...(form.photos || []), ...previews]);
+    set('photoFiles', [...(form.photoFiles || []), ...newFiles]);
   };
 
   const handleCoverImage = (e) => {
     const file = e.target.files[0];
     if (!file) return;
     set('coverImage', URL.createObjectURL(file));
+    set('coverFile', file);
   };
 
   const handleSubmitReview = () => {
