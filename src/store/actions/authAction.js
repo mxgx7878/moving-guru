@@ -13,7 +13,8 @@ export const registerUser = createAsyncThunk(
   'auth/register',
   async (userData, { rejectWithValue }) => {
     try {
-      const { data } = await axiosInstance.post(API_ENDPOINTS.REGISTER, userData);
+      const config = fileConfig(userData);
+      const { data } = await axiosInstance.post(API_ENDPOINTS.REGISTER, userData, config);
       return data;
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));
