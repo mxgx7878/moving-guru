@@ -30,17 +30,9 @@ export default function Dashboard() {
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [emailSaved, setEmailSaved] = useState(false);
   const [passwordSaved, setPasswordSaved] = useState(false);
   const [resetSent, setResetSent] = useState(false);
   const [pwError, setPwError] = useState('');
-
-  const handleEmailSave = () => {
-    if (!email.trim()) return;
-    dispatch(updateProfile({ email }));
-    setEmailSaved(true);
-    setTimeout(() => setEmailSaved(false), 2500);
-  };
 
   const handlePasswordSave = () => {
     setPwError('');
@@ -216,26 +208,16 @@ export default function Dashboard() {
               <Mail size={14} className="text-[#CE4F56]" />
               <h3 className="font-['Unbounded'] text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Email Address</h3>
             </div>
-            <div className="p-5 space-y-3">
+            <div className="p-5">
               <div>
                 <label className="block text-[10px] font-bold text-[#9A9A94] uppercase tracking-wider mb-1.5">Email</label>
                 <input
                   type="email"
                   value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  className="w-full border border-[#E5E0D8] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#CE4F56] bg-[#FDFCF8] text-[#3E3D38]"
+                  disabled
+                  className="w-full border border-[#E5E0D8] rounded-xl px-3.5 py-2.5 text-sm bg-[#EDE8DF]/50 text-[#9A9A94] cursor-not-allowed"
                 />
               </div>
-              <button
-                onClick={handleEmailSave}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all duration-300
-                  ${emailSaved
-                    ? 'bg-emerald-500 text-white'
-                    : 'bg-[#2DA4D6] text-white hover:bg-[#2590bd]'
-                  }`}
-              >
-                {emailSaved ? <><Check size={13} /> Saved!</> : 'Update Email'}
-              </button>
             </div>
           </div>
 
