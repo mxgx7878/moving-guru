@@ -90,15 +90,15 @@ export default function Subscription() {
                 onClick={() => setSelected(plan.id)}
                 className={`relative text-left rounded-2xl border-2 p-6 transition-all duration-300 flex flex-col
                   ${isSelected
-                    ? 'border-[#CE4F56] bg-[#CE4F56] scale-[1.02] shadow-xl'
-                    : 'border-[#E5E0D8] bg-white hover:border-[#CE4F56]/40 hover:shadow-md'
+                    ? 'border-[#2DA4D6] bg-[#2DA4D6] scale-[1.02] shadow-xl'
+                    : 'border-[#E5E0D8] bg-white hover:border-[#2DA4D6]/40 hover:shadow-md'
                   }
-                  ${plan.highlight && !isSelected ? 'ring-2 ring-[#CE4F56]/20' : ''}`}
+                  ${plan.highlight && !isSelected ? 'ring-2 ring-[#2DA4D6]/20' : ''}`}
               >
                 {/* Popular badge */}
                 {plan.highlight && (
                   <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase
-                    ${isSelected ? 'bg-[#f5fca6] text-[#3E3D38]' : 'bg-[#CE4F56] text-white'}`}>
+                    ${isSelected ? 'bg-[#f5fca6] text-[#3E3D38]' : 'bg-[#2DA4D6] text-white'}`}>
                     Most Popular
                   </div>
                 )}
@@ -106,8 +106,8 @@ export default function Subscription() {
                 {/* Icon & label */}
                 <div className="flex flex-col items-center text-center mb-4 mt-1">
                   <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-3
-                    ${isSelected ? 'bg-white/20' : 'bg-[#CE4F56]/8'}`}>
-                    <PlanIcon size={22} className={isSelected ? 'text-white' : 'text-[#CE4F56]'} />
+                    ${isSelected ? 'bg-white/20' : 'bg-[#2DA4D6]/8'}`}>
+                    <PlanIcon size={22} className={isSelected ? 'text-white' : 'text-[#2DA4D6]'} />
                   </div>
                   <span className={`font-['Unbounded'] text-sm font-bold ${isSelected ? 'text-white' : 'text-[#3E3D38]'}`}>
                     {plan.label}
@@ -144,8 +144,8 @@ export default function Subscription() {
                   {plan.features.map(f => (
                     <li key={f} className="flex items-start gap-2">
                       <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5
-                        ${isSelected ? 'bg-white/20' : 'bg-[#CE4F56]/10'}`}>
-                        <Check size={9} className={isSelected ? 'text-white' : 'text-[#CE4F56]'} />
+                        ${isSelected ? 'bg-white/20' : 'bg-[#2DA4D6]/10'}`}>
+                        <Check size={9} className={isSelected ? 'text-white' : 'text-[#2DA4D6]'} />
                       </div>
                       <span className={`text-xs leading-relaxed ${isSelected ? 'text-white/70' : 'text-[#6B6B66]'}`}>{f}</span>
                     </li>
@@ -155,7 +155,7 @@ export default function Subscription() {
                 {/* Selection indicator */}
                 <div className={`mt-5 py-2.5 rounded-xl text-center text-xs font-bold transition-all
                   ${isSelected
-                    ? 'bg-white text-[#CE4F56]'
+                    ? 'bg-white text-[#2DA4D6]'
                     : 'bg-[#EDE8DF] text-[#9A9A94]'
                   }`}>
                   {isSelected ? (isCurrent ? 'Current Plan' : 'Selected') : 'Select'}
@@ -171,7 +171,7 @@ export default function Subscription() {
         <div className="flex justify-center">
           <button
             onClick={handleChange}
-            className="bg-[#CE4F56] text-white font-bold py-3.5 px-10 rounded-xl hover:bg-[#b8454c] transition-all flex items-center gap-2 shadow-lg shadow-[#CE4F56]/25"
+            className="bg-[#2DA4D6] text-white font-bold py-3.5 px-10 rounded-xl hover:bg-[#2590bd] transition-all flex items-center gap-2 shadow-lg shadow-[#2DA4D6]/25"
           >
             Switch to {selectedPlan?.label} — ${selectedPlan?.price}{selectedPlan?.per}
             <ArrowRight size={16} />
@@ -198,7 +198,7 @@ export default function Subscription() {
                 Cancel
               </button>
               <button onClick={confirmChange}
-                className="flex-1 py-2.5 bg-[#CE4F56] text-white rounded-xl text-sm font-bold hover:bg-[#b8454c] transition-colors">
+                className="flex-1 py-2.5 bg-[#2DA4D6] text-white rounded-xl text-sm font-bold hover:bg-[#2590bd] transition-colors">
                 Confirm
               </button>
             </div>

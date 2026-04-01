@@ -63,7 +63,7 @@ export default function ResetPassword() {
           </p>
           <button
             onClick={() => navigate('/login')}
-            className="w-full bg-[#CE4F56] text-white font-bold text-sm py-3.5 rounded-xl hover:bg-[#b8454c] transition-all duration-200 flex items-center justify-center gap-2"
+            className="w-full bg-[#2DA4D6] text-white font-bold text-sm py-3.5 rounded-xl hover:bg-[#2590bd] transition-all duration-200 flex items-center justify-center gap-2"
           >
             Sign In <ArrowRight size={16} />
           </button>
@@ -164,7 +164,7 @@ export default function ResetPassword() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#CE4F56] text-white font-bold text-sm py-3.5 rounded-xl hover:bg-[#b8454c] transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-[#2DA4D6] text-white font-bold text-sm py-3.5 rounded-xl hover:bg-[#2590bd] transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

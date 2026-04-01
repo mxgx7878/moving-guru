@@ -13,6 +13,7 @@ export const API_ENDPOINTS = {
   PROFILE: '/profile',
   FORGOT_PASSWORD: '/password/forgot',
   RESET_PASSWORD: '/password/reset',
+  CHANGE_PASSWORD: '/password/change',
 };
 
 // Async action status

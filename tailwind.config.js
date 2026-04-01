@@ -29,6 +29,10 @@ export default {
         sky: {
           mg: '#2DA4D6',
         },
+        chartreuse: {
+          DEFAULT: '#7FFF00',
+          dark: '#72e600',
+        },
         mint: {
           DEFAULT: '#6BE6A4',
         },

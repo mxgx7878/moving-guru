@@ -142,6 +142,7 @@ export default function ProfilePage() {
       instagram, facebook, twitter, tiktok, youtube, linkedin,
       // strip out fields that shouldn't go in payload
       profile_picture, background_image, gallery_photos, social_links,
+      lookingFor: lookingForVal,
       ...rest } = form;
 
     const fd = new FormData();
@@ -155,6 +156,9 @@ export default function ProfilePage() {
         fd.append(key, val);
       }
     });
+
+    // lookingFor text field
+    if (lookingForVal) fd.append('lookingFor', lookingForVal);
 
     // Files — only append if user picked a new file
     if (avatarFile) fd.append('profile_picture', avatarFile);
@@ -236,7 +240,7 @@ export default function ProfilePage() {
             className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300
               ${saved
                 ? 'bg-emerald-500 text-white'
-                : 'bg-[#CE4F56] text-white hover:bg-[#b8454c]'
+                : 'bg-[#2DA4D6] text-white hover:bg-[#2590bd]'
               }`}
           >
             {saved ? <><Check size={15} /> Saved!</> : <><Save size={15} /> Save Changes</>}
@@ -343,6 +347,14 @@ export default function ProfilePage() {
                     <p className="text-[#6B6B66] text-xs leading-relaxed mt-4 text-left">{form.bio}</p>
                   )}
 
+                  {/* What I'm Looking For */}
+                  {form.lookingFor && (
+                    <div className="mt-4 text-left bg-[#2DA4D6]/8 rounded-xl p-3 border border-[#2DA4D6]/15">
+                      <p className="text-[9px] text-[#2DA4D6] uppercase tracking-wider font-bold mb-1">What I'm Looking For</p>
+                      <p className="text-[#6B6B66] text-xs leading-relaxed">{form.lookingFor}</p>
+                    </div>
+                  )}
+
                   {/* Location info */}
                   <div className="grid grid-cols-2 gap-3 mt-5">
                     {form.location && (
@@ -377,7 +389,7 @@ export default function ProfilePage() {
                       <p className="text-[9px] text-[#9A9A94] uppercase tracking-wider mb-2">Open To</p>
                       <div className="flex flex-wrap justify-center gap-1.5">
                         {(Array.isArray(form.openTo) ? form.openTo : [form.openTo]).map(o => (
-                          <span key={o} className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-[#E89560]/15 text-[#E89560]">{o}</span>
+                          <span key={o} className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-[#2DA4D6]/15 text-[#2DA4D6]">{o}</span>
                         ))}
                       </div>
                     </div>
@@ -389,7 +401,7 @@ export default function ProfilePage() {
                       <p className="text-[9px] text-[#9A9A94] uppercase tracking-wider mb-2">Disciplines</p>
                       <div className="flex flex-wrap justify-center gap-1.5">
                         {(form.disciplines || []).map(d => (
-                          <span key={d} className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-[#CE4F56]/10 text-[#CE4F56]">{d}</span>
+                          <span key={d} className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-[#2DA4D6]/15 text-[#2DA4D6]">{d}</span>
                         ))}
                       </div>
                     </div>
@@ -401,7 +413,7 @@ export default function ProfilePage() {
                       <p className="text-[9px] text-[#9A9A94] uppercase tracking-wider mb-2">Languages</p>
                       <div className="flex flex-wrap justify-center gap-1.5">
                         {(form.languages || []).map(l => (
-                          <span key={l} className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-[#EDE8DF] text-[#6B6B66]">{l}</span>
+                          <span key={l} className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-[#2DA4D6]/15 text-[#2DA4D6]">{l}</span>
                         ))}
                       </div>
                     </div>
@@ -540,8 +552,8 @@ export default function ProfilePage() {
                 <button key={s} type="button" onClick={() => set('profileStatus', s)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold border transition-all
                     ${form.profileStatus === s
-                      ? s === 'active' ? 'bg-[#CE4F56] border-[#CE4F56] text-[#3E3D38]' : 'bg-[#3E3D38] border-[#3E3D38] text-white'
-                      : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#CE4F56]'
+                      ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
+                      : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'
                     }`}>
                   <span className={`w-2 h-2 rounded-full ${s === 'active' ? 'bg-emerald-500' : 'bg-[#9A9A94]'}`} />
                   {s === 'active' ? 'Actively Seeking' : 'Not Seeking'}
@@ -610,10 +622,18 @@ export default function ProfilePage() {
       <Section title="Bio" icon={Edit3}>
         <Field label={`About You (${(form.bio || '').length}/500)`}>
           <textarea value={form.bio || ''} onChange={e => set('bio', e.target.value)}
-            rows={5} maxLength={500}
-            placeholder="Tell studios and instructors about yourself, your style, and what you're looking for..."
+            rows={4} maxLength={500}
+            placeholder="Tell studios and instructors about yourself, your style, and experience..."
             className="w-full border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:border-[#CE4F56] bg-white" />
         </Field>
+        <div className="mt-4 pt-4 border-t border-[#E5E0D8]">
+          <Field label={`What I'm Looking For (${(form.lookingFor || '').length}/2500)`} hint="Are you looking for full-time work, short-term swaps, seasonal placements, or something else?">
+            <textarea value={form.lookingFor || ''} onChange={e => set('lookingFor', e.target.value)}
+              rows={5} maxLength={2500}
+              placeholder="e.g. I'm looking for a 3-month placement in Europe over summer. Open to studio swaps, direct hire, or energy exchange. Flexible on dates..."
+              className="w-full border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:border-[#2DA4D6] bg-white" />
+          </Field>
+        </div>
       </Section>
 
       {/* Location */}
@@ -650,8 +670,8 @@ export default function ProfilePage() {
                 <button key={opt} type="button" onClick={() => toggle('openTo', opt)}
                   className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
                     ${(form.openTo || []).includes(opt)
-                      ? 'bg-[#3E3D38] border-[#3E3D38] text-white'
-                      : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#CE4F56]'
+                      ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
+                      : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'
                     }`}>
                   {opt}
                 </button>
@@ -668,8 +688,8 @@ export default function ProfilePage() {
             <button key={lang} type="button" onClick={() => toggle('languages', lang)}
               className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
                 ${(form.languages || []).includes(lang)
-                  ? 'bg-[#CE4F56] border-[#CE4F56] text-[#3E3D38]'
-                  : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#CE4F56]'
+                  ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
+                  : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'
                 }`}>
               {lang}
             </button>
@@ -681,9 +701,9 @@ export default function ProfilePage() {
       <Section title="Disciplines" icon={Calendar}>
         {/* Selected */}
         {(form.disciplines || []).length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-4 p-3 bg-[#CE4F56]/15 rounded-xl border border-[#CE4F56]/30 justify-center">
+          <div className="flex flex-wrap gap-2 mb-4 p-3 bg-[#2DA4D6]/10 rounded-xl border border-[#2DA4D6]/20 justify-center">
             {(form.disciplines || []).map(d => (
-              <span key={d} className="flex items-center gap-1 bg-[#CE4F56] text-[#3E3D38] text-xs font-medium px-2.5 py-1 rounded-full">
+              <span key={d} className="flex items-center gap-1 bg-[#2DA4D6] text-white text-xs font-medium px-2.5 py-1 rounded-full">
                 {d}
                 <button type="button" onClick={() => toggle('disciplines', d)}><X size={9} /></button>
               </span>
@@ -721,8 +741,8 @@ export default function ProfilePage() {
                     <button key={d} type="button" onClick={() => toggle('disciplines', d)}
                       className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
                         ${(form.disciplines || []).includes(d)
-                          ? 'bg-[#3E3D38] border-[#3E3D38] text-white'
-                          : 'border-[#E5E0D8] text-[#3E3D38] hover:border-[#CE4F56] hover:bg-[#EDE8DF]'
+                          ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
+                          : 'border-[#E5E0D8] text-[#3E3D38] hover:border-[#2DA4D6] hover:bg-[#EDE8DF]'
                         }`}>
                       {d}
                     </button>
@@ -768,7 +788,7 @@ export default function ProfilePage() {
         <button
           onClick={handleSave}
           className={`flex items-center gap-2 px-8 py-3 rounded-xl font-bold text-sm transition-all duration-300
-            ${saved ? 'bg-emerald-500 text-white' : 'bg-[#CE4F56] text-[#3E3D38] hover:bg-[#c4e530]'}`}
+            ${saved ? 'bg-emerald-500 text-white' : 'bg-[#2DA4D6] text-white hover:bg-[#2590bd]'}`}
         >
           {saved ? <><Check size={15} /> Changes Saved!</> : <><Save size={15} /> Save All Changes</>}
         </button>
