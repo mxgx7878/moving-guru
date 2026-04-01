@@ -63,7 +63,7 @@ export default function ResetPassword() {
           </p>
           <button
             onClick={() => navigate('/login')}
-            className="w-full bg-[#7FFF00] text-[#3E3D38] font-bold text-sm py-3.5 rounded-xl hover:bg-[#72e600] transition-all duration-200 flex items-center justify-center gap-2"
+            className="w-full bg-[#2DA4D6] text-white font-bold text-sm py-3.5 rounded-xl hover:bg-[#2590bd] transition-all duration-200 flex items-center justify-center gap-2"
           >
             Sign In <ArrowRight size={16} />
           </button>

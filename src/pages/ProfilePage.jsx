@@ -240,7 +240,7 @@ export default function ProfilePage() {
             className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300
               ${saved
                 ? 'bg-emerald-500 text-white'
-                : 'bg-[#CE4F56] text-white hover:bg-[#b8454c]'
+                : 'bg-[#2DA4D6] text-white hover:bg-[#2590bd]'
               }`}
           >
             {saved ? <><Check size={15} /> Saved!</> : <><Save size={15} /> Save Changes</>}
@@ -788,7 +788,7 @@ export default function ProfilePage() {
         <button
           onClick={handleSave}
           className={`flex items-center gap-2 px-8 py-3 rounded-xl font-bold text-sm transition-all duration-300
-            ${saved ? 'bg-emerald-500 text-white' : 'bg-[#7FFF00] text-[#3E3D38] hover:bg-[#72e600]'}`}
+            ${saved ? 'bg-emerald-500 text-white' : 'bg-[#2DA4D6] text-white hover:bg-[#2590bd]'}`}
         >
           {saved ? <><Check size={15} /> Changes Saved!</> : <><Save size={15} /> Save All Changes</>}
         </button>

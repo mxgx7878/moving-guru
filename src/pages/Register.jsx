@@ -445,7 +445,7 @@ export default function Register() {
                     Gallery Photos <span className="text-[#C4BCB4] normal-case">(up to 4)</span>
                   </label>
                   <div
-                    className="border-2 border-dashed border-[#E5E0D8] rounded-xl p-6 text-center cursor-pointer hover:border-[#7FFF00] transition-colors"
+                    className="border-2 border-dashed border-[#E5E0D8] rounded-xl p-6 text-center cursor-pointer hover:border-[#2DA4D6] transition-colors"
                     onClick={() => photosRef.current?.click()}
                   >
                     <Upload size={24} className="text-[#9A9A94] mx-auto mb-2" />
@@ -539,10 +539,10 @@ export default function Register() {
                     type="button"
                     onClick={handleSubmit}
                     disabled={loading}
-                    className="flex-1 bg-[#7FFF00] text-[#3E3D38] font-bold py-4 rounded-xl hover:bg-[#72e600] transition-all flex items-center justify-center gap-2 font-['Unbounded'] text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 bg-[#2DA4D6] text-white font-bold py-4 rounded-xl hover:bg-[#2590bd] transition-all flex items-center justify-center gap-2 font-['Unbounded'] text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading ? (
-                      <div className="w-5 h-5 border-2 border-[#3E3D38]/30 border-t-[#3E3D38] rounded-full animate-spin" />
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : (
                       <>Complete Registration <ArrowRight size={16} /></>
                     )}
