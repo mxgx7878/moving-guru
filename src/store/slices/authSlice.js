@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { STATUS } from '../../constants/apiConstants';
-import { forgotPassword, getMe, loginUser, logoutUser, refreshToken, registerUser, resetPassword, updateProfile } from '../actions/authAction';
+import { changePassword, forgotPassword, getMe, loginUser, logoutUser, refreshToken, registerUser, resetPassword, updateProfile } from '../actions/authAction';
 
 // ─── Slice ────────────────────────────────────────────────────────
 
@@ -140,6 +140,20 @@ const authSlice = createSlice({
         state.message = payload.message;
       })
       .addCase(resetPassword.rejected, (state, { payload }) => {
+        state.status = STATUS.FAILED;
+        state.error = payload;
+      })
+
+      // ── Change Password ──
+      .addCase(changePassword.pending, (state) => {
+        state.status = STATUS.LOADING;
+        state.error = null;
+      })
+      .addCase(changePassword.fulfilled, (state, { payload }) => {
+        state.status = STATUS.SUCCEEDED;
+        state.message = payload.message;
+      })
+      .addCase(changePassword.rejected, (state, { payload }) => {
         state.status = STATUS.FAILED;
         state.error = payload;
       });

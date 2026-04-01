@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { updateProfile, forgotPassword } from '../store/actions/authAction';
+import { changePassword, forgotPassword } from '../store/actions/authAction';
 import { DUMMY_USER } from '../data/dummyData';
 import BarChart from '../components/BarChart';
 import StatCard from '../components/StatCard';
@@ -23,31 +23,61 @@ export default function Dashboard() {
   const growth = lastMonth > 0 ? Math.round(((thisMonth - lastMonth) / lastMonth) * 100) : 0;
 
   // Account settings state
-  const [email, setEmail] = useState(user?.email || '');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [passwordSaved, setPasswordSaved] = useState(false);
-  const [resetSent, setResetSent] = useState(false);
+
+  // Change password states
+  const [pwLoading, setPwLoading] = useState(false);
+  const [pwSuccess, setPwSuccess] = useState(false);
   const [pwError, setPwError] = useState('');
 
-  const handlePasswordSave = () => {
+  // Reset link states
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetSuccess, setResetSuccess] = useState(false);
+  const [resetError, setResetError] = useState('');
+
+  const handlePasswordSave = async () => {
     setPwError('');
+    setPwSuccess(false);
     if (!currentPassword) { setPwError('Please enter your current password'); return; }
     if (newPassword.length < 6) { setPwError('New password must be at least 6 characters'); return; }
     if (newPassword !== confirmPassword) { setPwError('Passwords do not match'); return; }
-    setCurrentPassword(''); setNewPassword(''); setConfirmPassword('');
-    setPasswordSaved(true);
-    setTimeout(() => setPasswordSaved(false), 2500);
+
+    setPwLoading(true);
+    const result = await dispatch(changePassword({
+      current_password: currentPassword,
+      password: newPassword,
+      password_confirmation: confirmPassword,
+    }));
+    setPwLoading(false);
+
+    if (changePassword.fulfilled.match(result)) {
+      setPwSuccess(true);
+      setCurrentPassword(''); setNewPassword(''); setConfirmPassword('');
+      setTimeout(() => setPwSuccess(false), 3000);
+    } else {
+      setPwError(result.payload || 'Failed to update password. Please try again.');
+    }
   };
 
-  const handlePasswordReset = () => {
-    dispatch(forgotPassword({ email: user?.email }));
-    setResetSent(true);
-    setTimeout(() => setResetSent(false), 3000);
+  const handlePasswordReset = async () => {
+    setResetError('');
+    setResetSuccess(false);
+    setResetLoading(true);
+
+    const result = await dispatch(forgotPassword({ email: user?.email }));
+    setResetLoading(false);
+
+    if (forgotPassword.fulfilled.match(result)) {
+      setResetSuccess(true);
+      setTimeout(() => setResetSuccess(false), 5000);
+    } else {
+      setResetError(result.payload || 'Failed to send reset link. Please try again.');
+    }
   };
 
   return (
@@ -231,17 +261,31 @@ export default function Dashboard() {
               <p className="text-sm text-[#6B6B66] mb-3">
                 Forgot your password? We'll send a reset link to your email.
               </p>
-              {resetSent ? (
+
+              {resetSuccess && (
                 <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5 flex items-center gap-2">
                   <Check size={13} className="text-emerald-600" />
                   <p className="text-emerald-700 text-xs font-medium">Reset link sent to {user?.email}</p>
                 </div>
-              ) : (
+              )}
+
+              {resetError && (
+                <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-2.5 mb-3">
+                  <p className="text-red-600 text-xs">{resetError}</p>
+                </div>
+              )}
+
+              {!resetSuccess && (
                 <button
                   onClick={handlePasswordReset}
-                  className="px-4 py-2 rounded-xl font-bold text-xs border border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6] hover:text-[#2DA4D6] transition-all"
+                  disabled={resetLoading}
+                  className="px-4 py-2 rounded-xl font-bold text-xs border border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6] hover:text-[#2DA4D6] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
-                  Send Password Reset Link
+                  {resetLoading ? (
+                    <><div className="w-3 h-3 border-2 border-[#9A9A94]/30 border-t-[#9A9A94] rounded-full animate-spin" /> Sending...</>
+                  ) : (
+                    'Send Password Reset Link'
+                  )}
                 </button>
               )}
             </div>
@@ -261,6 +305,13 @@ export default function Dashboard() {
               </div>
             )}
 
+            {pwSuccess && (
+              <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5 flex items-center gap-2">
+                <Check size={13} className="text-emerald-600" />
+                <p className="text-emerald-700 text-xs font-medium">Password updated successfully!</p>
+              </div>
+            )}
+
             <div className="grid sm:grid-cols-3 gap-3">
               <div>
                 <label className="block text-[10px] font-bold text-[#9A9A94] uppercase tracking-wider mb-1.5">Current Password</label>
@@ -270,7 +321,8 @@ export default function Dashboard() {
                     value={currentPassword}
                     onChange={e => setCurrentPassword(e.target.value)}
                     placeholder="Current"
-                    className="w-full border border-[#E5E0D8] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#CE4F56] bg-[#FDFCF8] text-[#3E3D38] pr-9"
+                    disabled={pwLoading}
+                    className="w-full border border-[#E5E0D8] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#2DA4D6] bg-[#FDFCF8] text-[#3E3D38] pr-9 disabled:opacity-50"
                   />
                   <button type="button" onClick={() => setShowCurrent(!showCurrent)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A9A94] hover:text-[#6B6B66]">
@@ -285,8 +337,9 @@ export default function Dashboard() {
                     type={showNew ? 'text' : 'password'}
                     value={newPassword}
                     onChange={e => setNewPassword(e.target.value)}
-                    placeholder="New"
-                    className="w-full border border-[#E5E0D8] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#CE4F56] bg-[#FDFCF8] text-[#3E3D38] pr-9"
+                    placeholder="Min. 6 characters"
+                    disabled={pwLoading}
+                    className="w-full border border-[#E5E0D8] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#2DA4D6] bg-[#FDFCF8] text-[#3E3D38] pr-9 disabled:opacity-50"
                   />
                   <button type="button" onClick={() => setShowNew(!showNew)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A9A94] hover:text-[#6B6B66]">
@@ -301,8 +354,9 @@ export default function Dashboard() {
                     type={showConfirm ? 'text' : 'password'}
                     value={confirmPassword}
                     onChange={e => setConfirmPassword(e.target.value)}
-                    placeholder="Confirm"
-                    className="w-full border border-[#E5E0D8] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#CE4F56] bg-[#FDFCF8] text-[#3E3D38] pr-9"
+                    placeholder="Repeat new password"
+                    disabled={pwLoading}
+                    className="w-full border border-[#E5E0D8] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#2DA4D6] bg-[#FDFCF8] text-[#3E3D38] pr-9 disabled:opacity-50"
                   />
                   <button type="button" onClick={() => setShowConfirm(!showConfirm)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A9A94] hover:text-[#6B6B66]">
@@ -314,13 +368,20 @@ export default function Dashboard() {
 
             <button
               onClick={handlePasswordSave}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all duration-300
-                ${passwordSaved
+              disabled={pwLoading}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed
+                ${pwSuccess
                   ? 'bg-emerald-500 text-white'
                   : 'bg-[#2DA4D6] text-white hover:bg-[#2590bd]'
                 }`}
             >
-              {passwordSaved ? <><Check size={13} /> Password Updated!</> : 'Update Password'}
+              {pwLoading ? (
+                <><div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Updating...</>
+              ) : pwSuccess ? (
+                <><Check size={13} /> Password Updated!</>
+              ) : (
+                'Update Password'
+              )}
             </button>
           </div>
         </div>

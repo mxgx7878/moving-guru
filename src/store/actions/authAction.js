@@ -106,6 +106,18 @@ export const forgotPassword = createAsyncThunk(
   },
 );
 
+export const changePassword = createAsyncThunk(
+  'auth/changePassword',
+  async (payload, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.post(API_ENDPOINTS.CHANGE_PASSWORD, payload);
+      return data;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+);
+
 export const resetPassword = createAsyncThunk(
   'auth/resetPassword',
   async (payload, { rejectWithValue }) => {
