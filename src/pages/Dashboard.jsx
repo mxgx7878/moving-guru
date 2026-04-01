@@ -149,7 +149,7 @@ export default function Dashboard() {
                 <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider">Disciplines</p>
                 <div className="flex flex-wrap gap-1 mt-0.5">
                   {(profileData.disciplines || []).slice(0, 3).map(d => (
-                    <span key={d} className="text-[10px] bg-[#f5fca6]/50 text-[#3E3D38] px-2 py-0.5 rounded-full">{d}</span>
+                    <span key={d} className="text-[10px] bg-[#2DA4D6]/15 text-[#2DA4D6] px-2 py-0.5 rounded-full">{d}</span>
                   ))}
                   {(profileData.disciplines || []).length > 3 && (
                     <span className="text-[10px] bg-[#EDE8DF] text-[#9A9A94] px-2 py-0.5 rounded-full">
@@ -231,7 +231,7 @@ export default function Dashboard() {
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all duration-300
                   ${emailSaved
                     ? 'bg-emerald-500 text-white'
-                    : 'bg-[#CE4F56] text-white hover:bg-[#b8454c]'
+                    : 'bg-[#2DA4D6] text-white hover:bg-[#2590bd]'
                   }`}
               >
                 {emailSaved ? <><Check size={13} /> Saved!</> : 'Update Email'}
@@ -257,7 +257,7 @@ export default function Dashboard() {
               ) : (
                 <button
                   onClick={handlePasswordReset}
-                  className="px-4 py-2 rounded-xl font-bold text-xs border border-[#E5E0D8] text-[#6B6B66] hover:border-[#CE4F56] hover:text-[#CE4F56] transition-all"
+                  className="px-4 py-2 rounded-xl font-bold text-xs border border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6] hover:text-[#2DA4D6] transition-all"
                 >
                   Send Password Reset Link
                 </button>
@@ -335,7 +335,7 @@ export default function Dashboard() {
               className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all duration-300
                 ${passwordSaved
                   ? 'bg-emerald-500 text-white'
-                  : 'bg-[#CE4F56] text-white hover:bg-[#b8454c]'
+                  : 'bg-[#2DA4D6] text-white hover:bg-[#2590bd]'
                 }`}
             >
               {passwordSaved ? <><Check size={13} /> Password Updated!</> : 'Update Password'}

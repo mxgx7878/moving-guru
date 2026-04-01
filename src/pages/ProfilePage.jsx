@@ -389,7 +389,7 @@ export default function ProfilePage() {
                       <p className="text-[9px] text-[#9A9A94] uppercase tracking-wider mb-2">Open To</p>
                       <div className="flex flex-wrap justify-center gap-1.5">
                         {(Array.isArray(form.openTo) ? form.openTo : [form.openTo]).map(o => (
-                          <span key={o} className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-[#E89560]/15 text-[#E89560]">{o}</span>
+                          <span key={o} className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-[#2DA4D6]/15 text-[#2DA4D6]">{o}</span>
                         ))}
                       </div>
                     </div>
@@ -401,7 +401,7 @@ export default function ProfilePage() {
                       <p className="text-[9px] text-[#9A9A94] uppercase tracking-wider mb-2">Disciplines</p>
                       <div className="flex flex-wrap justify-center gap-1.5">
                         {(form.disciplines || []).map(d => (
-                          <span key={d} className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-[#3E3D38] text-[#7FFF00]">{d}</span>
+                          <span key={d} className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-[#2DA4D6]/15 text-[#2DA4D6]">{d}</span>
                         ))}
                       </div>
                     </div>
@@ -552,8 +552,8 @@ export default function ProfilePage() {
                 <button key={s} type="button" onClick={() => set('profileStatus', s)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold border transition-all
                     ${form.profileStatus === s
-                      ? s === 'active' ? 'bg-[#CE4F56] border-[#CE4F56] text-[#3E3D38]' : 'bg-[#3E3D38] border-[#3E3D38] text-white'
-                      : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#CE4F56]'
+                      ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
+                      : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'
                     }`}>
                   <span className={`w-2 h-2 rounded-full ${s === 'active' ? 'bg-emerald-500' : 'bg-[#9A9A94]'}`} />
                   {s === 'active' ? 'Actively Seeking' : 'Not Seeking'}
@@ -670,8 +670,8 @@ export default function ProfilePage() {
                 <button key={opt} type="button" onClick={() => toggle('openTo', opt)}
                   className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
                     ${(form.openTo || []).includes(opt)
-                      ? 'bg-[#3E3D38] border-[#3E3D38] text-white'
-                      : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#CE4F56]'
+                      ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
+                      : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'
                     }`}>
                   {opt}
                 </button>
@@ -701,9 +701,9 @@ export default function ProfilePage() {
       <Section title="Disciplines" icon={Calendar}>
         {/* Selected */}
         {(form.disciplines || []).length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-4 p-3 bg-[#7FFF00]/15 rounded-xl border border-[#7FFF00]/30 justify-center">
+          <div className="flex flex-wrap gap-2 mb-4 p-3 bg-[#2DA4D6]/10 rounded-xl border border-[#2DA4D6]/20 justify-center">
             {(form.disciplines || []).map(d => (
-              <span key={d} className="flex items-center gap-1 bg-[#3E3D38] text-[#7FFF00] text-xs font-medium px-2.5 py-1 rounded-full">
+              <span key={d} className="flex items-center gap-1 bg-[#2DA4D6] text-white text-xs font-medium px-2.5 py-1 rounded-full">
                 {d}
                 <button type="button" onClick={() => toggle('disciplines', d)}><X size={9} /></button>
               </span>
@@ -741,8 +741,8 @@ export default function ProfilePage() {
                     <button key={d} type="button" onClick={() => toggle('disciplines', d)}
                       className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
                         ${(form.disciplines || []).includes(d)
-                          ? 'bg-[#3E3D38] border-[#3E3D38] text-white'
-                          : 'border-[#E5E0D8] text-[#3E3D38] hover:border-[#CE4F56] hover:bg-[#EDE8DF]'
+                          ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
+                          : 'border-[#E5E0D8] text-[#3E3D38] hover:border-[#2DA4D6] hover:bg-[#EDE8DF]'
                         }`}>
                       {d}
                     </button>

@@ -131,7 +131,7 @@ export default function Messages() {
                   placeholder="Type a message..."
                   className="flex-1 bg-transparent border-none outline-none text-sm text-[#3E3D38] placeholder:text-[#9A9A94]"
                 />
-                <button className="w-8 h-8 bg-[#CE4F56] rounded-lg flex items-center justify-center hover:bg-[#b8454c] transition-colors">
+                <button className="w-8 h-8 bg-[#2DA4D6] rounded-lg flex items-center justify-center hover:bg-[#2590bd] transition-colors">
                   <Send size={14} className="text-white" />
                 </button>
               </div>

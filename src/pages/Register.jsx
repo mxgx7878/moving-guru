@@ -312,8 +312,8 @@ export default function Register() {
                         onClick={() => toggleItem('openTo', opt)}
                         className={`px-4 py-2 rounded-full text-xs font-medium border transition-all
                           ${form.openTo.includes(opt)
-                            ? 'bg-[#3E3D38] text-white border-[#3E3D38]'
-                            : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#CE4F56]'
+                            ? 'bg-[#2DA4D6] text-white border-[#2DA4D6]'
+                            : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'
                           }`}
                       >
                         {opt}
@@ -332,8 +332,8 @@ export default function Register() {
                         onClick={() => update('profileStatus', s)}
                         className={`flex-1 py-2.5 rounded-xl text-xs font-semibold border capitalize transition-all
                           ${form.profileStatus === s
-                            ? 'bg-[#CE4F56] border-[#CE4F56] text-white'
-                            : 'border-[#E5E0D8] text-[#9A9A94] hover:border-[#CE4F56]'
+                            ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
+                            : 'border-[#E5E0D8] text-[#9A9A94] hover:border-[#2DA4D6]'
                           }`}
                       >
                         {s === 'active' ? 'Actively Seeking' : 'Not Seeking'}
@@ -354,9 +354,9 @@ export default function Register() {
 
                 {/* Selected pills */}
                 {form.disciplines.length > 0 && (
-                  <div className="flex flex-wrap gap-2 p-3 bg-[#7FFF00]/15 rounded-xl border border-[#7FFF00]/30">
+                  <div className="flex flex-wrap gap-2 p-3 bg-[#2DA4D6]/10 rounded-xl border border-[#2DA4D6]/20">
                     {form.disciplines.map(d => (
-                      <span key={d} className="flex items-center gap-1 bg-[#3E3D38] text-[#7FFF00] text-xs font-medium px-2.5 py-1 rounded-full">
+                      <span key={d} className="flex items-center gap-1 bg-[#2DA4D6] text-white text-xs font-medium px-2.5 py-1 rounded-full">
                         {d}
                         <button onClick={() => toggleItem('disciplines', d)}><X size={10} /></button>
                       </span>
@@ -389,8 +389,8 @@ export default function Register() {
                             onClick={() => toggleItem('disciplines', d)}
                             className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
                               ${form.disciplines.includes(d)
-                                ? 'bg-[#3E3D38] text-white border-[#3E3D38]'
-                                : 'border-[#E5E0D8] text-[#3E3D38] hover:border-[#CE4F56] hover:bg-[#FDFCF8]'
+                                ? 'bg-[#2DA4D6] text-white border-[#2DA4D6]'
+                                : 'border-[#E5E0D8] text-[#3E3D38] hover:border-[#2DA4D6] hover:bg-[#FDFCF8]'
                               }`}
                           >
                             {d}
@@ -486,8 +486,8 @@ export default function Register() {
                       onClick={() => update('plan', plan.id)}
                       className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all text-left
                         ${form.plan === plan.id
-                          ? 'border-[#CE4F56] bg-[#CE4F56] text-white'
-                          : 'border-[#E5E0D8] hover:border-[#CE4F56]/40 text-[#3E3D38]'
+                          ? 'border-[#2DA4D6] bg-[#2DA4D6] text-white'
+                          : 'border-[#E5E0D8] hover:border-[#2DA4D6]/40 text-[#3E3D38]'
                         }`}
                     >
                       <div className="flex items-center gap-3">
@@ -503,7 +503,7 @@ export default function Register() {
                       <div className="flex items-center gap-2">
                         {plan.badge && (
                           <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full
-                            ${form.plan === plan.id ? 'bg-[#f5fca6] text-[#3E3D38]' : 'bg-[#CE4F56]/10 text-[#CE4F56]'}`}>
+                            ${form.plan === plan.id ? 'bg-white/25 text-white' : 'bg-[#2DA4D6]/10 text-[#2DA4D6]'}`}>
                             {plan.badge}
                           </span>
                         )}
