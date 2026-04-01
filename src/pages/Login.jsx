@@ -150,10 +150,10 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#CE4F56] text-white font-bold text-sm py-3.5 rounded-xl hover:bg-[#b8454c] transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+              className="w-full bg-[#7FFF00] text-[#3E3D38] font-bold text-sm py-3.5 rounded-xl hover:bg-[#72e600] transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
               {loading ? (
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-[#3E3D38]/30 border-t-[#3E3D38] rounded-full animate-spin" />
               ) : (
                 <>Sign In <ArrowRight size={16} /></>
               )}

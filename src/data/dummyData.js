@@ -1,7 +1,7 @@
 export const DUMMY_USER = {
   id: 'usr_001',
   name: 'Bambi Romanowski',
-  email: 'bambi@movingguru.co',
+  email: 'admin@movingguru.co',
   password: 'demo123',
   age: 30,
   pronouns: 'She/Her',

@@ -32,7 +32,7 @@ export default function Register() {
     location: '', countryFrom: '', travelingTo: '', availability: '',
     disciplines: [], languages: [],
     openTo: [], profileStatus: 'active',
-    bio: '', photos: [], avatar: null, avatarPreview: null,
+    bio: '', lookingFor: '', photos: [], avatar: null, avatarPreview: null,
     plan: 'monthly',
   });
   const [errors, setErrors] = useState({});
@@ -93,6 +93,11 @@ export default function Register() {
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    if (file.size > 4 * 1024 * 1024) {
+      setErrors(prev => ({ ...prev, avatar: 'Photo must be under 4MB' }));
+      return;
+    }
+    setErrors(prev => ({ ...prev, avatar: null }));
     const url = URL.createObjectURL(file);
     update('avatarPreview', url);
     update('avatar', file);
@@ -119,6 +124,7 @@ export default function Register() {
     fd.append('availability', form.availability);
     fd.append('profileStatus', form.profileStatus);
     fd.append('bio', form.bio);
+    fd.append('lookingFor', form.lookingFor);
     fd.append('plan', form.plan);
 
     // Arrays
@@ -239,7 +245,7 @@ export default function Register() {
                       >
                         Upload photo
                       </button>
-                      <p className="text-xs text-[#9A9A94] mt-1">JPG, PNG up to 5MB</p>
+                      <p className="text-xs text-[#9A9A94] mt-1">JPG, PNG up to 4MB</p>
                     </div>
                     <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
                   </div>
@@ -272,8 +278,8 @@ export default function Register() {
                         onClick={() => toggleItem('languages', lang)}
                         className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
                           ${form.languages.includes(lang)
-                            ? 'bg-[#CE4F56] border-[#CE4F56] text-white'
-                            : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#CE4F56]'
+                            ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
+                            : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'
                           }`}
                       >
                         {lang}
@@ -348,9 +354,9 @@ export default function Register() {
 
                 {/* Selected pills */}
                 {form.disciplines.length > 0 && (
-                  <div className="flex flex-wrap gap-2 p-3 bg-[#CE4F56]/10 rounded-xl border border-[#CE4F56]/20">
+                  <div className="flex flex-wrap gap-2 p-3 bg-[#7FFF00]/15 rounded-xl border border-[#7FFF00]/30">
                     {form.disciplines.map(d => (
-                      <span key={d} className="flex items-center gap-1 bg-[#CE4F56] text-white text-xs font-medium px-2.5 py-1 rounded-full">
+                      <span key={d} className="flex items-center gap-1 bg-[#3E3D38] text-[#7FFF00] text-xs font-medium px-2.5 py-1 rounded-full">
                         {d}
                         <button onClick={() => toggleItem('disciplines', d)}><X size={10} /></button>
                       </span>
@@ -412,10 +418,25 @@ export default function Register() {
                   <textarea
                     value={form.bio}
                     onChange={e => update('bio', e.target.value)}
-                    rows={5}
+                    rows={4}
                     maxLength={500}
-                    placeholder="Tell the community about yourself, your style, experience and what you're looking for..."
+                    placeholder="Tell the community about yourself, your style, and experience..."
                     className="w-full border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-[#CE4F56] resize-none bg-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">
+                    What I'm Looking For <span className="text-[#C4BCB4] normal-case">({(form.lookingFor || '').length}/2500)</span>
+                  </label>
+                  <p className="text-[#C4BCB4] text-xs mb-2">Are you looking for full-time work, short-term swaps, seasonal placements, or something else? Tell studios what you need.</p>
+                  <textarea
+                    value={form.lookingFor}
+                    onChange={e => update('lookingFor', e.target.value)}
+                    rows={5}
+                    maxLength={2500}
+                    placeholder="e.g. I'm looking for a 3-month placement in Europe over summer. Open to studio swaps, direct hire, or energy exchange. Flexible on dates..."
+                    className="w-full border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-[#2DA4D6] resize-none bg-white"
                   />
                 </div>
 
@@ -424,12 +445,12 @@ export default function Register() {
                     Gallery Photos <span className="text-[#C4BCB4] normal-case">(up to 4)</span>
                   </label>
                   <div
-                    className="border-2 border-dashed border-[#E5E0D8] rounded-xl p-6 text-center cursor-pointer hover:border-[#CE4F56] transition-colors"
+                    className="border-2 border-dashed border-[#E5E0D8] rounded-xl p-6 text-center cursor-pointer hover:border-[#7FFF00] transition-colors"
                     onClick={() => photosRef.current?.click()}
                   >
                     <Upload size={24} className="text-[#9A9A94] mx-auto mb-2" />
                     <p className="text-sm text-[#6B6B66]">Click to upload photos</p>
-                    <p className="text-xs text-[#9A9A94] mt-1">JPG, PNG up to 5MB each</p>
+                    <p className="text-xs text-[#9A9A94] mt-1">JPG, PNG up to 4MB each</p>
                     <input ref={photosRef} type="file" accept="image/*" multiple className="hidden" onChange={handlePhotosChange} />
                   </div>
                   {form.photos.length > 0 && (
@@ -506,18 +527,27 @@ export default function Register() {
                   </div>
                 )}
 
-                <button
-                  type="button"
-                  onClick={handleSubmit}
-                  disabled={loading}
-                  className="w-full bg-[#CE4F56] text-white font-bold py-4 rounded-xl hover:bg-[#b8454c] transition-all flex items-center justify-center gap-2 font-['Unbounded'] text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {loading ? (
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  ) : (
-                    <>Complete Registration <ArrowRight size={16} /></>
-                  )}
-                </button>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={prev}
+                    className="flex items-center gap-2 px-5 py-3 border border-[#E5E0D8] rounded-xl text-sm font-medium text-[#6B6B66] hover:border-[#2DA4D6] hover:text-[#3E3D38] transition-all"
+                  >
+                    <ArrowLeft size={16} /> Back
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSubmit}
+                    disabled={loading}
+                    className="flex-1 bg-[#7FFF00] text-[#3E3D38] font-bold py-4 rounded-xl hover:bg-[#72e600] transition-all flex items-center justify-center gap-2 font-['Unbounded'] text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loading ? (
+                      <div className="w-5 h-5 border-2 border-[#3E3D38]/30 border-t-[#3E3D38] rounded-full animate-spin" />
+                    ) : (
+                      <>Complete Registration <ArrowRight size={16} /></>
+                    )}
+                  </button>
+                </div>
               </div>
             )}
 
@@ -528,7 +558,7 @@ export default function Register() {
                   <button
                     type="button"
                     onClick={prev}
-                    className="flex items-center gap-2 px-5 py-3 border border-[#E5E0D8] rounded-xl text-sm font-medium text-[#6B6B66] hover:border-[#CE4F56] hover:text-[#3E3D38] transition-all"
+                    className="flex items-center gap-2 px-5 py-3 border border-[#E5E0D8] rounded-xl text-sm font-medium text-[#6B6B66] hover:border-[#2DA4D6] hover:text-[#3E3D38] transition-all"
                   >
                     <ArrowLeft size={16} /> Back
                   </button>
@@ -536,7 +566,7 @@ export default function Register() {
                 <button
                   type="button"
                   onClick={next}
-                  className="flex-1 flex items-center justify-center gap-2 bg-[#CE4F56] text-white font-bold text-sm py-3 rounded-xl hover:bg-[#b8454c] transition-all"
+                  className="flex-1 flex items-center justify-center gap-2 bg-[#2DA4D6] text-white font-bold text-sm py-3 rounded-xl hover:bg-[#2590bd] transition-all"
                 >
                   Continue <ArrowRight size={16} />
                 </button>

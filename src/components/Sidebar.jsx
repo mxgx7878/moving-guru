@@ -80,14 +80,14 @@ export default function Sidebar({ mobileOpen, onClose }) {
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group
                 ${isActive
-                  ? 'bg-[#CE4F56] text-white'
+                  ? 'bg-[#3E3D38] text-[#7FFF00]'
                   : 'text-[#6B6B66] hover:bg-[#EDE8DF] hover:text-[#3E3D38]'
                 }`
               }
             >
               {({ isActive }) => (
                 <>
-                  <Icon size={16} className={isActive ? 'text-white' : 'text-[#9A9A94] group-hover:text-[#6B6B66]'} />
+                  <Icon size={16} className={isActive ? 'text-[#7FFF00]' : 'text-[#9A9A94] group-hover:text-[#6B6B66]'} />
                   <span className="flex-1">{label}</span>
                   {isActive && <ChevronRight size={12} />}
                 </>
