@@ -243,7 +243,7 @@ export default function Dashboard() {
                 <label className="block text-[10px] font-bold text-[#9A9A94] uppercase tracking-wider mb-1.5">Email</label>
                 <input
                   type="email"
-                  value={email}
+                  value={user?.email || ''}
                   disabled
                   className="w-full border border-[#E5E0D8] rounded-xl px-3.5 py-2.5 text-sm bg-[#EDE8DF]/50 text-[#9A9A94] cursor-not-allowed"
                 />
