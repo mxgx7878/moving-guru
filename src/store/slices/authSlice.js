@@ -2,6 +2,14 @@ import { createSlice } from '@reduxjs/toolkit';
 import { STATUS } from '../../constants/apiConstants';
 import { changePassword, forgotPassword, getMe, loginUser, logoutUser, refreshToken, registerUser, resetPassword, updateProfile } from '../actions/authAction';
 
+// Helper — flatten nested `detail` into the user object so the rest
+// of the app can access profile fields directly (e.g. user.bio).
+const flattenUser = (raw) => {
+  if (!raw) return null;
+  const { detail, ...rest } = raw;
+  return detail ? { ...rest, ...detail } : rest;
+};
+
 // ─── Slice ────────────────────────────────────────────────────────
 
 const initialState = {
@@ -39,7 +47,7 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
-        state.user = payload.data?.user || null;
+        state.user = flattenUser(payload.data?.user) || null;
         state.token = payload.data?.access_token || state.token;
         localStorage.setItem('access_token', payload.data?.access_token || state.token);
         state.message = payload.message;
@@ -56,9 +64,8 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
-        state.user = payload.data?.user || null;
+        state.user = flattenUser(payload.data?.user) || null;
         state.token = payload.data?.access_token || state.token;
-        console.log(payload);
         localStorage.setItem('access_token', payload.data?.access_token || state.token);
         state.message = payload.message;
       })
@@ -74,7 +81,7 @@ const authSlice = createSlice({
       })
       .addCase(getMe.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
-        state.user = payload.data?.user || payload.data || null;
+        state.user = flattenUser(payload.data?.user || payload.data) || null;
       })
       .addCase(getMe.rejected, (state, { payload }) => {
         state.status = STATUS.FAILED;
@@ -108,7 +115,7 @@ const authSlice = createSlice({
       })
       .addCase(updateProfile.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
-        state.user = payload.data?.user || state.user;
+        state.user = flattenUser(payload.data?.user) || state.user;
         state.message = payload.message;
       })
       .addCase(updateProfile.rejected, (state, { payload }) => {
