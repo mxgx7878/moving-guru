@@ -85,7 +85,7 @@ export default function ProfilePage() {
     // social_links is array like [{ instagram: "url" }, { facebook: "url" }]
     const socialsMap = {};
     (user.social_links || []).forEach((obj) => {
-      const key = Object.keys(obj)[0];
+      const key = obj ? Object.keys(obj)[0] : null;
       if (key) socialsMap[key] = obj[key];
     });
     return {
