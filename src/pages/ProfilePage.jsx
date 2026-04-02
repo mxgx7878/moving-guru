@@ -280,6 +280,8 @@ export default function ProfilePage() {
                     </button>
                   </div>
 
+                  {console.log(form.avatarPreview)}
+
                   {/* Avatar - scalloped frame, click to view full */}
                   <div className="absolute -bottom-11 left-1/2 -translate-x-1/2 z-10">
                     <button onClick={() => setShowAvatarModal(true)} className="block focus:outline-none group hover:scale-105 transition-transform">
