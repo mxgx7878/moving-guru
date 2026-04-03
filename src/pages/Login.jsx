@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearError } from '../store/slices/authSlice';
 import { loginUser } from '../store/actions/authAction';
-import { STATUS } from '../constants/apiConstants';
+import { STATUS, ROLES } from '../constants/apiConstants';
 import { Eye, EyeOff, Globe, ArrowRight } from 'lucide-react';
 import logo from '../assets/logo.png';
 
@@ -14,18 +14,23 @@ export default function Login() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { status, error, token } = useSelector((state) => state.auth);
+  const { status, error, token, user } = useSelector((state) => state.auth);
 
   const loading = status === STATUS.LOADING;
 
+  // Role-based redirect after login
   useEffect(() => {
-    if (token) navigate('/portal/dashboard');
-  }, [token, navigate]);
+    if (token && user) {
+      if (user.role === ROLES.STUDIO) {
+        navigate('/studio/dashboard');
+      } else {
+        navigate('/portal/dashboard');
+      }
+    }
+  }, [token, user, navigate]);
 
   useEffect(() => {
-    return () => {
-      dispatch(clearError());
-    };
+    return () => { dispatch(clearError()); };
   }, [dispatch]);
 
   const handleSubmit = (e) => {
@@ -37,7 +42,6 @@ export default function Login() {
     <div className="min-h-screen bg-[#FDFCF8] flex font-['DM_Sans']">
       {/* Left panel */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden flex-col justify-between p-12">
-        {/* Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#CE4F56] via-[#CE4F56]/90 to-[#E89560]" />
         <div className="absolute inset-0 opacity-20"
           style={{
@@ -45,7 +49,6 @@ export default function Login() {
                               radial-gradient(circle at 80% 20%, #2DA4D6 0%, transparent 50%)`
           }}
         />
-        {/* Decorative circles */}
         <div className="absolute -bottom-20 -left-20 w-80 h-80 rounded-full border-2 border-white/10" />
         <div className="absolute -top-10 -right-10 w-60 h-60 rounded-full border-2 border-white/10" />
 
@@ -71,26 +74,25 @@ export default function Login() {
 
         <div className="relative z-10 flex items-center gap-6">
           <div className="text-center">
-            <p className="font-['Unbounded'] text-2xl font-black text-white">200+</p>
-            <p className="text-xs text-white/50 mt-1">Studios</p>
-          </div>
-          <div className="w-px h-8 bg-white/20" />
-          <div className="text-center">
             <p className="font-['Unbounded'] text-2xl font-black text-white">50+</p>
-            <p className="text-xs text-white/50 mt-1">Countries</p>
+            <p className="text-white/50 text-xs">Countries</p>
           </div>
           <div className="w-px h-8 bg-white/20" />
           <div className="text-center">
-            <p className="font-['Unbounded'] text-2xl font-black text-white">1k+</p>
-            <p className="text-xs text-white/50 mt-1">Instructors</p>
+            <p className="font-['Unbounded'] text-2xl font-black text-white">1000+</p>
+            <p className="text-white/50 text-xs">Instructors</p>
+          </div>
+          <div className="w-px h-8 bg-white/20" />
+          <div className="text-center">
+            <p className="font-['Unbounded'] text-2xl font-black text-white">200+</p>
+            <p className="text-white/50 text-xs">Studios</p>
           </div>
         </div>
       </div>
 
       {/* Right panel */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12">
+      <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-sm">
-          {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-2 mb-8">
             <Globe size={18} className="text-[#CE4F56]" />
             <span className="font-['Unbounded'] text-sm font-bold text-[#3E3D38] tracking-wider">
@@ -98,16 +100,12 @@ export default function Login() {
             </span>
           </div>
 
-          <div className="mb-8">
-            <h2 className="font-['Unbounded'] text-2xl font-black text-[#3E3D38] mb-2">Welcome back</h2>
-            <p className="text-[#9A9A94] text-sm">Sign in to your member portal</p>
-          </div>
+          <h2 className="font-['Unbounded'] text-2xl font-black text-[#3E3D38] mb-1">Welcome back</h2>
+          <p className="text-[#9A9A94] text-sm mb-8">Sign in to your account</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">
-                Email
-              </label>
+              <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Email</label>
               <input
                 type="email"
                 value={email}
@@ -119,9 +117,7 @@ export default function Login() {
             </div>
 
             <div>
-              <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">
-                Password
-              </label>
+              <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Password</label>
               <div className="relative">
                 <input
                   type={showPw ? 'text' : 'password'}
@@ -150,7 +146,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#2DA4D6] text-white font-bold text-sm py-3.5 rounded-xl hover:bg-[#2590bd] transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+              className="w-full bg-[#CE4F56] text-white font-bold text-sm py-3.5 rounded-xl hover:bg-[#b8454c] transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
               {loading ? (
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -166,18 +162,19 @@ export default function Login() {
             </Link>
           </p>
 
-          <p className="text-center text-[#9A9A94] text-sm mt-4">
-            New to Moving Guru?{' '}
-            <Link to="/register" className="text-[#CE4F56] font-medium hover:underline">
-              Create account
+          <div className="border-t border-[#E5E0D8] mt-6 pt-6 space-y-3">
+            <p className="text-center text-[#9A9A94] text-sm">
+              New to Moving Guru?
+            </p>
+            <Link to="/register"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-[#CE4F56] text-[#CE4F56] rounded-xl text-sm font-semibold hover:bg-[#CE4F56] hover:text-white transition-all">
+              Join as Instructor
             </Link>
-          </p>
-
-          <p className="text-center mt-6">
-            <a href="/" className="text-[#C4BCB4] text-xs hover:text-[#9A9A94] transition-colors">
-              &larr; Back to website
-            </a>
-          </p>
+            <Link to="/studio-register"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-[#2DA4D6] text-[#2DA4D6] rounded-xl text-sm font-semibold hover:bg-[#2DA4D6] hover:text-white transition-all">
+              Join as Studio
+            </Link>
+          </div>
         </div>
       </div>
     </div>

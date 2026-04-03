@@ -1,39 +1,35 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logoutUser } from '../store/actions/authAction';
-import {
-  LayoutDashboard, User, CreditCard, Star, LogOut,
-  Globe, ChevronRight, Bell, MessageCircle
-} from 'lucide-react';
+import { LogOut, ChevronRight } from 'lucide-react';
 import logo from '../assets/logo.png';
-
-const NAV = [
-  { to: '/portal/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/portal/profile', icon: User, label: 'My Profile' },
-  { to: '/portal/messages', icon: MessageCircle, label: 'Messages' },
-  { to: '/portal/subscription', icon: Star, label: 'Subscription' },
-  { to: '/portal/payments', icon: CreditCard, label: 'Payment History' },
-];
+import { NAV_CONFIG, ROLE_THEME } from '../config/portalConfig';
 
 export default function Sidebar({ mobileOpen, onClose }) {
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useSelector((s) => s.auth);
   const navigate = useNavigate();
+
+  const role = user?.role || 'instructor';
+  const theme = ROLE_THEME[role] || ROLE_THEME.instructor;
+  const navItems = NAV_CONFIG[role] || NAV_CONFIG.instructor;
+
+  // Display name: studios show studio_name, others show name
+  const displayName = role === 'studio'
+    ? (user?.studio_name || user?.studioName || user?.name || 'Studio')
+    : (user?.name || 'Member');
+
+  const initials = displayName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
 
   const handleLogout = () => {
     dispatch(logoutUser()).then(() => navigate('/login'));
   };
 
-  const initials = user?.name?.split(' ').map(n => n[0]).join('') || 'MG';
-
   return (
     <>
       {/* Mobile overlay */}
       {mobileOpen && (
-        <div
-          className="fixed inset-0 bg-black/40 z-30 lg:hidden"
-          onClick={onClose}
-        />
+        <div className="fixed inset-0 bg-black/40 z-30 lg:hidden" onClick={onClose} />
       )}
 
       <aside className={`
@@ -46,48 +42,48 @@ export default function Sidebar({ mobileOpen, onClose }) {
         {/* Logo */}
         <div className="px-6 py-6 border-b border-[#E5E0D8]">
           <a href="/" className="flex items-center gap-1">
-            <img src={logo} alt="Moving Guru Logo" height={60} width={60} />
+            <img src={logo} alt="Moving Guru" height={52} width={52} />
             <span className="font-['Unbounded'] text-sm font-bold text-[#3E3D38] tracking-wider">
-              MOVING <em className="not-italic text-[#CE4F56]">GURU</em>
+              MOVING{' '}
+              <em className="not-italic" style={{ color: theme.accent }}>GURU</em>
             </span>
           </a>
-          <p className="text-[10px] text-[#9A9A94] mt-1 tracking-widest uppercase">Member Portal</p>
+          <p className="text-[10px] text-[#9A9A94] mt-1 tracking-widest uppercase">{theme.label}</p>
         </div>
 
-        {/* User card */}
+        {/* User / Studio card */}
         <div className="px-4 py-4 border-b border-[#E5E0D8]">
-          <div className="flex items-center gap-3 bg-[#f5fca6]/30 rounded-xl p-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center text-white font-bold text-xs font-['Unbounded'] flex-shrink-0">
+          <div className="flex items-center gap-3 bg-[#f5fca6]/25 rounded-xl p-3">
+            <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${theme.avatarGradient} flex items-center justify-center text-white font-bold text-xs font-['Unbounded'] flex-shrink-0`}>
               {initials}
             </div>
             <div className="min-w-0">
-              <p className="text-[#3E3D38] text-xs font-semibold truncate">{user?.name}</p>
+              <p className="text-[#3E3D38] text-xs font-semibold truncate">{displayName}</p>
               <div className="flex items-center gap-1 mt-0.5">
-                <span className={`w-1.5 h-1.5 rounded-full ${user?.profileStatus === 'active' ? 'bg-[#6BE6A4]' : 'bg-[#9A9A94]'}`} />
-                <p className="text-[#9A9A94] text-[10px] capitalize">{user?.profileStatus || 'inactive'}</p>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#6BE6A4]" />
+                <p className="text-[#9A9A94] text-[10px] capitalize">{role}</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Nav */}
+        {/* Navigation */}
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-          {NAV.map(({ to, icon: Icon, label }) => (
+          {navItems.map(({ to, icon: Icon, label }) => (
             <NavLink
               key={to}
               to={to}
               onClick={onClose}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group
+                `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group
                 ${isActive
-                  ? 'bg-[#3E3D38] text-[#7FFF00]'
-                  : 'text-[#6B6B66] hover:bg-[#EDE8DF] hover:text-[#3E3D38]'
-                }`
+                  ? 'bg-[#3E3D38] text-white'
+                  : 'text-[#6B6B66] hover:bg-[#EDE8DF] hover:text-[#3E3D38]'}`
               }
             >
               {({ isActive }) => (
                 <>
-                  <Icon size={16} className={isActive ? 'text-[#7FFF00]' : 'text-[#9A9A94] group-hover:text-[#6B6B66]'} />
+                  <Icon size={16} className={isActive ? 'text-white' : 'text-[#9A9A94] group-hover:text-[#6B6B66]'} />
                   <span className="flex-1">{label}</span>
                   {isActive && <ChevronRight size={12} />}
                 </>
@@ -96,11 +92,11 @@ export default function Sidebar({ mobileOpen, onClose }) {
           ))}
         </nav>
 
-        {/* Bottom */}
-        <div className="px-3 py-4 border-t border-[#E5E0D8] space-y-1">
+        {/* Logout */}
+        <div className="px-3 py-4 border-t border-[#E5E0D8]">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-[#9A9A94] hover:bg-red-50 hover:text-red-500 transition-all duration-200"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-[#9A9A94] hover:bg-red-50 hover:text-red-500 transition-all"
           >
             <LogOut size={16} />
             <span>Log Out</span>

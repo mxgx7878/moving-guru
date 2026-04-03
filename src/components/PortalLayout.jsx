@@ -1,15 +1,25 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import Sidebar from './Sidebar';
 import { Menu, Bell } from 'lucide-react';
-import { useSelector } from 'react-redux';
+import { ROLE_THEME } from '../config/portalConfig';
 
 export default function PortalLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useSelector((s) => s.auth);
+
+  const role = user?.role || 'instructor';
+  const theme = ROLE_THEME[role] || ROLE_THEME.instructor;
+
+  const displayName = role === 'studio'
+    ? (user?.studio_name || user?.studioName || user?.name || 'Studio')
+    : (user?.name || 'Member');
+
+  const firstName = displayName.split(' ')[0];
 
   return (
-    <div className="flex h-screen bg-[#FDFCF8] font-['DM_Sans']">
+    <div className="flex h-screen bg-[#F4F0EA] font-['DM_Sans'] overflow-hidden">
       <Sidebar mobileOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
@@ -22,6 +32,14 @@ export default function PortalLayout() {
             <Menu size={20} className="text-[#6B6B66]" />
           </button>
 
+          {/* Role badge */}
+          <span
+            className="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white"
+            style={{ backgroundColor: theme.accent }}
+          >
+            {theme.label}
+          </span>
+
           <div className="flex-1" />
 
           <div className="flex items-center gap-3">
@@ -31,7 +49,7 @@ export default function PortalLayout() {
             </button>
             <div className="flex items-center gap-2 text-sm">
               <span className="text-[#9A9A94] hidden sm:inline">Hi,</span>
-              <span className="font-semibold text-[#3E3D38]">{user?.name?.split(' ')[0]}</span>
+              <span className="font-semibold text-[#3E3D38]">{firstName}</span>
             </div>
           </div>
         </header>
