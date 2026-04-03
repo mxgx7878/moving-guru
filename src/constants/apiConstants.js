@@ -36,6 +36,9 @@ export const API_ENDPOINTS = {
   // Payments
   PAYMENTS: '/payments',
   DOWNLOAD_INVOICE: '/payments', // append /:id/invoice
+
+  // Jobs / Listings
+  JOBS: '/jobs',
 };
 
 // Roles

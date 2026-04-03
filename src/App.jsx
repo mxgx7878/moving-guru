@@ -21,6 +21,7 @@ import ProfilePage from './pages/instructor/ProfilePage';
 import StudioDashboard    from './pages/studio/StudioDashboard';
 import StudioProfile      from './pages/studio/StudioProfile';
 import SearchInstructors  from './pages/studio/SearchInstructors';
+import JobListings        from './pages/studio/JobListings';
 
 // Common pages (same UI for instructor + studio, role-aware)
 import Messages     from './pages/common/Messages';
@@ -77,6 +78,7 @@ export default function App() {
           <Route path="dashboard"    element={<StudioDashboard />} />
           <Route path="profile"      element={<StudioProfile />} />
           <Route path="search"       element={<SearchInstructors />} />
+          <Route path="jobs"         element={<JobListings />} />
           <Route path="messages"     element={<Messages />} />
           <Route path="subscription" element={<Subscription />} />
           <Route path="payments"     element={<Payments />} />
