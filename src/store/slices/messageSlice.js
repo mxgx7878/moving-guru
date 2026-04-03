@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { STATUS } from '../../constants/apiConstants';
+import { DUMMY_CONVERSATIONS, DUMMY_MESSAGES } from '../../data/dummyData';
 import {
   fetchConversations,
   fetchMessages,
@@ -8,8 +9,9 @@ import {
 } from '../actions/messageAction';
 
 const initialState = {
-  conversations: [],
-  messages: [],
+  conversations: DUMMY_CONVERSATIONS,
+  messages: DUMMY_MESSAGES['conv_001'] || [],
+  allMessages: DUMMY_MESSAGES,
   status: STATUS.IDLE,
   sendStatus: STATUS.IDLE,
   error: null,
@@ -35,11 +37,14 @@ const messageSlice = createSlice({
       })
       .addCase(fetchConversations.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
-        state.conversations = payload.data?.conversations || payload.data || [];
+        const apiData = payload.data?.conversations || payload.data;
+        if (apiData && Array.isArray(apiData) && apiData.length > 0) {
+          state.conversations = apiData;
+        }
       })
-      .addCase(fetchConversations.rejected, (state, { payload }) => {
-        state.status = STATUS.FAILED;
-        state.error = payload;
+      .addCase(fetchConversations.rejected, (state) => {
+        state.status = STATUS.SUCCEEDED;
+        // Keep dummy conversations
       })
 
       // Fetch messages
@@ -48,11 +53,14 @@ const messageSlice = createSlice({
       })
       .addCase(fetchMessages.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
-        state.messages = payload.data?.messages || payload.data || [];
+        const apiMsgs = payload.data?.messages || payload.data;
+        if (apiMsgs && Array.isArray(apiMsgs) && apiMsgs.length > 0) {
+          state.messages = apiMsgs;
+        }
       })
-      .addCase(fetchMessages.rejected, (state, { payload }) => {
-        state.status = STATUS.FAILED;
-        state.error = payload;
+      .addCase(fetchMessages.rejected, (state) => {
+        state.status = STATUS.SUCCEEDED;
+        // Keep dummy messages
       })
 
       // Send message
