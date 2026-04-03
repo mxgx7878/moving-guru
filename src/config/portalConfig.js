@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, User, MessageCircle, Star, CreditCard,
-  Building2, Search, Users, FileText, Settings, Shield
+  Building2, Search, Users, FileText, Settings, Shield, Briefcase
 } from 'lucide-react';
 
 // ─── Role themes ─────────────────────────────────────────────────
@@ -42,6 +42,7 @@ export const NAV_CONFIG = {
     { to: '/studio/dashboard',    icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/studio/profile',      icon: Building2,       label: 'Studio Profile' },
     { to: '/studio/search',       icon: Search,          label: 'Find Instructors' },
+    { to: '/studio/jobs',         icon: Briefcase,       label: 'Job Listings' },
     { to: '/studio/messages',     icon: MessageCircle,   label: 'Messages' },
     { to: '/studio/subscription', icon: Star,            label: 'Subscription' },
     { to: '/studio/payments',     icon: CreditCard,      label: 'Payment History' },

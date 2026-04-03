@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { STATUS } from '../constants/apiConstants';
+import { STATUS } from '../../constants/apiConstants';
 
 export default function FullPageLoader() {
   const { status } = useSelector((state) => state.auth);

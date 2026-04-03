@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { getMe } from '../store/actions/authAction';
-import { STATUS } from '../constants/apiConstants';
-import { ROLE_THEME } from '../config/portalConfig';
+import { getMe } from '../../store/actions/authAction';
+import { STATUS } from '../../constants/apiConstants';
+import { ROLE_THEME } from '../../config/portalConfig';
 
 /**
  * Centralized ProtectedRoute for all portals.

@@ -1,12 +1,12 @@
 import { useState, useRef, useId } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import {clearError, clearMessage } from '../store/slices/authSlice';
-import { updateProfile,} from '../store/actions/authAction';
-import { STATUS } from '../constants/apiConstants';
-import { DISCIPLINE_CATEGORIES } from '../data/disciplines';
-import Section from '../components/Section';
-import Field from '../components/Field';
+import {clearError, clearMessage } from '../../store/slices/authSlice';
+import { updateProfile,} from '../../store/actions/authAction';
+import { STATUS } from '../../constants/apiConstants';
+import { DISCIPLINE_CATEGORIES } from '../../data/disciplines';
+import Section from '../../components/ui/Section';
+import Field from '../../components/ui/Field';
 import { Save, Upload, X, Check, User, MapPin, Globe, Calendar, Edit3, Eye, EyeOff, MessageCircle, Heart, Star, Image, Link } from 'lucide-react';
 
 const SOCIAL_PLATFORMS = [

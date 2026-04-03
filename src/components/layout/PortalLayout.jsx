@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Sidebar from './Sidebar';
 import { Menu, Bell } from 'lucide-react';
-import { ROLE_THEME } from '../config/portalConfig';
+import { ROLE_THEME } from '../../config/portalConfig';
 
 export default function PortalLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);

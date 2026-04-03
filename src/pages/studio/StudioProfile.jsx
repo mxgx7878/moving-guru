@@ -8,6 +8,7 @@ import {
   Instagram, Save, Eye, EyeOff
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { ButtonLoader } from '../../components/feedback';
 
 const OPEN_TO = ['Direct Hire', 'Swaps', 'Energy Exchange'];
 const STUDIO_SIZES = ['1–5 instructors', '6–15 instructors', '16–30 instructors', '30+ instructors'];
@@ -123,7 +124,7 @@ export default function StudioProfile() {
             disabled={saving}
             className="flex items-center gap-2 px-5 py-2.5 bg-[#2DA4D6] text-white rounded-xl text-sm font-bold hover:bg-[#2590bd] transition-all disabled:opacity-50"
           >
-            {saving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save size={14} />}
+            {saving ? <ButtonLoader size={16} /> : <Save size={14} />}
             Save Changes
           </button>
         </div>

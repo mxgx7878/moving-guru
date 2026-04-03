@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { clearError } from '../store/slices/authSlice';
-import { loginUser } from '../store/actions/authAction';
-import { STATUS, ROLES } from '../constants/apiConstants';
+import { clearError } from '../../store/slices/authSlice';
+import { loginUser } from '../../store/actions/authAction';
+import { STATUS, ROLES } from '../../constants/apiConstants';
 import { Eye, EyeOff, Globe, ArrowRight } from 'lucide-react';
-import logo from '../assets/logo.png';
+import logo from '../../assets/logo.png';
 
 export default function Login() {
   const [email, setEmail] = useState('');

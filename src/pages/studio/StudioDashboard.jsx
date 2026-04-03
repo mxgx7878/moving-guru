@@ -1,9 +1,12 @@
-import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
   Search, MessageCircle, Heart, Eye, ArrowRight,
-  MapPin, Zap, Users, Star, TrendingUp, Building2
+  MapPin, Star, Users, Building2
 } from 'lucide-react';
+import { fetchInstructors } from '../../store/actions/instructorAction';
+import { CardSkeleton } from '../../components/feedback';
 
 function StatCard({ icon: Icon, label, value, sub, color = 'default' }) {
   const colors = {
@@ -17,7 +20,7 @@ function StatCard({ icon: Icon, label, value, sub, color = 'default' }) {
   return (
     <div className={`${c.bg} rounded-2xl p-5 border border-[#E5E0D8]`}>
       <div className="flex items-start justify-between mb-3">
-        <div className={`w-9 h-9 rounded-xl flex items-center justify-center bg-white shadow-sm`}>
+        <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-white shadow-sm">
           <Icon size={16} className={c.icon} />
         </div>
       </div>
@@ -28,16 +31,18 @@ function StatCard({ icon: Icon, label, value, sub, color = 'default' }) {
   );
 }
 
-const DUMMY_INSTRUCTORS = [
-  { id: 1, name: 'Bambi Romanowski', disciplines: ['Reformer Pilates', 'Mat Pilates'], location: 'Sydney, Australia', travelingTo: 'South America', availability: 'Aug–Oct 2026', openTo: 'Swaps & Direct Hire', initials: 'BR' },
-  { id: 2, name: 'Sarah Chen', disciplines: ['Vinyasa Yoga', 'Yin Yoga'], location: 'Singapore', travelingTo: 'Europe', availability: 'Sep–Dec 2026', openTo: 'Direct Hire', initials: 'SC' },
-  { id: 3, name: 'Marco Silva', disciplines: ['Muay Thai', 'Boxing'], location: 'São Paulo, Brazil', travelingTo: 'Asia', availability: 'Oct 2026', openTo: 'Both', initials: 'MS' },
-];
-
 export default function StudioDashboard() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { user } = useSelector((s) => s.auth);
+  const { instructors, status } = useSelector((s) => s.instructor);
   const studioName = user?.studio_name || user?.studioName || user?.name || 'Studio';
+
+  useEffect(() => {
+    dispatch(fetchInstructors({ limit: 3 }));
+  }, [dispatch]);
+
+  const recentInstructors = instructors.slice(0, 3);
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
@@ -116,7 +121,7 @@ export default function StudioDashboard() {
         </button>
       </div>
 
-      {/* Recently active instructors preview */}
+      {/* Recently active instructors */}
       <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
         <div className="px-6 py-5 border-b border-[#E5E0D8] flex items-center justify-between">
           <div>
@@ -131,37 +136,46 @@ export default function StudioDashboard() {
           </button>
         </div>
 
-        <div className="divide-y divide-[#E5E0D8]">
-          {DUMMY_INSTRUCTORS.map(inst => (
-            <div key={inst.id} className="px-6 py-4 flex items-center gap-4 hover:bg-[#FDFCF8] transition-colors group">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center text-white text-xs font-bold font-['Unbounded'] flex-shrink-0">
-                {inst.initials}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[#3E3D38] text-sm font-semibold truncate">{inst.name}</p>
-                <p className="text-[#9A9A94] text-xs">{inst.disciplines.join(', ')}</p>
-              </div>
-              <div className="hidden md:flex items-center gap-1 text-xs text-[#9A9A94]">
-                <MapPin size={11} />
-                {inst.location}
-              </div>
-              <div className="hidden lg:block">
-                <span className="px-2.5 py-1 bg-[#6BE6A4]/20 text-[#3E3D38] text-[10px] font-semibold rounded-full">
-                  {inst.availability}
-                </span>
-              </div>
-              <button
-                onClick={() => navigate('/studio/messages')}
-                className="opacity-0 group-hover:opacity-100 transition-opacity px-3 py-1.5 bg-[#2DA4D6] text-white text-xs font-semibold rounded-lg hover:bg-[#2590bd]"
-              >
-                Message
-              </button>
-            </div>
-          ))}
-        </div>
+        {status === 'loading' && instructors.length === 0 ? (
+          <div className="p-6">
+            <CardSkeleton count={3} />
+          </div>
+        ) : (
+          <div className="divide-y divide-[#E5E0D8]">
+            {recentInstructors.map(inst => {
+              const initials = inst.initials || inst.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+              return (
+                <div key={inst.id} className="px-6 py-4 flex items-center gap-4 hover:bg-[#FDFCF8] transition-colors group">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center text-white text-xs font-bold font-['Unbounded'] flex-shrink-0">
+                    {initials}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[#3E3D38] text-sm font-semibold truncate">{inst.name}</p>
+                    <p className="text-[#9A9A94] text-xs">{(inst.disciplines || []).join(', ')}</p>
+                  </div>
+                  <div className="hidden md:flex items-center gap-1 text-xs text-[#9A9A94]">
+                    <MapPin size={11} />
+                    {inst.location}
+                  </div>
+                  <div className="hidden lg:block">
+                    <span className="px-2.5 py-1 bg-[#6BE6A4]/20 text-[#3E3D38] text-[10px] font-semibold rounded-full">
+                      {inst.availability}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => navigate('/studio/messages')}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity px-3 py-1.5 bg-[#2DA4D6] text-white text-xs font-semibold rounded-lg hover:bg-[#2590bd]"
+                  >
+                    Message
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
-      {/* Subscription nudge if needed */}
+      {/* Subscription nudge */}
       <div className="bg-[#f5fca6]/40 rounded-2xl p-5 border border-[#f5fca6] flex items-center gap-4">
         <div className="w-10 h-10 bg-[#f5fca6] rounded-xl flex items-center justify-center flex-shrink-0">
           <Star size={18} className="text-[#3E3D38]" />
