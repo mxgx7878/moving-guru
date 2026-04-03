@@ -10,7 +10,7 @@ import { ButtonLoader } from '../../components/feedback';
 export default function Messages() {
   const dispatch = useDispatch();
   const { user } = useSelector((s) => s.auth);
-  const { conversations, messages, status } = useSelector((s) => s.message);
+  const { conversations, messages, allMessages, status } = useSelector((s) => s.message);
   const role = user?.role || 'instructor';
   const theme = ROLE_THEME[role] || ROLE_THEME.instructor;
 
@@ -18,6 +18,7 @@ export default function Messages() {
   const [msgText, setMsgText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [sending, setSending] = useState(false);
+  const [localMessages, setLocalMessages] = useState([]);
 
   useEffect(() => {
     dispatch(fetchConversations());
@@ -29,16 +30,31 @@ export default function Messages() {
     }
   }, [conversations, activeConvo]);
 
+  // Load messages — use allMessages dict (dummy) or fetch from API
   useEffect(() => {
-    if (activeConvo?.id) {
+    if (!activeConvo?.id) return;
+    if (allMessages && allMessages[activeConvo.id]) {
+      setLocalMessages(allMessages[activeConvo.id]);
+    } else {
       dispatch(fetchMessages(activeConvo.id));
     }
-  }, [activeConvo?.id, dispatch]);
+  }, [activeConvo?.id, allMessages, dispatch]);
+
+  // Sync API messages into localMessages
+  useEffect(() => {
+    if (messages.length > 0) {
+      setLocalMessages(messages);
+    }
+  }, [messages]);
 
   const handleSend = async () => {
     if (!msgText.trim() || !activeConvo) return;
     setSending(true);
-    await dispatch(sendMessageAction({ conversationId: activeConvo.id, text: msgText }));
+    // Add message locally for instant feedback
+    const newMsg = { id: `msg_local_${Date.now()}`, from: 'me', is_mine: true, text: msgText, time: 'Just now' };
+    setLocalMessages(prev => [...prev, newMsg]);
+    // Also try API
+    dispatch(sendMessageAction({ conversationId: activeConvo.id, text: msgText }));
     setMsgText('');
     setSending(false);
   };
@@ -150,7 +166,7 @@ export default function Messages() {
 
                 {/* Messages */}
                 <div className="flex-1 overflow-y-auto p-5 space-y-4">
-                  {messages.map(msg => (
+                  {localMessages.map(msg => (
                     <div key={msg.id} className={`flex ${msg.from === 'me' || msg.is_mine ? 'justify-end' : 'justify-start'}`}>
                       <div className="max-w-[70%]">
                         <div

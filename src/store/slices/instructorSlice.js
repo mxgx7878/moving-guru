@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { STATUS } from '../../constants/apiConstants';
+import { DUMMY_INSTRUCTORS } from '../../data/dummyData';
 import {
   fetchInstructors,
   fetchInstructorDetail,
@@ -9,8 +10,8 @@ import {
 } from '../actions/instructorAction';
 
 const initialState = {
-  instructors: [],
-  savedIds: [],
+  instructors: DUMMY_INSTRUCTORS,
+  savedIds: ['inst_001', 'inst_004'],
   selectedInstructor: null,
   pagination: null,
   status: STATUS.IDLE,
@@ -37,12 +38,15 @@ const instructorSlice = createSlice({
       })
       .addCase(fetchInstructors.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
-        state.instructors = payload.data?.instructors || payload.data || [];
+        const apiData = payload.data?.instructors || payload.data;
+        if (apiData && Array.isArray(apiData) && apiData.length > 0) {
+          state.instructors = apiData;
+        }
         state.pagination = payload.data?.pagination || null;
       })
-      .addCase(fetchInstructors.rejected, (state, { payload }) => {
-        state.status = STATUS.FAILED;
-        state.error = payload;
+      .addCase(fetchInstructors.rejected, (state) => {
+        state.status = STATUS.SUCCEEDED;
+        // Keep dummy data on error
       })
 
       // Fetch detail

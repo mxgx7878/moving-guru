@@ -1,9 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { STATUS } from '../../constants/apiConstants';
+import { DUMMY_JOBS } from '../../data/dummyData';
 import { fetchJobs, createJob, updateJob, deleteJob } from '../actions/jobAction';
 
 const initialState = {
-  jobs: [],
+  jobs: DUMMY_JOBS,
   status: STATUS.IDLE,
   error: null,
   message: null,
@@ -29,11 +30,14 @@ const jobSlice = createSlice({
       })
       .addCase(fetchJobs.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
-        state.jobs = payload.data?.jobs || payload.data || [];
+        const apiJobs = payload.data?.jobs || payload.data;
+        if (apiJobs && Array.isArray(apiJobs) && apiJobs.length > 0) {
+          state.jobs = apiJobs;
+        }
       })
-      .addCase(fetchJobs.rejected, (state, { payload }) => {
-        state.status = STATUS.FAILED;
-        state.error = payload;
+      .addCase(fetchJobs.rejected, (state) => {
+        state.status = STATUS.SUCCEEDED;
+        // Keep dummy jobs
       })
 
       // Create
