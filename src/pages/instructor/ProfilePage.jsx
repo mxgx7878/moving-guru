@@ -163,21 +163,23 @@ export default function ProfilePage() {
   };
 
   // ─── Save ──────────────────────────────────────────────────────
-  const handleSave = async () => {
+const handleSave = async () => {
     setSaving(true);
+ 
     const {
-      avatarPreview, coverImage, photos, avatarFile, coverFile, photoFiles,
+      avatarPreview, coverImage, photos,
+      avatarFile, coverFile, photoFiles,
       instagram, facebook, twitter, tiktok, youtube, linkedin,
       profile_picture, background_image, gallery_photos, social_links,
-      availableFrom, availableTo,
-      // strip these — send snake_case below
+      // camelCase fields — append manually below
       countryFrom, travelingTo, profileStatus, openTo,
+      availableFrom, availableTo,
       ...rest
     } = form;
-
+ 
     const fd = new FormData();
-
-    // Text fields
+ 
+    // Text fields from rest (age, name, bio, location, studio, etc.)
     Object.entries(rest).forEach(([key, val]) => {
       if (val == null) return;
       if (Array.isArray(val)) {
@@ -186,32 +188,31 @@ export default function ProfilePage() {
         fd.append(key, val);
       }
     });
-
-    // Snake_case fields
-    fd.append('country_from', countryFrom || '');
-    fd.append('traveling_to', travelingTo || '');
-    fd.append('profile_status', profileStatus || 'active');
-    fd.append('available_from', availableFrom || '');
-    fd.append('available_to', availableTo || '');
-    // Formatted availability string for display
-    fd.append('availability', formatDateRange(availableFrom, availableTo));
-    // openTo array
-    (openTo || []).forEach((o, i) => fd.append(`open_to[${i}]`, o));
-
+ 
+    // camelCase fields  ✅
+    fd.append('countryFrom',   countryFrom   || '');
+    fd.append('travelingTo',   travelingTo   || '');
+    fd.append('profileStatus', profileStatus || 'active');
+    fd.append('availableFrom', availableFrom || '');
+    fd.append('availableTo',   availableTo   || '');
+    fd.append('availability',  formatDateRange(availableFrom, availableTo));
+ 
+    (openTo || []).forEach((o, i) => fd.append(`openTo[${i}]`, o)); // ✅
+ 
     // Files
     if (avatarFile) fd.append('profile_picture', avatarFile);
     if (coverFile)  fd.append('background_image', coverFile);
     (photoFiles || []).forEach((f, i) => {
       if (f instanceof File) fd.append(`gallery_photos[${i}]`, f);
     });
-
+ 
     // Social links
     const socials = { instagram, facebook, twitter, tiktok, youtube, linkedin };
     let idx = 0;
     Object.entries(socials).forEach(([platform, url]) => {
       if (url) { fd.append(`social_links[${idx}][${platform}]`, url); idx++; }
     });
-
+ 
     const result = await dispatch(updateProfile(fd));
     setSaving(false);
     if (updateProfile.fulfilled.match(result)) {

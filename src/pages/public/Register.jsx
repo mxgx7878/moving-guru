@@ -160,42 +160,57 @@ export default function Register() {
     update('photos', files.map(f => URL.createObjectURL(f)));
   };
 
-  const handleSubmit = () => {
+ const handleSubmit = () => {
     const fd = new FormData();
-    fd.append('role', role);
-    fd.append('name', form.name);
-    fd.append('email', form.email);
-    fd.append('password', form.password);
-    fd.append('bio', form.bio);
-    fd.append('profile_status', form.profileStatus);
-    fd.append('plan', form.plan);
-    (form.openTo || []).forEach((o, i) => fd.append(`open_to[${i}]`, o));
-    (form.disciplines || []).forEach((d, i) => fd.append(`disciplines[${i}]`, d));
-    if (form.avatar) fd.append('profile_picture', form.avatar);
-    (form.photoFiles || []).forEach((f, i) => fd.append(`gallery_photos[${i}]`, f));
-
+ 
+    // Common
+    fd.append('role',           role);
+    fd.append('name',           form.name);
+    fd.append('email',          form.email);
+    fd.append('password',       form.password);
+    fd.append('bio',            form.bio || '');
+    fd.append('profileStatus',  form.profileStatus || 'active');  // ✅ camelCase
+    fd.append('plan',           form.plan || 'monthly');
+ 
+    (form.openTo || []).forEach((o, i) =>
+      fd.append(`openTo[${i}]`, o)                                // ✅ camelCase
+    );
+    (form.disciplines || []).forEach((d, i) =>
+      fd.append(`disciplines[${i}]`, d)
+    );
+ 
+    if (form.avatar)
+      fd.append('profile_picture', form.avatar);                  // media — snake_case OK (file field)
+    (form.photoFiles || []).forEach((f, i) =>
+      fd.append(`gallery_photos[${i}]`, f)
+    );
+ 
     if (role === 'instructor') {
-      fd.append('age', form.age);
-      fd.append('pronouns', form.pronouns);
-      fd.append('studio', form.studio);
-      fd.append('location', form.location);
-      fd.append('country_from', form.countryFrom);
-      fd.append('traveling_to', form.travelingTo);
-      fd.append('available_from', form.availableFrom);
-      fd.append('available_to', form.availableTo);
-      fd.append('availability', formatDateRange(form.availableFrom, form.availableTo));
-      fd.append('flexible_dates', form.flexibleDates ? '1' : '0');
-      fd.append('looking_for', form.lookingFor);
-      (form.languages || []).forEach((l, i) => fd.append(`languages[${i}]`, l));
+      fd.append('age',           form.age);
+      fd.append('pronouns',      form.pronouns || '');
+      fd.append('studio',        form.studio || '');
+      fd.append('location',      form.location || '');
+      fd.append('countryFrom',   form.countryFrom || '');         // ✅ camelCase
+      fd.append('travelingTo',   form.travelingTo || '');         // ✅ camelCase
+      fd.append('availableFrom', form.availableFrom || '');       // ✅ camelCase
+      fd.append('availableTo',   form.availableTo || '');         // ✅ camelCase
+      fd.append('availability',  formatDateRange(form.availableFrom, form.availableTo));
+      fd.append('flexibleDates', form.flexibleDates ? '1' : '0'); // ✅ camelCase
+      fd.append('lookingFor',    form.lookingFor || '');           // ✅ camelCase
+      (form.languages || []).forEach((l, i) =>
+        fd.append(`languages[${i}]`, l)
+      );
     } else {
-      fd.append('studio_name', form.studioName);
-      fd.append('contact_name', form.contactName || form.name);
-      fd.append('location', form.location);
-      fd.append('country', form.country);
-      fd.append('phone', form.phone);
-      fd.append('website', form.website);
-      fd.append('studio_size', form.studioSize);
+      // studio
+      fd.append('studioName',   form.studioName || '');           // ✅ camelCase
+      fd.append('contactName',  form.contactName || form.name);   // ✅ camelCase
+      fd.append('location',     form.location || '');
+      fd.append('country',      form.country || '');
+      fd.append('phone',        form.phone || '');
+      fd.append('website',      form.website || '');
+      fd.append('studioSize',   form.studioSize || '');           // ✅ camelCase
     }
+ 
     dispatch(registerUser(fd));
   };
 

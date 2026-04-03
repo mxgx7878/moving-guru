@@ -70,25 +70,26 @@ export default function StudioProfile() {
     update('photos', files.map(f => URL.createObjectURL(f)));
   };
 
-  const handleSave = async () => {
+const handleSave = async () => {
     const fd = new FormData();
-    fd.append('_method', 'PATCH');
-    fd.append('role', 'studio');
-    fd.append('studio_name', form.studioName);
-    fd.append('contact_name', form.contactName);
-    fd.append('location', form.location);
-    fd.append('country', form.country);
-    fd.append('phone', form.phone);
-    fd.append('website', form.website);
-    fd.append('studio_size', form.studioSize);
-    fd.append('bio', form.bio);
-    fd.append('instagram', form.instagram);
-    fd.append('profileStatus', form.profileStatus);
+ 
+    fd.append('studioName',    form.studioName   || '');  // ✅ camelCase
+    fd.append('contactName',   form.contactName  || '');  // ✅ camelCase
+    fd.append('location',      form.location     || '');
+    fd.append('country',       form.country      || '');
+    fd.append('phone',         form.phone        || '');
+    fd.append('website',       form.website      || '');
+    fd.append('studioSize',    form.studioSize   || '');  // ✅ camelCase
+    fd.append('bio',           form.bio          || '');
+    fd.append('instagram',     form.instagram    || '');
+    fd.append('profileStatus', form.profileStatus || 'active');
+ 
     (form.disciplines || []).forEach((d, i) => fd.append(`disciplines[${i}]`, d));
-    (form.openTo || []).forEach((o, i) => fd.append(`openTo[${i}]`, o));
+    (form.openTo      || []).forEach((o, i) => fd.append(`openTo[${i}]`, o));     // ✅ already correct
+ 
     if (form.avatarFile) fd.append('profile_picture', form.avatarFile);
-    (form.photoFiles || []).forEach((f, i) => fd.append(`gallery_photos[${i}]`, f));
-
+    (form.photoFiles  || []).forEach((f, i) => fd.append(`gallery_photos[${i}]`, f));
+ 
     const result = await dispatch(updateProfile(fd));
     if (updateProfile.fulfilled.match(result)) {
       toast.success('Studio profile updated!');
