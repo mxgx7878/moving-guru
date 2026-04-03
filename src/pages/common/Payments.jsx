@@ -1,11 +1,36 @@
-import { useSelector } from 'react-redux';
-import { DUMMY_PAYMENTS } from '../data/dummyData';
+import { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Download, CreditCard, CheckCircle, Calendar, DollarSign } from 'lucide-react';
+import { ROLE_THEME } from '../../config/portalConfig';
+import { fetchPayments } from '../../store/actions/paymentAction';
+import { STATUS } from '../../constants/apiConstants';
+import { TableSkeleton, CardSkeleton } from '../../components/feedback';
 
 export default function Payments() {
-  const { user } = useSelector((state) => state.auth);
-  const payments = DUMMY_PAYMENTS;
-  const total = payments.reduce((s, p) => s + p.amount, 0);
+  const dispatch = useDispatch();
+  const { user } = useSelector((s) => s.auth);
+  const { payments, status } = useSelector((s) => s.payment);
+  const role = user?.role || 'instructor';
+  const theme = ROLE_THEME[role] || ROLE_THEME.instructor;
+
+  useEffect(() => {
+    dispatch(fetchPayments());
+  }, [dispatch]);
+
+  const total = payments.reduce((s, p) => s + (p.amount || 0), 0);
+
+  if (status === STATUS.LOADING && payments.length === 0) {
+    return (
+      <div className="max-w-3xl mx-auto space-y-6">
+        <div>
+          <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">Payment History</h1>
+          <p className="text-[#9A9A94] text-sm mt-1">Your billing history and invoices</p>
+        </div>
+        <CardSkeleton count={3} />
+        <TableSkeleton rows={4} cols={3} />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
@@ -17,8 +42,8 @@ export default function Payments() {
       {/* Summary cards */}
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-white rounded-2xl p-4 border border-[#E5E0D8] text-center">
-          <DollarSign size={16} className="text-[#CE4F56] mx-auto mb-2" />
-          <p className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">${total}</p>
+          <DollarSign size={16} style={{ color: theme.accent }} className="mx-auto mb-2" />
+          <p className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">${total.toFixed(2)}</p>
           <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider mt-1">Total Paid</p>
         </div>
         <div className="bg-white rounded-2xl p-4 border border-[#E5E0D8] text-center">
@@ -28,7 +53,9 @@ export default function Payments() {
         </div>
         <div className="bg-white rounded-2xl p-4 border border-[#E5E0D8] text-center">
           <Calendar size={16} className="text-[#2DA4D6] mx-auto mb-2" />
-          <p className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">{user?.subscriptionRenews || '—'}</p>
+          <p className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">
+            {user?.subscriptionRenews || user?.subscription_renews || '—'}
+          </p>
           <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider mt-1">Next Renewal</p>
         </div>
       </div>
@@ -37,7 +64,7 @@ export default function Payments() {
       <div className="bg-white rounded-2xl p-5 border border-[#E5E0D8]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#CE4F56] rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: theme.accent }}>
               <CreditCard size={16} className="text-white" />
             </div>
             <div>
@@ -45,7 +72,9 @@ export default function Payments() {
               <p className="text-xs text-[#9A9A94]">Expires 12/28</p>
             </div>
           </div>
-          <button className="text-xs text-[#6B6B66] border border-[#E5E0D8] px-3 py-1.5 rounded-lg hover:border-[#2DA4D6] hover:text-[#2DA4D6] transition-colors">
+          <button
+            className="text-xs text-[#6B6B66] border border-[#E5E0D8] px-3 py-1.5 rounded-lg hover:text-[#2DA4D6] hover:border-[#2DA4D6] transition-colors"
+          >
             Update
           </button>
         </div>
@@ -72,7 +101,7 @@ export default function Payments() {
 
               <div className="flex items-center gap-4">
                 <div className="text-right">
-                  <p className="font-['Unbounded'] text-sm font-bold text-[#3E3D38]">${p.amount}</p>
+                  <p className="font-['Unbounded'] text-sm font-bold text-[#3E3D38]">${p.amount?.toFixed(2)}</p>
                   <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
                     {p.status}
                   </span>
@@ -92,6 +121,11 @@ export default function Payments() {
           </div>
         )}
       </div>
+
+      <p className="text-center text-[#9A9A94] text-xs">
+        Need a receipt or have billing questions? Contact{' '}
+        <a href="mailto:admin@movingguru.co" className="text-[#2DA4D6] hover:underline">admin@movingguru.co</a>
+      </p>
     </div>
   );
 }

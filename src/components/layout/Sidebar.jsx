@@ -1,9 +1,9 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { logoutUser } from '../store/actions/authAction';
+import { logoutUser } from '../../store/actions/authAction';
 import { LogOut, ChevronRight } from 'lucide-react';
-import logo from '../assets/logo.png';
-import { NAV_CONFIG, ROLE_THEME } from '../config/portalConfig';
+import logo from '../../assets/logo.png';
+import { NAV_CONFIG, ROLE_THEME } from '../../config/portalConfig';
 
 export default function Sidebar({ mobileOpen, onClose }) {
   const dispatch = useDispatch();

@@ -1,16 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { clearError } from '../store/slices/authSlice';
-import { registerUser } from '../store/actions/authAction';
-import { STATUS } from '../constants/apiConstants';
-import { DISCIPLINE_CATEGORIES } from '../data/disciplines';
-import { ROLE_THEME } from '../config/portalConfig';
+import { clearError } from '../../store/slices/authSlice';
+import { registerUser } from '../../store/actions/authAction';
+import { STATUS } from '../../constants/apiConstants';
+import { DISCIPLINE_CATEGORIES } from '../../data/disciplines';
+import { ROLE_THEME } from '../../config/portalConfig';
 import {
   Globe, ArrowRight, ArrowLeft, Check, Upload, X,
   User, MapPin, Dumbbell, FileText, CreditCard, Building2
 } from 'lucide-react';
-import Input from '../components/Input';
+import Input from '../../components/ui/Input';
 
 // ─── Steps per role ────────────────────────────────────────────────
 const STEPS_INSTRUCTOR = [

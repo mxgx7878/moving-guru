@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { clearError, clearMessage } from '../store/slices/authSlice';
-import { resetPassword } from '../store/actions/authAction';
-import { STATUS } from '../constants/apiConstants';
+import { clearError, clearMessage } from '../../store/slices/authSlice';
+import { resetPassword } from '../../store/actions/authAction';
+import { STATUS } from '../../constants/apiConstants';
 import { Globe, ArrowRight, Eye, EyeOff, ArrowLeft, CheckCircle, Lock } from 'lucide-react';
 
 export default function ResetPassword() {

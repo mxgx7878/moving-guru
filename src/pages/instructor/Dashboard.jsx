@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { changePassword, forgotPassword } from '../store/actions/authAction';
-import { DUMMY_USER } from '../data/dummyData';
-import BarChart from '../components/BarChart';
-import StatCard from '../components/StatCard';
+import { changePassword, forgotPassword } from '../../store/actions/authAction';
+import { DUMMY_USER } from '../../data/dummyData';
+import BarChart from '../../components/ui/BarChart';
+import StatCard from '../../components/ui/StatCard';
 import {
   Eye, MessageCircle, Heart, TrendingUp, Globe,
   MapPin, Calendar, Star, ArrowUpRight, Zap, Megaphone,
