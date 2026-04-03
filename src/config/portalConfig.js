@@ -1,10 +1,9 @@
 import {
   LayoutDashboard, User, MessageCircle, Star, CreditCard,
-  Building2, Search, Users, FileText, Settings, Shield, Briefcase
+  Building2, Search, Users, FileText, Settings, Briefcase,
+  Heart, Sprout, MapPin
 } from 'lucide-react';
 
-// ─── Role themes ─────────────────────────────────────────────────
-// accent = active nav highlight, ring = avatar gradient, label = portal subtitle
 export const ROLE_THEME = {
   instructor: {
     accent: '#CE4F56',
@@ -29,30 +28,33 @@ export const ROLE_THEME = {
   },
 };
 
-// ─── Nav items per role ───────────────────────────────────────────
 export const NAV_CONFIG = {
   instructor: [
-    { to: '/portal/dashboard',   icon: LayoutDashboard, label: 'Dashboard' },
-    { to: '/portal/profile',     icon: User,            label: 'My Profile' },
-    { to: '/portal/messages',    icon: MessageCircle,   label: 'Messages' },
-    { to: '/portal/subscription',icon: Star,            label: 'Subscription' },
-    { to: '/portal/payments',    icon: CreditCard,      label: 'Payment History' },
+    { to: '/portal/dashboard',    icon: LayoutDashboard, label: 'Dashboard'       },
+    { to: '/portal/profile',      icon: User,            label: 'My Profile'      },
+    { to: '/portal/find-work',    icon: MapPin,          label: 'Find Work'       },
+    { to: '/portal/grow',         icon: Sprout,          label: 'Grow'            },
+    { to: '/portal/messages',     icon: MessageCircle,   label: 'Messages'        },
+    { to: '/portal/subscription', icon: Star,            label: 'Subscription'    },
+    { to: '/portal/payments',     icon: CreditCard,      label: 'Payment History' },
   ],
   studio: [
-    { to: '/studio/dashboard',    icon: LayoutDashboard, label: 'Dashboard' },
-    { to: '/studio/profile',      icon: Building2,       label: 'Studio Profile' },
-    { to: '/studio/search',       icon: Search,          label: 'Find Instructors' },
-    { to: '/studio/jobs',         icon: Briefcase,       label: 'Job Listings' },
-    { to: '/studio/messages',     icon: MessageCircle,   label: 'Messages' },
-    { to: '/studio/subscription', icon: Star,            label: 'Subscription' },
-    { to: '/studio/payments',     icon: CreditCard,      label: 'Payment History' },
+    { to: '/studio/dashboard',    icon: LayoutDashboard, label: 'Dashboard'          },
+    { to: '/studio/profile',      icon: Building2,       label: 'Studio Profile'     },
+    { to: '/studio/search',       icon: Search,          label: 'Find Instructors'   },
+    { to: '/studio/favourites',   icon: Heart,           label: 'Saved Instructors'  },
+    { to: '/studio/jobs',         icon: Briefcase,       label: 'Job Listings'       },
+    { to: '/studio/grow',         icon: Sprout,          label: 'Grow'               },
+    { to: '/studio/messages',     icon: MessageCircle,   label: 'Messages'           },
+    { to: '/studio/subscription', icon: Star,            label: 'Subscription'       },
+    { to: '/studio/payments',     icon: CreditCard,      label: 'Payment History'    },
   ],
   admin: [
-    { to: '/admin/dashboard',     icon: LayoutDashboard, label: 'Dashboard' },
-    { to: '/admin/users',         icon: Users,           label: 'Users' },
-    { to: '/admin/studios',       icon: Building2,       label: 'Studios' },
+    { to: '/admin/dashboard',     icon: LayoutDashboard, label: 'Dashboard'    },
+    { to: '/admin/users',         icon: Users,           label: 'Instructors'  },
+    { to: '/admin/studios',       icon: Building2,       label: 'Studios'      },
     { to: '/admin/posts',         icon: FileText,        label: 'Posts / Events' },
     { to: '/admin/subscriptions', icon: Star,            label: 'Subscriptions' },
-    { to: '/admin/settings',      icon: Settings,        label: 'Settings' },
+    { to: '/admin/settings',      icon: Settings,        label: 'Settings'     },
   ],
 };

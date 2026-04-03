@@ -5,18 +5,19 @@ import { clearError } from '../../store/slices/authSlice';
 import { registerUser } from '../../store/actions/authAction';
 import { STATUS } from '../../constants/apiConstants';
 import { DISCIPLINE_CATEGORIES } from '../../data/disciplines';
+import { COUNTRIES, COUNTRIES_AND_REGIONS } from '../../data/countries';
 import { ROLE_THEME } from '../../config/portalConfig';
 import {
   Globe, ArrowRight, ArrowLeft, Check, Upload, X,
-  User, MapPin, Dumbbell, FileText, CreditCard, Building2
+  User, MapPin, Dumbbell, FileText, CreditCard, Building2, ChevronDown, Calendar
 } from 'lucide-react';
 import Input from '../../components/ui/Input';
 
-// ─── Steps per role ────────────────────────────────────────────────
+// ─── Steps ──────────────────────────────────────────────────────
 const STEPS_INSTRUCTOR = [
   { id: 1, label: 'Account',     icon: User },
   { id: 2, label: 'Personal',    icon: User },
-  { id: 3, label: 'Location',    icon: MapPin },
+  { id: 3, label: 'Travel',      icon: MapPin },
   { id: 4, label: 'Disciplines', icon: Dumbbell },
   { id: 5, label: 'Bio & Photos',icon: FileText },
   { id: 6, label: 'Plan',        icon: CreditCard },
@@ -30,83 +31,115 @@ const STEPS_STUDIO = [
   { id: 5, label: 'Plan',        icon: CreditCard },
 ];
 
-// ─── Field options ─────────────────────────────────────────────────
-const PRONOUNS    = ['He/Him','She/Her','They/Them','He/They','She/They','Prefer not to say'];
-const OPEN_TO     = ['Direct Hire','Swaps','Both','Energy Exchange'];
-const LANGUAGES   = ['English','Spanish','French','Portuguese','Italian','German','Japanese','Mandarin','Arabic','Hindi','Korean','Indonesian','Russian','Polish','Cantonese','Ukrainian','Nigerian','Thai'];
+// ─── Constants ──────────────────────────────────────────────────
+const PRONOUNS   = ['He/Him','She/Her','They/Them','He/They','She/They','Prefer not to say'];
+const OPEN_TO    = ['Direct Hire','Swaps','Energy Exchange'];
+const LANGUAGES  = ['English','Spanish','French','Portuguese','Italian','German','Japanese','Mandarin','Arabic','Hindi','Korean','Indonesian','Russian','Polish','Cantonese','Ukrainian','Nigerian','Thai'];
 const STUDIO_OPEN = ['Direct Hire','Swaps','Energy Exchange'];
-const STUDIO_SIZES= ['1–5 instructors','6–15 instructors','16–30 instructors','30+ instructors'];
+const STUDIO_SIZES = ['1–5 instructors','6–15 instructors','16–30 instructors','30+ instructors'];
 const PLANS = [
   { id:'monthly',  label:'Monthly',   price:15, per:'/mo',  desc:'Flexible, cancel anytime', highlight:false },
   { id:'biannual', label:'6 Months',  price:45, per:'/6mo', desc:'Save 50% vs monthly',      highlight:true  },
   { id:'annual',   label:'12 Months', price:60, per:'/yr',  desc:'Best value — ~$5/mo',      highlight:false },
 ];
 
+// ─── Helpers ─────────────────────────────────────────────────────
+function SelectInput({ label, value, onChange, options, placeholder, error }) {
+  return (
+    <div>
+      {label && <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">{label}</label>}
+      <div className="relative">
+        <select value={value || ''}
+          onChange={e => onChange(e.target.value)}
+          className={`w-full appearance-none border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2DA4D6] bg-white pr-10
+            ${error ? 'border-red-400' : 'border-[#E5E0D8]'}
+            ${!value ? 'text-[#C4BCB4]' : 'text-[#3E3D38]'}`}>
+          <option value="">{placeholder}</option>
+          {options.map(o => <option key={o} value={o}>{o}</option>)}
+        </select>
+        <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none" />
+      </div>
+      {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
+    </div>
+  );
+}
+
+function formatDateRange(from, to) {
+  if (!from && !to) return '';
+  const fmt = (d) => {
+    if (!d) return '';
+    const [y, m] = d.split('-');
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${months[parseInt(m) - 1]} ${y}`;
+  };
+  if (from && to) return `${fmt(from)} – ${fmt(to)}`;
+  if (from) return `From ${fmt(from)}`;
+  return `Until ${fmt(to)}`;
+}
+
+// ─── Main ────────────────────────────────────────────────────────
 export default function Register() {
-  // step 0 = role picker, step 1+ = form steps
-  const [role, setRole]   = useState('');   // 'instructor' | 'studio'
+  const [role, setRole]   = useState('');
   const [step, setStep]   = useState(0);
   const [form, setForm]   = useState({
-    // shared
     name:'', email:'', password:'', confirmPassword:'',
     bio:'', openTo:[], profileStatus:'active',
     plan:'monthly', photos:[], avatar:null, avatarPreview:null, photoFiles:[],
-    // instructor-only
+    // instructor
     age:'', pronouns:'', studio:'',
-    location:'', countryFrom:'', travelingTo:'', availability:'',
+    location:'', countryFrom:'', travelingTo:'',
+    availableFrom:'', availableTo:'', flexibleDates:false,
     disciplines:[], languages:[], lookingFor:'',
-    // studio-only
+    // studio
     studioName:'', contactName:'', phone:'', country:'',
     website:'', studioSize:'',
   });
-  const [errors, setErrors]             = useState({});
-  const [disciplineSearch, setDSearch]  = useState('');
+  const [errors, setErrors] = useState({});
+  const [discSearch, setDiscSearch] = useState('');
   const fileRef   = useRef();
   const photosRef = useRef();
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { status, error: apiError, token, user } = useSelector((s) => s.auth);
+  const { status, error: apiError, token, user } = useSelector(s => s.auth);
   const loading = status === STATUS.LOADING;
 
-  // Role-aware redirect after registration
   useEffect(() => {
     if (token && user) {
-      const dest = ROLE_THEME[user.role]?.defaultPath || '/portal/dashboard';
-      navigate(dest);
+      navigate(ROLE_THEME[user.role]?.defaultPath || '/portal/dashboard');
     }
   }, [token, user, navigate]);
+  useEffect(() => () => dispatch(clearError()), [dispatch]);
 
-  useEffect(() => { return () => { dispatch(clearError()); }; }, [dispatch]);
-
-  const update     = (k, v) => setForm(f => ({ ...f, [k]: v }));
+  const update = (k, v) => setForm(f => ({ ...f, [k]: v }));
   const toggleItem = (k, v) => setForm(f => ({
     ...f, [k]: f[k].includes(v) ? f[k].filter(i => i !== v) : [...f[k], v],
   }));
 
   const STEPS = role === 'studio' ? STEPS_STUDIO : STEPS_INSTRUCTOR;
   const theme = role === 'studio' ? ROLE_THEME.studio : ROLE_THEME.instructor;
+  const accentColor = theme?.accent || '#CE4F56';
 
-  // ── Validate current step ─────────────────────────────────────────
+  // ── Validation ───────────────────────────────────────────────
   const validate = () => {
     const e = {};
     if (step === 1) {
-      if (!form.name.trim())                     e.name = 'Name is required';
-      if (!form.email.trim())                    e.email = 'Email is required';
+      if (!form.name.trim())  e.name = 'Name is required';
+      if (!form.email.trim()) e.email = 'Email is required';
       if (!form.password || form.password.length < 6) e.password = 'Min 6 characters';
       if (form.password !== form.confirmPassword) e.confirmPassword = 'Passwords do not match';
     }
     if (role === 'instructor') {
-      if (step === 2 && !form.age)               e.age = 'Age is required';
-      if (step === 3 && !form.location.trim())   e.location = 'Location is required';
-      if (step === 3 && !form.countryFrom.trim()) e.countryFrom = 'Country is required';
-      if (step === 4 && !form.disciplines.length) e.disciplines = 'Select at least one';
+      if (step === 2 && !form.age) e.age = 'Age is required';
+      if (step === 3 && !form.countryFrom) e.countryFrom = 'Please select your country';
+      if (step === 3 && !form.availableFrom) e.availableFrom = 'Please select a start date';
+      if (step === 4 && !form.disciplines.length) e.disciplines = 'Select at least one discipline';
     }
     if (role === 'studio') {
       if (step === 2 && !form.studioName.trim()) e.studioName = 'Studio name is required';
       if (step === 2 && !form.location.trim())   e.location = 'City is required';
-      if (step === 2 && !form.country.trim())    e.country = 'Country is required';
-      if (step === 3 && !form.disciplines.length) e.disciplines = 'Select at least one';
+      if (step === 2 && !form.country)           e.country = 'Country is required';
+      if (step === 3 && !form.disciplines.length) e.disciplines = 'Select at least one discipline';
     }
     setErrors(e);
     return !Object.keys(e).length;
@@ -114,7 +147,6 @@ export default function Register() {
 
   const next = () => { if (validate()) setStep(s => s + 1); };
   const prev = () => setStep(s => s - 1);
-
   const pickRole = (r) => { setRole(r); setStep(1); };
 
   const handleAvatar = (e) => {
@@ -135,9 +167,9 @@ export default function Register() {
     fd.append('email', form.email);
     fd.append('password', form.password);
     fd.append('bio', form.bio);
-    fd.append('profileStatus', form.profileStatus);
+    fd.append('profile_status', form.profileStatus);
     fd.append('plan', form.plan);
-    (form.openTo || []).forEach((o, i) => fd.append(`openTo[${i}]`, o));
+    (form.openTo || []).forEach((o, i) => fd.append(`open_to[${i}]`, o));
     (form.disciplines || []).forEach((d, i) => fd.append(`disciplines[${i}]`, d));
     if (form.avatar) fd.append('profile_picture', form.avatar);
     (form.photoFiles || []).forEach((f, i) => fd.append(`gallery_photos[${i}]`, f));
@@ -147,10 +179,13 @@ export default function Register() {
       fd.append('pronouns', form.pronouns);
       fd.append('studio', form.studio);
       fd.append('location', form.location);
-      fd.append('countryFrom', form.countryFrom);
-      fd.append('travelingTo', form.travelingTo);
-      fd.append('availability', form.availability);
-      fd.append('lookingFor', form.lookingFor);
+      fd.append('country_from', form.countryFrom);
+      fd.append('traveling_to', form.travelingTo);
+      fd.append('available_from', form.availableFrom);
+      fd.append('available_to', form.availableTo);
+      fd.append('availability', formatDateRange(form.availableFrom, form.availableTo));
+      fd.append('flexible_dates', form.flexibleDates ? '1' : '0');
+      fd.append('looking_for', form.lookingFor);
       (form.languages || []).forEach((l, i) => fd.append(`languages[${i}]`, l));
     } else {
       fd.append('studio_name', form.studioName);
@@ -161,18 +196,19 @@ export default function Register() {
       fd.append('website', form.website);
       fd.append('studio_size', form.studioSize);
     }
-
     dispatch(registerUser(fd));
   };
 
   const filteredDisciplines = DISCIPLINE_CATEGORIES.map(cat => ({
     ...cat,
-    items: cat.items.filter(d => !disciplineSearch || d.toLowerCase().includes(disciplineSearch.toLowerCase())),
+    items: cat.items.filter(d => !discSearch || d.toLowerCase().includes(discSearch.toLowerCase())),
   })).filter(cat => cat.items.length > 0);
 
   const progress = step > 0 ? ((step - 1) / (STEPS.length - 1)) * 100 : 0;
+  const availabilityDisplay = formatDateRange(form.availableFrom, form.availableTo);
+  const inp = "w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none transition-all";
 
-  // ── STEP 0: Role picker ────────────────────────────────────────────
+  // ── STEP 0: Role picker ─────────────────────────────────────
   if (step === 0) {
     return (
       <div className="min-h-screen bg-[#FDFCF8] flex items-center justify-center font-['DM_Sans'] p-4">
@@ -183,65 +219,39 @@ export default function Register() {
               MOVING <em className="not-italic text-[#CE4F56]">GURU</em>
             </span>
           </div>
-
-          <h1 className="font-['Unbounded'] text-2xl font-black text-[#3E3D38] text-center mb-2">
-            Join Moving Guru
-          </h1>
-          <p className="text-[#9A9A94] text-sm text-center mb-10">
-            Are you joining as an instructor or a studio?
-          </p>
-
+          <h1 className="font-['Unbounded'] text-2xl font-black text-[#3E3D38] text-center mb-2">Join Moving Guru</h1>
+          <p className="text-[#9A9A94] text-sm text-center mb-10">Are you joining as an instructor or a studio?</p>
           <div className="grid grid-cols-2 gap-4">
-            {/* Instructor card */}
-            <button
-              onClick={() => pickRole('instructor')}
-              className="group bg-white border-2 border-[#E5E0D8] rounded-2xl p-6 text-left hover:border-[#CE4F56] hover:shadow-md transition-all"
-            >
+            <button onClick={() => pickRole('instructor')}
+              className="group bg-white border-2 border-[#E5E0D8] rounded-2xl p-6 text-left hover:border-[#CE4F56] hover:shadow-md transition-all">
               <div className="w-12 h-12 bg-[#CE4F56]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#CE4F56]/20 transition-colors">
                 <User size={22} className="text-[#CE4F56]" />
               </div>
               <p className="font-['Unbounded'] text-sm font-black text-[#3E3D38] mb-1">Instructor</p>
-              <p className="text-[#9A9A94] text-xs leading-relaxed">
-                I teach yoga, pilates, martial arts or other wellness disciplines and want to find work globally.
-              </p>
-              <div className="flex items-center gap-1 mt-4 text-[#CE4F56] text-xs font-semibold">
-                Join as instructor <ArrowRight size={12} />
-              </div>
+              <p className="text-[#9A9A94] text-xs leading-relaxed">I teach wellness disciplines and want to find work globally.</p>
+              <div className="flex items-center gap-1 mt-4 text-[#CE4F56] text-xs font-semibold">Join as instructor <ArrowRight size={12} /></div>
             </button>
-
-            {/* Studio card */}
-            <button
-              onClick={() => pickRole('studio')}
-              className="group bg-white border-2 border-[#E5E0D8] rounded-2xl p-6 text-left hover:border-[#2DA4D6] hover:shadow-md transition-all"
-            >
+            <button onClick={() => pickRole('studio')}
+              className="group bg-white border-2 border-[#E5E0D8] rounded-2xl p-6 text-left hover:border-[#2DA4D6] hover:shadow-md transition-all">
               <div className="w-12 h-12 bg-[#2DA4D6]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#2DA4D6]/20 transition-colors">
                 <Building2 size={22} className="text-[#2DA4D6]" />
               </div>
               <p className="font-['Unbounded'] text-sm font-black text-[#3E3D38] mb-1">Studio</p>
-              <p className="text-[#9A9A94] text-xs leading-relaxed">
-                I run a wellness studio and want to find talented travelling instructors to join my team.
-              </p>
-              <div className="flex items-center gap-1 mt-4 text-[#2DA4D6] text-xs font-semibold">
-                Join as studio <ArrowRight size={12} />
-              </div>
+              <p className="text-[#9A9A94] text-xs leading-relaxed">I run a wellness studio and want to find travelling instructors.</p>
+              <div className="flex items-center gap-1 mt-4 text-[#2DA4D6] text-xs font-semibold">Join as studio <ArrowRight size={12} /></div>
             </button>
           </div>
-
           <p className="text-center text-[#9A9A94] text-sm mt-8">
-            Already a member?{' '}
-            <Link to="/login" className="text-[#CE4F56] font-medium hover:underline">Sign in</Link>
+            Already a member? <Link to="/login" className="text-[#CE4F56] font-medium hover:underline">Sign in</Link>
           </p>
         </div>
       </div>
     );
   }
 
-  // ── STEP 1+: Multi-step form ───────────────────────────────────────
-  const accentColor = theme.accent;
-
+  // ── STEP 1+: Multi-step form ────────────────────────────────
   return (
     <div className="min-h-screen bg-[#FDFCF8] font-['DM_Sans'] py-8 px-4">
-      {/* Header */}
       <div className="max-w-2xl mx-auto mb-8 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
           <Globe size={18} style={{ color: accentColor }} />
@@ -249,10 +259,7 @@ export default function Register() {
             MOVING <em className="not-italic" style={{ color: accentColor }}>GURU</em>
           </span>
         </Link>
-        <button
-          onClick={() => setStep(0)}
-          className="text-xs text-[#9A9A94] hover:text-[#3E3D38] transition-colors"
-        >
+        <button onClick={() => setStep(0)} className="text-xs text-[#9A9A94] hover:text-[#3E3D38] transition-colors">
           ← Change role
         </button>
       </div>
@@ -270,7 +277,7 @@ export default function Register() {
             </div>
             <div className="flex items-center">
               {STEPS.map((s, i) => {
-                const done = step > s.id; const active = step === s.id;
+                const done = step > s.id, active = step === s.id;
                 return (
                   <div key={s.id} className="flex items-center flex-1 last:flex-none">
                     <div className="flex flex-col items-center gap-1">
@@ -279,9 +286,7 @@ export default function Register() {
                         {done ? <Check size={14} /> : <span className="font-['Unbounded'] text-[10px] font-bold">{s.id}</span>}
                       </div>
                       <span className={`text-[9px] tracking-wider uppercase hidden sm:block
-                        ${active ? 'text-white' : done ? 'text-[#f5fca6]' : 'text-white/30'}`}>
-                        {s.label}
-                      </span>
+                        ${active ? 'text-white' : done ? 'text-[#f5fca6]' : 'text-white/30'}`}>{s.label}</span>
                     </div>
                     {i < STEPS.length - 1 && (
                       <div className={`h-px flex-1 mx-1 transition-all ${step > s.id ? 'bg-[#f5fca6]' : 'bg-white/20'}`} />
@@ -330,30 +335,24 @@ export default function Register() {
                   <div className="flex items-center gap-4">
                     <div onClick={() => fileRef.current?.click()}
                       className="w-20 h-20 rounded-full border-2 border-dashed border-[#E5E0D8] flex items-center justify-center cursor-pointer hover:border-[#CE4F56] transition-colors overflow-hidden bg-[#FDFCF8]">
-                      {form.avatarPreview
-                        ? <img src={form.avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
-                        : <Upload size={20} className="text-[#C4BCB4]" />}
+                      {form.avatarPreview ? <img src={form.avatarPreview} alt="Avatar" className="w-full h-full object-cover" /> : <Upload size={20} className="text-[#C4BCB4]" />}
                     </div>
                     <input ref={fileRef} type="file" accept="image/*" onChange={handleAvatar} className="hidden" />
-                    <p className="text-[#9A9A94] text-xs">Optional. Max 4MB.</p>
+                    <p className="text-[#9A9A94] text-xs">Optional. Recommended square photo.</p>
                   </div>
                 </div>
-                <Input label="Age" name="age" type="number" form={form} update={update} errors={errors} placeholder="Your age" />
-                <div>
-                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Pronouns</label>
-                  <div className="flex flex-wrap gap-2">
-                    {PRONOUNS.map(p => (
-                      <button key={p} type="button" onClick={() => update('pronouns', p)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
-                          ${form.pronouns === p ? 'bg-[#CE4F56] text-white border-[#CE4F56]' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#CE4F56]'}`}>
-                        {p}
-                      </button>
-                    ))}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Age *</label>
+                    <input type="number" min="18" max="80" value={form.age} onChange={e => update('age', e.target.value)}
+                      placeholder="e.g. 30" className={`${inp} ${errors.age ? 'border-red-400' : ''}`} />
+                    {errors.age && <p className="text-red-400 text-xs mt-1">{errors.age}</p>}
                   </div>
+                  <SelectInput label="Pronouns" value={form.pronouns} onChange={v => update('pronouns', v)} options={PRONOUNS} placeholder="Select pronouns..." />
                 </div>
                 <Input label="Current Studio / Employer" name="studio" form={form} update={update} errors={errors} placeholder="e.g. STRIVE, Marrickville" />
                 <div>
-                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Languages</label>
+                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Languages Spoken</label>
                   <div className="flex flex-wrap gap-2">
                     {LANGUAGES.map(l => (
                       <button key={l} type="button" onClick={() => toggleItem('languages', l)}
@@ -374,22 +373,27 @@ export default function Register() {
                   <h2 className="font-['Unbounded'] text-xl font-black text-[#3E3D38] mb-1">Studio details</h2>
                   <p className="text-[#9A9A94] text-sm">Tell instructors about your studio</p>
                 </div>
-                {/* Studio main photo */}
-                <div>
-                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Studio Photo</label>
-                  <div onClick={() => fileRef.current?.click()}
-                    className="w-full h-36 border-2 border-dashed border-[#E5E0D8] rounded-xl flex items-center justify-center cursor-pointer hover:border-[#2DA4D6] transition-colors overflow-hidden bg-[#FDFCF8]">
-                    {form.avatarPreview
-                      ? <img src={form.avatarPreview} alt="Studio" className="w-full h-full object-cover" />
-                      : <div className="text-center"><Upload size={20} className="text-[#C4BCB4] mx-auto mb-1" /><p className="text-[#9A9A94] text-xs">Click to upload</p></div>}
-                  </div>
-                  <input ref={fileRef} type="file" accept="image/*" onChange={handleAvatar} className="hidden" />
+                <div onClick={() => fileRef.current?.click()}
+                  className="w-full h-36 border-2 border-dashed border-[#E5E0D8] rounded-xl flex items-center justify-center cursor-pointer hover:border-[#2DA4D6] transition-colors overflow-hidden bg-[#FDFCF8]">
+                  {form.avatarPreview ? <img src={form.avatarPreview} alt="Studio" className="w-full h-full object-cover" /> :
+                    <div className="text-center"><Upload size={20} className="text-[#C4BCB4] mx-auto mb-1" /><p className="text-[#9A9A94] text-xs">Studio main photo (optional)</p></div>}
                 </div>
-                <Input label="Studio Name" name="studioName" form={form} update={update} errors={errors} placeholder="e.g. Flow Studio Bali" />
+                <input ref={fileRef} type="file" accept="image/*" onChange={handleAvatar} className="hidden" />
+                <div>
+                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Studio Name *</label>
+                  <input value={form.studioName} onChange={e => update('studioName', e.target.value)}
+                    placeholder="e.g. Flow Studio Bali" className={`${inp} ${errors.studioName ? 'border-red-400' : ''}`} />
+                  {errors.studioName && <p className="text-red-400 text-xs mt-1">{errors.studioName}</p>}
+                </div>
                 <Input label="Contact Name" name="contactName" form={form} update={update} errors={errors} placeholder="Who manages this account?" />
                 <div className="grid grid-cols-2 gap-4">
-                  <Input label="City / Location" name="location" form={form} update={update} errors={errors} placeholder="e.g. Bali" />
-                  <Input label="Country" name="country" form={form} update={update} errors={errors} placeholder="e.g. Indonesia" />
+                  <div>
+                    <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">City / Location *</label>
+                    <input value={form.location} onChange={e => update('location', e.target.value)}
+                      placeholder="e.g. Bali" className={`${inp} ${errors.location ? 'border-red-400' : ''}`} />
+                    {errors.location && <p className="text-red-400 text-xs mt-1">{errors.location}</p>}
+                  </div>
+                  <SelectInput label="Country *" value={form.country} onChange={v => update('country', v)} options={COUNTRIES} placeholder="Select country..." error={errors.country} />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <Input label="Phone (optional)" name="phone" form={form} update={update} errors={errors} placeholder="+62 ..." />
@@ -415,12 +419,57 @@ export default function Register() {
               <div className="space-y-5">
                 <div>
                   <h2 className="font-['Unbounded'] text-xl font-black text-[#3E3D38] mb-1">Location & Travel</h2>
-                  <p className="text-[#9A9A94] text-sm">Where are you from? Where are you going?</p>
+                  <p className="text-[#9A9A94] text-sm">Where are you from? Where are you heading?</p>
                 </div>
-                <Input label="Current Location" name="location" form={form} update={update} errors={errors} placeholder="City, Country" />
-                <Input label="Country From" name="countryFrom" form={form} update={update} errors={errors} placeholder="e.g. Australia" />
-                <Input label="Traveling To" name="travelingTo" form={form} update={update} errors={errors} placeholder="e.g. South America, Italy" />
-                <Input label="Availability / Dates" name="availability" form={form} update={update} errors={errors} placeholder="e.g. August – October 2026" />
+
+                <Input label="Current Location" name="location" form={form} update={update} errors={errors} placeholder="City, Country (e.g. Sydney, Australia)" />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <SelectInput label="Country From *" value={form.countryFrom} onChange={v => update('countryFrom', v)}
+                    options={COUNTRIES} placeholder="Select your country..." error={errors.countryFrom} />
+                  <div>
+                    <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Traveling To</label>
+                    <SelectInput value={form.travelingTo} onChange={v => update('travelingTo', v)}
+                      options={COUNTRIES_AND_REGIONS} placeholder="Select destination..." />
+                    <input value={form.travelingTo} onChange={e => update('travelingTo', e.target.value)}
+                      placeholder="Or type: Italy, Bali, Thailand..."
+                      className="mt-2 w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-2.5 text-xs text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-[#2DA4D6] transition-all" />
+                  </div>
+                </div>
+
+                {/* Availability date range */}
+                <div>
+                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">
+                    Availability Dates *
+                  </label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-xs text-[#9A9A94] mb-1.5 flex items-center gap-1"><Calendar size={11} /> Available From</p>
+                      <input type="date" value={form.availableFrom} onChange={e => update('availableFrom', e.target.value)}
+                        min={new Date().toISOString().split('T')[0]}
+                        className={`${inp} ${errors.availableFrom ? 'border-red-400' : ''}`} />
+                      {errors.availableFrom && <p className="text-red-400 text-xs mt-1">{errors.availableFrom}</p>}
+                    </div>
+                    <div>
+                      <p className="text-xs text-[#9A9A94] mb-1.5 flex items-center gap-1"><Calendar size={11} /> Available To</p>
+                      <input type="date" value={form.availableTo} onChange={e => update('availableTo', e.target.value)}
+                        min={form.availableFrom || new Date().toISOString().split('T')[0]}
+                        className={inp} />
+                    </div>
+                  </div>
+                  {availabilityDisplay && (
+                    <div className="mt-2 flex items-center gap-2 px-3 py-1.5 bg-[#2DA4D6]/10 rounded-lg w-fit">
+                      <Calendar size={12} className="text-[#2DA4D6]" />
+                      <span className="text-[#2DA4D6] text-xs font-semibold">{availabilityDisplay}</span>
+                    </div>
+                  )}
+                  <label className="flex items-center gap-2 mt-2 cursor-pointer">
+                    <input type="checkbox" checked={form.flexibleDates} onChange={e => update('flexibleDates', e.target.checked)}
+                      className="w-4 h-4 rounded border-[#E5E0D8] accent-[#2DA4D6]" />
+                    <span className="text-sm text-[#6B6B66]">I'm flexible with exact dates</span>
+                  </label>
+                </div>
+
                 <div>
                   <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Open To</label>
                   <div className="flex flex-wrap gap-2">
@@ -436,35 +485,32 @@ export default function Register() {
               </div>
             )}
 
-            {/* ── STEP 3 STUDIO / STEP 4 INSTRUCTOR: Disciplines ── */}
+            {/* ── DISCIPLINES (Step 3 studio / Step 4 instructor) ── */}
             {((step === 3 && role === 'studio') || (step === 4 && role === 'instructor')) && (
               <div className="space-y-4">
                 <div>
                   <h2 className="font-['Unbounded'] text-xl font-black text-[#3E3D38] mb-1">
                     {role === 'studio' ? 'Disciplines offered' : 'Your disciplines'}
                   </h2>
-                  <p className="text-[#9A9A94] text-sm">
-                    {role === 'studio' ? 'What does your studio teach?' : 'What do you teach?'}
-                  </p>
+                  <p className="text-[#9A9A94] text-sm">{role === 'studio' ? 'What does your studio teach?' : 'What do you teach?'}</p>
                 </div>
-                <input type="text" value={disciplineSearch} onChange={e => setDSearch(e.target.value)}
+                <input type="text" value={discSearch} onChange={e => setDiscSearch(e.target.value)}
                   placeholder="Search disciplines..."
-                  className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#2DA4D6] transition-all" />
+                  className={inp} />
                 {form.disciplines.length > 0 && (
                   <div className="flex flex-wrap gap-1.5">
                     {form.disciplines.map(d => (
                       <span key={d} className="flex items-center gap-1 px-2.5 py-1 bg-[#2DA4D6]/10 text-[#2DA4D6] rounded-full text-xs font-medium">
-                        {d}
-                        <button onClick={() => toggleItem('disciplines', d)} className="hover:text-red-500"><X size={10} /></button>
+                        {d}<button onClick={() => toggleItem('disciplines', d)} className="hover:text-red-500"><X size={10} /></button>
                       </span>
                     ))}
                   </div>
                 )}
                 {errors.disciplines && <p className="text-red-400 text-xs">{errors.disciplines}</p>}
-                <div className="max-h-64 overflow-y-auto space-y-4 pr-1">
+                <div className="max-h-64 overflow-y-auto space-y-4 pr-1 border border-[#E5E0D8] rounded-xl p-3">
                   {filteredDisciplines.map(cat => (
                     <div key={cat.label}>
-                      <p className="text-[9px] text-[#9A9A94] tracking-widest uppercase font-semibold mb-2">{cat.label}</p>
+                      <p className="text-[9px] text-[#9A9A94] tracking-widest uppercase font-semibold mb-2">{cat.emoji} {cat.label}</p>
                       <div className="flex flex-wrap gap-1.5">
                         {cat.items.map(d => (
                           <button key={d} type="button" onClick={() => toggleItem('disciplines', d)}
@@ -488,26 +534,24 @@ export default function Register() {
                   <p className="text-[#9A9A94] text-sm">Help studios understand what makes you special</p>
                 </div>
                 <div>
-                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-1.5">Bio</label>
+                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-1.5">About You</label>
                   <textarea value={form.bio} onChange={e => update('bio', e.target.value)} rows={4}
                     placeholder="Tell studios about your experience, teaching style, and what you're looking for..."
-                    className="w-full bg-white border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm placeholder-[#C4BCB4] focus:outline-none focus:border-[#CE4F56] transition-all resize-none" />
+                    className={`${inp} resize-none`} />
                 </div>
                 <div>
                   <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-1.5">What I'm Looking For</label>
                   <textarea value={form.lookingFor} onChange={e => update('lookingFor', e.target.value)} rows={3}
                     placeholder="Describe your ideal opportunity..."
-                    className="w-full bg-white border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm placeholder-[#C4BCB4] focus:outline-none focus:border-[#CE4F56] transition-all resize-none" />
+                    className={`${inp} resize-none`} />
                 </div>
                 <div>
-                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Gallery Photos (up to 4)</label>
+                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Gallery Photos (up to 4, optional)</label>
                   <div className="grid grid-cols-4 gap-2">
                     {[0,1,2,3].map(i => (
                       <div key={i} onClick={() => photosRef.current?.click()}
                         className="aspect-square border-2 border-dashed border-[#E5E0D8] rounded-xl overflow-hidden cursor-pointer hover:border-[#CE4F56] transition-all flex items-center justify-center bg-[#FDFCF8]">
-                        {form.photos[i]
-                          ? <img src={form.photos[i]} alt="" className="w-full h-full object-cover" />
-                          : <Upload size={16} className="text-[#C4BCB4]" />}
+                        {form.photos[i] ? <img src={form.photos[i]} alt="" className="w-full h-full object-cover" /> : <Upload size={16} className="text-[#C4BCB4]" />}
                       </div>
                     ))}
                   </div>
@@ -516,18 +560,18 @@ export default function Register() {
               </div>
             )}
 
-            {/* ── STEP 4 STUDIO: About & Photos ── */}
+            {/* ── STEP 4 STUDIO: About ── */}
             {step === 4 && role === 'studio' && (
               <div className="space-y-5">
                 <div>
                   <h2 className="font-['Unbounded'] text-xl font-black text-[#3E3D38] mb-1">About your studio</h2>
-                  <p className="text-[#9A9A94] text-sm">Help instructors understand what makes your studio special</p>
+                  <p className="text-[#9A9A94] text-sm">Help instructors understand your studio</p>
                 </div>
                 <div>
                   <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-1.5">About the Studio</label>
                   <textarea value={form.bio} onChange={e => update('bio', e.target.value)} rows={4}
                     placeholder="Describe your studio — the vibe, community, what makes you unique..."
-                    className="w-full bg-white border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm placeholder-[#C4BCB4] focus:outline-none focus:border-[#2DA4D6] transition-all resize-none" />
+                    className={`${inp} resize-none`} />
                 </div>
                 <div>
                   <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Open To</label>
@@ -542,14 +586,12 @@ export default function Register() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Gallery Photos (up to 4)</label>
+                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Gallery Photos (up to 4, optional)</label>
                   <div className="grid grid-cols-4 gap-2">
                     {[0,1,2,3].map(i => (
                       <div key={i} onClick={() => photosRef.current?.click()}
                         className="aspect-square border-2 border-dashed border-[#E5E0D8] rounded-xl overflow-hidden cursor-pointer hover:border-[#2DA4D6] transition-all flex items-center justify-center bg-[#FDFCF8]">
-                        {form.photos[i]
-                          ? <img src={form.photos[i]} alt="" className="w-full h-full object-cover" />
-                          : <Upload size={16} className="text-[#C4BCB4]" />}
+                        {form.photos[i] ? <img src={form.photos[i]} alt="" className="w-full h-full object-cover" /> : <Upload size={16} className="text-[#C4BCB4]" />}
                       </div>
                     ))}
                   </div>
@@ -558,7 +600,7 @@ export default function Register() {
               </div>
             )}
 
-            {/* ── LAST STEP: Plan (shared) ── */}
+            {/* ── LAST STEP: Plan ── */}
             {((step === 6 && role === 'instructor') || (step === 5 && role === 'studio')) && (
               <div className="space-y-5">
                 <div>
@@ -571,9 +613,7 @@ export default function Register() {
                       className={`w-full p-4 rounded-xl border-2 text-left transition-all relative
                         ${form.plan === plan.id ? 'border-[#2DA4D6] bg-[#2DA4D6]/5' : 'border-[#E5E0D8] hover:border-[#2DA4D6]/40'}`}>
                       {plan.highlight && (
-                        <span className="absolute top-3 right-3 bg-[#f5fca6] text-[#3E3D38] text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                          Most Popular
-                        </span>
+                        <span className="absolute top-3 right-3 bg-[#f5fca6] text-[#3E3D38] text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Most Popular</span>
                       )}
                       <div className="flex items-center gap-3">
                         <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0
@@ -593,7 +633,7 @@ export default function Register() {
                 </div>
                 <div className="bg-[#f5fca6]/30 rounded-xl p-4 border border-[#f5fca6]">
                   <p className="text-[#3E3D38] text-xs font-semibold mb-1">🎉 Launch Promo Active</p>
-                  <p className="text-[#6B6B66] text-xs">First 3 months for $2. First 100 studios get 6 months free. Founding member pricing locked in.</p>
+                  <p className="text-[#6B6B66] text-xs">First 3 months for $2. First 100 studios get 6 months free. Founding member pricing locked in forever.</p>
                 </div>
               </div>
             )}
@@ -607,12 +647,10 @@ export default function Register() {
                 <ArrowLeft size={16} /> Back
               </button>
             ) : (
-              <button type="button" onClick={() => setStep(0)}
-                className="text-sm text-[#9A9A94] hover:text-[#3E3D38] transition-colors">
+              <button type="button" onClick={() => setStep(0)} className="text-sm text-[#9A9A94] hover:text-[#3E3D38] transition-colors">
                 ← Change role
               </button>
             )}
-
             {step < STEPS.length ? (
               <button type="button" onClick={next}
                 className="flex items-center gap-2 px-6 py-2.5 text-white rounded-xl text-sm font-bold transition-all"
@@ -621,7 +659,7 @@ export default function Register() {
               </button>
             ) : (
               <button type="button" onClick={handleSubmit} disabled={loading}
-                className="flex items-center gap-2 px-6 py-2.5 text-white rounded-xl text-sm font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-6 py-2.5 text-white rounded-xl text-sm font-bold transition-all disabled:opacity-50"
                 style={{ backgroundColor: accentColor }}>
                 {loading
                   ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -632,8 +670,7 @@ export default function Register() {
         </div>
 
         <p className="text-center text-[#9A9A94] text-xs mt-6">
-          Already a member?{' '}
-          <Link to="/login" className="text-[#CE4F56] hover:underline">Sign in</Link>
+          Already a member? <Link to="/login" className="text-[#CE4F56] hover:underline">Sign in</Link>
         </p>
       </div>
     </div>
