@@ -52,7 +52,6 @@ export default function App() {
         {/* ── Public ─────────────────────────────────────────── */}
         <Route path="/login"            element={<Login />} />
         <Route path="/register"         element={<Register />} />
-        <Route path="/studio-register"  element={<Register />} />
         <Route path="/forgot-password"  element={<ForgotPassword />} />
         <Route path="/reset-password"   element={<ResetPassword />} />
 

@@ -170,7 +170,7 @@ export default function Login() {
               className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-[#CE4F56] text-[#CE4F56] rounded-xl text-sm font-semibold hover:bg-[#CE4F56] hover:text-white transition-all">
               Join as Instructor
             </Link>
-            <Link to="/studio-register"
+            <Link to="/register"
               className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-[#2DA4D6] text-[#2DA4D6] rounded-xl text-sm font-semibold hover:bg-[#2DA4D6] hover:text-white transition-all">
               Join as Studio
             </Link>
