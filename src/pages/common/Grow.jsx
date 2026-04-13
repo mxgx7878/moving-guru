@@ -54,12 +54,22 @@ export default function Grow() {
     setEditingPost(null);
   };
 
+  // ── For studios, Grow shows ONLY their own active retreats / ads
+  //    (per client: "Grow section sirf usi studio ki posted content
+  //    dikhaye"). Instructors keep the full feed so they can browse
+  //    everything posted by studios + educators.
+  const visiblePosts = useMemo(
+    () => role === 'studio' ? posts.filter(isOwnPost) : posts,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [posts, role, studioName]
+  );
+
   const allDisc = useMemo(() => (
-    [...new Set(posts.flatMap(p => p.disciplines))].filter(Boolean).sort()
-  ), [posts]);
+    [...new Set(visiblePosts.flatMap(p => p.disciplines))].filter(Boolean).sort()
+  ), [visiblePosts]);
 
   const filtered = useMemo(() => {
-    return posts.filter(p => {
+    return visiblePosts.filter(p => {
       const matchType = activeType === 'all' || p.type === activeType;
       const q = query.toLowerCase();
       const matchQ = !q ||
@@ -70,10 +80,11 @@ export default function Grow() {
       const matchD = !filterDisc || (p.disciplines || []).some(d => d.toLowerCase().includes(filterDisc.toLowerCase()));
       return matchType && matchQ && matchD;
     });
-  }, [posts, activeType, query, filterDisc]);
+  }, [visiblePosts, activeType, query, filterDisc]);
 
   const clearFilters = () => { setQuery(''); setFilterDisc(''); };
   const hasFilters   = query || filterDisc;
+  const isStudio = role === 'studio';
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -84,11 +95,12 @@ export default function Grow() {
         <div className="relative z-10">
           <p className="text-[#3E3D38]/60 text-xs font-semibold tracking-widest uppercase mb-2">Grow</p>
           <h1 className="font-['Unbounded'] text-2xl font-black text-[#3E3D38] mb-1">
-            Training, Retreats & Events
+            {isStudio ? 'Your Posted Retreats & Events' : 'Training, Retreats & Events'}
           </h1>
           <p className="text-[#3E3D38]/70 text-sm max-w-lg">
-            Upskill, deepen your practice, and connect with the global wellness community.
-            Opportunities from studios and educators worldwide.
+            {isStudio
+              ? 'Manage the trainings, retreats and events your studio has posted. Click "Edit Info" on any card to update the details.'
+              : 'Upskill, deepen your practice, and connect with the global wellness community. Opportunities from studios and educators worldwide.'}
           </p>
         </div>
         {/* Decorative circles */}
@@ -96,10 +108,10 @@ export default function Grow() {
         <div className="absolute -right-2 -bottom-6 w-20 h-20 rounded-full bg-white/10" />
       </div>
 
-      {/* Stats */}
+      {/* Stats — counts reflect what's actually visible (studio sees own only) */}
       <div className="grid grid-cols-3 gap-4">
         {GROW_TYPES.filter(t => t.id !== 'all').map(t => {
-          const count = GROW_POSTS.filter(p => p.type === t.id).length;
+          const count = visiblePosts.filter(p => p.type === t.id).length;
           return (
             <button key={t.id} onClick={() => setActiveType(t.id === activeType ? 'all' : t.id)}
               className={`rounded-2xl p-4 border text-center transition-all
@@ -140,7 +152,7 @@ export default function Grow() {
                 ${activeType === t.id ? 'text-white border-transparent' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#3E3D38]'}`}
               style={activeType === t.id ? { backgroundColor: t.color } : {}}>
               {t.label}
-              {t.id !== 'all' && ` (${GROW_POSTS.filter(p => p.type === t.id).length})`}
+              {t.id !== 'all' && ` (${visiblePosts.filter(p => p.type === t.id).length})`}
             </button>
           ))}
         </div>
