@@ -182,7 +182,7 @@ export default function JobListings() {
         <button
           onClick={() => setFilterType('all')}
           className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all
-            ${filterType === 'all' ? 'bg-[#3E3D38] text-white' : 'bg-white border border-[#E5E0D8] text-[#6B6B66] hover:border-[#3E3D38]'}`}
+            ${filterType === 'all' ? 'bg-[#CCFF00] text-[#3E3D38] border border-[#CCFF00]' : 'bg-white border border-[#E5E0D8] text-[#6B6B66] hover:border-[#3E3D38]'}`}
         >
           All ({jobs.length})
         </button>
@@ -403,7 +403,7 @@ export default function JobListings() {
                       onClick={() => update('role_type', o.id)}
                       className={`px-3.5 py-2 rounded-full text-xs font-semibold border transition-all
                         ${form.role_type === o.id
-                          ? 'bg-[#3E3D38] text-white border-[#3E3D38]'
+                          ? 'bg-[#CCFF00] text-[#3E3D38] border-[#CCFF00]'
                           : 'bg-white border-[#E5E0D8] text-[#6B6B66] hover:border-[#3E3D38]'}`}
                     >
                       {o.label}

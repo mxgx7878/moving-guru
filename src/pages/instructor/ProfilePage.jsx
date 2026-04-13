@@ -679,7 +679,7 @@ const handleSave = async () => {
                   </p>
                   <button type="button" onClick={() => toggleSelectAll(cat.items)}
                     className={`text-[10px] font-semibold px-2.5 py-1 rounded-lg transition-all
-                      ${allSel ? 'bg-[#3E3D38] text-white' : 'bg-[#FBF8E4] text-[#6B6B66] hover:bg-[#E5E0D8]'}`}>
+                      ${allSel ? 'bg-[#CCFF00] text-[#3E3D38]' : 'bg-[#FBF8E4] text-[#6B6B66] hover:bg-[#E6FF80]'}`}>
                     {allSel ? 'Deselect All' : 'Select All'}
                   </button>
                 </div>

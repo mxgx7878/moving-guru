@@ -31,10 +31,12 @@ import { STATUS } from '../../constants/apiConstants';
 import { CardSkeleton, ButtonLoader } from '../../components/feedback';
 
 const JOB_TYPES = [
-  { id: 'all',             label: 'All Listings',    color: '#3E3D38', bg: 'bg-[#3E3D38]' },
-  { id: 'hire',            label: 'Direct Hire',     color: '#2DA4D6', bg: 'bg-[#2DA4D6]' },
-  { id: 'swap',            label: 'Instructor Swap', color: '#E89560', bg: 'bg-[#E89560]' },
-  { id: 'energy_exchange', label: 'Energy Exchange', color: '#6BE6A4', bg: 'bg-[#6BE6A4]' },
+  // "All" uses the chartreuse accent — per client palette, tabs &
+  // small buttons should lean on this colour rather than dark grey.
+  { id: 'all',             label: 'All Listings',    color: '#CCFF00', bg: 'bg-[#CCFF00]', activeText: '#3E3D38' },
+  { id: 'hire',            label: 'Direct Hire',     color: '#2DA4D6', bg: 'bg-[#2DA4D6]', activeText: '#FFFFFF' },
+  { id: 'swap',            label: 'Instructor Swap', color: '#E89560', bg: 'bg-[#E89560]', activeText: '#FFFFFF' },
+  { id: 'energy_exchange', label: 'Energy Exchange', color: '#6BE6A4', bg: 'bg-[#6BE6A4]', activeText: '#3E3D38' },
 ];
 
 const TYPE_STYLES = {
@@ -156,8 +158,8 @@ export default function FindWork() {
           {JOB_TYPES.map(t => (
             <button key={t.id} onClick={() => setFilterType(t.id)}
               className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all
-                ${filterType === t.id ? 'text-white shadow-sm' : 'bg-[#FBF8E4] text-[#6B6B66] hover:bg-[#FBF8E4]'}`}
-              style={filterType === t.id ? { backgroundColor: t.color } : {}}>
+                ${filterType === t.id ? 'shadow-sm' : 'bg-[#FBF8E4] text-[#6B6B66] hover:bg-[#E6FF80]'}`}
+              style={filterType === t.id ? { backgroundColor: t.color, color: t.activeText } : {}}>
               {t.label}
               {t.id !== 'all' && (
                 <span className="ml-1.5 opacity-70">
