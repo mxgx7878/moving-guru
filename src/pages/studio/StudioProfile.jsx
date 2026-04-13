@@ -6,7 +6,7 @@ import { DISCIPLINE_CATEGORIES } from '../../data/disciplines';
 import {
   Upload, X, MapPin, Globe, Phone,
   Instagram, Save, Eye, Building2, ExternalLink, MessageCircle, Heart,
-  Briefcase, Calendar, GraduationCap, Clock
+  Briefcase, Calendar, GraduationCap, Clock, ChevronDown
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { ButtonLoader } from '../../components/feedback';
@@ -25,6 +25,26 @@ const POSITION_TYPES = [
 ];
 
 const POSITION_LABELS = POSITION_TYPES.reduce((acc, p) => ({ ...acc, [p.id]: p.label }), {});
+
+// ── Qualification levels — ordered roughly low → high.
+//    Used by both Studio Profile (active hiring box) and JobListings,
+//    so any change here propagates to the whole app + the DB enum.
+export const QUALIFICATION_LEVELS = [
+  { id: 'none',                  label: 'Not required'                          },
+  { id: 'intermediate',          label: 'Intermediate / High School'            },
+  { id: 'diploma',               label: 'Diploma / Associate'                   },
+  { id: 'bachelors',             label: "Bachelor's Degree"                     },
+  { id: 'masters',               label: "Master's Degree"                       },
+  { id: 'doctorate',             label: 'Doctorate / PhD'                       },
+  { id: 'cert_200hr',            label: '200hr Teacher Certification'           },
+  { id: 'cert_500hr',            label: '500hr Teacher Certification'           },
+  { id: 'cert_comprehensive',    label: 'Comprehensive Certification'           },
+  { id: 'cert_specialized',      label: 'Specialised / Other Certification'     },
+];
+
+const QUALIFICATION_LABELS = QUALIFICATION_LEVELS.reduce(
+  (acc, q) => ({ ...acc, [q.id]: q.label }), {}
+);
 
 function Field({ label, children }) {
   return (
@@ -65,7 +85,7 @@ export default function StudioProfile() {
     hiringRoleDescription:    user?.hiring_role_description    || user?.hiringRoleDescription    || '',
     hiringPositionType:       user?.hiring_position_type       || user?.hiringPositionType       || 'permanent',
     hiringStartDate:          user?.hiring_start_date          || user?.hiringStartDate          || '',
-    hiringQualificationRequired: !!(user?.hiring_qualification_required ?? user?.hiringQualificationRequired),
+    hiringQualificationLevel: user?.hiring_qualification_level || user?.hiringQualificationLevel || 'none',
     hiringCompensation:       user?.hiring_compensation        || user?.hiringCompensation       || '',
     hiringDuration:           user?.hiring_duration            || user?.hiringDuration           || '',
   });
@@ -123,7 +143,7 @@ const handleSave = async () => {
     fd.append('hiring_role_description',    isHiring ? (form.hiringRoleDescription || '') : '');
     fd.append('hiring_position_type',       isHiring ? (form.hiringPositionType    || '') : '');
     fd.append('hiring_start_date',          isHiring ? (form.hiringStartDate       || '') : '');
-    fd.append('hiring_qualification_required', isHiring && form.hiringQualificationRequired ? '1' : '0');
+    fd.append('hiring_qualification_level', isHiring ? (form.hiringQualificationLevel || 'none') : 'none');
     fd.append('hiring_compensation',        isHiring ? (form.hiringCompensation    || '') : '');
     fd.append('hiring_duration',            isHiring ? (form.hiringDuration        || '') : '');
 
@@ -355,18 +375,24 @@ const handleSave = async () => {
                   />
                 </Field>
 
-                <label className="flex items-center gap-2.5 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={form.hiringQualificationRequired}
-                    onChange={e => update('hiringQualificationRequired', e.target.checked)}
-                    className="w-4 h-4 rounded border-[#E5E0D8] text-[#2DA4D6] focus:ring-[#2DA4D6]"
-                  />
-                  <span className="flex items-center gap-1.5 text-xs text-[#3E3D38] font-medium">
-                    <GraduationCap size={13} className="text-[#2DA4D6]" />
-                    Formal qualification / certification required
-                  </span>
-                </label>
+                <Field label="Minimum Qualification">
+                  <div className="relative">
+                    <GraduationCap size={13} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2DA4D6] pointer-events-none" />
+                    <select
+                      value={form.hiringQualificationLevel}
+                      onChange={e => update('hiringQualificationLevel', e.target.value)}
+                      className="w-full appearance-none bg-white border border-[#E5E0D8] rounded-xl pl-9 pr-10 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
+                    >
+                      {QUALIFICATION_LEVELS.map(q => (
+                        <option key={q.id} value={q.id}>{q.label}</option>
+                      ))}
+                    </select>
+                    <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none" />
+                  </div>
+                  <p className="text-[10px] text-[#3E3D38]/70 mt-1.5">
+                    Pick "Not required" if any background is welcome.
+                  </p>
+                </Field>
               </div>
             )}
           </div>
@@ -638,9 +664,10 @@ function StudioPreviewModal({ form, onClose }) {
                     {POSITION_LABELS[form.hiringPositionType] || form.hiringPositionType}
                   </span>
                 )}
-                {form.hiringQualificationRequired && (
+                {form.hiringQualificationLevel && form.hiringQualificationLevel !== 'none' && (
                   <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#f5fca6] text-[#3E3D38]">
-                    <GraduationCap size={10} /> Qualification req.
+                    <GraduationCap size={10} />
+                    {QUALIFICATION_LABELS[form.hiringQualificationLevel] || form.hiringQualificationLevel}
                   </span>
                 )}
               </div>

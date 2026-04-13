@@ -26,6 +26,24 @@ const ROLE_TYPE_OPTIONS = [
   { id: 'casual',        label: 'Casual / On-call'         },
 ];
 
+// Same qualification levels as Studio Profile so both forms agree.
+const QUALIFICATION_LEVELS = [
+  { id: 'none',                  label: 'Not required'                          },
+  { id: 'intermediate',          label: 'Intermediate / High School'            },
+  { id: 'diploma',               label: 'Diploma / Associate'                   },
+  { id: 'bachelors',             label: "Bachelor's Degree"                     },
+  { id: 'masters',               label: "Master's Degree"                       },
+  { id: 'doctorate',             label: 'Doctorate / PhD'                       },
+  { id: 'cert_200hr',            label: '200hr Teacher Certification'           },
+  { id: 'cert_500hr',            label: '500hr Teacher Certification'           },
+  { id: 'cert_comprehensive',    label: 'Comprehensive Certification'           },
+  { id: 'cert_specialized',      label: 'Specialised / Other Certification'     },
+];
+
+const QUALIFICATION_LABELS = QUALIFICATION_LEVELS.reduce(
+  (acc, q) => ({ ...acc, [q.id]: q.label }), {}
+);
+
 const EMPTY_FORM = {
   title: '',
   type: 'hire',
@@ -37,7 +55,7 @@ const EMPTY_FORM = {
   duration: '',
   compensation: '',
   requirements: '',
-  qualification_required: false,
+  qualification_level: 'none',
   is_active: true,
 };
 
@@ -85,7 +103,7 @@ export default function JobListings() {
       duration: job.duration || '',
       compensation: job.compensation || '',
       requirements: job.requirements || '',
-      qualification_required: !!job.qualification_required,
+      qualification_level: job.qualification_level || (job.qualification_required ? 'cert_specialized' : 'none'),
       is_active: job.is_active !== false,
     });
     setEditingId(job.id);
@@ -226,9 +244,10 @@ export default function JobListings() {
                               {ROLE_TYPE_OPTIONS.find(r => r.id === job.role_type)?.label || job.role_type}
                             </span>
                           )}
-                          {job.qualification_required && (
+                          {job.qualification_level && job.qualification_level !== 'none' && (
                             <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#f5fca6] text-[#3E3D38]">
-                              <GraduationCap size={10} /> Qualification req.
+                              <GraduationCap size={10} />
+                              {QUALIFICATION_LABELS[job.qualification_level] || job.qualification_level}
                             </span>
                           )}
                           {job.is_active === false && (
@@ -457,19 +476,27 @@ export default function JobListings() {
                   placeholder="e.g. Min 2 years teaching experience, fluent English..."
                   className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-[#2DA4D6] transition-all resize-none"
                 />
+              </div>
 
-                <label className="mt-3 flex items-center gap-2.5 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={form.qualification_required}
-                    onChange={e => update('qualification_required', e.target.checked)}
-                    className="w-4 h-4 rounded border-[#E5E0D8] text-[#2DA4D6] focus:ring-[#2DA4D6]"
-                  />
-                  <span className="flex items-center gap-1.5 text-xs text-[#3E3D38] font-medium">
-                    <GraduationCap size={13} className="text-[#2DA4D6]" />
-                    Formal qualification / certification required
-                  </span>
-                </label>
+              {/* Qualification level */}
+              <div>
+                <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Minimum Qualification</label>
+                <div className="relative">
+                  <GraduationCap size={13} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2DA4D6] pointer-events-none" />
+                  <select
+                    value={form.qualification_level}
+                    onChange={e => update('qualification_level', e.target.value)}
+                    className="w-full appearance-none bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl pl-9 pr-10 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6] transition-all"
+                  >
+                    {QUALIFICATION_LEVELS.map(q => (
+                      <option key={q.id} value={q.id}>{q.label}</option>
+                    ))}
+                  </select>
+                  <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none" />
+                </div>
+                <p className="text-[10px] text-[#9A9A94] mt-1.5">
+                  Pick "Not required" if any background is welcome.
+                </p>
               </div>
 
               {/* Disciplines */}
@@ -599,9 +626,10 @@ function PreviewModal({ form, onClose }) {
                         {roleLabel}
                       </span>
                     )}
-                    {form.qualification_required && (
+                    {form.qualification_level && form.qualification_level !== 'none' && (
                       <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#f5fca6] text-[#3E3D38]">
-                        <GraduationCap size={10} /> Qualification required
+                        <GraduationCap size={10} />
+                        {QUALIFICATION_LABELS[form.qualification_level] || form.qualification_level}
                       </span>
                     )}
                   </div>

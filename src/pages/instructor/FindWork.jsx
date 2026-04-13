@@ -13,6 +13,19 @@ const ROLE_TYPE_LABELS = {
   weekend_cover: 'Substitute for the weekend',
   casual:        'Casual / On-call',
 };
+
+const QUALIFICATION_LABELS = {
+  none:                 'Not required',
+  intermediate:         'Intermediate / High School',
+  diploma:              'Diploma / Associate',
+  bachelors:            "Bachelor's Degree",
+  masters:              "Master's Degree",
+  doctorate:            'Doctorate / PhD',
+  cert_200hr:           '200hr Teacher Certification',
+  cert_500hr:           '500hr Teacher Certification',
+  cert_comprehensive:   'Comprehensive Certification',
+  cert_specialized:     'Specialised / Other Certification',
+};
 import { fetchJobs } from '../../store/actions/jobAction';
 import { STATUS } from '../../constants/apiConstants';
 import { CardSkeleton, ButtonLoader } from '../../components/feedback';
@@ -238,10 +251,11 @@ export default function FindWork() {
                               {ROLE_TYPE_LABELS[job.role_type] || job.role_type}
                             </span>
                           )}
-                          {/* Qualification required badge */}
-                          {job.qualification_required && (
+                          {/* Qualification level badge */}
+                          {job.qualification_level && job.qualification_level !== 'none' && (
                             <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#f5fca6] text-[#3E3D38]">
-                              <GraduationCap size={10} /> Qualification req.
+                              <GraduationCap size={10} />
+                              {QUALIFICATION_LABELS[job.qualification_level] || job.qualification_level}
                             </span>
                           )}
                           {/* Save button */}
