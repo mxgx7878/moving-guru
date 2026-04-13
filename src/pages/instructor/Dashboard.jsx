@@ -104,7 +104,7 @@ export default function Dashboard() {
           <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold
             ${(profileData.profileStatus || profileData.profile_status) === 'active'
               ? 'bg-[#6BE6A4]/20 text-[#3E3D38]'
-              : 'bg-[#EDE8DF] text-[#9A9A94]'}`}>
+              : 'bg-[#FBF8E4] text-[#9A9A94]'}`}>
             <span className={`w-1.5 h-1.5 rounded-full ${(profileData.profileStatus || profileData.profile_status) === 'active' ? 'bg-[#6BE6A4]' : 'bg-[#9A9A94]'}`} />
             {(profileData.profileStatus || profileData.profile_status) === 'active' ? 'Actively Seeking' : 'Not Seeking'}
           </div>
@@ -174,7 +174,7 @@ export default function Dashboard() {
                     <span key={d} className="text-[10px] bg-[#2DA4D6]/15 text-[#2DA4D6] px-2 py-0.5 rounded-full">{d}</span>
                   ))}
                   {(profileData.disciplines || []).length > 3 && (
-                    <span className="text-[10px] bg-[#EDE8DF] text-[#9A9A94] px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] bg-[#FBF8E4] text-[#9A9A94] px-2 py-0.5 rounded-full">
                       +{profileData.disciplines.length - 3}
                     </span>
                   )}
@@ -245,7 +245,7 @@ export default function Dashboard() {
                   type="email"
                   value={user?.email || ''}
                   disabled
-                  className="w-full border border-[#E5E0D8] rounded-xl px-3.5 py-2.5 text-sm bg-[#EDE8DF]/50 text-[#9A9A94] cursor-not-allowed"
+                  className="w-full border border-[#E5E0D8] rounded-xl px-3.5 py-2.5 text-sm bg-[#FBF8E4]/50 text-[#9A9A94] cursor-not-allowed"
                 />
               </div>
             </div>

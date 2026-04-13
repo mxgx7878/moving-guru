@@ -322,7 +322,7 @@ const handleSave = async () => {
 
                 <div className="flex items-center justify-center gap-2 mt-3">
                   <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold
-                    ${form.profileStatus === 'active' ? 'bg-[#6BE6A4]/20 text-[#3E3D38]' : 'bg-[#EDE8DF] text-[#9A9A94]'}`}>
+                    ${form.profileStatus === 'active' ? 'bg-[#6BE6A4]/20 text-[#3E3D38]' : 'bg-[#FBF8E4] text-[#9A9A94]'}`}>
                     <span className={`w-1.5 h-1.5 rounded-full ${form.profileStatus === 'active' ? 'bg-[#6BE6A4]' : 'bg-[#9A9A94]'}`} />
                     {form.profileStatus === 'active' ? 'Actively Seeking' : 'Not Seeking'}
                   </span>
@@ -337,37 +337,37 @@ const handleSave = async () => {
                 {/* Info grid — matches design image */}
                 <div className="mt-4 grid grid-cols-2 gap-2 text-left">
                   {form.studio && (
-                    <div className="bg-[#EDE8DF]/50 rounded-xl p-2.5">
+                    <div className="bg-[#FBF8E4]/50 rounded-xl p-2.5">
                       <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold">Name / Studio</p>
                       <p className="text-[#3E3D38] text-[11px] mt-0.5 font-medium">{form.name} · {form.studio}</p>
                     </div>
                   )}
                   {(form.disciplines || []).length > 0 && (
-                    <div className="bg-[#EDE8DF]/50 rounded-xl p-2.5">
+                    <div className="bg-[#FBF8E4]/50 rounded-xl p-2.5">
                       <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold">Disciplines</p>
                       <p className="text-[#3E3D38] text-[11px] mt-0.5">{(form.disciplines || []).slice(0, 2).join(', ')}{form.disciplines?.length > 2 ? '...' : ''}</p>
                     </div>
                   )}
                   {(form.languages || []).length > 0 && (
-                    <div className="bg-[#EDE8DF]/50 rounded-xl p-2.5">
+                    <div className="bg-[#FBF8E4]/50 rounded-xl p-2.5">
                       <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold">Languages</p>
                       <p className="text-[#3E3D38] text-[11px] mt-0.5">{(form.languages || []).join(', ')}</p>
                     </div>
                   )}
                   {(form.countryFrom || form.travelingTo) && (
-                    <div className="bg-[#EDE8DF]/50 rounded-xl p-2.5">
+                    <div className="bg-[#FBF8E4]/50 rounded-xl p-2.5">
                       <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold">Country From → To</p>
                       <p className="text-[#3E3D38] text-[11px] mt-0.5">{form.countryFrom || '—'} → {form.travelingTo || '—'}</p>
                     </div>
                   )}
                   {availabilityDisplay && (
-                    <div className="bg-[#EDE8DF]/50 rounded-xl p-2.5">
+                    <div className="bg-[#FBF8E4]/50 rounded-xl p-2.5">
                       <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold">Availability</p>
                       <p className="text-[#3E3D38] text-[11px] mt-0.5">{availabilityDisplay}</p>
                     </div>
                   )}
                   {(form.openTo || []).length > 0 && (
-                    <div className="bg-[#EDE8DF]/50 rounded-xl p-2.5">
+                    <div className="bg-[#FBF8E4]/50 rounded-xl p-2.5">
                       <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold">Open To</p>
                       <p className="text-[#3E3D38] text-[11px] mt-0.5">{(form.openTo || []).join(', ')}</p>
                     </div>
@@ -679,7 +679,7 @@ const handleSave = async () => {
                   </p>
                   <button type="button" onClick={() => toggleSelectAll(cat.items)}
                     className={`text-[10px] font-semibold px-2.5 py-1 rounded-lg transition-all
-                      ${allSel ? 'bg-[#3E3D38] text-white' : 'bg-[#EDE8DF] text-[#6B6B66] hover:bg-[#E5E0D8]'}`}>
+                      ${allSel ? 'bg-[#CCFF00] text-[#3E3D38]' : 'bg-[#FBF8E4] text-[#6B6B66] hover:bg-[#E6FF80]'}`}>
                     {allSel ? 'Deselect All' : 'Select All'}
                   </button>
                 </div>
@@ -689,7 +689,7 @@ const handleSave = async () => {
                       className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
                         ${(form.disciplines || []).includes(d)
                           ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
-                          : 'border-[#E5E0D8] text-[#3E3D38] hover:border-[#2DA4D6] hover:bg-[#EDE8DF]'}`}>
+                          : 'border-[#E5E0D8] text-[#3E3D38] hover:border-[#2DA4D6] hover:bg-[#FBF8E4]'}`}>
                       {d}
                     </button>
                   ))}
@@ -707,7 +707,7 @@ const handleSave = async () => {
         <p className="text-xs text-[#9A9A94] mb-3">Add up to 4 photos showing your teaching, studio, or travels</p>
         <div className="grid grid-cols-4 gap-3 mb-3">
           {(form.photos || []).map((p, i) => (
-            <div key={i} className="aspect-square rounded-xl overflow-hidden bg-[#EDE8DF] relative group">
+            <div key={i} className="aspect-square rounded-xl overflow-hidden bg-[#FBF8E4] relative group">
               <img src={p} alt="" className="w-full h-full object-cover" />
               <button type="button"
                 onClick={() => {
@@ -751,7 +751,7 @@ const handleSave = async () => {
           onClick={() => setShowAvatarModal(false)}>
           <div className="relative" onClick={e => e.stopPropagation()}>
             <button onClick={() => setShowAvatarModal(false)}
-              className="absolute -top-3 -right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg z-20 hover:bg-[#EDE8DF] transition-colors">
+              className="absolute -top-3 -right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg z-20 hover:bg-[#FBF8E4] transition-colors">
               <X size={14} className="text-[#3E3D38]" />
             </button>
             <ScallopedFrame size={280} borderWidth={2.5}>

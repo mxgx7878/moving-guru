@@ -30,17 +30,26 @@ export default {
           mg: '#2DA4D6',
         },
         chartreuse: {
-          DEFAULT: '#7FFF00',
-          dark: '#72e600',
+          DEFAULT: '#CCFF00',  // bright neon lime — matches client palette swatch
+          dark:    '#B8E600',  // hover / pressed
+          soft:    '#E6FF80',  // tinted background
         },
         mint: {
-          DEFAULT: '#6BE6A4',
+          DEFAULT: '#9DD964',  // sharper light green per palette swatch
+          soft:    '#6BE6A4',  // legacy mint kept for status pills
         },
         sand: {
           DEFAULT: '#EDE8DF',
         },
         warm: {
           bg: '#FDFCF8',
+        },
+        // ── Brand-aligned soft yellow used as the primary background tint
+        //    (replaces previous grey/sand backgrounds across the portal).
+        cream: {
+          DEFAULT: '#FBF8E4',  // page background
+          soft:    '#FDFBEF',  // even softer for nested cards/sections
+          tint:    '#FEFCF1',  // text-box / input background
         },
       },
     },

@@ -232,7 +232,7 @@ export default function StudioDashboard() {
             <div className="p-5">
               <label className="block text-[10px] font-bold text-[#9A9A94] uppercase tracking-wider mb-1.5">Email</label>
               <input type="email" value={user?.email || ''} disabled
-                className="w-full border border-[#E5E0D8] rounded-xl px-3.5 py-2.5 text-sm bg-[#EDE8DF]/50 text-[#9A9A94] cursor-not-allowed" />
+                className="w-full border border-[#E5E0D8] rounded-xl px-3.5 py-2.5 text-sm bg-[#FBF8E4]/50 text-[#9A9A94] cursor-not-allowed" />
               <p className="text-[10px] text-[#9A9A94] mt-2">To change your email, contact admin@movingguru.co</p>
             </div>
           </div>

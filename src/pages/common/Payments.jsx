@@ -106,7 +106,7 @@ export default function Payments() {
                     {p.status}
                   </span>
                 </div>
-                <button className="p-1.5 hover:bg-[#EDE8DF] rounded-lg transition-colors text-[#9A9A94] hover:text-[#3E3D38]">
+                <button className="p-1.5 hover:bg-[#FBF8E4] rounded-lg transition-colors text-[#9A9A94] hover:text-[#3E3D38]">
                   <Download size={14} />
                 </button>
               </div>

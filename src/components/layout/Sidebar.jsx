@@ -78,7 +78,7 @@ export default function Sidebar({ mobileOpen, onClose }) {
                 `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group
                 ${isActive
                   ? 'bg-[#3E3D38] text-white'
-                  : 'text-[#6B6B66] hover:bg-[#EDE8DF] hover:text-[#3E3D38]'}`
+                  : 'text-[#6B6B66] hover:bg-[#FBF8E4] hover:text-[#3E3D38]'}`
               }
             >
               {({ isActive }) => (

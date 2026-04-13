@@ -4,7 +4,7 @@ export default function StatCard({ icon: Icon, label, value, sub, color = 'defau
   const bgMap = {
     coral: 'bg-[#CE4F56]/10',
     orange: 'bg-[#E89560]/10',
-    default: 'bg-[#EDE8DF]',
+    default: 'bg-[#FBF8E4]',
   };
   const iconMap = {
     coral: 'text-[#CE4F56]',

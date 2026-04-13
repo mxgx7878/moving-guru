@@ -131,7 +131,7 @@ export default function InstructorProfileModal({ instructor, isSaved, onClose, o
           {/* ── Info grid (matches design image) ── */}
           <div className="grid grid-cols-2 gap-2 mb-4">
             {countryFrom && (
-              <div className="bg-[#EDE8DF]/50 rounded-xl p-3">
+              <div className="bg-[#FBF8E4]/50 rounded-xl p-3">
                 <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold mb-1">Country From → To</p>
                 <p className="text-[#3E3D38] text-xs font-medium">
                   {countryFrom}{travelingTo ? ` → ${travelingTo}` : ''}
@@ -139,7 +139,7 @@ export default function InstructorProfileModal({ instructor, isSaved, onClose, o
               </div>
             )}
             {availability && (
-              <div className="bg-[#EDE8DF]/50 rounded-xl p-3">
+              <div className="bg-[#FBF8E4]/50 rounded-xl p-3">
                 <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold mb-1">Availability</p>
                 <p className="text-[#3E3D38] text-xs font-medium flex items-center gap-1">
                   <Calendar size={10} className="text-[#9A9A94]" /> {availability}
@@ -147,17 +147,17 @@ export default function InstructorProfileModal({ instructor, isSaved, onClose, o
               </div>
             )}
             {languages.length > 0 && (
-              <div className="bg-[#EDE8DF]/50 rounded-xl p-3">
+              <div className="bg-[#FBF8E4]/50 rounded-xl p-3">
                 <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold mb-1">Languages</p>
                 <p className="text-[#3E3D38] text-xs font-medium">{languages.join(', ')}</p>
               </div>
             )}
             {openTo.length > 0 && (
-              <div className="bg-[#EDE8DF]/50 rounded-xl p-3">
+              <div className="bg-[#FBF8E4]/50 rounded-xl p-3">
                 <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold mb-1">Open To</p>
                 <div className="flex flex-wrap gap-1 mt-0.5">
                   {openTo.map(o => {
-                    const c = openToColors[o] || { bg: 'bg-[#EDE8DF]', text: 'text-[#6B6B66]' };
+                    const c = openToColors[o] || { bg: 'bg-[#FBF8E4]', text: 'text-[#6B6B66]' };
                     return (
                       <span key={o} className={`px-1.5 py-0.5 rounded-full text-[9px] font-medium ${c.bg} ${c.text}`}>{o}</span>
                     );
@@ -203,7 +203,7 @@ export default function InstructorProfileModal({ instructor, isSaved, onClose, o
               <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-bold mb-2">Gallery</p>
               <div className="grid grid-cols-4 gap-2">
                 {photos.map((p, i) => (
-                  <div key={i} className="aspect-square rounded-xl overflow-hidden bg-[#EDE8DF]">
+                  <div key={i} className="aspect-square rounded-xl overflow-hidden bg-[#FBF8E4]">
                     <img src={p} alt="" className="w-full h-full object-cover" />
                   </div>
                 ))}

@@ -187,7 +187,7 @@ export default function Subscription() {
                 </ul>
 
                 <div className={`mt-5 py-2.5 rounded-xl text-center text-xs font-bold transition-all
-                  ${isSelected ? 'bg-white' : 'bg-[#EDE8DF] text-[#9A9A94]'}`}
+                  ${isSelected ? 'bg-white' : 'bg-[#FBF8E4] text-[#9A9A94]'}`}
                   style={isSelected ? { color: theme.accent } : undefined}
                 >
                   {isSelected ? (isCurrent ? 'Current Plan' : 'Selected') : 'Select'}

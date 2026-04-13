@@ -19,7 +19,7 @@ export default function PortalLayout() {
   const firstName = displayName.split(' ')[0];
 
   return (
-    <div className="flex h-screen bg-[#F4F0EA] font-['DM_Sans'] overflow-hidden">
+    <div className="flex h-screen bg-[#FBF8E4] font-['DM_Sans'] overflow-hidden">
       <Sidebar mobileOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
@@ -27,7 +27,7 @@ export default function PortalLayout() {
         <header className="h-14 bg-white border-b border-[#E5E0D8] flex items-center px-4 lg:px-6 gap-4 flex-shrink-0">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden p-1.5 rounded-lg hover:bg-[#EDE8DF] transition-colors"
+            className="lg:hidden p-1.5 rounded-lg hover:bg-[#FBF8E4] transition-colors"
           >
             <Menu size={20} className="text-[#6B6B66]" />
           </button>
@@ -43,7 +43,7 @@ export default function PortalLayout() {
           <div className="flex-1" />
 
           <div className="flex items-center gap-3">
-            <button className="p-1.5 rounded-lg hover:bg-[#EDE8DF] transition-colors relative">
+            <button className="p-1.5 rounded-lg hover:bg-[#FBF8E4] transition-colors relative">
               <Bell size={18} className="text-[#6B6B66]" />
               <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-[#CE4F56] rounded-full" />
             </button>
