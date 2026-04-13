@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { clearError } from '../../store/slices/authSlice';
 import { loginUser } from '../../store/actions/authAction';
 import { STATUS, ROLES } from '../../constants/apiConstants';
-import { Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, Globe, ArrowRight } from 'lucide-react';
 import logo from '../../assets/logo.png';
 
 export default function Login() {
@@ -39,49 +39,73 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FBF8E4] flex font-['DM_Sans']">
-      {/* ─────────────  Left panel — branded, image-free  ─────────────
-          Previously this panel duplicated the "MOVING GURU" wordmark
-          and used heavy decorative imagery. The client asked us to
-          lead with the circle logo and remove the double title /
-          stock-style backdrop. */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden flex-col items-center justify-center p-12 bg-[#f5fca6]">
-        {/* Soft decorative shapes — no photographs */}
-        <div className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-[#6BE6A4]/30" />
-        <div className="absolute -top-16 -right-16 w-72 h-72 rounded-full bg-white/40" />
-        <div className="absolute top-1/3 right-1/4 w-32 h-32 rounded-full bg-[#7FFF00]/30" />
+    <div className="min-h-screen bg-[#FDFCF8] flex font-['DM_Sans']">
+      {/* Left panel */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden flex-col justify-between p-12">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#CE4F56] via-[#CE4F56]/90 to-[#E89560]" />
+        <div className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage: `radial-gradient(circle at 20% 80%, #f5fca6 0%, transparent 50%),
+                              radial-gradient(circle at 80% 20%, #2DA4D6 0%, transparent 50%)`
+          }}
+        />
+        <div className="absolute -bottom-20 -left-20 w-80 h-80 rounded-full border-2 border-white/10" />
+        <div className="absolute -top-10 -right-10 w-60 h-60 rounded-full border-2 border-white/10" />
 
-        <div className="relative z-10 flex flex-col items-center text-center">
-          {/* Big circle logo — sole hero element */}
-          <img
-            src={logo}
-            alt="Moving Guru"
-            className="w-64 h-64 object-contain drop-shadow-sm"
-          />
-          <p className="font-['Unbounded'] text-[#3E3D38] text-base font-bold tracking-[0.4em] mt-6">
-            MOVING&nbsp;GURU
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 mb-2">
+            <img src={logo} alt="Moving Guru Logo" height={80} width={80} />
+            <span className="font-['Unbounded'] text-lg font-bold text-white/70 tracking-wider">
+              MOVING GURU
+            </span>
+          </div>
+        </div>
+
+        <div className="relative z-10">
+          <p className="text-[11px] text-white/50 tracking-widest uppercase mb-4">Global Wellness Network</p>
+          <h1 className="font-['Unbounded'] text-4xl xl:text-5xl font-black text-white leading-tight mb-6">
+            YOUR WORLD.<br />YOUR WORK.<br />
+            <span className="text-[#f5fca6]">EVERYWHERE.</span>
+          </h1>
+          <p className="text-white/70 text-base leading-relaxed max-w-xs">
+            Connect with studios globally. Travel, teach, and grow your wellness career without limits.
           </p>
-          <p className="text-[#3E3D38]/70 text-xs tracking-widest uppercase mt-2">
-            Global Wellness Network
-          </p>
+        </div>
+
+        <div className="relative z-10 flex items-center gap-6">
+          <div className="text-center">
+            <p className="font-['Unbounded'] text-2xl font-black text-white">50+</p>
+            <p className="text-white/50 text-xs">Countries</p>
+          </div>
+          <div className="w-px h-8 bg-white/20" />
+          <div className="text-center">
+            <p className="font-['Unbounded'] text-2xl font-black text-white">1000+</p>
+            <p className="text-white/50 text-xs">Instructors</p>
+          </div>
+          <div className="w-px h-8 bg-white/20" />
+          <div className="text-center">
+            <p className="font-['Unbounded'] text-2xl font-black text-white">200+</p>
+            <p className="text-white/50 text-xs">Studios</p>
+          </div>
         </div>
       </div>
 
-      {/* ─────────────  Right panel — sign in  ───────────── */}
+      {/* Right panel */}
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-sm">
-          {/* Mobile-only logo (no duplicate wordmark on desktop) */}
-          <div className="lg:hidden flex flex-col items-center mb-6">
-            <img src={logo} alt="Moving Guru" className="w-24 h-24 object-contain" />
+          <div className="lg:hidden flex items-center gap-2 mb-8">
+            <Globe size={18} className="text-[#CE4F56]" />
+            <span className="font-['Unbounded'] text-sm font-bold text-[#3E3D38] tracking-wider">
+              MOVING <em className="not-italic text-[#CE4F56]">GURU</em>
+            </span>
           </div>
 
-          <h2 className="font-['Unbounded'] text-2xl font-black text-[#3E3D38] mb-6 text-center lg:text-left">
-            Sign in
-          </h2>
+          <h2 className="font-['Unbounded'] text-2xl font-black text-[#3E3D38] mb-1">Welcome back</h2>
+          <p className="text-[#9A9A94] text-sm mb-8">Sign in to your account</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-[#3E3D38] text-xs font-semibold tracking-wider uppercase mb-2">Email</label>
+              <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Email</label>
               <input
                 type="email"
                 value={email}
@@ -93,7 +117,7 @@ export default function Login() {
             </div>
 
             <div>
-              <label className="block text-[#3E3D38] text-xs font-semibold tracking-wider uppercase mb-2">Password</label>
+              <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Password</label>
               <div className="relative">
                 <input
                   type={showPw ? 'text' : 'password'}
@@ -138,8 +162,10 @@ export default function Login() {
             </Link>
           </p>
 
-          {/* Sign-up — buttons only, no email blurb */}
           <div className="border-t border-[#E5E0D8] mt-6 pt-6 space-y-3">
+            <p className="text-center text-[#9A9A94] text-sm">
+              New to Moving Guru?
+            </p>
             <Link to="/register"
               className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-[#CE4F56] text-[#CE4F56] rounded-xl text-sm font-semibold hover:bg-[#CE4F56] hover:text-white transition-all">
               Join as Instructor
