@@ -1,6 +1,6 @@
 // Base URL
-// export const BASE_URL = 'http://localhost:8000/api';
-export const BASE_URL = 'https://demowebportals.com/moving-guru-backend/public/api';
+export const BASE_URL = 'http://localhost:8000/api';
+// export const BASE_URL = 'https://demowebportals.com/moving-guru-backend/public/api';
 
 
 // API Endpoints
