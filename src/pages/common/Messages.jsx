@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Search, Send } from 'lucide-react';
+import { Search, Send, ArrowLeft } from 'lucide-react';
 import { ROLE_THEME } from '../../config/portalConfig';
 import { fetchConversations, fetchMessages, sendMessage as sendMessageAction } from '../../store/actions/messageAction';
 import { STATUS } from '../../constants/apiConstants';
@@ -19,13 +19,16 @@ export default function Messages() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sending, setSending] = useState(false);
   const [localMessages, setLocalMessages] = useState([]);
+  // Mobile: controls whether we're showing the conversation list or the chat
+  const [mobileView, setMobileView] = useState('list'); // 'list' | 'chat'
 
   useEffect(() => {
     dispatch(fetchConversations());
   }, [dispatch]);
 
+  // On desktop only: auto-select first conversation. On mobile we wait for tap.
   useEffect(() => {
-    if (conversations.length > 0 && !activeConvo) {
+    if (conversations.length > 0 && !activeConvo && window.innerWidth >= 768) {
       setActiveConvo(conversations[0]);
     }
   }, [conversations, activeConvo]);
@@ -47,13 +50,20 @@ export default function Messages() {
     }
   }, [messages]);
 
+  const handleOpenConvo = (convo) => {
+    setActiveConvo(convo);
+    setMobileView('chat');
+  };
+
+  const handleBackToList = () => {
+    setMobileView('list');
+  };
+
   const handleSend = async () => {
     if (!msgText.trim() || !activeConvo) return;
     setSending(true);
-    // Add message locally for instant feedback
     const newMsg = { id: `msg_local_${Date.now()}`, from: 'me', is_mine: true, text: msgText, time: 'Just now' };
     setLocalMessages(prev => [...prev, newMsg]);
-    // Also try API
     dispatch(sendMessageAction({ conversationId: activeConvo.id, text: msgText }));
     setMsgText('');
     setSending(false);
@@ -81,15 +91,35 @@ export default function Messages() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="mb-6">
+      <div className="mb-4 sm:mb-6 hidden md:block">
         <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">Messages</h1>
         <p className="text-[#9A9A94] text-sm mt-1">{subtitle}</p>
       </div>
 
-      <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden" style={{ height: 'calc(100vh - 220px)', minHeight: '500px' }}>
-        <div className="flex h-full">
-          {/* Conversation list */}
-          <div className="w-80 border-r border-[#E5E0D8] flex flex-col flex-shrink-0">
+      {/* Container — responsive height that respects the mobile viewport.
+          On mobile this fills the available area below the top bar so messages
+          aren't cut off. Use dvh (dynamic viewport height) for iOS Safari. */}
+      <div
+        className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden"
+        style={{ height: 'min(calc(100dvh - 7rem), calc(100vh - 7rem))', minHeight: '420px' }}
+      >
+        <div className="flex h-full relative">
+
+          {/* ── Conversation list ──
+              Mobile: full-width slide panel, hidden when chat is open.
+              Desktop (md+): always visible left column. */}
+          <div
+            className={`
+              ${mobileView === 'list' ? 'flex' : 'hidden'} md:flex
+              w-full md:w-80 border-r border-[#E5E0D8] flex-col flex-shrink-0
+            `}
+          >
+            {/* Mobile header inside list */}
+            <div className="md:hidden px-4 pt-3 pb-1">
+              <h1 className="font-['Unbounded'] text-lg font-black text-[#3E3D38]">Messages</h1>
+              <p className="text-[#9A9A94] text-xs">{subtitle}</p>
+            </div>
+
             <div className="p-3 border-b border-[#E5E0D8]">
               <div className="flex items-center gap-2 bg-[#FDFCF8] rounded-xl px-3 py-2 border border-[#E5E0D8]">
                 <Search size={14} className="text-[#9A9A94]" />
@@ -98,7 +128,7 @@ export default function Messages() {
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="Search messages..."
-                  className="flex-1 bg-transparent border-none outline-none text-sm text-[#3E3D38] placeholder-[#C4BCB4]"
+                  className="flex-1 bg-transparent border-none outline-none text-sm text-[#3E3D38] placeholder-[#C4BCB4] min-w-0"
                 />
               </div>
             </div>
@@ -111,7 +141,7 @@ export default function Messages() {
               {filteredConversations.map(convo => (
                 <button
                   key={convo.id}
-                  onClick={() => setActiveConvo(convo)}
+                  onClick={() => handleOpenConvo(convo)}
                   className={`w-full text-left px-4 py-3.5 flex items-center gap-3 transition-colors border-b border-[#E5E0D8]/50
                     ${activeConvo?.id === convo.id ? `bg-[${theme.accent}]/5` : 'hover:bg-[#FDFCF8]'}`}
                 >
@@ -144,36 +174,54 @@ export default function Messages() {
             </div>
           </div>
 
-          {/* Chat area */}
-          <div className="flex-1 flex flex-col min-w-0">
+          {/* ── Chat area ──
+              Mobile: full-width slide-in from right when convo is selected.
+              Desktop: always visible right column. */}
+          <div
+            className={`
+              ${mobileView === 'chat' ? 'flex' : 'hidden'} md:flex
+              flex-1 flex-col min-w-0 absolute md:relative inset-0 md:inset-auto bg-white
+              transition-transform duration-300 ease-out
+              ${mobileView === 'chat' ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
+            `}
+          >
             {activeConvo ? (
               <>
                 {/* Chat header */}
-                <div className="px-5 py-3.5 border-b border-[#E5E0D8] flex items-center gap-3">
+                <div className="px-4 sm:px-5 py-3 sm:py-3.5 border-b border-[#E5E0D8] flex items-center gap-3">
+                  {/* Mobile back arrow */}
+                  <button
+                    onClick={handleBackToList}
+                    className="md:hidden -ml-1 p-1.5 rounded-lg hover:bg-[#FDFCF8] transition-colors text-[#3E3D38] flex-shrink-0"
+                    aria-label="Back to messages"
+                  >
+                    <ArrowLeft size={20} />
+                  </button>
+
                   <div
-                    className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold font-['Unbounded']"
+                    className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold font-['Unbounded'] flex-shrink-0"
                     style={{ background: `linear-gradient(135deg, #CE4F56, #E89560)` }}
                   >
                     {activeConvo.initials || activeConvo.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                   </div>
-                  <div>
-                    <p className="text-sm font-semibold text-[#3E3D38]">{activeConvo.name}</p>
-                    <p className="text-[10px] text-[#6BE6A4] font-medium">
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-[#3E3D38] truncate">{activeConvo.name}</p>
+                    <p className="text-[10px] text-[#6BE6A4] font-medium truncate">
                       {activeConvo.online ? 'Online' : activeConvo.discipline || ''}
                     </p>
                   </div>
                 </div>
 
                 {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-5 space-y-4">
+                <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
                   {localMessages.map(msg => (
                     <div key={msg.id} className={`flex ${msg.from === 'me' || msg.is_mine ? 'justify-end' : 'justify-start'}`}>
-                      <div className="max-w-[70%]">
+                      <div className="max-w-[80%] sm:max-w-[70%]">
                         <div
                           className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed
                             ${msg.from === 'me' || msg.is_mine
                               ? 'text-white rounded-br-md'
-                              : 'bg-[#F4F0EA] text-[#3E3D38] rounded-bl-md border border-[#E5E0D8]'
+                              : 'bg-[#f5fca6]/40 text-[#3E3D38] rounded-bl-md border border-[#f5fca6]'
                             }`}
                           style={msg.from === 'me' || msg.is_mine ? { backgroundColor: theme.accent } : undefined}
                         >
@@ -188,14 +236,14 @@ export default function Messages() {
                 </div>
 
                 {/* Input */}
-                <div className="p-4 border-t border-[#E5E0D8] flex items-end gap-3">
+                <div className="p-3 sm:p-4 border-t border-[#E5E0D8] flex items-end gap-2 sm:gap-3">
                   <input
                     type="text"
                     value={msgText}
                     onChange={e => setMsgText(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && handleSend()}
                     placeholder="Type a message..."
-                    className="flex-1 bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none transition-all"
+                    className="flex-1 bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none transition-all min-w-0"
                     style={{ '--tw-ring-color': theme.accent }}
                   />
                   <button
@@ -209,8 +257,8 @@ export default function Messages() {
                 </div>
               </>
             ) : (
-              <div className="flex-1 flex items-center justify-center">
-                <p className="text-[#9A9A94] text-sm">Select a conversation to start messaging</p>
+              <div className="flex-1 flex items-center justify-center p-6">
+                <p className="text-[#9A9A94] text-sm text-center">Select a conversation to start messaging</p>
               </div>
             )}
           </div>

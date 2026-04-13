@@ -3,8 +3,16 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
   Search, MapPin, Calendar, Clock, Briefcase, RefreshCw, Zap,
-  X, Filter, ChevronDown, MessageCircle, Bookmark, BookmarkCheck, Users
+  X, Filter, ChevronDown, MessageCircle, Bookmark, BookmarkCheck, Users, GraduationCap
 } from 'lucide-react';
+
+const ROLE_TYPE_LABELS = {
+  permanent:     'Permanent',
+  temporary:     'Temporary',
+  substitute:    'Substitute',
+  weekend_cover: 'Substitute for the weekend',
+  casual:        'Casual / On-call',
+};
 import { fetchJobs } from '../../store/actions/jobAction';
 import { STATUS } from '../../constants/apiConstants';
 import { CardSkeleton, ButtonLoader } from '../../components/feedback';
@@ -135,7 +143,7 @@ export default function FindWork() {
           {JOB_TYPES.map(t => (
             <button key={t.id} onClick={() => setFilterType(t.id)}
               className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all
-                ${filterType === t.id ? 'text-white shadow-sm' : 'bg-[#F4F0EA] text-[#6B6B66] hover:bg-[#EDE8DF]'}`}
+                ${filterType === t.id ? 'text-white shadow-sm' : 'bg-[#FBF8E4] text-[#6B6B66] hover:bg-[#FBF8E4]'}`}
               style={filterType === t.id ? { backgroundColor: t.color } : {}}>
               {t.label}
               {t.id !== 'all' && (
@@ -218,12 +226,24 @@ export default function FindWork() {
                           </h3>
                           <p className="text-[#9A9A94] text-xs mt-0.5">Posted by a studio on Moving Guru</p>
                         </div>
-                        <div className="flex items-center gap-1.5 flex-shrink-0">
+                        <div className="flex items-center gap-1.5 flex-shrink-0 flex-wrap justify-end">
                           {/* Type badge */}
                           <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold text-white`}
                             style={{ backgroundColor: typeInfo.color }}>
                             {typeInfo.label}
                           </span>
+                          {/* Position type badge */}
+                          {job.role_type && (
+                            <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#3E3D38] text-white">
+                              {ROLE_TYPE_LABELS[job.role_type] || job.role_type}
+                            </span>
+                          )}
+                          {/* Qualification required badge */}
+                          {job.qualification_required && (
+                            <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#f5fca6] text-[#3E3D38]">
+                              <GraduationCap size={10} /> Qualification req.
+                            </span>
+                          )}
                           {/* Save button */}
                           <button onClick={() => toggleSaveJob(job.id)}
                             className={`p-1.5 rounded-lg transition-all ${isSaved ? 'text-[#CE4F56]' : 'text-[#C4BCB4] hover:text-[#CE4F56]'}`}
@@ -275,7 +295,7 @@ export default function FindWork() {
 
                   {/* Requirements */}
                   {job.requirements && (
-                    <div className="bg-[#F4F0EA] rounded-xl px-4 py-2.5 mb-4">
+                    <div className="bg-[#FBF8E4] rounded-xl px-4 py-2.5 mb-4">
                       <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-bold mb-1">Requirements</p>
                       <p className="text-[#6B6B66] text-xs leading-relaxed">{job.requirements}</p>
                     </div>

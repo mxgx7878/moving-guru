@@ -42,6 +42,13 @@ export default {
         warm: {
           bg: '#FDFCF8',
         },
+        // ── Brand-aligned soft yellow used as the primary background tint
+        //    (replaces previous grey/sand backgrounds across the portal).
+        cream: {
+          DEFAULT: '#FBF8E4',  // page background
+          soft:    '#FDFBEF',  // even softer for nested cards/sections
+          tint:    '#FEFCF1',  // text-box / input background
+        },
       },
     },
   },

@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import {
   BookOpen, Palmtree, Calendar, MapPin, Users, ExternalLink,
-  Search, X, Filter, Tag, Clock
+  Search, X, Filter, Tag, Edit3, Check
 } from 'lucide-react';
 import { GROW_POSTS, GROW_TYPES } from '../../data/growData';
 import { ROLE_THEME } from '../../config/portalConfig';
@@ -29,18 +29,37 @@ export default function Grow() {
   const { user }  = useSelector((s) => s.auth);
   const role      = user?.role || 'instructor';
   const theme     = ROLE_THEME[role] || ROLE_THEME.instructor;
+  const studioName = user?.studio_name || user?.studioName || user?.name || '';
+
+  // ── Posts are kept in local state so studio owners can edit their own.
+  //    This shows the live data from GROW_POSTS but lets us mutate locally
+  //    until the API is wired up.
+  const [posts, setPosts] = useState(GROW_POSTS);
 
   const [activeType,  setActiveType]  = useState('all');
   const [query,       setQuery]       = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [filterDisc,  setFilterDisc]  = useState('');
 
+  // Edit modal state
+  const [editingPost, setEditingPost] = useState(null);
+
+  // A studio "owns" a post when the postedBy name matches their studio name.
+  const isOwnPost = (post) =>
+    role === 'studio' && studioName &&
+    post.postedBy?.toLowerCase().trim() === studioName.toLowerCase().trim();
+
+  const handleSavePost = (updated) => {
+    setPosts(ps => ps.map(p => p.id === updated.id ? { ...p, ...updated } : p));
+    setEditingPost(null);
+  };
+
   const allDisc = useMemo(() => (
-    [...new Set(GROW_POSTS.flatMap(p => p.disciplines))].filter(Boolean).sort()
-  ), []);
+    [...new Set(posts.flatMap(p => p.disciplines))].filter(Boolean).sort()
+  ), [posts]);
 
   const filtered = useMemo(() => {
-    return GROW_POSTS.filter(p => {
+    return posts.filter(p => {
       const matchType = activeType === 'all' || p.type === activeType;
       const q = query.toLowerCase();
       const matchQ = !q ||
@@ -51,7 +70,7 @@ export default function Grow() {
       const matchD = !filterDisc || (p.disciplines || []).some(d => d.toLowerCase().includes(filterDisc.toLowerCase()));
       return matchType && matchQ && matchD;
     });
-  }, [activeType, query, filterDisc]);
+  }, [posts, activeType, query, filterDisc]);
 
   const clearFilters = () => { setQuery(''); setFilterDisc(''); };
   const hasFilters   = query || filterDisc;
@@ -220,7 +239,7 @@ export default function Grow() {
 
                   {/* Spots progress bar */}
                   <div className="mb-3">
-                    <div className="h-1.5 bg-[#EDE8DF] rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-[#FBF8E4] rounded-full overflow-hidden">
                       <div className="h-full rounded-full transition-all"
                         style={{
                           width: `${spotsPercent}%`,
@@ -239,10 +258,10 @@ export default function Grow() {
                   {post.disciplines.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mb-3">
                       {post.disciplines.slice(0, 4).map(d => (
-                        <span key={d} className="px-2 py-0.5 bg-[#EDE8DF] text-[#6B6B66] text-[10px] rounded-full">{d}</span>
+                        <span key={d} className="px-2 py-0.5 bg-[#FBF8E4] text-[#6B6B66] text-[10px] rounded-full">{d}</span>
                       ))}
                       {post.disciplines.length > 4 && (
-                        <span className="px-2 py-0.5 bg-[#EDE8DF] text-[#9A9A94] text-[10px] rounded-full">+{post.disciplines.length - 4}</span>
+                        <span className="px-2 py-0.5 bg-[#FBF8E4] text-[#9A9A94] text-[10px] rounded-full">+{post.disciplines.length - 4}</span>
                       )}
                     </div>
                   )}
@@ -266,6 +285,15 @@ export default function Grow() {
                     </div>
                     <div className="flex items-center gap-2">
                       <p className="text-xs font-bold text-[#3E3D38]">{post.price}</p>
+                      {isOwnPost(post) && (
+                        <button
+                          onClick={() => setEditingPost(post)}
+                          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border border-[#E5E0D8] text-[#3E3D38] hover:border-[#3E3D38] transition-all"
+                          title="Edit this post"
+                        >
+                          <Edit3 size={11} /> Edit Info
+                        </button>
+                      )}
                       <a href={post.url}
                         className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white transition-all hover:opacity-90"
                         style={{ backgroundColor: post.color === '#f5fca6' ? '#3E3D38' : post.color }}>
@@ -294,6 +322,115 @@ export default function Grow() {
         <button className="bg-[#f5fca6] text-[#3E3D38] font-bold text-xs px-5 py-2.5 rounded-xl hover:bg-white transition-colors flex-shrink-0 whitespace-nowrap">
           Post Now
         </button>
+      </div>
+
+      {/* Edit modal — owners only */}
+      {editingPost && (
+        <EditPostModal
+          post={editingPost}
+          onClose={() => setEditingPost(null)}
+          onSave={handleSavePost}
+        />
+      )}
+    </div>
+  );
+}
+
+/* ────────────────────────────────────────────────────────────
+   Edit modal — lets a studio owner update their Grow post.
+   ──────────────────────────────────────────────────────────── */
+function EditPostModal({ post, onClose, onSave }) {
+  const [form, setForm] = useState({
+    title:        post.title || '',
+    subtitle:     post.subtitle || '',
+    description:  post.description || '',
+    location:     post.location || '',
+    dates:        post.dates || '',
+    price:        post.price || '',
+    spots:        post.spots || 0,
+    spotsLeft:    post.spotsLeft || 0,
+    url:          post.url || '',
+  });
+  const update = (k, v) => setForm(f => ({ ...f, [k]: v }));
+
+  const handleSubmit = () => {
+    onSave({ ...post, ...form, spots: Number(form.spots), spotsLeft: Number(form.spotsLeft) });
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start justify-center z-50 p-4 overflow-y-auto">
+      <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl my-8">
+        <div className="px-6 py-4 border-b border-[#E5E0D8] flex items-center justify-between">
+          <div>
+            <h2 className="font-['Unbounded'] text-base font-black text-[#3E3D38]">Edit Post</h2>
+            <p className="text-[10px] text-[#9A9A94] mt-0.5">Update the details for your training, retreat or event</p>
+          </div>
+          <button onClick={onClose}
+            className="p-1.5 hover:bg-[#FBF8E4] rounded-lg transition-colors text-[#9A9A94]">
+            <X size={18} />
+          </button>
+        </div>
+
+        <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+          <div>
+            <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Title</label>
+            <input value={form.title} onChange={e => update('title', e.target.value)}
+              className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6]" />
+          </div>
+          <div>
+            <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Subtitle</label>
+            <input value={form.subtitle} onChange={e => update('subtitle', e.target.value)}
+              className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6]" />
+          </div>
+          <div>
+            <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Description</label>
+            <textarea value={form.description} onChange={e => update('description', e.target.value)} rows={5}
+              className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6] resize-none" />
+          </div>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Location</label>
+              <input value={form.location} onChange={e => update('location', e.target.value)}
+                className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6]" />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Dates</label>
+              <input value={form.dates} onChange={e => update('dates', e.target.value)}
+                className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6]" />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Total Spots</label>
+              <input type="number" min="0" value={form.spots} onChange={e => update('spots', e.target.value)}
+                className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6]" />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Spots Remaining</label>
+              <input type="number" min="0" value={form.spotsLeft} onChange={e => update('spotsLeft', e.target.value)}
+                className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6]" />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Price</label>
+              <input value={form.price} onChange={e => update('price', e.target.value)}
+                className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6]" />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">More Info Link</label>
+              <input value={form.url} onChange={e => update('url', e.target.value)} placeholder="https://..."
+                className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6]" />
+            </div>
+          </div>
+        </div>
+
+        <div className="px-6 py-4 border-t border-[#E5E0D8] flex items-center justify-between">
+          <button onClick={onClose}
+            className="px-5 py-2.5 border border-[#E5E0D8] rounded-xl text-sm font-medium text-[#6B6B66] hover:border-[#9A9A94]">
+            Cancel
+          </button>
+          <button onClick={handleSubmit}
+            className="flex items-center gap-2 px-6 py-2.5 bg-[#3E3D38] text-white rounded-xl text-sm font-bold hover:bg-[#2a2925]">
+            <Check size={14} /> Save Changes
+          </button>
+        </div>
       </div>
     </div>
   );

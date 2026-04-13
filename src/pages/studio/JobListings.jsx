@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Plus, Briefcase, RefreshCw, Zap, MapPin, Calendar, Clock,
-  Edit3, Trash2, Eye, EyeOff, X, Check, ChevronDown, Users
+  Edit3, Trash2, Eye, EyeOff, X, Check, ChevronDown, Users, GraduationCap
 } from 'lucide-react';
 import { fetchJobs, createJob, updateJob, deleteJob } from '../../store/actions/jobAction';
 import { STATUS } from '../../constants/apiConstants';
@@ -18,9 +18,18 @@ const JOB_TYPES = [
 
 const DURATION_OPTIONS = ['1 week', '2 weeks', '1 month', '2 months', '3 months', '6 months', 'Ongoing'];
 
+const ROLE_TYPE_OPTIONS = [
+  { id: 'permanent',     label: 'Permanent'                },
+  { id: 'temporary',     label: 'Temporary'                },
+  { id: 'substitute',    label: 'Substitute'               },
+  { id: 'weekend_cover', label: 'Substitute for the weekend' },
+  { id: 'casual',        label: 'Casual / On-call'         },
+];
+
 const EMPTY_FORM = {
   title: '',
   type: 'hire',
+  role_type: 'permanent',
   description: '',
   disciplines: [],
   location: '',
@@ -28,6 +37,7 @@ const EMPTY_FORM = {
   duration: '',
   compensation: '',
   requirements: '',
+  qualification_required: false,
   is_active: true,
 };
 
@@ -43,6 +53,7 @@ export default function JobListings() {
   const [deletingId, setDeletingId] = useState(null);
   const [disciplineSearch, setDisciplineSearch] = useState('');
   const [filterType, setFilterType] = useState('all');
+  const [showPreview, setShowPreview] = useState(false);
 
   useEffect(() => {
     dispatch(fetchJobs());
@@ -66,6 +77,7 @@ export default function JobListings() {
     setForm({
       title: job.title || '',
       type: job.type || 'hire',
+      role_type: job.role_type || 'permanent',
       description: job.description || '',
       disciplines: job.disciplines || [],
       location: job.location || user?.location || '',
@@ -73,6 +85,7 @@ export default function JobListings() {
       duration: job.duration || '',
       compensation: job.compensation || '',
       requirements: job.requirements || '',
+      qualification_required: !!job.qualification_required,
       is_active: job.is_active !== false,
     });
     setEditingId(job.id);
@@ -200,7 +213,7 @@ export default function JobListings() {
                         <TypeIcon size={18} style={{ color: typeInfo.color }} />
                       </div>
                       <div>
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
                           <h3 className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">{job.title}</h3>
                           <span
                             className="px-2 py-0.5 rounded-full text-[10px] font-bold text-white"
@@ -208,8 +221,18 @@ export default function JobListings() {
                           >
                             {typeInfo.label}
                           </span>
+                          {job.role_type && (
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#3E3D38] text-white">
+                              {ROLE_TYPE_OPTIONS.find(r => r.id === job.role_type)?.label || job.role_type}
+                            </span>
+                          )}
+                          {job.qualification_required && (
+                            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#f5fca6] text-[#3E3D38]">
+                              <GraduationCap size={10} /> Qualification req.
+                            </span>
+                          )}
                           {job.is_active === false && (
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#EDE8DF] text-[#9A9A94]">
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#f5fca6]/40 text-[#6B6B66]">
                               Closed
                             </span>
                           )}
@@ -222,14 +245,14 @@ export default function JobListings() {
                     <div className="flex items-center gap-1.5 flex-shrink-0 ml-4">
                       <button
                         onClick={() => handleToggleActive(job)}
-                        className="p-2 rounded-lg hover:bg-[#EDE8DF] transition-colors text-[#9A9A94] hover:text-[#3E3D38]"
+                        className="p-2 rounded-lg hover:bg-[#FBF8E4] transition-colors text-[#9A9A94] hover:text-[#3E3D38]"
                         title={job.is_active !== false ? 'Close listing' : 'Reactivate listing'}
                       >
                         {job.is_active !== false ? <EyeOff size={14} /> : <Eye size={14} />}
                       </button>
                       <button
                         onClick={() => openEdit(job)}
-                        className="p-2 rounded-lg hover:bg-[#EDE8DF] transition-colors text-[#9A9A94] hover:text-[#2DA4D6]"
+                        className="p-2 rounded-lg hover:bg-[#FBF8E4] transition-colors text-[#9A9A94] hover:text-[#2DA4D6]"
                       >
                         <Edit3 size={14} />
                       </button>
@@ -301,7 +324,7 @@ export default function JobListings() {
                 {editingId ? 'Edit Listing' : 'Post a New Listing'}
               </h2>
               <button onClick={() => { setShowForm(false); setEditingId(null); }}
-                className="p-1.5 hover:bg-[#EDE8DF] rounded-lg transition-colors text-[#9A9A94]">
+                className="p-1.5 hover:bg-[#FBF8E4] rounded-lg transition-colors text-[#9A9A94]">
                 <X size={18} />
               </button>
             </div>
@@ -340,7 +363,7 @@ export default function JobListings() {
 
               {/* Description */}
               <div>
-                <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Description</label>
+                <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Role Description</label>
                 <textarea
                   value={form.description}
                   onChange={e => update('description', e.target.value)}
@@ -348,6 +371,29 @@ export default function JobListings() {
                   placeholder="Describe the role, what you're looking for, and what the instructor can expect..."
                   className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-[#2DA4D6] transition-all resize-none"
                 />
+              </div>
+
+              {/* Role / Position type */}
+              <div>
+                <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Position Type</label>
+                <div className="flex flex-wrap gap-2">
+                  {ROLE_TYPE_OPTIONS.map(o => (
+                    <button
+                      key={o.id}
+                      type="button"
+                      onClick={() => update('role_type', o.id)}
+                      className={`px-3.5 py-2 rounded-full text-xs font-semibold border transition-all
+                        ${form.role_type === o.id
+                          ? 'bg-[#3E3D38] text-white border-[#3E3D38]'
+                          : 'bg-white border-[#E5E0D8] text-[#6B6B66] hover:border-[#3E3D38]'}`}
+                    >
+                      {o.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-[#9A9A94] mt-2">
+                  Pick the closest match — applicants will see this on your listing.
+                </p>
               </div>
 
               {/* Location + dates row */}
@@ -411,6 +457,19 @@ export default function JobListings() {
                   placeholder="e.g. Min 2 years teaching experience, fluent English..."
                   className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-[#2DA4D6] transition-all resize-none"
                 />
+
+                <label className="mt-3 flex items-center gap-2.5 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={form.qualification_required}
+                    onChange={e => update('qualification_required', e.target.checked)}
+                    className="w-4 h-4 rounded border-[#E5E0D8] text-[#2DA4D6] focus:ring-[#2DA4D6]"
+                  />
+                  <span className="flex items-center gap-1.5 text-xs text-[#3E3D38] font-medium">
+                    <GraduationCap size={13} className="text-[#2DA4D6]" />
+                    Formal qualification / certification required
+                  </span>
+                </label>
               </div>
 
               {/* Disciplines */}
@@ -457,25 +516,151 @@ export default function JobListings() {
             </div>
 
             {/* Modal footer */}
-            <div className="px-6 py-4 border-t border-[#E5E0D8] flex items-center justify-between">
+            <div className="px-6 py-4 border-t border-[#E5E0D8] flex items-center justify-between gap-3 flex-wrap">
               <button
                 onClick={() => { setShowForm(false); setEditingId(null); }}
                 className="px-5 py-2.5 border border-[#E5E0D8] rounded-xl text-sm font-medium text-[#6B6B66] hover:border-[#9A9A94] transition-colors"
               >
                 Cancel
               </button>
-              <button
-                onClick={handleSave}
-                disabled={saving || !form.title.trim() || !form.description.trim()}
-                className="flex items-center gap-2 px-6 py-2.5 bg-[#2DA4D6] text-white rounded-xl text-sm font-bold hover:bg-[#2590bd] transition-all disabled:opacity-50"
-              >
-                {saving ? <ButtonLoader size={14} /> : <Check size={14} />}
-                {editingId ? 'Save Changes' : 'Post Listing'}
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setShowPreview(true)}
+                  disabled={!form.title.trim() && !form.description.trim()}
+                  className="flex items-center gap-2 px-5 py-2.5 border border-[#E5E0D8] rounded-xl text-sm font-bold text-[#3E3D38] hover:border-[#3E3D38] transition-all disabled:opacity-50"
+                >
+                  <Eye size={14} /> Preview
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={saving || !form.title.trim() || !form.description.trim()}
+                  className="flex items-center gap-2 px-6 py-2.5 bg-[#2DA4D6] text-white rounded-xl text-sm font-bold hover:bg-[#2590bd] transition-all disabled:opacity-50"
+                >
+                  {saving ? <ButtonLoader size={14} /> : <Check size={14} />}
+                  {editingId ? 'Save Changes' : 'Post Listing'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* ═══ Preview Modal ═══ */}
+      {showPreview && (
+        <PreviewModal form={form} onClose={() => setShowPreview(false)} />
+      )}
+    </div>
+  );
+}
+
+/* ────────────────────────────────────────────────────────────
+   Preview modal — renders the listing exactly as instructors
+   will see it in their feed.
+   ──────────────────────────────────────────────────────────── */
+function PreviewModal({ form, onClose }) {
+  const typeInfo = JOB_TYPES.find(t => t.id === form.type) || JOB_TYPES[0];
+  const TypeIcon = typeInfo.icon;
+  const roleLabel = ROLE_TYPE_OPTIONS.find(r => r.id === form.role_type)?.label;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start justify-center z-[60] p-4 overflow-y-auto">
+      <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl my-8">
+        <div className="px-6 py-4 border-b border-[#E5E0D8] flex items-center justify-between">
+          <div>
+            <h2 className="font-['Unbounded'] text-base font-black text-[#3E3D38]">Listing Preview</h2>
+            <p className="text-[10px] text-[#9A9A94] mt-0.5">This is how instructors will see your post</p>
+          </div>
+          <button onClick={onClose}
+            className="p-1.5 hover:bg-[#FBF8E4] rounded-lg transition-colors text-[#9A9A94]">
+            <X size={18} />
+          </button>
+        </div>
+
+        <div className="p-6">
+          <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
+            <div className="p-6">
+              <div className="flex items-start gap-4 mb-4">
+                <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${typeInfo.bg}`}>
+                  <TypeIcon size={18} style={{ color: typeInfo.color }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <h3 className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">
+                      {form.title || 'Untitled listing'}
+                    </h3>
+                    <span
+                      className="px-2 py-0.5 rounded-full text-[10px] font-bold text-white"
+                      style={{ backgroundColor: typeInfo.color }}
+                    >
+                      {typeInfo.label}
+                    </span>
+                    {roleLabel && (
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#3E3D38] text-white">
+                        {roleLabel}
+                      </span>
+                    )}
+                    {form.qualification_required && (
+                      <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#f5fca6] text-[#3E3D38]">
+                        <GraduationCap size={10} /> Qualification required
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[#6B6B66] text-sm leading-relaxed whitespace-pre-line">
+                    {form.description || '—'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-4 mt-3">
+                {form.location && (
+                  <div className="flex items-center gap-1.5 text-xs text-[#6B6B66]">
+                    <MapPin size={12} className="text-[#9A9A94]" /> {form.location}
+                  </div>
+                )}
+                {form.start_date && (
+                  <div className="flex items-center gap-1.5 text-xs text-[#6B6B66]">
+                    <Calendar size={12} className="text-[#9A9A94]" /> Starts {form.start_date}
+                  </div>
+                )}
+                {form.duration && (
+                  <div className="flex items-center gap-1.5 text-xs text-[#6B6B66]">
+                    <Clock size={12} className="text-[#9A9A94]" /> {form.duration}
+                  </div>
+                )}
+                {form.compensation && (
+                  <div className="flex items-center gap-1.5 text-xs text-[#6B6B66] font-semibold">
+                    {form.compensation}
+                  </div>
+                )}
+              </div>
+
+              {(form.disciplines || []).length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-3">
+                  {form.disciplines.map(d => (
+                    <span key={d} className="px-2.5 py-0.5 bg-[#2DA4D6]/10 text-[#2DA4D6] text-[10px] font-medium rounded-full">{d}</span>
+                  ))}
+                </div>
+              )}
+
+              {form.requirements && (
+                <div className="mt-4 p-3 rounded-xl bg-[#f5fca6]/30 border border-[#f5fca6]">
+                  <p className="text-[10px] font-bold text-[#3E3D38] tracking-widest uppercase mb-1">Requirements</p>
+                  <p className="text-xs text-[#3E3D38] whitespace-pre-line">{form.requirements}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="px-6 py-4 border-t border-[#E5E0D8] flex justify-end">
+          <button
+            onClick={onClose}
+            className="px-5 py-2.5 bg-[#3E3D38] text-white rounded-xl text-sm font-bold hover:bg-[#2a2925] transition-colors"
+          >
+            Back to editor
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

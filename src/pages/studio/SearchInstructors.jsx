@@ -195,10 +195,10 @@ export default function SearchInstructors() {
                 <div className="px-5 pb-4 space-y-3">
                   <div className="flex flex-wrap gap-1">
                     {(inst.disciplines || []).slice(0, 3).map(d => (
-                      <span key={d} className="px-2 py-0.5 bg-[#EDE8DF] text-[#6B6B66] text-[10px] rounded-full">{d}</span>
+                      <span key={d} className="px-2 py-0.5 bg-[#FBF8E4] text-[#6B6B66] text-[10px] rounded-full">{d}</span>
                     ))}
                     {(inst.disciplines || []).length > 3 && (
-                      <span className="px-2 py-0.5 bg-[#EDE8DF] text-[#9A9A94] text-[10px] rounded-full">+{inst.disciplines.length - 3}</span>
+                      <span className="px-2 py-0.5 bg-[#FBF8E4] text-[#9A9A94] text-[10px] rounded-full">+{inst.disciplines.length - 3}</span>
                     )}
                   </div>
 

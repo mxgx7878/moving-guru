@@ -225,7 +225,7 @@ const handleSave = async () => {
                   <button key={s} type="button" onClick={() => update('profileStatus', s)}
                     className={`flex-1 py-2.5 rounded-xl text-xs font-semibold border capitalize transition-all
                       ${form.profileStatus === s
-                        ? s === 'active' ? 'bg-[#6BE6A4]/20 border-[#6BE6A4] text-[#3E3D38]' : 'bg-[#EDE8DF] border-[#9A9A94] text-[#6B6B66]'
+                        ? s === 'active' ? 'bg-[#6BE6A4]/20 border-[#6BE6A4] text-[#3E3D38]' : 'bg-[#FBF8E4] border-[#9A9A94] text-[#6B6B66]'
                         : 'border-[#E5E0D8] text-[#9A9A94] hover:border-[#9A9A94]'}`}>
                     {s === 'active' ? '✓ Actively Hiring' : 'Not Hiring'}
                   </button>
