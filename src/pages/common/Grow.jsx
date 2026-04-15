@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'sonner';
 import {
@@ -9,16 +10,13 @@ import {
 import {
   fetchGrowPosts,
   fetchMyGrowPosts,
-  createGrowPost,
-  updateGrowPost,
   deleteGrowPost,
 } from '../../store/actions/grow';
-import { clearGrowMessage, clearGrowError, resetSubmitStatus } from '../../store/slices/growSlice';
+import { clearGrowMessage, clearGrowError } from '../../store/slices/growSlice';
 import { ROLE_THEME } from '../../config/portalConfig';
 import { STATUS } from '../../constants/apiConstants';
 
 // ── Constants ────────────────────────────────────────────────────
-
 const GROW_TYPES = [
   { id: 'all',      label: 'All Posts',        color: '#3E3D38' },
   { id: 'training', label: 'Teacher Training', color: '#2DA4D6' },
@@ -44,35 +42,28 @@ const STATUS_BADGE = {
   rejected: { label: 'Rejected',         icon: AlertCircle,  cls: 'bg-red-50 text-red-700 border-red-200'        },
 };
 
-const DISCIPLINE_LIST = [
-  'Reformer Pilates','Mat Pilates','Vinyasa Yoga','Hatha Yoga','Yin Yoga',
-  'Ashtanga Yoga','Barre','Breathwork / Pranayama','Meditation','Sound Bath / Sound Healing',
-  'Massage','Muay Thai','Boxing','Kickboxing','Contemporary Dance',
-  'Dance Movement Therapy','Somatic Movement','Tai Chi','Qigong',
-];
-
-// ── Main Component ───────────────────────────────────────────────
-
+// ── Component ────────────────────────────────────────────────────
 export default function Grow() {
-  const dispatch   = useDispatch();
-  const { user }   = useSelector((s) => s.auth);
-  const { posts, myPosts, status, submitStatus, message, submitError } =
-    useSelector((s) => s.grow);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user } = useSelector((s) => s.auth);
+  const { posts, myPosts, status, message, error } = useSelector((s) => s.grow);
 
-  const role      = user?.role || 'instructor';
-  const theme     = ROLE_THEME[role] || ROLE_THEME.instructor;
-  const isStudio  = role === 'studio';
-  const isAdmin   = role === 'admin';
+  const role     = user?.role || 'instructor';
+  const theme    = ROLE_THEME[role] || ROLE_THEME.instructor;
+  const isStudio = role === 'studio';
+  const isAdmin  = role === 'admin';
+  const basePath = isStudio ? '/studio/grow'
+                 : isAdmin  ? '/admin/grow'
+                 : '/portal/grow';
 
   // UI state
-  const [activeType,   setActiveType]   = useState('all');
-  const [query,        setQuery]        = useState('');
-  const [showFilters,  setShowFilters]  = useState(false);
-  const [filterDisc,   setFilterDisc]   = useState('');
-  const [showPostForm, setShowPostForm] = useState(false);
-  const [editingPost,  setEditingPost]  = useState(null);   // post object to edit
+  const [activeType,  setActiveType]  = useState('all');
+  const [query,       setQuery]       = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [filterDisc,  setFilterDisc]  = useState('');
 
-  // ── Load data on mount ────────────────────────────────────────
+  // ── Data load ─────────────────────────────────────────────────
   useEffect(() => {
     dispatch(fetchGrowPosts());
     if (isStudio || role === 'instructor') {
@@ -80,7 +71,7 @@ export default function Grow() {
     }
   }, [dispatch, isStudio, role]);
 
-  // ── Toast on message / error ──────────────────────────────────
+  // ── Toast feedback ────────────────────────────────────────────
   useEffect(() => {
     if (message) {
       toast.success(message);
@@ -89,32 +80,21 @@ export default function Grow() {
   }, [message, dispatch]);
 
   useEffect(() => {
-    if (submitError) {
-      toast.error(submitError);
+    if (error) {
+      toast.error(error);
       dispatch(clearGrowError());
     }
-  }, [submitError, dispatch]);
+  }, [error, dispatch]);
 
-  // ── After successful submit, close form ───────────────────────
-  useEffect(() => {
-    if (submitStatus === STATUS.SUCCEEDED) {
-      setShowPostForm(false);
-      setEditingPost(null);
-      dispatch(resetSubmitStatus());
-    }
-  }, [submitStatus, dispatch]);
-
-  // ── Decide which posts list to show per role ──────────────────
-  // Studios see ONLY their own posts (manage view)
-  // Instructors + admin see full public feed
+  // ── Studios view manages only their posts; others browse feed ─
   const sourcePosts = isStudio ? myPosts : posts;
 
   const allDisc = useMemo(() => (
     [...new Set(sourcePosts.flatMap((p) => p.disciplines || []))].filter(Boolean).sort()
   ), [sourcePosts]);
 
-  const filtered = useMemo(() => {
-    return sourcePosts.filter((p) => {
+  const filtered = useMemo(() => (
+    sourcePosts.filter((p) => {
       const matchType = activeType === 'all' || p.type === activeType;
       const q = query.toLowerCase();
       const matchQ = !q
@@ -125,8 +105,8 @@ export default function Grow() {
       const matchD = !filterDisc
         || (p.disciplines || []).some((d) => d.toLowerCase().includes(filterDisc.toLowerCase()));
       return matchType && matchQ && matchD;
-    });
-  }, [sourcePosts, activeType, query, filterDisc]);
+    })
+  ), [sourcePosts, activeType, query, filterDisc]);
 
   const clearFilters = () => { setQuery(''); setFilterDisc(''); };
   const hasFilters   = query || filterDisc;
@@ -135,6 +115,9 @@ export default function Grow() {
     if (!window.confirm(`Delete "${post.title}"? This cannot be undone.`)) return;
     dispatch(deleteGrowPost(post.id));
   };
+
+  const goNew  = () => navigate(`${basePath}/new`);
+  const goEdit = (post) => navigate(`${basePath}/edit/${post.id}`);
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -152,10 +135,9 @@ export default function Grow() {
               ? 'Manage the trainings, retreats and events your studio has posted.'
               : 'Upskill, deepen your practice, and connect with the global wellness community.'}
           </p>
-          {/* Post button in hero for studios */}
           {(isStudio || role === 'instructor') && (
             <button
-              onClick={() => { setEditingPost(null); setShowPostForm(true); }}
+              onClick={goNew}
               className="mt-4 flex items-center gap-2 bg-[#3E3D38] text-[#f5fca6] font-bold text-xs px-5 py-2.5 rounded-xl hover:bg-black transition-colors">
               <Plus size={14} /> Post an Opportunity
             </button>
@@ -168,16 +150,17 @@ export default function Grow() {
       {/* ── Stats ─────────────────────────────────────────────── */}
       <div className="grid grid-cols-3 gap-4">
         {GROW_TYPES.filter((t) => t.id !== 'all').map((t) => {
-          const count = sourcePosts.filter((p) => p.type === t.id).length;
+          const count  = sourcePosts.filter((p) => p.type === t.id).length;
+          const active = activeType === t.id;
           return (
             <button key={t.id}
-              onClick={() => setActiveType(t.id === activeType ? 'all' : t.id)}
+              onClick={() => setActiveType(active ? 'all' : t.id)}
               className={`rounded-2xl p-4 border text-center transition-all
-                ${activeType === t.id ? 'border-2 shadow-sm' : 'bg-white border-[#E5E0D8] hover:shadow-sm'}`}
-              style={activeType === t.id ? { borderColor: t.color, backgroundColor: t.color + '18' } : {}}>
+                ${active ? 'border-2 shadow-sm' : 'bg-white border-[#E5E0D8] hover:shadow-sm'}`}
+              style={active ? { borderColor: t.color, backgroundColor: t.color + '18' } : {}}>
               <p className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">{count}</p>
               <p className="text-xs font-semibold mt-1"
-                style={{ color: activeType === t.id ? t.color : '#9A9A94' }}>
+                style={{ color: active ? t.color : '#9A9A94' }}>
                 {t.label}
               </p>
             </button>
@@ -277,7 +260,6 @@ export default function Grow() {
               <div key={post.id}
                 className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden hover:shadow-md transition-shadow flex flex-col">
 
-                {/* Card top accent strip */}
                 <div className="h-1 w-full" style={{ backgroundColor: post.color || typeCfg?.color || '#2DA4D6' }} />
 
                 <div className="p-5 flex-1 flex flex-col">
@@ -286,14 +268,13 @@ export default function Grow() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                         <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${TYPE_BG[post.type]}`}>
-                          <TypeIcon size={9} /> {post.type.toUpperCase()}
+                          <TypeIcon size={9} /> {(post.type || '').toUpperCase()}
                         </span>
                         {post.is_featured && (
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#f5fca6] text-[#3E3D38]">
                             ⚡ FEATURED
                           </span>
                         )}
-                        {/* Status badge — only shown to post owner or admin */}
                         {(isOwn || isAdmin) && statusCfg && (
                           <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${statusCfg.cls}`}>
                             <statusCfg.icon size={9} /> {statusCfg.label}
@@ -308,7 +289,6 @@ export default function Grow() {
                       )}
                     </div>
 
-                    {/* Thumbnail */}
                     {(post.images?.[0]) && (
                       <img src={post.images[0]} alt={post.title}
                         className="w-16 h-16 rounded-xl object-cover flex-shrink-0 border border-[#E5E0D8]" />
@@ -336,12 +316,10 @@ export default function Grow() {
                     )}
                   </div>
 
-                  {/* Description */}
                   <p className="text-[#6B6B66] text-xs leading-relaxed line-clamp-3 mb-3 flex-1">
                     {post.description}
                   </p>
 
-                  {/* Tags */}
                   {(post.tags || []).length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mb-4">
                       {(post.tags || []).map((tag) => (
@@ -353,7 +331,7 @@ export default function Grow() {
                     </div>
                   )}
 
-                  {/* Footer: price + actions */}
+                  {/* Footer: owner + actions */}
                   <div className="flex items-center justify-between pt-3 border-t border-[#F0EBE3]">
                     <div>
                       <p className="text-[10px] text-[#9A9A94] uppercase tracking-wide">Posted by</p>
@@ -366,23 +344,23 @@ export default function Grow() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      {/* Edit / Delete — only owner or admin */}
                       {(isOwn || isAdmin) && (
                         <>
                           <button
-                            onClick={() => { setEditingPost(post); setShowPostForm(true); }}
-                            className="p-2 rounded-xl border border-[#E5E0D8] text-[#6B6B66] hover:border-[#3E3D38] transition-colors">
+                            onClick={() => goEdit(post)}
+                            className="p-2 rounded-xl border border-[#E5E0D8] text-[#6B6B66] hover:border-[#3E3D38] transition-colors"
+                            aria-label="Edit post">
                             <Edit3 size={13} />
                           </button>
                           <button
                             onClick={() => handleDelete(post)}
-                            className="p-2 rounded-xl border border-[#E5E0D8] text-[#CE4F56] hover:bg-[#CE4F56]/5 hover:border-[#CE4F56] transition-colors">
+                            className="p-2 rounded-xl border border-[#E5E0D8] text-[#CE4F56] hover:bg-[#CE4F56]/5 hover:border-[#CE4F56] transition-colors"
+                            aria-label="Delete post">
                             <Trash2 size={13} />
                           </button>
                         </>
                       )}
 
-                      {/* More Info link */}
                       {(post.external_url || post.url) && (post.external_url || post.url) !== '#' && (
                         <a href={post.external_url || post.url} target="_blank" rel="noreferrer"
                           className="flex items-center gap-1.5 text-xs font-bold px-4 py-2 rounded-xl text-white transition-colors"
@@ -412,258 +390,12 @@ export default function Grow() {
             </div>
           </div>
           <button
-            onClick={() => { setEditingPost(null); setShowPostForm(true); }}
+            onClick={goNew}
             className="bg-[#f5fca6] text-[#3E3D38] font-bold text-xs px-5 py-2.5 rounded-xl hover:bg-white transition-colors flex-shrink-0 whitespace-nowrap">
             Post Now
           </button>
         </div>
       )}
-
-      {/* ── Post / Edit Form Modal ─────────────────────────────── */}
-      {showPostForm && (
-        <GrowPostModal
-          post={editingPost}
-          theme={theme}
-          submitStatus={submitStatus}
-          onClose={() => { setShowPostForm(false); setEditingPost(null); dispatch(resetSubmitStatus()); }}
-          onSubmit={(payload) => {
-            if (editingPost) {
-              dispatch(updateGrowPost({ id: editingPost.id, ...payload }));
-            } else {
-              dispatch(createGrowPost(payload));
-            }
-          }}
-        />
-      )}
-    </div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════════════
-//  Post / Edit Modal
-// ═══════════════════════════════════════════════════════════════
-
-function GrowPostModal({ post, theme, submitStatus, onClose, onSubmit }) {
-  const isEditing = !!post;
-
-  const [form, setForm] = useState({
-    type:         post?.type        || 'training',
-    title:        post?.title       || '',
-    subtitle:     post?.subtitle    || '',
-    description:  post?.description || '',
-    location:     post?.location    || '',
-    date_from:    post?.date_from   || '',
-    date_to:      post?.date_to     || '',
-    price:        post?.price       || '',
-    spots:        post?.spots       || '',
-    spots_left:   post?.spots_left ?? post?.spotsLeft ?? '',
-    external_url: post?.external_url || post?.url || '',
-    disciplines:  post?.disciplines || [],
-    tags_raw:     (post?.tags || []).join(', '),
-    expiry_date:  '',
-  });
-
-  const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
-
-  const toggleDisc = (d) => {
-    setForm((f) => ({
-      ...f,
-      disciplines: f.disciplines.includes(d)
-        ? f.disciplines.filter((x) => x !== d)
-        : [...f.disciplines, d],
-    }));
-  };
-
-  const handleSubmit = () => {
-    if (!form.title.trim())       return toast.error('Title is required');
-    if (!form.description.trim()) return toast.error('Description is required');
-    if (!form.location.trim())    return toast.error('Location is required');
-
-    onSubmit({
-      type:         form.type,
-      title:        form.title.trim(),
-      subtitle:     form.subtitle.trim(),
-      description:  form.description.trim(),
-      location:     form.location.trim(),
-      date_from:    form.date_from || null,
-      date_to:      form.date_to   || null,
-      price:        form.price.trim(),
-      spots:        form.spots     ? Number(form.spots)     : null,
-      spots_left:   form.spots_left ? Number(form.spots_left) : null,
-      external_url: form.external_url.trim() || null,
-      disciplines:  form.disciplines,
-      tags:         form.tags_raw.split(',').map((t) => t.trim()).filter(Boolean),
-      expiry_date:  form.expiry_date || null,
-    });
-  };
-
-  const isLoading = submitStatus === STATUS.LOADING;
-
-  return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl my-8">
-
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-[#E5E0D8] flex items-center justify-between">
-          <div>
-            <h2 className="font-['Unbounded'] text-base font-black text-[#3E3D38]">
-              {isEditing ? 'Edit Post' : 'Post an Opportunity'}
-            </h2>
-            <p className="text-[10px] text-[#9A9A94] mt-0.5">
-              {isEditing
-                ? 'Update the details for your training, retreat or event.'
-                : 'Fill in the details. Your post will go live after admin approval.'}
-            </p>
-          </div>
-          <button onClick={onClose}
-            className="p-1.5 hover:bg-[#FBF8E4] rounded-lg transition-colors text-[#9A9A94]">
-            <X size={18} />
-          </button>
-        </div>
-
-        <div className="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
-
-          {/* Type */}
-          <div>
-            <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">
-              Type *
-            </label>
-            <div className="flex gap-2">
-              {GROW_TYPES.filter((t) => t.id !== 'all').map((t) => (
-                <button key={t.id} type="button"
-                  onClick={() => update('type', t.id)}
-                  className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all
-                    ${form.type === t.id ? 'text-white' : 'border-[#E5E0D8] text-[#6B6B66]'}`}
-                  style={form.type === t.id ? { backgroundColor: t.color, borderColor: t.color } : {}}>
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Title */}
-          <Field label="Title *">
-            <input value={form.title} onChange={(e) => update('title', e.target.value)}
-              placeholder="e.g. Imagine Studios Thailand — Pilates Teacher Training"
-              className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6]" />
-          </Field>
-
-          {/* Subtitle */}
-          <Field label="Subtitle">
-            <input value={form.subtitle} onChange={(e) => update('subtitle', e.target.value)}
-              placeholder="e.g. Internationally accredited 500h program"
-              className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6]" />
-          </Field>
-
-          {/* Description */}
-          <Field label="Description *">
-            <textarea value={form.description} onChange={(e) => update('description', e.target.value)}
-              rows={4} placeholder="Tell people what this is about, what's included, who it's for..."
-              className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6] resize-none" />
-          </Field>
-
-          {/* Location */}
-          <Field label="Location *">
-            <input value={form.location} onChange={(e) => update('location', e.target.value)}
-              placeholder="e.g. Koh Samui, Thailand"
-              className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6]" />
-          </Field>
-
-          {/* Dates row */}
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="Date From">
-              <input type="date" value={form.date_from} onChange={(e) => update('date_from', e.target.value)}
-                className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6]" />
-            </Field>
-            <Field label="Date To">
-              <input type="date" value={form.date_to} onChange={(e) => update('date_to', e.target.value)}
-                className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6]" />
-            </Field>
-          </div>
-
-          {/* Price + Spots row */}
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="Price">
-              <input value={form.price} onChange={(e) => update('price', e.target.value)}
-                placeholder="e.g. From $3,800 USD"
-                className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6]" />
-            </Field>
-            <Field label="Total Spots">
-              <input type="number" value={form.spots} onChange={(e) => update('spots', e.target.value)}
-                placeholder="e.g. 12"
-                className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6]" />
-            </Field>
-          </div>
-
-          {/* Disciplines */}
-          <Field label="Disciplines">
-            <div className="flex flex-wrap gap-2 mt-1">
-              {DISCIPLINE_LIST.map((d) => (
-                <button key={d} type="button" onClick={() => toggleDisc(d)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
-                    ${form.disciplines.includes(d)
-                      ? 'text-white border-transparent'
-                      : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#3E3D38]'}`}
-                  style={form.disciplines.includes(d) ? { backgroundColor: theme.accent } : {}}>
-                  {d}
-                </button>
-              ))}
-            </div>
-          </Field>
-
-          {/* Tags */}
-          <Field label="Tags (comma separated)">
-            <input value={form.tags_raw} onChange={(e) => update('tags_raw', e.target.value)}
-              placeholder="e.g. 500h, Accredited, Residential"
-              className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6]" />
-          </Field>
-
-          {/* External URL */}
-          <Field label="Website / More Info URL">
-            <input value={form.external_url} onChange={(e) => update('external_url', e.target.value)}
-              placeholder="https://yourstudio.com/training"
-              className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6]" />
-          </Field>
-
-          {/* Expiry */}
-          <Field label="Auto-remove post after (expiry date)">
-            <input type="date" value={form.expiry_date} onChange={(e) => update('expiry_date', e.target.value)}
-              className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6]" />
-          </Field>
-
-          {!isEditing && (
-            <p className="text-[11px] text-[#9A9A94] bg-[#FDFCF8] rounded-xl p-3 border border-[#E5E0D8]">
-              ℹ️ Your post will be reviewed by the Moving Guru team before it goes live. You'll be notified once approved.
-            </p>
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="px-6 py-4 border-t border-[#E5E0D8] flex justify-end gap-3">
-          <button onClick={onClose}
-            className="px-5 py-2.5 rounded-xl border border-[#E5E0D8] text-sm font-semibold text-[#6B6B66] hover:bg-[#F5F0E8] transition-colors">
-            Cancel
-          </button>
-          <button onClick={handleSubmit} disabled={isLoading}
-            className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-colors disabled:opacity-60"
-            style={{ backgroundColor: theme.accent }}>
-            {isLoading && <Loader2 size={14} className="animate-spin" />}
-            {isEditing ? 'Save Changes' : 'Submit for Approval'}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ── Small helper component ────────────────────────────────────────
-function Field({ label, children }) {
-  return (
-    <div>
-      <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">
-        {label}
-      </label>
-      {children}
     </div>
   );
 }

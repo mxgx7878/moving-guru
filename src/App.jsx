@@ -22,6 +22,7 @@ import Messages       from './pages/common/Messages';
 import Subscription   from './pages/common/Subscription';
 import Payments       from './pages/common/Payments';
 import Grow           from './pages/common/Grow';
+import GrowPostForm   from './pages/common/GrowPostForm';
 
 // Studio portal
 import StudioDashboard   from './pages/studio/StudioDashboard';
@@ -32,6 +33,7 @@ import JobListings       from './pages/studio/JobListings';
 
 // Admin portal
 import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminGrowPosts from './pages/admin/AdminGrowPosts';
 
 function RoleRedirect() {
   const { token, user } = useSelector((s) => s.auth);
@@ -65,7 +67,9 @@ export default function App() {
           <Route path="dashboard"  element={<Dashboard />} />
           <Route path="profile"    element={<ProfilePage />} />
           <Route path="find-work"  element={<FindWork />} />
-          <Route path="grow"       element={<Grow />} />
+          <Route path="grow"            element={<Grow />} />
+          <Route path="grow/new"        element={<GrowPostForm />} />
+          <Route path="grow/edit/:id"   element={<GrowPostForm />} />
           <Route path="messages"   element={<Messages />} />
           <Route path="subscription" element={<Subscription />} />
           <Route path="payments"   element={<Payments />} />
@@ -83,7 +87,9 @@ export default function App() {
           <Route path="search"      element={<SearchInstructors />} />
           <Route path="favourites"  element={<Favourites />} />
           <Route path="jobs"        element={<JobListings />} />
-          <Route path="grow"        element={<Grow />} />
+          <Route path="grow"            element={<Grow />} />
+          <Route path="grow/new"        element={<GrowPostForm />} />
+          <Route path="grow/edit/:id"   element={<GrowPostForm />} />
           <Route path="messages"    element={<Messages />} />
           <Route path="subscription" element={<Subscription />} />
           <Route path="payments"    element={<Payments />} />
@@ -96,7 +102,9 @@ export default function App() {
           </ProtectedRoute>
         }>
           <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="dashboard"       element={<AdminDashboard />} />
+          <Route path="grow"            element={<AdminGrowPosts />} />
+          <Route path="grow/edit/:id"   element={<GrowPostForm />} />
         </Route>
 
         {/* ── Catch-all ──────────────────────────────────────── */}
