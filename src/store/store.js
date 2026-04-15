@@ -6,7 +6,7 @@ import subscriptionReducer from "./slices/subscriptionSlice";
 import paymentReducer from "./slices/paymentSlice";
 import jobReducer from "./slices/jobSlice";
 import growReducer from "./slices/growSlice";
-import adminReducer from "./slices/adminSlice";
+import postReducer from "./slices/postSlice";
 
 const store = configureStore({
   reducer: {
@@ -17,7 +17,7 @@ const store = configureStore({
     payment: paymentReducer,
     job: jobReducer,
     grow: growReducer,
-    admin: adminReducer,
+    post: postReducer,
   },
   devTools: import.meta.env.DEV,
 });

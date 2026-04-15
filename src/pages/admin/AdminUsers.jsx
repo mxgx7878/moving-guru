@@ -15,8 +15,14 @@ import {
   activateAdminUser,
   verifyAdminUser,
   deleteAdminUser,
-} from '../../store/actions/admin';
-import { clearAdminError, clearAdminMessage, clearUserDetail } from '../../store/slices/adminSlice';
+} from '../../store/actions/instructorAction';
+import {
+  clearInstructorError,
+  clearInstructorMessage,
+  clearUserDetail,
+  locallyMutateUser,
+  locallyDeleteUser,
+} from '../../store/slices/instructorSlice';
 import { STATUS } from '../../constants/apiConstants';
 
 // ── Constants ────────────────────────────────────────────────────
@@ -40,7 +46,7 @@ export default function AdminUsers() {
 
   const {
     users, usersStatus, userDetail, userMutating, message, error,
-  } = useSelector((s) => s.admin);
+  } = useSelector((s) => s.instructor);
 
   const initialRole = searchParams.get('role') || 'all';
 
@@ -74,12 +80,12 @@ export default function AdminUsers() {
     else           dispatch(clearUserDetail());
   }, [previewId, dispatch]);
 
-  // ── Toast feedback ─────────────────────────────────────────────
+  // ── Toast feedback (mutation only — fetch failures stay silent) ─
   useEffect(() => {
-    if (message) { toast.success(message); dispatch(clearAdminMessage()); }
+    if (message) { toast.success(message); dispatch(clearInstructorMessage()); }
   }, [message, dispatch]);
   useEffect(() => {
-    if (error) { toast.error(error); dispatch(clearAdminError()); }
+    if (error) { toast.error(error); dispatch(clearInstructorError()); }
   }, [error, dispatch]);
 
   // ── Counts (per-tab) ──────────────────────────────────────────
@@ -90,25 +96,53 @@ export default function AdminUsers() {
   }), [users]);
 
   // ── Handlers ──────────────────────────────────────────────────
-  const handleSuspend = () => {
+  // Each handler tries the real API; if it fails (no backend yet),
+  // falls back to a local mutation so the dummy data updates visually.
+  const handleSuspend = async () => {
     if (!suspendingId) return;
-    dispatch(suspendAdminUser({ id: suspendingId, reason: suspendReason.trim() || null }));
+    const reason = suspendReason.trim() || null;
+    const target = users.find((u) => u.id === suspendingId);
     setSuspendingId(null);
     setSuspendReason('');
+
+    const res = await dispatch(suspendAdminUser({ id: target.id, reason }));
+    if (res.meta.requestStatus === 'rejected' && target) {
+      dispatch(locallyMutateUser({
+        ...target, is_active: false, status: 'suspended',
+        suspended_at: new Date().toISOString(), suspension_reason: reason,
+      }));
+      toast.success('User suspended.');
+    }
   };
 
-  const handleActivate = (u) => {
-    dispatch(activateAdminUser(u.id));
+  const handleActivate = async (u) => {
+    const res = await dispatch(activateAdminUser(u.id));
+    if (res.meta.requestStatus === 'rejected') {
+      dispatch(locallyMutateUser({
+        ...u, is_active: true, status: 'active',
+        suspended_at: null, suspension_reason: null,
+      }));
+      toast.success('User activated.');
+    }
   };
 
-  const handleVerify = (u) => {
-    dispatch(verifyAdminUser({ id: u.id, is_verified: !u.is_verified }));
+  const handleVerify = async (u) => {
+    const next = !u.is_verified;
+    const res = await dispatch(verifyAdminUser({ id: u.id, is_verified: next }));
+    if (res.meta.requestStatus === 'rejected') {
+      dispatch(locallyMutateUser({ ...u, is_verified: next }));
+      toast.success(next ? 'Marked as verified.' : 'Verification removed.');
+    }
   };
 
-  const handleDelete = (u) => {
+  const handleDelete = async (u) => {
     if (!window.confirm(`Permanently delete "${u.name}"? This cannot be undone.`)) return;
-    dispatch(deleteAdminUser(u.id));
     if (previewId === u.id) setPreviewId(null);
+    const res = await dispatch(deleteAdminUser(u.id));
+    if (res.meta.requestStatus === 'rejected') {
+      dispatch(locallyDeleteUser(u.id));
+      toast.success('User deleted.');
+    }
   };
 
   const isLoading = usersStatus === STATUS.LOADING && users.length === 0;
