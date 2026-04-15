@@ -1,10 +1,13 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { ProtectedRoute, PortalLayout } from './components/layout';
 import { FullPageLoader, ToastListener } from './components/feedback';
 import { ROLE_THEME } from './config/portalConfig';
+import { STATUS } from './constants/apiConstants';
+import { getMe } from './store/actions/authAction';
 
 // Public
 import Login          from './pages/public/Login';
@@ -36,9 +39,34 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminGrowPosts from './pages/admin/AdminGrowPosts';
 
 function RoleRedirect() {
-  const { token, user } = useSelector((s) => s.auth);
+  const dispatch = useDispatch();
+  const { token, user, status } = useSelector((s) => s.auth);
+
+  // If a token exists (possibly stale from a different app) but no user has
+  // been loaded yet, validate it once. If the token is invalid the slice
+  // will clear it and this component re-renders into the login redirect.
+  useEffect(() => {
+    if (token && !user && status === STATUS.IDLE) {
+      dispatch(getMe());
+    }
+  }, [token, user, status, dispatch]);
+
   if (!token) return <Navigate to="/login" replace />;
-  if (!user)  return null;
+
+  if (!user) {
+    // Still validating → show a loader instead of a blank white screen.
+    if (status === STATUS.IDLE || status === STATUS.LOADING) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-[#FDFCF8]">
+          <div className="w-8 h-8 border-2 border-[#CE4F56]/30 border-t-[#CE4F56] rounded-full animate-spin" />
+        </div>
+      );
+    }
+    // Validation finished without a user (failed or empty response) — token
+    // is unusable. Force a fresh login.
+    return <Navigate to="/login" replace />;
+  }
+
   return <Navigate to={ROLE_THEME[user.role]?.defaultPath || '/login'} replace />;
 }
 
