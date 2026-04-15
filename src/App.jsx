@@ -37,6 +37,8 @@ import JobListings       from './pages/studio/JobListings';
 // Admin portal
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminGrowPosts from './pages/admin/AdminGrowPosts';
+import AdminUsers     from './pages/admin/AdminUsers';
+import AdminPosts     from './pages/admin/AdminPosts';
 
 function RoleRedirect() {
   const dispatch = useDispatch();
@@ -131,6 +133,8 @@ export default function App() {
         }>
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard"       element={<AdminDashboard />} />
+          <Route path="users"           element={<AdminUsers />} />
+          <Route path="posts"           element={<AdminPosts />} />
           <Route path="grow"            element={<AdminGrowPosts />} />
           <Route path="grow/edit/:id"   element={<GrowPostForm />} />
         </Route>

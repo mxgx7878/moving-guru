@@ -50,12 +50,11 @@ export const NAV_CONFIG = {
     { to: '/studio/payments',     icon: CreditCard,      label: 'Payment History'    },
   ],
   admin: [
-    { to: '/admin/dashboard',     icon: LayoutDashboard, label: 'Dashboard'    },
-    { to: '/admin/users',         icon: Users,           label: 'Instructors'  },
-    { to: '/admin/studios',       icon: Building2,       label: 'Studios'      },
-    { to: '/admin/grow',          icon: Sprout,          label: 'Grow Posts'   },
-    { to: '/admin/posts',         icon: FileText,        label: 'Posts / Events' },
-    { to: '/admin/subscriptions', icon: Star,            label: 'Subscriptions' },
-    { to: '/admin/settings',      icon: Settings,        label: 'Settings'     },
+    { to: '/admin/dashboard',     icon: LayoutDashboard, label: 'Dashboard'        },
+    { to: '/admin/users',         icon: Users,           label: 'User Management'  },
+    { to: '/admin/grow',          icon: Sprout,          label: 'Grow Posts'       },
+    { to: '/admin/posts',         icon: FileText,        label: 'Posts / Events'   },
+    { to: '/admin/subscriptions', icon: Star,            label: 'Subscriptions'    },
+    { to: '/admin/settings',      icon: Settings,        label: 'Settings'         },
   ],
 };
