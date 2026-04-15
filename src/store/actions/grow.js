@@ -83,3 +83,80 @@ export const deleteGrowPost = createAsyncThunk(
     }
   },
 );
+
+// ═══════════════════════════════════════════════════════════════
+//  Admin actions
+// ═══════════════════════════════════════════════════════════════
+
+// ── Admin: list all posts (all statuses, with optional filters) ──
+export const fetchAdminGrowPosts = createAsyncThunk(
+  'grow/adminFetchAll',
+  async (params = {}, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.get(API_ENDPOINTS.ADMIN_GROW_POSTS, { params });
+      return data;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+);
+
+// ── Admin: approve a post ──
+export const approveGrowPost = createAsyncThunk(
+  'grow/adminApprove',
+  async (id, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.patch(
+        `${API_ENDPOINTS.ADMIN_GROW_APPROVE}/${id}/approve`,
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+);
+
+// ── Admin: reject a post (optional reason) ──
+export const rejectGrowPost = createAsyncThunk(
+  'grow/adminReject',
+  async ({ id, reason }, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.patch(
+        `${API_ENDPOINTS.ADMIN_GROW_REJECT}/${id}/reject`,
+        { reason },
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+);
+
+// ── Admin: toggle featured/boost ──
+export const boostGrowPost = createAsyncThunk(
+  'grow/adminBoost',
+  async ({ id, is_featured }, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.patch(
+        `${API_ENDPOINTS.ADMIN_GROW_BOOST}/${id}/boost`,
+        { is_featured },
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+);
+
+// ── Admin: delete any post ──
+export const adminDeleteGrowPost = createAsyncThunk(
+  'grow/adminDelete',
+  async (id, { rejectWithValue }) => {
+    try {
+      await axiosInstance.delete(`${API_ENDPOINTS.ADMIN_GROW_POSTS}/${id}`);
+      return id;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+);

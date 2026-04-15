@@ -7,17 +7,50 @@ import {
   createGrowPost,
   updateGrowPost,
   deleteGrowPost,
+  fetchAdminGrowPosts,
+  approveGrowPost,
+  rejectGrowPost,
+  boostGrowPost,
+  adminDeleteGrowPost,
 } from '../actions/grow';
 
+// Synthesise some pending/rejected variants of the dummy posts so the
+// admin moderation screen has something to act on while the API is
+// being built.
+const ADMIN_DUMMY_POSTS = [
+  ...GROW_POSTS.map((p, i) => ({
+    ...p,
+    status: i % 3 === 0 ? 'pending' : i % 3 === 1 ? 'approved' : 'rejected',
+    is_featured: i === 0,
+  })),
+];
+
 const initialState = {
-  posts: GROW_POSTS,        // fallback to static dummy data until API responds
-  myPosts: [],
+  posts: GROW_POSTS,            // public feed (fallback to dummy)
+  myPosts: GROW_POSTS.slice(0, 2), // simulate "my posts" for the demo
+  adminPosts: ADMIN_DUMMY_POSTS, // admin moderation queue (dummy fallback)
   pagination: null,
+  adminPagination: null,
   status: STATUS.IDLE,
+  adminStatus: STATUS.IDLE,
   submitStatus: STATUS.IDLE,
+  moderationStatus: STATUS.IDLE,
   error: null,
   submitError: null,
+  adminError: null,
   message: null,
+};
+
+// Helper: replace a post everywhere it appears in state
+const replacePost = (state, updated) => {
+  if (!updated) return;
+  const tryReplace = (arr) => {
+    const idx = arr.findIndex((p) => p.id === updated.id);
+    if (idx !== -1) arr[idx] = updated;
+  };
+  tryReplace(state.myPosts);
+  tryReplace(state.posts);
+  tryReplace(state.adminPosts);
 };
 
 const growSlice = createSlice({
@@ -27,6 +60,7 @@ const growSlice = createSlice({
     clearGrowError(state) {
       state.error = null;
       state.submitError = null;
+      state.adminError = null;
     },
     clearGrowMessage(state) {
       state.message = null;
@@ -34,6 +68,34 @@ const growSlice = createSlice({
     resetSubmitStatus(state) {
       state.submitStatus = STATUS.IDLE;
       state.submitError = null;
+    },
+    // Local-only mutations on dummy data (used while admin APIs are not ready)
+    locallySetGrowStatus(state, { payload: { id, status, reason = null } }) {
+      const updated = (post) => post && {
+        ...post, status,
+        rejection_reason: status === 'rejected' ? reason : null,
+      };
+      const apply = (arr) => {
+        const i = arr.findIndex((p) => p.id === id);
+        if (i !== -1) arr[i] = updated(arr[i]);
+      };
+      apply(state.adminPosts);
+      apply(state.posts);
+      apply(state.myPosts);
+    },
+    locallyToggleGrowFeatured(state, { payload: id }) {
+      const apply = (arr) => {
+        const i = arr.findIndex((p) => p.id === id);
+        if (i !== -1) arr[i] = { ...arr[i], is_featured: !arr[i].is_featured };
+      };
+      apply(state.adminPosts);
+      apply(state.posts);
+      apply(state.myPosts);
+    },
+    locallyDeleteGrow(state, { payload: id }) {
+      state.adminPosts = state.adminPosts.filter((p) => p.id !== id);
+      state.posts      = state.posts.filter((p) => p.id !== id);
+      state.myPosts    = state.myPosts.filter((p) => p.id !== id);
     },
   },
   extraReducers: (builder) => {
@@ -47,7 +109,6 @@ const growSlice = createSlice({
       .addCase(fetchGrowPosts.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
         const apiPosts = payload.data;
-        // Only replace dummy data if the API actually returned records
         if (Array.isArray(apiPosts) && apiPosts.length > 0) {
           state.posts = apiPosts;
         }
@@ -60,10 +121,14 @@ const growSlice = createSlice({
 
       // ── Fetch my own posts ───────────────────────────────────
       .addCase(fetchMyGrowPosts.fulfilled, (state, { payload }) => {
-        state.myPosts = payload.data || [];
+        const apiData = payload?.data;
+        if (Array.isArray(apiData) && apiData.length > 0) {
+          state.myPosts = apiData;
+        }
+        // else: keep dummy fallback
       })
-      .addCase(fetchMyGrowPosts.rejected, (state) => {
-        state.myPosts = [];
+      .addCase(fetchMyGrowPosts.rejected, () => {
+        // Silent: keep whatever myPosts was already in state
       })
 
       // ── Create post ──────────────────────────────────────────
@@ -75,9 +140,7 @@ const growSlice = createSlice({
         state.submitStatus = STATUS.SUCCEEDED;
         const newPost = payload.data;
         if (newPost) {
-          // Add to myPosts immediately
           state.myPosts.unshift(newPost);
-          // If it's already approved (unlikely but handle it), add to public feed
           if (newPost.status === 'approved') {
             state.posts.unshift(newPost);
           }
@@ -96,16 +159,7 @@ const growSlice = createSlice({
       })
       .addCase(updateGrowPost.fulfilled, (state, { payload }) => {
         state.submitStatus = STATUS.SUCCEEDED;
-        const updated = payload.data;
-        if (updated) {
-          // Update in myPosts
-          const myIdx = state.myPosts.findIndex((p) => p.id === updated.id);
-          if (myIdx !== -1) state.myPosts[myIdx] = updated;
-
-          // Update in public feed
-          const idx = state.posts.findIndex((p) => p.id === updated.id);
-          if (idx !== -1) state.posts[idx] = updated;
-        }
+        replacePost(state, payload.data);
         state.message = payload.message || 'Post updated successfully.';
       })
       .addCase(updateGrowPost.rejected, (state, { payload }) => {
@@ -113,17 +167,97 @@ const growSlice = createSlice({
         state.submitError = payload;
       })
 
-      // ── Delete post ──────────────────────────────────────────
+      // ── Delete post (owner) ──────────────────────────────────
       .addCase(deleteGrowPost.fulfilled, (state, { payload: id }) => {
-        state.myPosts = state.myPosts.filter((p) => p.id !== id);
-        state.posts   = state.posts.filter((p) => p.id !== id);
-        state.message = 'Post deleted.';
+        state.myPosts    = state.myPosts.filter((p) => p.id !== id);
+        state.posts      = state.posts.filter((p) => p.id !== id);
+        state.adminPosts = state.adminPosts.filter((p) => p.id !== id);
+        state.message    = 'Post deleted.';
       })
       .addCase(deleteGrowPost.rejected, (state, { payload }) => {
         state.error = payload;
+      })
+
+      // ═══════════════════════════════════════════════════════
+      //  Admin
+      // ═══════════════════════════════════════════════════════
+
+      // ── Admin: list all posts ────────────────────────────────
+      .addCase(fetchAdminGrowPosts.pending, (state) => {
+        state.adminStatus = STATUS.LOADING;
+        state.adminError = null;
+      })
+      .addCase(fetchAdminGrowPosts.fulfilled, (state, { payload }) => {
+        state.adminStatus = STATUS.SUCCEEDED;
+        const apiData = payload?.data;
+        if (Array.isArray(apiData) && apiData.length > 0) {
+          state.adminPosts = apiData;
+          state.adminPagination = payload.meta || null;
+        }
+        // else: keep dummy fallback
+      })
+      .addCase(fetchAdminGrowPosts.rejected, (state) => {
+        // Silent: keep dummy data, no toast
+        state.adminStatus = STATUS.SUCCEEDED;
+      })
+
+      // ── Admin: approve ───────────────────────────────────────
+      .addCase(approveGrowPost.pending, (state) => {
+        state.moderationStatus = STATUS.LOADING;
+      })
+      .addCase(approveGrowPost.fulfilled, (state, { payload }) => {
+        state.moderationStatus = STATUS.SUCCEEDED;
+        replacePost(state, payload.data);
+        state.message = payload.message || 'Post approved.';
+      })
+      .addCase(approveGrowPost.rejected, (state, { payload }) => {
+        state.moderationStatus = STATUS.FAILED;
+        state.adminError = payload;
+      })
+
+      // ── Admin: reject ────────────────────────────────────────
+      .addCase(rejectGrowPost.pending, (state) => {
+        state.moderationStatus = STATUS.LOADING;
+      })
+      .addCase(rejectGrowPost.fulfilled, (state, { payload }) => {
+        state.moderationStatus = STATUS.SUCCEEDED;
+        replacePost(state, payload.data);
+        state.message = payload.message || 'Post rejected.';
+      })
+      .addCase(rejectGrowPost.rejected, (state, { payload }) => {
+        state.moderationStatus = STATUS.FAILED;
+        state.adminError = payload;
+      })
+
+      // ── Admin: boost / feature ───────────────────────────────
+      .addCase(boostGrowPost.fulfilled, (state, { payload }) => {
+        replacePost(state, payload.data);
+        state.message = payload.message || 'Post updated.';
+      })
+      .addCase(boostGrowPost.rejected, (state, { payload }) => {
+        state.adminError = payload;
+      })
+
+      // ── Admin: delete any post ───────────────────────────────
+      .addCase(adminDeleteGrowPost.fulfilled, (state, { payload: id }) => {
+        state.adminPosts = state.adminPosts.filter((p) => p.id !== id);
+        state.posts      = state.posts.filter((p) => p.id !== id);
+        state.myPosts    = state.myPosts.filter((p) => p.id !== id);
+        state.message    = 'Post deleted.';
+      })
+      .addCase(adminDeleteGrowPost.rejected, (state, { payload }) => {
+        state.adminError = payload;
       });
   },
 });
 
-export const { clearGrowError, clearGrowMessage, resetSubmitStatus } = growSlice.actions;
+export const {
+  clearGrowError,
+  clearGrowMessage,
+  resetSubmitStatus,
+  locallySetGrowStatus,
+  locallyToggleGrowFeatured,
+  locallyDeleteGrow,
+} = growSlice.actions;
+
 export default growSlice.reducer;

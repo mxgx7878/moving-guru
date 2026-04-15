@@ -52,6 +52,28 @@ export const API_ENDPOINTS = {
   ADMIN_GROW_APPROVE: '/admin/grow-posts',   // PATCH /:id/approve
   ADMIN_GROW_REJECT: '/admin/grow-posts',    // PATCH /:id/reject
   ADMIN_GROW_BOOST: '/admin/grow-posts',     // PATCH /:id/boost
+
+  // ── Admin: Dashboard ─────────────────────────────────────
+  ADMIN_DASHBOARD_STATS: '/admin/dashboard/stats',         // GET — overview counters + trends
+  ADMIN_DASHBOARD_ACTIVITY: '/admin/dashboard/activity',   // GET — recent signups, posts, jobs
+
+  // ── Admin: Users (instructors + studios) ─────────────────
+  // Filterable list: ?role=instructor|studio&status=active|suspended|pending&q=...&page=
+  ADMIN_USERS: '/admin/users',
+  ADMIN_USER_DETAIL: '/admin/users',         // GET /:id
+  ADMIN_USER_UPDATE: '/admin/users',         // PATCH /:id  body: { is_active, is_verified, role, ... }
+  ADMIN_USER_SUSPEND: '/admin/users',        // PATCH /:id/suspend  body: { reason }
+  ADMIN_USER_ACTIVATE: '/admin/users',       // PATCH /:id/activate
+  ADMIN_USER_VERIFY: '/admin/users',         // PATCH /:id/verify   (studios)
+  ADMIN_USER_DELETE: '/admin/users',         // DELETE /:id
+
+  // ── Admin: Platform posts / events (broadcast announcements) ─
+  ADMIN_POSTS: '/admin/posts',               // GET, POST
+  ADMIN_POST_DETAIL: '/admin/posts',         // GET /:id
+  ADMIN_POST_UPDATE: '/admin/posts',         // PUT /:id
+  ADMIN_POST_DELETE: '/admin/posts',         // DELETE /:id
+  ADMIN_POST_PUBLISH: '/admin/posts',        // PATCH /:id/publish
+  ADMIN_POST_UNPUBLISH: '/admin/posts',      // PATCH /:id/unpublish
 };
  
 

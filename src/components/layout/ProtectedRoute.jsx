@@ -19,26 +19,33 @@ export default function ProtectedRoute({ children, allowedRoles = [] }) {
   const dispatch = useDispatch();
   const { user, token, status } = useSelector((s) => s.auth);
 
+  // Only kick off validation when we're genuinely idle — otherwise StrictMode
+  // and re-renders can re-dispatch while a request is already in flight.
   useEffect(() => {
-    if (token && !user) {
+    if (token && !user && status === STATUS.IDLE) {
       dispatch(getMe());
     }
-  }, [token, user, dispatch]);
+  }, [token, user, status, dispatch]);
 
   // Not authenticated
   if (!token) return <Navigate to="/login" replace />;
 
-  // Waiting for profile load
-  if (!user && status === STATUS.LOADING) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FDFCF8]">
-        <div className="w-8 h-8 border-2 border-[#CE4F56]/30 border-t-[#CE4F56] rounded-full animate-spin" />
-      </div>
-    );
+  // Token present but user not yet known
+  if (!user) {
+    if (status === STATUS.IDLE || status === STATUS.LOADING) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-[#FDFCF8]">
+          <div className="w-8 h-8 border-2 border-[#CE4F56]/30 border-t-[#CE4F56] rounded-full animate-spin" />
+        </div>
+      );
+    }
+    // Validation finished but no user (stale / foreign token, bad response) →
+    // force a clean login instead of crashing inside the portal layout.
+    return <Navigate to="/login" replace />;
   }
 
   // Wrong role → redirect to correct portal
-  if (user && allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
+  if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
     const correctPath = ROLE_THEME[user.role]?.defaultPath || '/login';
     return <Navigate to={correctPath} replace />;
   }
