@@ -1,43 +1,49 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { toast } from 'sonner';
+import { useSelector } from 'react-redux';
 import {
   Users, Building2, Sprout, Briefcase, FileText, CreditCard,
   CheckCircle2, Clock, TrendingUp, ArrowRight, Loader2,
 } from 'lucide-react';
 
-import {
-  fetchAdminDashboardStats,
-  fetchAdminDashboardActivity,
-} from '../../store/actions/admin';
-import { clearAdminError } from '../../store/slices/adminSlice';
-import { STATUS } from '../../constants/apiConstants';
+import axiosInstance from '../../config/axiosInstance';
+import { API_ENDPOINTS } from '../../constants/apiConstants';
+import { DUMMY_DASHBOARD_STATS, DUMMY_DASHBOARD_ACTIVITY } from '../../data/adminData';
 
 // ── Component ────────────────────────────────────────────────────
 export default function AdminDashboard() {
-  const dispatch = useDispatch();
   const { user } = useSelector((s) => s.auth);
-  const {
-    stats, activity, statsStatus, activityStatus, error,
-  } = useSelector((s) => s.admin);
-
   const adminName = user?.name?.split(' ')[0] || 'Admin';
 
-  useEffect(() => {
-    dispatch(fetchAdminDashboardStats());
-    dispatch(fetchAdminDashboardActivity());
-  }, [dispatch]);
+  // Local state — dashboard is just a read-only aggregator, no shared
+  // store needed. Falls back to dummy data silently when APIs fail.
+  const [stats,    setStats]    = useState(DUMMY_DASHBOARD_STATS);
+  const [activity, setActivity] = useState(DUMMY_DASHBOARD_ACTIVITY);
+  const [loading,  setLoading]  = useState(false);
 
   useEffect(() => {
-    if (error) {
-      toast.error(error);
-      dispatch(clearAdminError());
-    }
-  }, [error, dispatch]);
+    let cancelled = false;
+    setLoading(true);
 
-  const statsLoading    = statsStatus    === STATUS.LOADING && !stats;
-  const activityLoading = activityStatus === STATUS.LOADING && !activity;
+    Promise.allSettled([
+      axiosInstance.get(API_ENDPOINTS.ADMIN_DASHBOARD_STATS),
+      axiosInstance.get(API_ENDPOINTS.ADMIN_DASHBOARD_ACTIVITY),
+    ]).then(([statsRes, activityRes]) => {
+      if (cancelled) return;
+
+      if (statsRes.status === 'fulfilled' && statsRes.value?.data?.data) {
+        setStats(statsRes.value.data.data);
+      }
+      if (activityRes.status === 'fulfilled' && activityRes.value?.data?.data) {
+        setActivity(activityRes.value.data.data);
+      }
+      // Rejections are intentionally silent — the user already sees the
+      // dummy fallback rendered above.
+      setLoading(false);
+    });
+
+    return () => { cancelled = true; };
+  }, []);
 
   // ── Stat tiles configuration ──────────────────────────────────
   const tiles = [
@@ -46,8 +52,7 @@ export default function AdminDashboard() {
       value: stats?.instructors?.total,
       delta: stats?.instructors?.growth,
       sub:   `${stats?.instructors?.new_this_month ?? 0} this month`,
-      icon:  Users,
-      color: '#CE4F56',
+      icon:  Users,    color: '#CE4F56',
       to:    '/admin/users?role=instructor',
     },
     {
@@ -55,40 +60,35 @@ export default function AdminDashboard() {
       value: stats?.studios?.total,
       delta: stats?.studios?.growth,
       sub:   `${stats?.studios?.new_this_month ?? 0} this month`,
-      icon:  Building2,
-      color: '#2DA4D6',
+      icon:  Building2, color: '#2DA4D6',
       to:    '/admin/users?role=studio',
     },
     {
       label: 'Grow Posts',
       value: stats?.grow_posts?.total,
       sub:   `${stats?.grow_posts?.pending ?? 0} pending review`,
-      icon:  Sprout,
-      color: '#7F77DD',
+      icon:  Sprout, color: '#7F77DD',
       to:    '/admin/grow',
     },
     {
       label: 'Job Listings',
       value: stats?.jobs?.total,
       sub:   `${stats?.jobs?.active ?? 0} active`,
-      icon:  Briefcase,
-      color: '#E89560',
+      icon:  Briefcase, color: '#E89560',
       to:    '/admin/jobs',
     },
     {
       label: 'Active Subscriptions',
       value: stats?.subscriptions?.active,
       sub:   `${stats?.subscriptions?.trialing ?? 0} on trial`,
-      icon:  CreditCard,
-      color: '#10B981',
+      icon:  CreditCard, color: '#10B981',
       to:    '/admin/subscriptions',
     },
     {
       label: 'Platform Posts',
       value: stats?.platform_posts?.published,
       sub:   `${stats?.platform_posts?.draft ?? 0} drafts`,
-      icon:  FileText,
-      color: '#F59E0B',
+      icon:  FileText, color: '#F59E0B',
       to:    '/admin/posts',
     },
   ];
@@ -127,17 +127,9 @@ export default function AdminDashboard() {
       </div>
 
       {/* ── Stat tiles ─────────────────────────────────────────── */}
-      {statsLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="bg-white rounded-2xl border border-[#E5E0D8] p-5 h-32 animate-pulse" />
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {tiles.map((t) => <StatTile key={t.label} {...t} />)}
-        </div>
-      )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {tiles.map((t) => <StatTile key={t.label} {...t} />)}
+      </div>
 
       {/* ── Activity grid ──────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -147,7 +139,7 @@ export default function AdminDashboard() {
           icon={Clock}
           accent="#F59E0B"
           to="/admin/grow"
-          loading={activityLoading}
+          loading={loading}
           items={activity?.pending_grow_posts}
           empty="Nothing pending — caught up!"
           renderItem={(p) => (
@@ -171,7 +163,7 @@ export default function AdminDashboard() {
           icon={Users}
           accent="#7F77DD"
           to="/admin/users"
-          loading={activityLoading}
+          loading={loading}
           items={activity?.recent_signups}
           empty="No new signups."
           renderItem={(u) => (
@@ -199,7 +191,7 @@ export default function AdminDashboard() {
           icon={Briefcase}
           accent="#E89560"
           to="/admin/jobs"
-          loading={activityLoading}
+          loading={loading}
           items={activity?.recent_jobs}
           empty="No jobs posted yet."
           renderItem={(j) => (
@@ -229,7 +221,7 @@ export default function AdminDashboard() {
           icon={CreditCard}
           accent="#10B981"
           to="/admin/subscriptions"
-          loading={activityLoading}
+          loading={loading}
           items={activity?.recent_subscriptions}
           empty="No subscription activity."
           renderItem={(s) => (
@@ -305,7 +297,7 @@ function ActivityCard({ title, subtitle, icon: Icon, accent, to, items, loading,
         </Link>
       </div>
       <div className="divide-y divide-[#F0EBE3]">
-        {loading ? (
+        {loading && (!items || items.length === 0) ? (
           <div className="flex items-center justify-center py-10">
             <Loader2 size={20} className="animate-spin text-[#9A9A94]" />
           </div>
@@ -332,9 +324,9 @@ function formatRelative(iso) {
   const then = new Date(iso).getTime();
   if (Number.isNaN(then)) return '';
   const diff = Math.floor((Date.now() - then) / 1000);
-  if (diff < 60)       return 'just now';
-  if (diff < 3600)     return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400)    return `${Math.floor(diff / 3600)}h ago`;
+  if (diff < 60)        return 'just now';
+  if (diff < 3600)      return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400)     return `${Math.floor(diff / 3600)}h ago`;
   if (diff < 7 * 86400) return `${Math.floor(diff / 86400)}d ago`;
   return new Date(iso).toLocaleDateString();
 }

@@ -8,14 +8,21 @@ import {
 } from 'lucide-react';
 
 import {
-  fetchAdminPosts,
-  createAdminPost,
-  updateAdminPost,
-  deleteAdminPost,
-  publishAdminPost,
-  unpublishAdminPost,
-} from '../../store/actions/admin';
-import { clearAdminError, clearAdminMessage } from '../../store/slices/adminSlice';
+  fetchPosts,
+  createPost,
+  updatePost,
+  deletePost,
+  publishPost,
+  unpublishPost,
+} from '../../store/actions/postAction';
+import {
+  clearPostError,
+  clearPostMessage,
+  locallyCreatePost,
+  locallyUpdatePost,
+  locallyDeletePost,
+  locallyTogglePublish,
+} from '../../store/slices/postSlice';
 import { STATUS } from '../../constants/apiConstants';
 
 // ── Constants ────────────────────────────────────────────────────
@@ -66,8 +73,8 @@ const postToForm = (p) => ({
 export default function AdminPosts() {
   const dispatch = useDispatch();
   const {
-    posts, postsStatus, postMutating, message, error,
-  } = useSelector((s) => s.admin);
+    posts, status: postsStatus, mutating: postMutating, message, error,
+  } = useSelector((s) => s.post);
 
   const [typeTab,    setTypeTab]    = useState('all');
   const [audience,   setAudience]   = useState('all');
@@ -82,15 +89,15 @@ export default function AdminPosts() {
     if (typeTab  !== 'all') params.type     = typeTab;
     if (audience !== 'all') params.audience = audience;
     if (query.trim())        params.q        = query.trim();
-    dispatch(fetchAdminPosts(params));
+    dispatch(fetchPosts(params));
   }, [dispatch, typeTab, audience, query]);
 
-  // ── Toast feedback ─────────────────────────────────────────────
+  // ── Toast feedback (mutations only — fetch failures stay silent) ─
   useEffect(() => {
-    if (message) { toast.success(message); dispatch(clearAdminMessage()); }
+    if (message) { toast.success(message); dispatch(clearPostMessage()); }
   }, [message, dispatch]);
   useEffect(() => {
-    if (error) { toast.error(error); dispatch(clearAdminError()); }
+    if (error) { toast.error(error); dispatch(clearPostError()); }
   }, [error, dispatch]);
 
   // Close form when a mutation succeeds
@@ -119,20 +126,40 @@ export default function AdminPosts() {
     setFormOpen(true);
   };
 
-  const handleSubmit = (payload) => {
-    if (editing) dispatch(updateAdminPost({ id: editing.id, ...payload }));
-    else         dispatch(createAdminPost(payload));
+  // Each handler tries the real API; if it fails (no backend yet),
+  // falls back to a local mutation so the UI updates against dummy data.
+  const handleSubmit = async (payload) => {
+    if (editing) {
+      const res = await dispatch(updatePost({ id: editing.id, ...payload }));
+      if (res.meta.requestStatus === 'rejected') {
+        dispatch(locallyUpdatePost({ ...editing, ...payload }));
+        setFormOpen(false);
+        setEditing(null);
+      }
+    } else {
+      const res = await dispatch(createPost(payload));
+      if (res.meta.requestStatus === 'rejected') {
+        dispatch(locallyCreatePost(payload));
+        setFormOpen(false);
+      }
+    }
   };
 
-  const handleDelete = (post) => {
+  const handleDelete = async (post) => {
     if (!window.confirm(`Delete "${post.title}"? This cannot be undone.`)) return;
-    dispatch(deleteAdminPost(post.id));
     if (previewPost?.id === post.id) setPreviewPost(null);
+    const res = await dispatch(deletePost(post.id));
+    if (res.meta.requestStatus === 'rejected') {
+      dispatch(locallyDeletePost(post.id));
+    }
   };
 
-  const handleTogglePublish = (post) => {
-    if (post.status === 'published') dispatch(unpublishAdminPost(post.id));
-    else                              dispatch(publishAdminPost(post.id));
+  const handleTogglePublish = async (post) => {
+    const action = post.status === 'published' ? unpublishPost : publishPost;
+    const res = await dispatch(action(post.id));
+    if (res.meta.requestStatus === 'rejected') {
+      dispatch(locallyTogglePublish(post.id));
+    }
   };
 
   const isLoading = postsStatus === STATUS.LOADING && posts.length === 0;
