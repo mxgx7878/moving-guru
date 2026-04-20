@@ -8,59 +8,15 @@ import {
   fetchMyJobs, createJob, updateJob, deleteJob,
 } from '../../store/actions/jobAction';
 import { STATUS } from '../../constants/apiConstants';
+import {
+  JOB_TYPES, DURATION_OPTIONS, ROLE_TYPE_OPTIONS,
+  QUALIFICATION_LEVELS, QUALIFICATION_LABELS, EMPTY_JOB_FORM as EMPTY_FORM,
+} from '../../constants/jobConstants';
 import { DISCIPLINE_CATEGORIES } from '../../data/disciplines';
 import { ButtonLoader, CardSkeleton } from '../../components/feedback';
-import 
-JobApplicantsModal from '../../components/studio/JobApplicantsModal';
+import { JobApplicantsModal } from '../../components/modals';
 import Toggle from '../../components/ui/Toggle';
-
-const JOB_TYPES = [
-  { id: 'hire',            label: 'Direct Hire',     icon: Briefcase, color: '#2DA4D6', bg: 'bg-[#2DA4D6]/10' },
-  { id: 'swap',            label: 'Instructor Swap', icon: RefreshCw, color: '#E89560', bg: 'bg-[#E89560]/10' },
-  { id: 'energy_exchange', label: 'Energy Exchange', icon: Zap,       color: '#6BE6A4', bg: 'bg-[#6BE6A4]/20' },
-];
-
-const DURATION_OPTIONS = ['1 week', '2 weeks', '1 month', '2 months', '3 months', '6 months', 'Ongoing'];
-
-const ROLE_TYPE_OPTIONS = [
-  { id: 'permanent',     label: 'Permanent'                   },
-  { id: 'temporary',     label: 'Temporary'                   },
-  { id: 'substitute',    label: 'Substitute'                  },
-  { id: 'weekend_cover', label: 'Substitute for the weekend'  },
-  { id: 'casual',        label: 'Casual / On-call'            },
-];
-
-const QUALIFICATION_LEVELS = [
-  { id: 'none',                  label: 'Not required'                       },
-  { id: 'intermediate',          label: 'Intermediate / High School'         },
-  { id: 'diploma',               label: 'Diploma / Associate'                },
-  { id: 'bachelors',             label: "Bachelor's Degree"                  },
-  { id: 'masters',               label: "Master's Degree"                    },
-  { id: 'doctorate',             label: 'Doctorate / PhD'                    },
-  { id: 'cert_200hr',            label: '200hr Teacher Certification'        },
-  { id: 'cert_500hr',            label: '500hr Teacher Certification'        },
-  { id: 'cert_comprehensive',    label: 'Comprehensive Certification'        },
-  { id: 'cert_specialized',      label: 'Specialised / Other Certification'  },
-];
-
-const QUALIFICATION_LABELS = QUALIFICATION_LEVELS.reduce(
-  (acc, q) => ({ ...acc, [q.id]: q.label }), {},
-);
-
-const EMPTY_FORM = {
-  title: '',
-  type: 'hire',
-  role_type: 'permanent',
-  description: '',
-  disciplines: [],
-  location: '',
-  start_date: '',
-  duration: '',
-  compensation: '',
-  requirements: '',
-  qualification_level: 'none',
-  is_active: true,
-};
+import { validateJobForm } from '../../utils/validators';
 
 export default function JobListings() {
   const dispatch = useDispatch();
@@ -70,6 +26,7 @@ export default function JobListings() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
+  const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
   const [disciplineSearch, setDisciplineSearch] = useState('');
@@ -81,7 +38,10 @@ export default function JobListings() {
     dispatch(fetchMyJobs());
   }, [dispatch]);
 
-  const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+  const update = (k, v) => {
+    setForm((f) => ({ ...f, [k]: v }));
+    if (errors[k]) setErrors((prev) => ({ ...prev, [k]: '' }));
+  };
 
   const toggleDiscipline = (d) => setForm((f) => ({
     ...f,
@@ -92,6 +52,7 @@ export default function JobListings() {
 
   const openCreate = () => {
     setForm(EMPTY_FORM);
+    setErrors({});
     setEditingId(null);
     setShowForm(true);
   };
@@ -112,11 +73,14 @@ export default function JobListings() {
       is_active:           job.is_active !== false,
     });
     setEditingId(job.id);
+    setErrors({});
     setShowForm(true);
   };
 
   const handleSave = async () => {
-    if (!form.title.trim() || !form.description.trim()) return;
+    const errs = validateJobForm(form);
+    setErrors(errs);
+    if (Object.keys(errs).length) return;
     setSaving(true);
     if (editingId) {
       await dispatch(updateJob({ id: editingId, ...form }));
@@ -422,8 +386,10 @@ export default function JobListings() {
                   placeholder={form.type === 'swap'
                     ? 'e.g. Pilates Instructor Swap — Bali ↔ Sydney'
                     : 'e.g. Yoga Instructor Needed — Bali Studio'}
-                  className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-[#2DA4D6] transition-all"
+                  className={`w-full bg-[#FDFCF8] border rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none transition-all
+                    ${errors.title ? 'border-red-400 focus:border-red-500' : 'border-[#E5E0D8] focus:border-[#2DA4D6]'}`}
                 />
+                {errors.title && <p className="mt-1 text-[11px] text-red-500">{errors.title}</p>}
               </div>
 
               {/* Description */}
@@ -434,8 +400,10 @@ export default function JobListings() {
                   onChange={(e) => update('description', e.target.value)}
                   rows={4}
                   placeholder="Describe the role, what you're looking for, and what the instructor can expect..."
-                  className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-[#2DA4D6] transition-all resize-none"
+                  className={`w-full bg-[#FDFCF8] border rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none transition-all resize-none
+                    ${errors.description ? 'border-red-400 focus:border-red-500' : 'border-[#E5E0D8] focus:border-[#2DA4D6]'}`}
                 />
+                {errors.description && <p className="mt-1 text-[11px] text-red-500">{errors.description}</p>}
               </div>
 
               {/* Position type */}
@@ -602,15 +570,14 @@ export default function JobListings() {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setShowPreview(true)}
-                  disabled={!form.title.trim() && !form.description.trim()}
-                  className="flex items-center gap-2 px-5 py-2.5 border border-[#E5E0D8] rounded-xl text-sm font-bold text-[#3E3D38] hover:border-[#3E3D38] transition-all disabled:opacity-50"
+                  className="flex items-center gap-2 px-5 py-2.5 border border-[#E5E0D8] rounded-xl text-sm font-bold text-[#3E3D38] hover:border-[#3E3D38] transition-all"
                 >
                   <Eye size={14} /> Preview
                 </button>
                 <button
                   onClick={handleSave}
-                  disabled={saving || !form.title.trim() || !form.description.trim()}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-[#2DA4D6] text-white rounded-xl text-sm font-bold hover:bg-[#2590bd] transition-all disabled:opacity-50"
+                  aria-busy={saving}
+                  className="flex items-center gap-2 px-6 py-2.5 bg-[#2DA4D6] text-white rounded-xl text-sm font-bold hover:bg-[#2590bd] transition-all"
                 >
                   {saving ? <ButtonLoader size={14} /> : <Check size={14} />}
                   {editingId ? 'Save Changes' : 'Post Listing'}
