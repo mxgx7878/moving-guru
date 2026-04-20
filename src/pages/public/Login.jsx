@@ -5,12 +5,14 @@ import { clearError } from '../../store/slices/authSlice';
 import { loginUser } from '../../store/actions/authAction';
 import { STATUS, ROLES } from '../../constants/apiConstants';
 import { Eye, EyeOff, Globe, ArrowRight } from 'lucide-react';
+import { validateLogin } from '../../utils/validators';
 import logo from '../../assets/logo.png';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPw, setShowPw] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -35,6 +37,9 @@ export default function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const errs = validateLogin({ email, password });
+    setErrors(errs);
+    if (Object.keys(errs).length) return;
     dispatch(loginUser({ email, password }));
   };
 
@@ -109,11 +114,12 @@ export default function Login() {
               <input
                 type="email"
                 value={email}
-                onChange={e => setEmail(e.target.value)}
-                className="w-full bg-white border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm placeholder-[#C4BCB4] focus:outline-none focus:border-[#CE4F56] transition-all"
+                onChange={e => { setEmail(e.target.value); if (errors.email) setErrors({ ...errors, email: '' }); }}
+                className={`w-full bg-white border rounded-xl px-4 py-3 text-[#3E3D38] text-sm placeholder-[#C4BCB4] focus:outline-none transition-all
+                  ${errors.email ? 'border-red-400 focus:border-red-500' : 'border-[#E5E0D8] focus:border-[#CE4F56]'}`}
                 placeholder="you@example.com"
-                required
               />
+              {errors.email && <p className="mt-1 text-[11px] text-red-500">{errors.email}</p>}
             </div>
 
             <div>
@@ -122,10 +128,10 @@ export default function Login() {
                 <input
                   type={showPw ? 'text' : 'password'}
                   value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  className="w-full bg-white border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm placeholder-[#C4BCB4] focus:outline-none focus:border-[#CE4F56] transition-all pr-10"
+                  onChange={e => { setPassword(e.target.value); if (errors.password) setErrors({ ...errors, password: '' }); }}
+                  className={`w-full bg-white border rounded-xl px-4 py-3 text-[#3E3D38] text-sm placeholder-[#C4BCB4] focus:outline-none transition-all pr-10
+                    ${errors.password ? 'border-red-400 focus:border-red-500' : 'border-[#E5E0D8] focus:border-[#CE4F56]'}`}
                   placeholder="••••••••"
-                  required
                 />
                 <button
                   type="button"
@@ -135,6 +141,7 @@ export default function Login() {
                   {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
+              {errors.password && <p className="mt-1 text-[11px] text-red-500">{errors.password}</p>}
             </div>
 
             {error && (
@@ -145,8 +152,8 @@ export default function Login() {
 
             <button
               type="submit"
-              disabled={loading}
-              className="w-full bg-[#CE4F56] text-white font-bold text-sm py-3.5 rounded-xl hover:bg-[#b8454c] transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+              aria-busy={loading}
+              className="w-full bg-[#CE4F56] text-white font-bold text-sm py-3.5 rounded-xl hover:bg-[#b8454c] transition-all duration-200 flex items-center justify-center gap-2 mt-2"
             >
               {loading ? (
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

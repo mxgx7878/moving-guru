@@ -5,9 +5,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchInstructors, saveInstructor, unsaveInstructor, fetchSavedInstructors } from '../../store/actions/instructorAction';
 import { STATUS } from '../../constants/apiConstants';
 import { CardSkeleton, ButtonLoader } from '../../components/feedback';
-import InstructorProfileModal from '../../components/studio/InstructorProfileModal';
-
-const ALL_OPEN_TO = ['Direct Hire', 'Swaps', 'Energy Exchange'];
+import { InstructorProfileModal } from '../../components/modals';
+import { OPEN_TO as ALL_OPEN_TO } from '../../constants/profileConstants';
 
 export default function SearchInstructors() {
   const navigate = useNavigate();
