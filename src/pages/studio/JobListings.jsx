@@ -2,46 +2,49 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Plus, Briefcase, RefreshCw, Zap, MapPin, Calendar, Clock,
-  Edit3, Trash2, Eye, EyeOff, X, Check, ChevronDown, Users, GraduationCap
+  Edit3, Trash2, Eye, EyeOff, X, Check, ChevronDown, Users, GraduationCap,
 } from 'lucide-react';
-import { fetchJobs, createJob, updateJob, deleteJob } from '../../store/actions/jobAction';
+import {
+  fetchMyJobs, createJob, updateJob, deleteJob,
+} from '../../store/actions/jobAction';
 import { STATUS } from '../../constants/apiConstants';
 import { DISCIPLINE_CATEGORIES } from '../../data/disciplines';
-import { ButtonLoader } from '../../components/feedback';
-import { CardSkeleton } from '../../components/feedback';
+import { ButtonLoader, CardSkeleton } from '../../components/feedback';
+import 
+JobApplicantsModal from '../../components/studio/JobApplicantsModal';
+import Toggle from '../../components/ui/Toggle';
 
 const JOB_TYPES = [
-  { id: 'hire', label: 'Direct Hire', icon: Briefcase, color: '#2DA4D6', bg: 'bg-[#2DA4D6]/10' },
-  { id: 'swap', label: 'Instructor Swap', icon: RefreshCw, color: '#E89560', bg: 'bg-[#E89560]/10' },
-  { id: 'energy_exchange', label: 'Energy Exchange', icon: Zap, color: '#6BE6A4', bg: 'bg-[#6BE6A4]/20' },
+  { id: 'hire',            label: 'Direct Hire',     icon: Briefcase, color: '#2DA4D6', bg: 'bg-[#2DA4D6]/10' },
+  { id: 'swap',            label: 'Instructor Swap', icon: RefreshCw, color: '#E89560', bg: 'bg-[#E89560]/10' },
+  { id: 'energy_exchange', label: 'Energy Exchange', icon: Zap,       color: '#6BE6A4', bg: 'bg-[#6BE6A4]/20' },
 ];
 
 const DURATION_OPTIONS = ['1 week', '2 weeks', '1 month', '2 months', '3 months', '6 months', 'Ongoing'];
 
 const ROLE_TYPE_OPTIONS = [
-  { id: 'permanent',     label: 'Permanent'                },
-  { id: 'temporary',     label: 'Temporary'                },
-  { id: 'substitute',    label: 'Substitute'               },
-  { id: 'weekend_cover', label: 'Substitute for the weekend' },
-  { id: 'casual',        label: 'Casual / On-call'         },
+  { id: 'permanent',     label: 'Permanent'                   },
+  { id: 'temporary',     label: 'Temporary'                   },
+  { id: 'substitute',    label: 'Substitute'                  },
+  { id: 'weekend_cover', label: 'Substitute for the weekend'  },
+  { id: 'casual',        label: 'Casual / On-call'            },
 ];
 
-// Same qualification levels as Studio Profile so both forms agree.
 const QUALIFICATION_LEVELS = [
-  { id: 'none',                  label: 'Not required'                          },
-  { id: 'intermediate',          label: 'Intermediate / High School'            },
-  { id: 'diploma',               label: 'Diploma / Associate'                   },
-  { id: 'bachelors',             label: "Bachelor's Degree"                     },
-  { id: 'masters',               label: "Master's Degree"                       },
-  { id: 'doctorate',             label: 'Doctorate / PhD'                       },
-  { id: 'cert_200hr',            label: '200hr Teacher Certification'           },
-  { id: 'cert_500hr',            label: '500hr Teacher Certification'           },
-  { id: 'cert_comprehensive',    label: 'Comprehensive Certification'           },
-  { id: 'cert_specialized',      label: 'Specialised / Other Certification'     },
+  { id: 'none',                  label: 'Not required'                       },
+  { id: 'intermediate',          label: 'Intermediate / High School'         },
+  { id: 'diploma',               label: 'Diploma / Associate'                },
+  { id: 'bachelors',             label: "Bachelor's Degree"                  },
+  { id: 'masters',               label: "Master's Degree"                    },
+  { id: 'doctorate',             label: 'Doctorate / PhD'                    },
+  { id: 'cert_200hr',            label: '200hr Teacher Certification'        },
+  { id: 'cert_500hr',            label: '500hr Teacher Certification'        },
+  { id: 'cert_comprehensive',    label: 'Comprehensive Certification'        },
+  { id: 'cert_specialized',      label: 'Specialised / Other Certification'  },
 ];
 
 const QUALIFICATION_LABELS = QUALIFICATION_LEVELS.reduce(
-  (acc, q) => ({ ...acc, [q.id]: q.label }), {}
+  (acc, q) => ({ ...acc, [q.id]: q.label }), {},
 );
 
 const EMPTY_FORM = {
@@ -62,7 +65,7 @@ const EMPTY_FORM = {
 export default function JobListings() {
   const dispatch = useDispatch();
   const { user } = useSelector((s) => s.auth);
-  const { jobs, status } = useSelector((s) => s.job);
+  const { myJobs, myJobsStatus } = useSelector((s) => s.job);
 
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -72,16 +75,18 @@ export default function JobListings() {
   const [disciplineSearch, setDisciplineSearch] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [showPreview, setShowPreview] = useState(false);
+  const [applicantsJob, setApplicantsJob] = useState(null);
 
   useEffect(() => {
-    dispatch(fetchJobs());
+    dispatch(fetchMyJobs());
   }, [dispatch]);
 
-  const update = (k, v) => setForm(f => ({ ...f, [k]: v }));
-  const toggleDiscipline = (d) => setForm(f => ({
+  const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+
+  const toggleDiscipline = (d) => setForm((f) => ({
     ...f,
     disciplines: f.disciplines.includes(d)
-      ? f.disciplines.filter(x => x !== d)
+      ? f.disciplines.filter((x) => x !== d)
       : [...f.disciplines, d],
   }));
 
@@ -93,18 +98,18 @@ export default function JobListings() {
 
   const openEdit = (job) => {
     setForm({
-      title: job.title || '',
-      type: job.type || 'hire',
-      role_type: job.role_type || 'permanent',
-      description: job.description || '',
-      disciplines: job.disciplines || [],
-      location: job.location || user?.location || '',
-      start_date: job.start_date || '',
-      duration: job.duration || '',
-      compensation: job.compensation || '',
-      requirements: job.requirements || '',
-      qualification_level: job.qualification_level || (job.qualification_required ? 'cert_specialized' : 'none'),
-      is_active: job.is_active !== false,
+      title:               job.title               || '',
+      type:                job.type                || 'hire',
+      role_type:           job.role_type           || 'permanent',
+      description:         job.description         || '',
+      disciplines:         job.disciplines         || [],
+      location:            job.location            || user?.location || '',
+      start_date:          job.start_date          || '',
+      duration:            job.duration            || '',
+      compensation:        job.compensation        || '',
+      requirements:        job.requirements        || '',
+      qualification_level: job.qualification_level || 'none',
+      is_active:           job.is_active !== false,
     });
     setEditingId(job.id);
     setShowForm(true);
@@ -125,6 +130,7 @@ export default function JobListings() {
   };
 
   const handleDelete = async (id) => {
+    if (!window.confirm('Delete this listing? This will also remove any applicants who have applied.')) return;
     setDeletingId(id);
     await dispatch(deleteJob(id));
     setDeletingId(null);
@@ -135,23 +141,24 @@ export default function JobListings() {
   };
 
   const filteredJobs = filterType === 'all'
-    ? jobs
-    : jobs.filter(j => j.type === filterType);
+    ? myJobs
+    : myJobs.filter((j) => j.type === filterType);
 
-  const loading = status === STATUS.LOADING && jobs.length === 0;
+  const loading = myJobsStatus === STATUS.LOADING && myJobs.length === 0;
 
-  const filteredDisciplines = DISCIPLINE_CATEGORIES.map(cat => ({
+  const filteredDisciplines = DISCIPLINE_CATEGORIES.map((cat) => ({
     ...cat,
-    items: cat.items.filter(d => !disciplineSearch || d.toLowerCase().includes(disciplineSearch.toLowerCase())),
-  })).filter(cat => cat.items.length > 0);
+    items: cat.items.filter((d) => !disciplineSearch || d.toLowerCase().includes(disciplineSearch.toLowerCase())),
+  })).filter((cat) => cat.items.length > 0);
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      {/* Header */}
+
+      {/* ── Header ────────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">Job Listings</h1>
-          <p className="text-[#9A9A94] text-sm mt-1">Post opportunities and find your next instructor</p>
+          <p className="text-[#9A9A94] text-sm mt-1">Post opportunities and review applicants</p>
         </div>
         <button
           onClick={openCreate}
@@ -161,33 +168,39 @@ export default function JobListings() {
         </button>
       </div>
 
-      {/* Stats */}
+      {/* ── Stats ────────────────────────────────────────────── */}
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-white rounded-2xl p-5 border border-[#E5E0D8] text-center">
-          <p className="font-['Unbounded'] text-2xl font-black text-[#3E3D38]">{jobs.length}</p>
+          <p className="font-['Unbounded'] text-2xl font-black text-[#3E3D38]">{myJobs.length}</p>
           <p className="text-[#9A9A94] text-xs font-semibold mt-1">Total Listings</p>
         </div>
         <div className="bg-white rounded-2xl p-5 border border-[#E5E0D8] text-center">
-          <p className="font-['Unbounded'] text-2xl font-black text-[#2DA4D6]">{jobs.filter(j => j.is_active !== false).length}</p>
+          <p className="font-['Unbounded'] text-2xl font-black text-[#2DA4D6]">
+            {myJobs.filter((j) => j.is_active !== false).length}
+          </p>
           <p className="text-[#9A9A94] text-xs font-semibold mt-1">Active</p>
         </div>
         <div className="bg-white rounded-2xl p-5 border border-[#E5E0D8] text-center">
-          <p className="font-['Unbounded'] text-2xl font-black text-[#E89560]">{jobs.filter(j => j.type === 'swap').length}</p>
-          <p className="text-[#9A9A94] text-xs font-semibold mt-1">Swap Offers</p>
+          <p className="font-['Unbounded'] text-2xl font-black text-[#E89560]">
+            {myJobs.reduce((sum, j) => sum + (j.applicants_count || 0), 0)}
+          </p>
+          <p className="text-[#9A9A94] text-xs font-semibold mt-1">Total Applicants</p>
         </div>
       </div>
 
-      {/* Filter tabs */}
-      <div className="flex items-center gap-2">
+      {/* ── Filter tabs ──────────────────────────────────────── */}
+      <div className="flex items-center gap-2 flex-wrap">
         <button
           onClick={() => setFilterType('all')}
           className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all
-            ${filterType === 'all' ? 'bg-[#CCFF00] text-[#3E3D38] border border-[#CCFF00]' : 'bg-white border border-[#E5E0D8] text-[#6B6B66] hover:border-[#3E3D38]'}`}
+            ${filterType === 'all'
+              ? 'bg-[#CCFF00] text-[#3E3D38] border border-[#CCFF00]'
+              : 'bg-white border border-[#E5E0D8] text-[#6B6B66] hover:border-[#3E3D38]'}`}
         >
-          All ({jobs.length})
+          All ({myJobs.length})
         </button>
-        {JOB_TYPES.map(t => {
-          const count = jobs.filter(j => j.type === t.id).length;
+        {JOB_TYPES.map((t) => {
+          const count = myJobs.filter((j) => j.type === t.id).length;
           return (
             <button
               key={t.id}
@@ -202,35 +215,50 @@ export default function JobListings() {
         })}
       </div>
 
-      {/* Loading */}
+      {/* ── Loading ──────────────────────────────────────────── */}
       {loading && <CardSkeleton count={3} />}
 
-      {/* Job cards */}
+      {/* ── Empty ────────────────────────────────────────────── */}
       {!loading && filteredJobs.length === 0 && (
         <div className="bg-white rounded-2xl border border-[#E5E0D8] p-12 text-center">
           <Briefcase size={32} className="text-[#C4BCB4] mx-auto mb-3" />
-          <p className="text-[#3E3D38] font-semibold">No listings yet</p>
-          <p className="text-[#9A9A94] text-sm mt-1">Post your first job listing or swap offer to attract instructors</p>
-          <button onClick={openCreate} className="mt-4 text-sm text-[#2DA4D6] hover:underline">
-            Create a listing
-          </button>
+          <p className="text-[#3E3D38] font-semibold">
+            {myJobs.length === 0 ? 'No listings yet' : 'No listings match this filter'}
+          </p>
+          <p className="text-[#9A9A94] text-sm mt-1">
+            {myJobs.length === 0
+              ? 'Post your first job listing or swap offer to attract instructors'
+              : 'Try switching to a different listing type'}
+          </p>
+          {myJobs.length === 0 && (
+            <button onClick={openCreate} className="mt-4 text-sm text-[#2DA4D6] hover:underline">
+              Create a listing
+            </button>
+          )}
         </div>
       )}
 
+      {/* ── Job cards ────────────────────────────────────────── */}
       {!loading && filteredJobs.length > 0 && (
         <div className="space-y-4">
-          {filteredJobs.map(job => {
-            const typeInfo = JOB_TYPES.find(t => t.id === job.type) || JOB_TYPES[0];
+          {filteredJobs.map((job) => {
+            const typeInfo = JOB_TYPES.find((t) => t.id === job.type) || JOB_TYPES[0];
             const TypeIcon = typeInfo.icon;
+            const applicantCount = job.applicants_count || 0;
+
             return (
-              <div key={job.id} className={`bg-white rounded-2xl border overflow-hidden transition-all ${job.is_active !== false ? 'border-[#E5E0D8]' : 'border-[#E5E0D8] opacity-60'}`}>
+              <div key={job.id}
+                className={`bg-white rounded-2xl border overflow-hidden transition-all
+                  ${job.is_active !== false ? 'border-[#E5E0D8]' : 'border-[#E5E0D8] opacity-60'}`}>
                 <div className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-start gap-4">
+
+                  {/* Top row: icon + title + badges + actions */}
+                  <div className="flex items-start justify-between mb-4 gap-4">
+                    <div className="flex items-start gap-4 min-w-0">
                       <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${typeInfo.bg}`}>
                         <TypeIcon size={18} style={{ color: typeInfo.color }} />
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
                           <h3 className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">{job.title}</h3>
                           <span
@@ -241,7 +269,7 @@ export default function JobListings() {
                           </span>
                           {job.role_type && (
                             <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#3E3D38] text-white">
-                              {ROLE_TYPE_OPTIONS.find(r => r.id === job.role_type)?.label || job.role_type}
+                              {ROLE_TYPE_OPTIONS.find((r) => r.id === job.role_type)?.label || job.role_type}
                             </span>
                           )}
                           {job.qualification_level && job.qualification_level !== 'none' && (
@@ -260,8 +288,8 @@ export default function JobListings() {
                       </div>
                     </div>
 
-                    {/* Actions */}
-                    <div className="flex items-center gap-1.5 flex-shrink-0 ml-4">
+                    {/* Icon actions */}
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
                       <button
                         onClick={() => handleToggleActive(job)}
                         className="p-2 rounded-lg hover:bg-[#FBF8E4] transition-colors text-[#9A9A94] hover:text-[#3E3D38]"
@@ -272,6 +300,7 @@ export default function JobListings() {
                       <button
                         onClick={() => openEdit(job)}
                         className="p-2 rounded-lg hover:bg-[#FBF8E4] transition-colors text-[#9A9A94] hover:text-[#2DA4D6]"
+                        title="Edit listing"
                       >
                         <Edit3 size={14} />
                       </button>
@@ -279,13 +308,14 @@ export default function JobListings() {
                         onClick={() => handleDelete(job.id)}
                         disabled={deletingId === job.id}
                         className="p-2 rounded-lg hover:bg-red-50 transition-colors text-[#9A9A94] hover:text-red-500"
+                        title="Delete listing"
                       >
                         {deletingId === job.id ? <ButtonLoader size={14} color="#CE4F56" /> : <Trash2 size={14} />}
                       </button>
                     </div>
                   </div>
 
-                  {/* Details */}
+                  {/* Details row */}
                   <div className="flex flex-wrap items-center gap-4 mt-3">
                     {job.location && (
                       <div className="flex items-center gap-1.5 text-xs text-[#6B6B66]">
@@ -315,16 +345,30 @@ export default function JobListings() {
                   {/* Disciplines */}
                   {(job.disciplines || []).length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mt-3">
-                      {job.disciplines.map(d => (
-                        <span key={d} className="px-2.5 py-0.5 bg-[#2DA4D6]/10 text-[#2DA4D6] text-[10px] font-medium rounded-full">{d}</span>
+                      {job.disciplines.map((d) => (
+                        <span key={d} className="px-2.5 py-0.5 bg-[#2DA4D6]/10 text-[#2DA4D6] text-[10px] font-medium rounded-full">
+                          {d}
+                        </span>
                       ))}
                     </div>
                   )}
 
-                  {/* Applicants count */}
-                  <div className="flex items-center gap-1.5 mt-3 text-xs text-[#9A9A94]">
-                    <Users size={12} />
-                    {job.applicants_count || 0} applicant{(job.applicants_count || 0) !== 1 ? 's' : ''}
+                  {/* Bottom row: applicants count + CTA */}
+                  <div className="flex items-center justify-between gap-3 mt-4 pt-3 border-t border-[#E5E0D8]">
+                    <div className="flex items-center gap-1.5 text-xs text-[#9A9A94]">
+                      <Users size={12} />
+                      {applicantCount} applicant{applicantCount !== 1 ? 's' : ''}
+                    </div>
+                    <button
+                      onClick={() => setApplicantsJob(job)}
+                      disabled={applicantCount === 0}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all
+                        ${applicantCount === 0
+                          ? 'bg-[#FBF8E4] text-[#9A9A94] cursor-not-allowed'
+                          : 'bg-[#2DA4D6] text-white hover:bg-[#2590bd]'}`}
+                    >
+                      <Users size={12} /> View Applicants
+                    </button>
                   </div>
                 </div>
               </div>
@@ -337,6 +381,7 @@ export default function JobListings() {
       {showForm && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl my-8">
+
             {/* Modal header */}
             <div className="px-6 py-4 border-b border-[#E5E0D8] flex items-center justify-between">
               <h2 className="font-['Unbounded'] text-base font-black text-[#3E3D38]">
@@ -350,14 +395,13 @@ export default function JobListings() {
 
             {/* Modal body */}
             <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
-              {/* Job type */}
+
+              {/* Type */}
               <div>
                 <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Listing Type</label>
                 <div className="grid grid-cols-3 gap-3">
-                  {JOB_TYPES.map(t => (
-                    <button
-                      key={t.id}
-                      type="button"
+                  {JOB_TYPES.map((t) => (
+                    <button key={t.id} type="button"
                       onClick={() => update('type', t.id)}
                       className={`flex items-center gap-2 px-4 py-3 rounded-xl border-2 text-sm font-semibold transition-all
                         ${form.type === t.id ? 'text-white' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#3E3D38]'}`}
@@ -374,8 +418,10 @@ export default function JobListings() {
                 <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Title</label>
                 <input
                   value={form.title}
-                  onChange={e => update('title', e.target.value)}
-                  placeholder={form.type === 'swap' ? 'e.g. Pilates Instructor Swap — Bali ↔ Sydney' : 'e.g. Yoga Instructor Needed — Bali Studio'}
+                  onChange={(e) => update('title', e.target.value)}
+                  placeholder={form.type === 'swap'
+                    ? 'e.g. Pilates Instructor Swap — Bali ↔ Sydney'
+                    : 'e.g. Yoga Instructor Needed — Bali Studio'}
                   className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-[#2DA4D6] transition-all"
                 />
               </div>
@@ -385,21 +431,19 @@ export default function JobListings() {
                 <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Role Description</label>
                 <textarea
                   value={form.description}
-                  onChange={e => update('description', e.target.value)}
+                  onChange={(e) => update('description', e.target.value)}
                   rows={4}
                   placeholder="Describe the role, what you're looking for, and what the instructor can expect..."
                   className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-[#2DA4D6] transition-all resize-none"
                 />
               </div>
 
-              {/* Role / Position type */}
+              {/* Position type */}
               <div>
                 <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Position Type</label>
                 <div className="flex flex-wrap gap-2">
-                  {ROLE_TYPE_OPTIONS.map(o => (
-                    <button
-                      key={o.id}
-                      type="button"
+                  {ROLE_TYPE_OPTIONS.map((o) => (
+                    <button key={o.id} type="button"
                       onClick={() => update('role_type', o.id)}
                       className={`px-3.5 py-2 rounded-full text-xs font-semibold border transition-all
                         ${form.role_type === o.id
@@ -410,18 +454,32 @@ export default function JobListings() {
                     </button>
                   ))}
                 </div>
-                <p className="text-[10px] text-[#9A9A94] mt-2">
-                  Pick the closest match — applicants will see this on your listing.
-                </p>
               </div>
 
-              {/* Location + dates row */}
+              {/* Qualification level */}
+              <div>
+                <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Qualification Required</label>
+                <div className="relative">
+                  <select
+                    value={form.qualification_level}
+                    onChange={(e) => update('qualification_level', e.target.value)}
+                    className="w-full appearance-none bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6] transition-all pr-10"
+                  >
+                    {QUALIFICATION_LEVELS.map((q) => (
+                      <option key={q.id} value={q.id}>{q.label}</option>
+                    ))}
+                  </select>
+                  <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none" />
+                </div>
+              </div>
+
+              {/* Location + start date */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Location</label>
                   <input
                     value={form.location}
-                    onChange={e => update('location', e.target.value)}
+                    onChange={(e) => update('location', e.target.value)}
                     placeholder="e.g. Bali, Indonesia"
                     className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-[#2DA4D6] transition-all"
                   />
@@ -431,7 +489,7 @@ export default function JobListings() {
                   <input
                     type="date"
                     value={form.start_date}
-                    onChange={e => update('start_date', e.target.value)}
+                    onChange={(e) => update('start_date', e.target.value)}
                     className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6] transition-all"
                   />
                 </div>
@@ -444,23 +502,29 @@ export default function JobListings() {
                   <div className="relative">
                     <select
                       value={form.duration}
-                      onChange={e => update('duration', e.target.value)}
+                      onChange={(e) => update('duration', e.target.value)}
                       className="w-full appearance-none bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6] transition-all pr-10"
                     >
                       <option value="">Select duration</option>
-                      {DURATION_OPTIONS.map(d => <option key={d} value={d}>{d}</option>)}
+                      {DURATION_OPTIONS.map((d) => <option key={d} value={d}>{d}</option>)}
                     </select>
                     <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none" />
                   </div>
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">
-                    {form.type === 'swap' ? 'Swap Details' : form.type === 'energy_exchange' ? 'Exchange Offer' : 'Compensation'}
+                    {form.type === 'swap' ? 'Swap Details'
+                      : form.type === 'energy_exchange' ? 'Exchange Offer'
+                      : 'Compensation'}
                   </label>
                   <input
                     value={form.compensation}
-                    onChange={e => update('compensation', e.target.value)}
-                    placeholder={form.type === 'swap' ? 'e.g. Studio space + accommodation' : form.type === 'energy_exchange' ? 'e.g. Free classes + meals' : 'e.g. $50/class or $800/week'}
+                    onChange={(e) => update('compensation', e.target.value)}
+                    placeholder={form.type === 'swap'
+                      ? 'e.g. Studio space + accommodation'
+                      : form.type === 'energy_exchange'
+                        ? 'e.g. Free classes + meals'
+                        : 'e.g. $800/week + accommodation'}
                     className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-[#2DA4D6] transition-all"
                   />
                 </div>
@@ -468,35 +532,18 @@ export default function JobListings() {
 
               {/* Requirements */}
               <div>
-                <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Requirements (optional)</label>
+                <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Requirements</label>
                 <textarea
                   value={form.requirements}
-                  onChange={e => update('requirements', e.target.value)}
+                  onChange={(e) => update('requirements', e.target.value)}
                   rows={2}
-                  placeholder="e.g. Min 2 years teaching experience, fluent English..."
+                  placeholder="e.g. Min 2 years experience, certification required, English fluency..."
                   className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-[#2DA4D6] transition-all resize-none"
                 />
               </div>
 
-              {/* Qualification level */}
               <div>
-                <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Minimum Qualification</label>
-                <div className="relative">
-                  <GraduationCap size={13} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2DA4D6] pointer-events-none" />
-                  <select
-                    value={form.qualification_level}
-                    onChange={e => update('qualification_level', e.target.value)}
-                    className="w-full appearance-none bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl pl-9 pr-10 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6] transition-all"
-                  >
-                    {QUALIFICATION_LEVELS.map(q => (
-                      <option key={q.id} value={q.id}>{q.label}</option>
-                    ))}
-                  </select>
-                  <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none" />
-                </div>
-                <p className="text-[10px] text-[#9A9A94] mt-1.5">
-                  Pick "Not required" if any background is welcome.
-                </p>
+                <Toggle label="Active/Inactive" checked={form.is_active} onChange={(e) => update('is_active', e.target.checked)} />
               </div>
 
               {/* Disciplines */}
@@ -505,14 +552,14 @@ export default function JobListings() {
                 <input
                   type="text"
                   value={disciplineSearch}
-                  onChange={e => setDisciplineSearch(e.target.value)}
+                  onChange={(e) => setDisciplineSearch(e.target.value)}
                   placeholder="Search disciplines..."
                   className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-2.5 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-[#2DA4D6] transition-all mb-2"
                 />
 
                 {form.disciplines.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mb-2">
-                    {form.disciplines.map(d => (
+                    {form.disciplines.map((d) => (
                       <span key={d} className="flex items-center gap-1 px-2.5 py-1 bg-[#2DA4D6]/10 text-[#2DA4D6] rounded-full text-xs font-medium">
                         {d}
                         <button onClick={() => toggleDiscipline(d)} className="hover:text-red-500 transition-colors">
@@ -524,14 +571,16 @@ export default function JobListings() {
                 )}
 
                 <div className="max-h-40 overflow-y-auto space-y-3 border border-[#E5E0D8] rounded-xl p-3">
-                  {filteredDisciplines.map(cat => (
+                  {filteredDisciplines.map((cat) => (
                     <div key={cat.label}>
                       <p className="text-[9px] text-[#9A9A94] tracking-widest uppercase font-semibold mb-1.5">{cat.label}</p>
                       <div className="flex flex-wrap gap-1.5">
-                        {cat.items.map(d => (
+                        {cat.items.map((d) => (
                           <button key={d} type="button" onClick={() => toggleDiscipline(d)}
                             className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-all
-                              ${form.disciplines.includes(d) ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}>
+                              ${form.disciplines.includes(d)
+                                ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
+                                : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}>
                             {d}
                           </button>
                         ))}
@@ -576,18 +625,26 @@ export default function JobListings() {
       {showPreview && (
         <PreviewModal form={form} onClose={() => setShowPreview(false)} />
       )}
+
+      {/* ═══ Applicants Modal ═══ */}
+      {applicantsJob && (
+        <JobApplicantsModal
+          job={applicantsJob}
+          onClose={() => setApplicantsJob(null)}
+        />
+      )}
     </div>
   );
 }
 
 /* ────────────────────────────────────────────────────────────
-   Preview modal — renders the listing exactly as instructors
-   will see it in their feed.
+   Preview modal — renders the listing as instructors will
+   see it in their Find Work feed.
    ──────────────────────────────────────────────────────────── */
 function PreviewModal({ form, onClose }) {
-  const typeInfo = JOB_TYPES.find(t => t.id === form.type) || JOB_TYPES[0];
+  const typeInfo = JOB_TYPES.find((t) => t.id === form.type) || JOB_TYPES[0];
   const TypeIcon = typeInfo.icon;
-  const roleLabel = ROLE_TYPE_OPTIONS.find(r => r.id === form.role_type)?.label;
+  const roleLabel = ROLE_TYPE_OPTIONS.find((r) => r.id === form.role_type)?.label;
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start justify-center z-[60] p-4 overflow-y-auto">
@@ -595,7 +652,7 @@ function PreviewModal({ form, onClose }) {
         <div className="px-6 py-4 border-b border-[#E5E0D8] flex items-center justify-between">
           <div>
             <h2 className="font-['Unbounded'] text-base font-black text-[#3E3D38]">Listing Preview</h2>
-            <p className="text-[10px] text-[#9A9A94] mt-0.5">This is how instructors will see your post</p>
+            <p className="text-[10px] text-[#9A9A94] mt-0.5">How instructors will see your post</p>
           </div>
           <button onClick={onClose}
             className="p-1.5 hover:bg-[#FBF8E4] rounded-lg transition-colors text-[#9A9A94]">
@@ -647,7 +704,7 @@ function PreviewModal({ form, onClose }) {
                 )}
                 {form.start_date && (
                   <div className="flex items-center gap-1.5 text-xs text-[#6B6B66]">
-                    <Calendar size={12} className="text-[#9A9A94]" /> Starts {form.start_date}
+                    <Calendar size={12} className="text-[#9A9A94]" /> {form.start_date}
                   </div>
                 )}
                 {form.duration && (
@@ -657,35 +714,26 @@ function PreviewModal({ form, onClose }) {
                 )}
                 {form.compensation && (
                   <div className="flex items-center gap-1.5 text-xs text-[#6B6B66] font-semibold">
-                    {form.compensation}
+                    💰 {form.compensation}
                   </div>
                 )}
               </div>
 
               {(form.disciplines || []).length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mt-3">
-                  {form.disciplines.map(d => (
+                  {form.disciplines.map((d) => (
                     <span key={d} className="px-2.5 py-0.5 bg-[#2DA4D6]/10 text-[#2DA4D6] text-[10px] font-medium rounded-full">{d}</span>
                   ))}
-                </div>
-              )}
-
-              {form.requirements && (
-                <div className="mt-4 p-3 rounded-xl bg-[#f5fca6]/30 border border-[#f5fca6]">
-                  <p className="text-[10px] font-bold text-[#3E3D38] tracking-widest uppercase mb-1">Requirements</p>
-                  <p className="text-xs text-[#3E3D38] whitespace-pre-line">{form.requirements}</p>
                 </div>
               )}
             </div>
           </div>
         </div>
 
-        <div className="px-6 py-4 border-t border-[#E5E0D8] flex justify-end">
-          <button
-            onClick={onClose}
-            className="px-5 py-2.5 bg-[#3E3D38] text-white rounded-xl text-sm font-bold hover:bg-[#2a2925] transition-colors"
-          >
-            Back to editor
+        <div className="px-6 py-4 border-t border-[#E5E0D8] flex items-center justify-end">
+          <button onClick={onClose}
+            className="px-5 py-2.5 border border-[#E5E0D8] rounded-xl text-sm font-medium text-[#6B6B66] hover:border-[#9A9A94] transition-colors">
+            Close
           </button>
         </div>
       </div>
