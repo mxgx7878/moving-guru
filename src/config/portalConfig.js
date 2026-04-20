@@ -1,7 +1,7 @@
 import {
   LayoutDashboard, User, MessageCircle, Star, CreditCard,
   Building2, Search, Users, FileText, Settings, Briefcase,
-  Heart, Sprout, MapPin
+  Heart, Sprout, MapPin, Bookmark
 } from 'lucide-react';
 
 export const ROLE_THEME = {
@@ -33,6 +33,7 @@ export const NAV_CONFIG = {
     { to: '/portal/dashboard',    icon: LayoutDashboard, label: 'Dashboard'       },
     { to: '/portal/profile',      icon: User,            label: 'My Profile'      },
     { to: '/portal/find-work',    icon: MapPin,          label: 'Find Work'       },
+    { to: '/portal/saved-jobs',   icon: Bookmark,        label: 'Saved Jobs'      },
     { to: '/portal/grow',         icon: Sprout,          label: 'Grow'            },
     { to: '/portal/messages',     icon: MessageCircle,   label: 'Messages'        },
     { to: '/portal/subscription', icon: Star,            label: 'Subscription'    },

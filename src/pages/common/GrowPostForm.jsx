@@ -19,9 +19,14 @@ import {
 } from '../../store/slices/growSlice';
 import { ROLE_THEME } from '../../config/portalConfig';
 import { STATUS } from '../../constants/apiConstants';
+import { EMPTY_GROW_FORM as EMPTY_FORM } from '../../constants/growConstants';
 import { Field } from '../../components/ui';
+import { postToGrowForm as postToForm } from '../../utils/postToForm';
+import { validateGrowForm } from '../../utils/validators';
 
-// ── Constants ────────────────────────────────────────────────────
+// Local labels — the Grow form uses longer labels than the public list
+// (e.g. "Teacher Training" vs "Training"), so we override the shared icons
+// from growConstants to use a different colour palette.
 const GROW_TYPES = [
   { id: 'training', label: 'Teacher Training', color: '#2DA4D6', icon: BookOpen },
   { id: 'retreat',  label: 'Retreats',         color: '#6BE6A4', icon: Palmtree },
@@ -34,41 +39,6 @@ const DISCIPLINE_LIST = [
   'Sound Bath / Sound Healing', 'Massage', 'Muay Thai', 'Boxing', 'Kickboxing',
   'Contemporary Dance', 'Dance Movement Therapy', 'Somatic Movement', 'Tai Chi', 'Qigong',
 ];
-
-const EMPTY_FORM = {
-  type:         'training',
-  title:        '',
-  subtitle:     '',
-  description:  '',
-  location:     '',
-  date_from:    '',
-  date_to:      '',
-  price:        '',
-  spots:        '',
-  spots_left:   '',
-  external_url: '',
-  disciplines:  [],
-  tags_raw:     '',
-  expiry_date:  '',
-};
-
-// Fill form fields from a post object (handles both snake_case and camelCase keys)
-const postToForm = (p) => ({
-  type:         p.type            || 'training',
-  title:        p.title           || '',
-  subtitle:     p.subtitle        || '',
-  description:  p.description     || '',
-  location:     p.location        || '',
-  date_from:    p.date_from       || p.dateFrom  || '',
-  date_to:      p.date_to         || p.dateTo    || '',
-  price:        p.price           || '',
-  spots:        p.spots ?? '',
-  spots_left:   p.spots_left      ?? p.spotsLeft ?? '',
-  external_url: p.external_url    || p.url       || '',
-  disciplines:  p.disciplines     || [],
-  tags_raw:     (p.tags || []).join(', '),
-  expiry_date:  p.expiry_date     || '',
-});
 
 // ── Component ────────────────────────────────────────────────────
 export default function GrowPostForm() {
@@ -89,6 +59,7 @@ export default function GrowPostForm() {
   const isEditing = Boolean(id);
 
   const [form, setForm]       = useState(EMPTY_FORM);
+  const [errors, setErrors]   = useState({});
   const [loading, setLoading] = useState(isEditing);
 
   // ── Load existing post when editing ────────────────────────────
@@ -150,7 +121,10 @@ export default function GrowPostForm() {
   }, [submitStatus, dispatch, navigate, basePath]);
 
   // ── Handlers ──────────────────────────────────────────────────
-  const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+  const update = (k, v) => {
+    setForm((f) => ({ ...f, [k]: v }));
+    if (errors[k]) setErrors((prev) => ({ ...prev, [k]: '' }));
+  };
 
   const toggleDiscipline = (d) => {
     setForm((f) => ({
@@ -163,11 +137,15 @@ export default function GrowPostForm() {
 
   const handleSubmit = (e) => {
     e?.preventDefault?.();
-    if (!form.title.trim())       return toast.error('Title is required');
-    if (!form.description.trim()) return toast.error('Description is required');
-    if (!form.location.trim())    return toast.error('Location is required');
+    const errs = validateGrowForm(form);
     if (form.date_from && form.date_to && form.date_from > form.date_to) {
-      return toast.error('Start date must be before end date');
+      errs.date_to = 'Start date must be before end date';
+    }
+    setErrors(errs);
+    if (Object.keys(errs).length) {
+      // Surface the first message as a toast so the user gets an at-a-glance hint.
+      toast.error(Object.values(errs)[0]);
+      return;
     }
 
     const payload = {
@@ -178,7 +156,7 @@ export default function GrowPostForm() {
       location:     form.location.trim(),
       date_from:    form.date_from || null,
       date_to:      form.date_to   || null,
-      price:        form.price.trim(),
+      price:        String(form.price || '').trim(),
       spots:        form.spots       !== '' ? Number(form.spots)       : null,
       spots_left:   form.spots_left  !== '' ? Number(form.spots_left)  : null,
       external_url: form.external_url.trim() || null,
@@ -254,12 +232,13 @@ export default function GrowPostForm() {
           </div>
         </Field>
 
-        <Field label="Title *">
+        <Field label="Title *" error={errors.title}>
           <input
             value={form.title}
             onChange={(e) => update('title', e.target.value)}
             placeholder="e.g. Imagine Studios Thailand — Pilates Teacher Training"
-            className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6]" />
+            className={`w-full bg-[#FDFCF8] border rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none
+              ${errors.title ? 'border-red-400 focus:border-red-500' : 'border-[#E5E0D8] focus:border-[#2DA4D6]'}`} />
         </Field>
 
         <Field label="Subtitle">
@@ -270,21 +249,23 @@ export default function GrowPostForm() {
             className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6]" />
         </Field>
 
-        <Field label="Description *">
+        <Field label="Description *" error={errors.description}>
           <textarea
             value={form.description}
             onChange={(e) => update('description', e.target.value)}
             rows={5}
             placeholder="Tell people what this is about, what's included, who it's for..."
-            className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6] resize-none" />
+            className={`w-full bg-[#FDFCF8] border rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none resize-none
+              ${errors.description ? 'border-red-400 focus:border-red-500' : 'border-[#E5E0D8] focus:border-[#2DA4D6]'}`} />
         </Field>
 
-        <Field label="Location *">
+        <Field label="Location *" error={errors.location}>
           <input
             value={form.location}
             onChange={(e) => update('location', e.target.value)}
             placeholder="e.g. Koh Samui, Thailand"
-            className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6]" />
+            className={`w-full bg-[#FDFCF8] border rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none
+              ${errors.location ? 'border-red-400 focus:border-red-500' : 'border-[#E5E0D8] focus:border-[#2DA4D6]'}`} />
         </Field>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -392,8 +373,8 @@ export default function GrowPostForm() {
           </button>
           <button
             type="submit"
-            disabled={isSaving}
-            className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-colors disabled:opacity-60"
+            aria-busy={isSaving}
+            className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-colors"
             style={{ backgroundColor: theme.accent }}>
             {isSaving && <Loader2 size={14} className="animate-spin" />}
             {isEditing ? 'Save Changes' : 'Submit for Approval'}

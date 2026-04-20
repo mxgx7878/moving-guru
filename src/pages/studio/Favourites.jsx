@@ -5,7 +5,7 @@ import { Heart, MessageCircle, MapPin, Calendar, Search, X, Eye } from 'lucide-r
 import { fetchSavedInstructors, unsaveInstructor, saveInstructor } from '../../store/actions/instructorAction';
 import { STATUS } from '../../constants/apiConstants';
 import { CardSkeleton, ButtonLoader } from '../../components/feedback';
-import InstructorProfileModal from '../../components/studio/InstructorProfileModal';
+import { InstructorProfileModal } from '../../components/modals';
 
 export default function Favourites() {
   const dispatch = useDispatch();
