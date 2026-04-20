@@ -19,7 +19,7 @@ import {
 
 const initialState = {
   // Studio "Find Instructors" search
-  instructors: DUMMY_INSTRUCTORS,
+  instructors: [],
   savedIds: ['inst_001', 'inst_004'],
   selectedInstructor: null,
   pagination: null,
@@ -41,6 +41,24 @@ const replaceUser = (state, updated) => {
   const idx = state.users.findIndex((u) => u.id === updated.id);
   if (idx !== -1) state.users[idx] = updated;
   if (state.userDetail?.id === updated.id) state.userDetail = updated;
+};
+
+// Merge a new/updated instructor profile into state.instructors by id.
+// Used after fetchSavedInstructors so Favourites can render on cold load.
+const upsertInstructor = (state, inst) => {
+  if (!inst || !inst.id) return;
+  const idx = state.instructors.findIndex((i) => i.id === inst.id);
+  if (idx === -1) state.instructors.push(inst);
+  else state.instructors[idx] = { ...state.instructors[idx], ...inst };
+};
+
+// Unwrap the backend's standard envelope: { data: { instructors: [...], meta: {...} } }
+// Falls back gracefully for older { data: [...] } shapes.
+const unwrapInstructors = (payload) => {
+  const d = payload?.data;
+  if (Array.isArray(d?.instructors)) return d.instructors;
+  if (Array.isArray(d)) return d;
+  return [];
 };
 
 const instructorSlice = createSlice({
@@ -77,11 +95,21 @@ const instructorSlice = createSlice({
       })
       .addCase(fetchInstructors.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
-        const apiData = payload.data?.instructors || payload.data;
-        if (apiData && Array.isArray(apiData) && apiData.length > 0) {
-          state.instructors = apiData;
+        const list = unwrapInstructors(payload);
+        if (list.length > 0) {
+          state.instructors = list;
+          // Sync savedIds from the per-item is_saved flag if the API sent it.
+          // This keeps the heart icon accurate even before fetchSavedInstructors fires.
+          const savedFromList = list.filter((i) => i.is_saved).map((i) => i.id);
+          if (savedFromList.length) {
+            const merged = new Set([...state.savedIds, ...savedFromList]);
+            state.savedIds = Array.from(merged);
+          }
+        } else if (Array.isArray(payload?.data?.instructors)) {
+          // Empty array from the API is legitimate "no results"
+          state.instructors = [];
         }
-        state.pagination = payload.data?.pagination || null;
+        state.pagination = payload?.data?.meta || payload?.data?.pagination || null;
       })
       .addCase(fetchInstructors.rejected, (state) => {
         state.status = STATUS.SUCCEEDED;
@@ -93,7 +121,9 @@ const instructorSlice = createSlice({
       })
       .addCase(fetchInstructorDetail.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
-        state.selectedInstructor = payload.data?.instructor || payload.data || null;
+        const inst = payload?.data?.instructor || payload?.data || null;
+        state.selectedInstructor = inst;
+        if (inst) upsertInstructor(state, inst);
       })
       .addCase(fetchInstructorDetail.rejected, (state, { payload }) => {
         state.status = STATUS.FAILED;
@@ -107,8 +137,15 @@ const instructorSlice = createSlice({
       .addCase(unsaveInstructor.fulfilled, (state, { meta }) => {
         state.savedIds = state.savedIds.filter((id) => id !== meta.arg);
       })
+
+      // ── Fetch saved instructors ─────────────────────────────
+      // Merge full profiles into state.instructors so the Favourites
+      // page renders correctly on cold load without having hit the
+      // Find Instructors page first.
       .addCase(fetchSavedInstructors.fulfilled, (state, { payload }) => {
-        state.savedIds = (payload.data || []).map((i) => i.id);
+        const list = unwrapInstructors(payload);
+        state.savedIds = list.map((i) => i.id);
+        list.forEach((inst) => upsertInstructor(state, inst));
       })
 
       // ═══════════════════════════════════════════════════════
