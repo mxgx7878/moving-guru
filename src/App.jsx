@@ -19,6 +19,7 @@ import ResetPassword  from './pages/public/ResetPassword';
 import Dashboard      from './pages/instructor/Dashboard';
 import ProfilePage    from './pages/instructor/ProfilePage';
 import FindWork       from './pages/instructor/FindWork';
+import SavedJobs      from './pages/instructor/SavedJobs';
 
 // Common (shared between portals)
 import Messages       from './pages/common/Messages';
@@ -97,6 +98,7 @@ export default function App() {
           <Route path="dashboard"  element={<Dashboard />} />
           <Route path="profile"    element={<ProfilePage />} />
           <Route path="find-work"  element={<FindWork />} />
+          <Route path="saved-jobs" element={<SavedJobs />} />
           <Route path="grow"            element={<Grow />} />
           <Route path="grow/new"        element={<GrowPostForm />} />
           <Route path="grow/edit/:id"   element={<GrowPostForm />} />
