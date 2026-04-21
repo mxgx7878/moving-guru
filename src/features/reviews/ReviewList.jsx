@@ -1,27 +1,22 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Trash2, Star } from 'lucide-react';
-import { fetchUserReviews, deleteReview } from '../store/actions/reviewAction';
-import { STATUS } from '../constants/apiConstants';
-import { ButtonLoader, CardSkeleton } from './feedback';
-import StarRating from './ui/StarRating';
+import { fetchUserReviews, deleteReview } from '../../store/actions/reviewAction';
+import { STATUS } from '../../constants/apiConstants';
+import { ButtonLoader, CardSkeleton } from '../../components/feedback';
+import { StarRating } from '../../components/ui';
+import { ConfirmModal } from '../modals';
 
-/**
- * ReviewList
- * -----------------------------------------------------------------
- * Shows reviews for a given `userId`, auto-fetched on mount. Pass
- * `direction` to override role-derived default (normally the API
- * picks it based on reviewee role, so this is only needed for the
- * rare case where a user is both roles).
- *
- * `compact` variant skips the distribution bar chart (used inside
- * the instructor modal where space is tight).
- */
+// Review list for a given userId. Auto-fetches on mount, shows an
+// aggregated distribution bar, and lets the reviewer delete their own
+// review through a branded confirm dialog.
 export default function ReviewList({ userId, direction, compact = false, emptyLabel }) {
   const dispatch = useDispatch();
   const { user: currentUser } = useSelector((s) => s.auth);
   const bucket = useSelector((s) => s.review.byUserId[userId]);
   const deletingId = useSelector((s) => s.review.deletingId);
+
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   useEffect(() => {
     if (userId) dispatch(fetchUserReviews({ userId, direction }));
@@ -31,9 +26,10 @@ export default function ReviewList({ userId, direction, compact = false, emptyLa
   const reviews = bucket?.reviews || [];
   const summary = bucket?.summary || { count: 0, average: 0, distribution: {} };
 
-  const handleDelete = (id) => {
-    if (!window.confirm('Delete this review? This cannot be undone.')) return;
-    dispatch(deleteReview(id));
+  const handleConfirmDelete = () => {
+    if (!deleteTarget) return;
+    dispatch(deleteReview(deleteTarget));
+    setDeleteTarget(null);
   };
 
   if (loading && reviews.length === 0) {
@@ -46,7 +42,6 @@ export default function ReviewList({ userId, direction, compact = false, emptyLa
 
   return (
     <div className="space-y-4">
-      {/* Summary */}
       <div className="bg-[#FBF8E4]/50 rounded-xl p-4 flex items-center gap-4">
         <div className="text-center">
           <p className="font-['Unbounded'] text-3xl font-black text-[#3E3D38] leading-none">
@@ -67,10 +62,7 @@ export default function ReviewList({ userId, direction, compact = false, emptyLa
                   <span className="w-3 text-right">{n}</span>
                   <Star size={10} className="text-[#E89560]" fill="#E89560" />
                   <div className="flex-1 bg-white rounded-full h-1.5 overflow-hidden">
-                    <div
-                      className="h-full bg-[#E89560]"
-                      style={{ width: `${pct}%` }}
-                    />
+                    <div className="h-full bg-[#E89560]" style={{ width: `${pct}%` }} />
                   </div>
                   <span className="w-5 text-[#9A9A94]">{c}</span>
                 </div>
@@ -80,7 +72,6 @@ export default function ReviewList({ userId, direction, compact = false, emptyLa
         )}
       </div>
 
-      {/* Individual reviews */}
       {reviews.length === 0 ? (
         <div className="text-center py-6 text-[#9A9A94] text-xs">
           {emptyLabel || 'No reviews yet.'}
@@ -94,10 +85,7 @@ export default function ReviewList({ userId, direction, compact = false, emptyLa
             const isMine = currentUser?.id && reviewer.id === currentUser.id;
 
             return (
-              <div
-                key={r.id}
-                className="bg-white rounded-xl border border-[#E5E0D8] p-4"
-              >
+              <div key={r.id} className="bg-white rounded-xl border border-[#E5E0D8] p-4">
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#2DA4D6] to-[#2590bd] flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
                     {reviewer.detail?.profile_picture || reviewer.profile_picture ? (
@@ -106,9 +94,7 @@ export default function ReviewList({ userId, direction, compact = false, emptyLa
                         alt=""
                         className="w-full h-full object-cover rounded-full"
                       />
-                    ) : (
-                      initials
-                    )}
+                    ) : initials}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2 flex-wrap">
@@ -127,7 +113,7 @@ export default function ReviewList({ userId, direction, compact = false, emptyLa
                       </div>
                       {isMine && (
                         <button
-                          onClick={() => handleDelete(r.id)}
+                          onClick={() => setDeleteTarget(r.id)}
                           disabled={deletingId === r.id}
                           className="p-1.5 rounded-lg text-[#9A9A94] hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-60"
                           title="Delete your review"
@@ -147,6 +133,16 @@ export default function ReviewList({ userId, direction, compact = false, emptyLa
             );
           })}
         </div>
+      )}
+
+      {deleteTarget && (
+        <ConfirmModal
+          title="Delete review?"
+          message="This review will be removed permanently."
+          confirmLabel="Delete"
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={handleConfirmDelete}
+        />
       )}
     </div>
   );

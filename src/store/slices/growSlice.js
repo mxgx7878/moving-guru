@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { STATUS } from '../../constants/apiConstants';
-import { GROW_POSTS } from '../../data/growData';
 import {
   fetchGrowPosts,
   fetchMyGrowPosts,
@@ -14,21 +13,10 @@ import {
   adminDeleteGrowPost,
 } from '../actions/grow';
 
-// Synthesise some pending/rejected variants of the dummy posts so the
-// admin moderation screen has something to act on while the API is
-// being built.
-const ADMIN_DUMMY_POSTS = [
-  ...GROW_POSTS.map((p, i) => ({
-    ...p,
-    status: i % 3 === 0 ? 'pending' : i % 3 === 1 ? 'approved' : 'rejected',
-    is_featured: i === 0,
-  })),
-];
-
 const initialState = {
-  posts: GROW_POSTS,            // public feed (fallback to dummy)
-  myPosts: GROW_POSTS.slice(0, 2), // simulate "my posts" for the demo
-  adminPosts: ADMIN_DUMMY_POSTS, // admin moderation queue (dummy fallback)
+  posts: [],
+  myPosts: [],
+  adminPosts: [],
   pagination: null,
   adminPagination: null,
   status: STATUS.IDLE,
@@ -108,27 +96,19 @@ const growSlice = createSlice({
       })
       .addCase(fetchGrowPosts.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
-        const apiPosts = payload.data;
-        if (Array.isArray(apiPosts) && apiPosts.length > 0) {
-          state.posts = apiPosts;
-        }
-        state.pagination = payload.meta || null;
+        state.posts = Array.isArray(payload?.data) ? payload.data : [];
+        state.pagination = payload?.meta || null;
       })
-      .addCase(fetchGrowPosts.rejected, (state) => {
-        state.status = STATUS.SUCCEEDED;
-        // Keep dummy data — no error shown to user for browse failure
+      .addCase(fetchGrowPosts.rejected, (state, { payload }) => {
+        state.status = STATUS.FAILED;
+        state.error = payload;
       })
 
-      // ── Fetch my own posts ───────────────────────────────────
       .addCase(fetchMyGrowPosts.fulfilled, (state, { payload }) => {
-        const apiData = payload?.data;
-        if (Array.isArray(apiData) && apiData.length > 0) {
-          state.myPosts = apiData;
-        }
-        // else: keep dummy fallback
+        state.myPosts = Array.isArray(payload?.data) ? payload.data : [];
       })
-      .addCase(fetchMyGrowPosts.rejected, () => {
-        // Silent: keep whatever myPosts was already in state
+      .addCase(fetchMyGrowPosts.rejected, (state, { payload }) => {
+        state.error = payload;
       })
 
       // ── Create post ──────────────────────────────────────────
@@ -189,16 +169,12 @@ const growSlice = createSlice({
       })
       .addCase(fetchAdminGrowPosts.fulfilled, (state, { payload }) => {
         state.adminStatus = STATUS.SUCCEEDED;
-        const apiData = payload?.data;
-        if (Array.isArray(apiData) && apiData.length > 0) {
-          state.adminPosts = apiData;
-          state.adminPagination = payload.meta || null;
-        }
-        // else: keep dummy fallback
+        state.adminPosts = Array.isArray(payload?.data) ? payload.data : [];
+        state.adminPagination = payload?.meta || null;
       })
-      .addCase(fetchAdminGrowPosts.rejected, (state) => {
-        // Silent: keep dummy data, no toast
-        state.adminStatus = STATUS.SUCCEEDED;
+      .addCase(fetchAdminGrowPosts.rejected, (state, { payload }) => {
+        state.adminStatus = STATUS.FAILED;
+        state.adminError = payload;
       })
 
       // ── Admin: approve ───────────────────────────────────────

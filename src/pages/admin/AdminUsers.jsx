@@ -24,6 +24,7 @@ import {
   locallyDeleteUser,
 } from '../../store/slices/instructorSlice';
 import { STATUS } from '../../constants/apiConstants';
+import { SuspendUserModal, ConfirmModal } from '../../features/modals';
 
 // ── Constants ────────────────────────────────────────────────────
 const ROLE_TABS = [
@@ -55,7 +56,7 @@ export default function AdminUsers() {
   const [query,        setQuery]        = useState('');
   const [previewId,    setPreviewId]    = useState(null);
   const [suspendingId, setSuspendingId] = useState(null);
-  const [suspendReason, setSuspendReason] = useState('');
+  const [deletingTarget, setDeletingTarget] = useState(null);
 
   // ── Sync URL ↔ tab ────────────────────────────────────────────
   useEffect(() => {
@@ -98,12 +99,10 @@ export default function AdminUsers() {
   // ── Handlers ──────────────────────────────────────────────────
   // Each handler tries the real API; if it fails (no backend yet),
   // falls back to a local mutation so the dummy data updates visually.
-  const handleSuspend = async () => {
+  const handleSuspend = async (reason) => {
     if (!suspendingId) return;
-    const reason = suspendReason.trim() || null;
     const target = users.find((u) => u.id === suspendingId);
     setSuspendingId(null);
-    setSuspendReason('');
 
     const res = await dispatch(suspendAdminUser({ id: target.id, reason }));
     if (res.meta.requestStatus === 'rejected' && target) {
@@ -135,8 +134,14 @@ export default function AdminUsers() {
     }
   };
 
-  const handleDelete = async (u) => {
-    if (!window.confirm(`Permanently delete "${u.name}"? This cannot be undone.`)) return;
+  const handleDelete = (u) => {
+    setDeletingTarget(u);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingTarget) return;
+    const u = deletingTarget;
+    setDeletingTarget(null);
     if (previewId === u.id) setPreviewId(null);
     const res = await dispatch(deleteAdminUser(u.id));
     if (res.meta.requestStatus === 'rejected') {
@@ -241,7 +246,7 @@ export default function AdminUsers() {
                   <UserRow key={u.id} user={u}
                     busy={userMutating === STATUS.LOADING}
                     onPreview={() => setPreviewId(u.id)}
-                    onSuspend={() => { setSuspendingId(u.id); setSuspendReason(''); }}
+                    onSuspend={() => setSuspendingId(u.id)}
                     onActivate={() => handleActivate(u)}
                     onVerify={() => handleVerify(u)}
                     onDelete={() => handleDelete(u)}
@@ -258,43 +263,29 @@ export default function AdminUsers() {
         <UserDetailDrawer
           user={userDetail || users.find((u) => u.id === previewId)}
           onClose={() => setPreviewId(null)}
-          onSuspend={() => { setSuspendingId(previewId); setSuspendReason(''); }}
+          onSuspend={() => setSuspendingId(previewId)}
           onActivate={(u) => handleActivate(u)}
           onVerify={(u) => handleVerify(u)}
           onDelete={(u) => handleDelete(u)}
         />
       )}
 
-      {/* ── Suspend Dialog ────────────────────────────────────── */}
       {suspendingId && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
-            <div className="px-6 py-4 border-b border-[#E5E0D8]">
-              <h2 className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">Suspend Account</h2>
-              <p className="text-[11px] text-[#9A9A94] mt-0.5">
-                Suspended users can&apos;t log in until reactivated.
-              </p>
-            </div>
-            <div className="p-6 space-y-3">
-              <textarea
-                value={suspendReason}
-                onChange={(e) => setSuspendReason(e.target.value)}
-                rows={4}
-                placeholder="Reason (e.g. policy violation, spam reports)..."
-                className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#7F77DD] resize-none" />
-            </div>
-            <div className="px-6 py-4 border-t border-[#E5E0D8] flex justify-end gap-3">
-              <button onClick={() => setSuspendingId(null)}
-                className="px-5 py-2.5 rounded-xl border border-[#E5E0D8] text-sm font-semibold text-[#6B6B66] hover:bg-[#F5F0E8]">
-                Cancel
-              </button>
-              <button onClick={handleSuspend}
-                className="px-6 py-2.5 rounded-xl text-sm font-bold text-white bg-[#EF4444] hover:bg-[#d63b3b]">
-                Suspend
-              </button>
-            </div>
-          </div>
-        </div>
+        <SuspendUserModal
+          busy={userMutating === STATUS.LOADING}
+          onCancel={() => setSuspendingId(null)}
+          onConfirm={handleSuspend}
+        />
+      )}
+
+      {deletingTarget && (
+        <ConfirmModal
+          title="Delete user?"
+          message={`Permanently delete "${deletingTarget.name}"? This cannot be undone.`}
+          confirmLabel="Delete"
+          onCancel={() => setDeletingTarget(null)}
+          onConfirm={handleConfirmDelete}
+        />
       )}
     </div>
   );

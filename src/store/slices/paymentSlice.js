@@ -1,10 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { STATUS } from '../../constants/apiConstants';
-import { DUMMY_PAYMENTS } from '../../data/dummyData';
 import { fetchPayments } from '../actions/paymentAction';
 
 const initialState = {
-  payments: DUMMY_PAYMENTS, // default fallback from dummy data
+  payments: [],
   status: STATUS.IDLE,
   error: null,
 };
@@ -26,14 +25,11 @@ const paymentSlice = createSlice({
       .addCase(fetchPayments.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
         const apiPayments = payload.data?.payments || payload.data;
-        if (apiPayments && Array.isArray(apiPayments) && apiPayments.length > 0) {
-          state.payments = apiPayments;
-        }
-        // else keep dummy payments as fallback
+        state.payments = Array.isArray(apiPayments) ? apiPayments : [];
       })
-      .addCase(fetchPayments.rejected, (state) => {
-        state.status = STATUS.SUCCEEDED;
-        // Keep dummy payments on error — no need to show error
+      .addCase(fetchPayments.rejected, (state, { payload }) => {
+        state.status = STATUS.FAILED;
+        state.error = payload;
       });
   },
 });
