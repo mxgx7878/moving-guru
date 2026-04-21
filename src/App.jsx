@@ -36,11 +36,15 @@ import Favourites        from './pages/studio/Favourites';
 import JobListings       from './pages/studio/JobListings';
 
 // Admin portal
-import AdminDashboard from './pages/admin/AdminDashboard';
-import AdminGrowPosts from './pages/admin/AdminGrowPosts';
-import AdminUsers     from './pages/admin/AdminUsers';
-import AdminPosts     from './pages/admin/AdminPosts';
-import InstructorDetail from './pages/studio/InstructorDetail';
+import AdminDashboard     from './pages/admin/AdminDashboard';
+import AdminGrowPosts     from './pages/admin/AdminGrowPosts';
+import AdminUsers         from './pages/admin/AdminUsers';
+import AdminPosts         from './pages/admin/AdminPosts';
+import AdminJobs          from './pages/admin/AdminJobs';
+import AdminSubscriptions from './pages/admin/AdminSubscriptions';
+import AdminSettings      from './pages/admin/AdminSettings';
+import InstructorDetail   from './pages/studio/InstructorDetail';
+import StudioDetail       from './pages/public/StudioDetail';
 
 function RoleRedirect() {
   const dispatch = useDispatch();
@@ -103,6 +107,7 @@ export default function App() {
           <Route path="grow"            element={<Grow />} />
           <Route path="grow/new"        element={<GrowPostForm />} />
           <Route path="grow/edit/:id"   element={<GrowPostForm />} />
+          <Route path="studios/:id" element={<StudioDetail />} />
           <Route path="messages"   element={<Messages />} />
           <Route path="subscription" element={<Subscription />} />
           <Route path="payments"   element={<Payments />} />
@@ -121,6 +126,7 @@ export default function App() {
           <Route path="favourites"  element={<Favourites />} />
           <Route path="jobs"        element={<JobListings />} />
           <Route path="instructors/:id" element={<InstructorDetail />} />
+          <Route path="studios/:id"     element={<StudioDetail />} />
           <Route path="grow"            element={<Grow />} />
           <Route path="grow/new"        element={<GrowPostForm />} />
           <Route path="grow/edit/:id"   element={<GrowPostForm />} />
@@ -138,9 +144,12 @@ export default function App() {
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard"       element={<AdminDashboard />} />
           <Route path="users"           element={<AdminUsers />} />
+          <Route path="jobs"            element={<AdminJobs />} />
           <Route path="posts"           element={<AdminPosts />} />
           <Route path="grow"            element={<AdminGrowPosts />} />
           <Route path="grow/edit/:id"   element={<GrowPostForm />} />
+          <Route path="subscriptions"   element={<AdminSubscriptions />} />
+          <Route path="settings"        element={<AdminSettings />} />
         </Route>
 
         {/* ── Catch-all ──────────────────────────────────────── */}

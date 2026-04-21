@@ -6,7 +6,7 @@ import { Bookmark, Briefcase } from 'lucide-react';
 import { fetchJobs, applyToJob } from '../../store/actions/jobAction';
 import { STATUS } from '../../constants/apiConstants';
 import { CardSkeleton } from '../../components/feedback';
-import { ApplyModal } from '../../components/modals';
+import { ApplyJobModal } from '../../features/modals';
 import { loadSavedJobs, saveSavedJobs, toggleSavedJob } from '../../utils/savedJobsStorage';
 
 import { JobCard } from './FindWork';
@@ -91,7 +91,7 @@ export default function SavedJobs() {
       )}
 
       {applyTarget && (
-        <ApplyModal
+        <ApplyJobModal
           job={applyTarget}
           submitting={applyingJobId === applyTarget.id}
           onClose={() => setApplyTarget(null)}

@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { STATUS } from '../../constants/apiConstants';
-import { SUBSCRIPTION_PLANS } from '../../data/dummyData';
 import {
   fetchPlans,
   fetchCurrentSubscription,
@@ -8,7 +7,7 @@ import {
 } from '../actions/subscriptionAction';
 
 const initialState = {
-  plans: SUBSCRIPTION_PLANS, // default fallback from dummy data
+  plans: [],
   currentSubscription: null,
   status: STATUS.IDLE,
   error: null,
@@ -28,7 +27,6 @@ const subscriptionSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Fetch plans
       .addCase(fetchPlans.pending, (state) => {
         state.status = STATUS.LOADING;
         state.error = null;
@@ -36,22 +34,17 @@ const subscriptionSlice = createSlice({
       .addCase(fetchPlans.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
         const apiPlans = payload.data?.plans || payload.data;
-        if (apiPlans && Array.isArray(apiPlans) && apiPlans.length > 0) {
-          state.plans = apiPlans;
-        }
-        // else keep default SUBSCRIPTION_PLANS
+        state.plans = Array.isArray(apiPlans) ? apiPlans : [];
       })
-      .addCase(fetchPlans.rejected, (state) => {
-        state.status = STATUS.SUCCEEDED;
-        // Keep default plans on error — no need to show error
+      .addCase(fetchPlans.rejected, (state, { payload }) => {
+        state.status = STATUS.FAILED;
+        state.error = payload;
       })
 
-      // Fetch current subscription
       .addCase(fetchCurrentSubscription.fulfilled, (state, { payload }) => {
         state.currentSubscription = payload.data?.subscription || payload.data || null;
       })
 
-      // Change plan
       .addCase(changePlan.pending, (state) => {
         state.status = STATUS.LOADING;
         state.error = null;

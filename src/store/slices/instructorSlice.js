@@ -1,7 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { STATUS } from '../../constants/apiConstants';
-import { DUMMY_INSTRUCTORS } from '../../data/dummyData';
-import { DUMMY_ADMIN_USERS } from '../../data/adminData';
 import {
   fetchInstructors,
   fetchInstructorDetail,
@@ -20,14 +18,14 @@ import {
 const initialState = {
   // Studio "Find Instructors" search
   instructors: [],
-  savedIds: ['inst_001', 'inst_004'],
+  savedIds: [],
   selectedInstructor: null,
   pagination: null,
   status: STATUS.IDLE,
   error: null,
 
   // Admin user management (instructors + studios in one list)
-  users: DUMMY_ADMIN_USERS,
+  users: [],
   userDetail: null,
   usersPagination: null,
   usersStatus: STATUS.IDLE,
@@ -96,24 +94,17 @@ const instructorSlice = createSlice({
       .addCase(fetchInstructors.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
         const list = unwrapInstructors(payload);
-        if (list.length > 0) {
-          state.instructors = list;
-          // Sync savedIds from the per-item is_saved flag if the API sent it.
-          // This keeps the heart icon accurate even before fetchSavedInstructors fires.
-          const savedFromList = list.filter((i) => i.is_saved).map((i) => i.id);
-          if (savedFromList.length) {
-            const merged = new Set([...state.savedIds, ...savedFromList]);
-            state.savedIds = Array.from(merged);
-          }
-        } else if (Array.isArray(payload?.data?.instructors)) {
-          // Empty array from the API is legitimate "no results"
-          state.instructors = [];
+        state.instructors = list;
+        const savedFromList = list.filter((i) => i.is_saved).map((i) => i.id);
+        if (savedFromList.length) {
+          const merged = new Set([...state.savedIds, ...savedFromList]);
+          state.savedIds = Array.from(merged);
         }
         state.pagination = payload?.data?.meta || payload?.data?.pagination || null;
       })
-      .addCase(fetchInstructors.rejected, (state) => {
-        state.status = STATUS.SUCCEEDED;
-        // Keep dummy data on error — silent
+      .addCase(fetchInstructors.rejected, (state, { payload }) => {
+        state.status = STATUS.FAILED;
+        state.error = payload;
       })
 
       .addCase(fetchInstructorDetail.pending, (state) => {
@@ -156,26 +147,25 @@ const instructorSlice = createSlice({
       })
       .addCase(fetchAdminUsers.fulfilled, (state, { payload }) => {
         state.usersStatus = STATUS.SUCCEEDED;
-        const apiData = payload.data;
-        if (Array.isArray(apiData) && apiData.length > 0) {
-          state.users = apiData;
-          state.usersPagination = payload.meta || null;
-        }
-        // else: keep dummy fallback already in state
+        state.users = Array.isArray(payload?.data) ? payload.data : [];
+        state.usersPagination = payload?.meta || null;
       })
-      .addCase(fetchAdminUsers.rejected, (state) => {
-        // Silent: keep dummy data, don't surface error to user
-        state.usersStatus = STATUS.SUCCEEDED;
+      .addCase(fetchAdminUsers.rejected, (state, { payload }) => {
+        state.usersStatus = STATUS.FAILED;
+        state.error = payload;
       })
 
+      .addCase(fetchAdminUserDetail.pending, (state) => { state.userMutating = STATUS.LOADING; })
       .addCase(fetchAdminUserDetail.fulfilled, (state, { payload }) => {
+        state.userMutating = STATUS.SUCCEEDED;
         if (payload?.data) state.userDetail = payload.data;
       })
-      .addCase(fetchAdminUserDetail.rejected, (state, { meta }) => {
-        // Silent: fall back to the user already in the list
+      .addCase(fetchAdminUserDetail.rejected, (state, { meta, payload }) => {
+        state.userMutating = STATUS.FAILED;
         const id = meta.arg;
         const found = state.users.find((u) => u.id === id);
         if (found) state.userDetail = found;
+        state.error = payload;
       })
 
       .addCase(updateAdminUser.pending, (state) => { state.userMutating = STATUS.LOADING; })

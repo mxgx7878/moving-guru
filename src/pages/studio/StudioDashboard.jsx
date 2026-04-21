@@ -6,7 +6,8 @@ import {
   MapPin, Star, Users, Building2, Settings, Mail,
   Lock, Check, EyeOff
 } from 'lucide-react';
-import { fetchInstructors } from '../../store/actions/instructorAction';
+import { fetchInstructors, fetchSavedInstructors } from '../../store/actions/instructorAction';
+import { fetchMyJobs } from '../../store/actions/jobAction';
 import { changePassword, forgotPassword } from '../../store/actions/authAction';
 import { CardSkeleton } from '../../components/feedback';
 
@@ -36,9 +37,13 @@ export default function StudioDashboard() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((s) => s.auth);
-  const { instructors, status } = useSelector((s) => s.instructor);
+  const { instructors, savedIds, status } = useSelector((s) => s.instructor);
+  const { myJobs } = useSelector((s) => s.job);
   const studioName = user?.studio_name || user?.studioName || user?.name || 'Studio';
   const recentInstructors = instructors.slice(0, 3);
+
+  const totalApplicants = myJobs.reduce((n, j) => n + (j.applicants_count || 0), 0);
+  const activeListings  = myJobs.filter((j) => j.is_active !== false).length;
 
   // ── Account settings state ──────────────────────────────────
   const [currentPassword, setCurrentPassword] = useState('');
@@ -54,7 +59,11 @@ export default function StudioDashboard() {
   const [resetSuccess, setResetSuccess]       = useState(false);
   const [resetError, setResetError]           = useState('');
 
-  useEffect(() => { dispatch(fetchInstructors({ limit: 3 })); }, [dispatch]);
+  useEffect(() => {
+    dispatch(fetchInstructors({ limit: 3 }));
+    dispatch(fetchSavedInstructors());
+    dispatch(fetchMyJobs());
+  }, [dispatch]);
 
   const handlePasswordSave = async () => {
     setPwError(''); setPwSuccess(false);
@@ -108,12 +117,12 @@ export default function StudioDashboard() {
         </div>
       </div>
 
-      {/* Stats */}
+      {/* Stats — pulled from the live store */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={Eye}          label="Profile Views"    value="24"     sub="This month"         color="blue" />
-        <StatCard icon={MessageCircle} label="Messages"        value="3"      sub="Unread"             color="coral" />
-        <StatCard icon={Heart}        label="Saved"            value="8"      sub="Instructors saved"  color="green" />
-        <StatCard icon={Users}        label="Network"          value="1,200+" sub="Active instructors" color="default" />
+        <StatCard icon={Eye}          label="Active Listings" value={activeListings}      sub={`${myJobs.length} total`}        color="blue" />
+        <StatCard icon={MessageCircle} label="Applicants"     value={totalApplicants}     sub="Across your listings"           color="coral" />
+        <StatCard icon={Heart}        label="Saved"           value={savedIds.length}     sub="Instructors in favourites"      color="green" />
+        <StatCard icon={Users}        label="Network"         value={instructors.length}  sub="Active instructors on platform" color="default" />
       </div>
 
       {/* Quick actions */}

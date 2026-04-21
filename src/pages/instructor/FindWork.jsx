@@ -1,10 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
   Search, MapPin, Calendar, Clock, Briefcase, X, Filter, ChevronDown,
   MessageCircle, Bookmark, BookmarkCheck, Users, GraduationCap, Check,
-  XCircle, Clock3, Lock,
+  XCircle, Clock3, Lock, ExternalLink,
 } from 'lucide-react';
 
 import { fetchJobs, applyToJob } from '../../store/actions/jobAction';
@@ -13,7 +14,7 @@ import {
   ROLE_TYPE_LABELS, QUALIFICATION_LABELS, JOB_FILTER_TABS, TYPE_STYLES,
 } from '../../constants/jobConstants';
 import { CardSkeleton, ButtonLoader } from '../../components/feedback';
-import { ApplyModal } from '../../components/modals';
+import { ApplyJobModal } from '../../features/modals';
 import { getApplyState } from '../../utils/jobHelpers';
 import { loadSavedJobs, saveSavedJobs, toggleSavedJob } from '../../utils/savedJobsStorage';
 
@@ -148,7 +149,7 @@ export default function FindWork() {
       )}
 
       {applyTarget && (
-        <ApplyModal
+        <ApplyJobModal
           job={applyTarget}
           submitting={applyingJobId === applyTarget.id}
           onClose={() => setApplyTarget(null)}
@@ -326,9 +327,19 @@ export function JobCard({ job, user, isSaved, isApplying, onToggleSave, onApply 
                 <h3 className="font-['Unbounded'] text-sm font-black text-[#3E3D38] leading-snug">
                   {job.title}
                 </h3>
-                <p className="text-[#9A9A94] text-xs mt-0.5">
-                  {job.studio?.name || job.studio?.detail?.studioName || 'Posted by a studio on Moving Guru'}
-                </p>
+                {job.studio?.id ? (
+                  <Link
+                    to={`/portal/studios/${job.studio.id}`}
+                    className="inline-flex items-center gap-1 text-[#9A9A94] text-xs mt-0.5 hover:text-[#2DA4D6] hover:underline"
+                  >
+                    {job.studio?.studio_name || job.studio?.name || job.studio?.detail?.studioName || 'View studio'}
+                    <ExternalLink size={10} />
+                  </Link>
+                ) : (
+                  <p className="text-[#9A9A94] text-xs mt-0.5">
+                    {job.studio?.name || job.studio?.detail?.studioName || 'Posted by a studio on Moving Guru'}
+                  </p>
+                )}
               </div>
               <div className="flex items-center gap-1.5 flex-shrink-0 flex-wrap justify-end">
                 <span className="px-2.5 py-1 rounded-full text-[10px] font-bold text-white"
