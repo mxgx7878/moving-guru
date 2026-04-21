@@ -70,4 +70,5 @@ export const EMPTY_JOB_FORM = {
   requirements:        '',
   qualification_level: 'none',
   is_active:           true,
+  vacancies:           1,
 };

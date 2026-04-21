@@ -1,248 +1,193 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Check, Star, ArrowRight, AlertCircle, Crown, Shield, Sparkles } from 'lucide-react';
+import { Download, CreditCard, CheckCircle, Calendar, DollarSign, TrendingUp } from 'lucide-react';
 import { ROLE_THEME } from '../../config/portalConfig';
-import { fetchPlans, changePlan } from '../../store/actions/subscriptionAction';
+import { fetchPayments } from '../../store/actions/paymentAction';
 import { STATUS } from '../../constants/apiConstants';
-import { CardSkeleton } from '../../components/feedback';
-import { ButtonLoader } from '../../components/feedback';
+import { TableSkeleton, CardSkeleton } from '../../components/feedback';
 
-const PLAN_ICONS = { monthly: Shield, biannual: Crown, annual: Sparkles };
-
-export default function Subscription() {
+/**
+ * Payments page — shared between instructor and studio portals.
+ *
+ * Studio-specific addition: a "Total Spend" card that sums all
+ * successful payments (subscription + any one-off charges like
+ * featured listings). Falls back to the same total for instructors
+ * but uses role-aware copy so "Total Paid" stays accurate for them.
+ */
+export default function Payments() {
   const dispatch = useDispatch();
   const { user } = useSelector((s) => s.auth);
-  const { plans, status } = useSelector((s) => s.subscription);
+  const { payments, status } = useSelector((s) => s.payment);
   const role = user?.role || 'instructor';
   const theme = ROLE_THEME[role] || ROLE_THEME.instructor;
-
-  const [selected, setSelected] = useState(user?.subscription || 'monthly');
-  const [confirming, setConfirming] = useState(false);
-  const [changed, setChanged] = useState(false);
-  const [changing, setChanging] = useState(false);
+  const isStudio = role === 'studio';
 
   useEffect(() => {
-    dispatch(fetchPlans());
+    dispatch(fetchPayments());
   }, [dispatch]);
 
-  const currentPlan = plans.find(p => p.id === (user?.subscription || 'monthly'));
-  const selectedPlan = plans.find(p => p.id === selected);
+  // Only count paid/successful payments toward the totals — refunded /
+  // failed rows shouldn't pad the spend.
+  const paidOnly = payments.filter(
+    (p) => !p.status || ['paid', 'Paid', 'succeeded', 'completed'].includes(p.status),
+  );
+  const total = paidOnly.reduce((s, p) => s + (Number(p.amount) || 0), 0);
 
-  const handleChange = () => {
-    if (selected === user?.subscription) return;
-    setConfirming(true);
-  };
+  // Running avg per month (for studios who like the signal)
+  const months = new Set(
+    paidOnly.map((p) => (p.date || '').slice(0, 7)).filter(Boolean),
+  );
+  const avgPerMonth = months.size > 0 ? total / months.size : 0;
 
-  const confirmChange = async () => {
-    setChanging(true);
-    await dispatch(changePlan({ plan: selected }));
-    setChanging(false);
-    setConfirming(false);
-    setChanged(true);
-    setTimeout(() => setChanged(false), 3000);
-  };
-
-  if (status === STATUS.LOADING && plans.length === 0) {
+  if (status === STATUS.LOADING && payments.length === 0) {
     return (
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div className="text-center">
-          <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">Subscription</h1>
-          <p className="text-[#9A9A94] text-sm mt-1">Manage your Moving Guru membership</p>
+      <div className="max-w-3xl mx-auto space-y-6">
+        <div>
+          <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">Payment History</h1>
+          <p className="text-[#9A9A94] text-sm mt-1">Your billing history and invoices</p>
         </div>
         <CardSkeleton count={3} />
+        <TableSkeleton rows={4} cols={3} />
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      {/* Header */}
-      <div className="text-center">
-        <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">Subscription</h1>
+    <div className="max-w-3xl mx-auto space-y-6">
+      <div>
+        <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">Payment History</h1>
         <p className="text-[#9A9A94] text-sm mt-1">
-          Manage your Moving Guru {role === 'studio' ? 'studio ' : ''}membership
+          {isStudio ? 'Track what your studio has spent on Moving Guru' : 'Your billing history and invoices'}
         </p>
       </div>
 
-      {/* Current plan banner */}
-      <div className="bg-gradient-to-br from-[#FDFCF8] to-[#f5fca6]/40 rounded-2xl p-6 overflow-hidden relative border border-[#E5E0D8]">
-        <div className="absolute inset-0 opacity-15"
-          style={{ backgroundImage: `radial-gradient(circle at 80% 50%, ${theme.accent} 0%, transparent 50%)` }}
-        />
-        <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ backgroundColor: `${theme.accent}15` }}>
-              <Star size={22} style={{ color: theme.accent }} />
+      {/* ── Summary cards ───────────────────────────────────── */}
+      {isStudio ? (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Studio Total Spend — highlighted hero card */}
+          <div className="md:col-span-1 bg-gradient-to-br from-[#2DA4D6] to-[#2590bd] rounded-2xl p-5 text-white">
+            <div className="flex items-start justify-between mb-3">
+              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                <DollarSign size={18} />
+              </div>
+              <TrendingUp size={14} className="opacity-80" />
             </div>
-            <div className="text-center sm:text-left">
-              <p className="text-[#9A9A94] text-[10px] uppercase tracking-widest">Current Plan</p>
-              <p className="font-['Unbounded'] text-[#3E3D38] font-black text-lg mt-0.5">
-                {currentPlan?.label || 'Monthly'}
-              </p>
-              <p className="text-sm font-semibold" style={{ color: theme.accent }}>
-                ${currentPlan?.price || 15}{currentPlan?.per || '/mo'}
-              </p>
-            </div>
+            <p className="font-['Unbounded'] text-3xl font-black leading-none">
+              ${total.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+            </p>
+            <p className="text-white/80 text-xs font-semibold mt-2 uppercase tracking-wider">Total Spend</p>
+            <p className="text-white/60 text-[10px] mt-1">All-time across your studio account</p>
           </div>
-          <div className="flex items-center gap-6">
-            <div className="text-center">
-              <p className="text-[#9A9A94] text-[10px] uppercase tracking-wider">Renews</p>
-              <p className="text-[#3E3D38] text-sm font-semibold mt-0.5">{user?.subscriptionRenews || user?.subscription_renews || '—'}</p>
+
+          <div className="bg-white rounded-2xl p-5 border border-[#E5E0D8]">
+            <div className="w-10 h-10 rounded-xl bg-[#E89560]/10 flex items-center justify-center mb-3">
+              <CreditCard size={16} className="text-[#E89560]" />
             </div>
-            <div className="text-center">
-              <p className="text-[#9A9A94] text-[10px] uppercase tracking-wider">Status</p>
-              <span className="inline-flex px-3 py-1 rounded-full text-xs font-bold text-white mt-0.5" style={{ backgroundColor: theme.accent }}>
-                Active
-              </span>
+            <p className="font-['Unbounded'] text-2xl font-black text-[#3E3D38]">{paidOnly.length}</p>
+            <p className="text-[#9A9A94] text-xs font-semibold mt-1">Payments Made</p>
+          </div>
+
+          <div className="bg-white rounded-2xl p-5 border border-[#E5E0D8]">
+            <div className="w-10 h-10 rounded-xl bg-[#6BE6A4]/20 flex items-center justify-center mb-3">
+              <Calendar size={16} className="text-[#3E3D38]" />
             </div>
+            <p className="font-['Unbounded'] text-lg font-black text-[#3E3D38]">
+              ${avgPerMonth.toFixed(2)}
+            </p>
+            <p className="text-[#9A9A94] text-xs font-semibold mt-1">Avg / Month</p>
           </div>
         </div>
-      </div>
-
-      {/* Success message */}
-      {changed && (
-        <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 flex items-center justify-center gap-2">
-          <Check size={14} className="text-emerald-600" />
-          <p className="text-emerald-700 text-sm font-medium">Plan updated successfully!</p>
+      ) : (
+        <div className="grid grid-cols-3 gap-4">
+          <div className="bg-white rounded-2xl p-4 border border-[#E5E0D8] text-center">
+            <DollarSign size={16} style={{ color: theme.accent }} className="mx-auto mb-2" />
+            <p className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">${total.toFixed(2)}</p>
+            <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider mt-1">Total Paid</p>
+          </div>
+          <div className="bg-white rounded-2xl p-4 border border-[#E5E0D8] text-center">
+            <CreditCard size={16} className="text-[#E89560] mx-auto mb-2" />
+            <p className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">{paidOnly.length}</p>
+            <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider mt-1">Payments</p>
+          </div>
+          <div className="bg-white rounded-2xl p-4 border border-[#E5E0D8] text-center">
+            <Calendar size={16} className="text-[#2DA4D6] mx-auto mb-2" />
+            <p className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">
+              {user?.subscriptionRenews || user?.subscription_renews || '—'}
+            </p>
+            <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider mt-1">Next Renewal</p>
+          </div>
         </div>
       )}
 
-      {/* Plans grid */}
-      <div>
-        <h3 className="font-['Unbounded'] text-sm font-bold text-[#3E3D38] mb-5 text-center">Choose a Plan</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {plans.map(plan => {
-            const isCurrent = plan.id === (user?.subscription || 'monthly');
-            const isSelected = plan.id === selected;
-            const PlanIcon = PLAN_ICONS[plan.id] || Shield;
-            return (
-              <button
-                key={plan.id}
-                type="button"
-                onClick={() => setSelected(plan.id)}
-                className={`relative text-left rounded-2xl border-2 p-6 transition-all duration-300 flex flex-col
-                  ${isSelected
-                    ? 'scale-[1.02] shadow-xl text-white'
-                    : 'border-[#E5E0D8] bg-white hover:shadow-md'
-                  }
-                  ${plan.highlight && !isSelected ? 'ring-2 ring-opacity-20' : ''}`}
-                style={isSelected ? { borderColor: theme.accent, backgroundColor: theme.accent } : undefined}
-              >
-                {plan.highlight && (
-                  <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase
-                    ${isSelected ? 'bg-[#f5fca6] text-[#3E3D38]' : 'text-white'}`}
-                    style={!isSelected ? { backgroundColor: theme.accent } : undefined}
-                  >
-                    Most Popular
-                  </div>
-                )}
-
-                <div className="flex flex-col items-center text-center mb-4 mt-1">
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-3
-                    ${isSelected ? 'bg-white/20' : ''}`}
-                    style={!isSelected ? { backgroundColor: `${theme.accent}12` } : undefined}
-                  >
-                    <PlanIcon size={22} className={isSelected ? 'text-white' : ''} style={!isSelected ? { color: theme.accent } : undefined} />
-                  </div>
-                  <span className={`font-['Unbounded'] text-sm font-bold ${isSelected ? 'text-white' : 'text-[#3E3D38]'}`}>
-                    {plan.label}
-                  </span>
-                  {isCurrent && (
-                    <span className="text-[10px] font-bold bg-[#6BE6A4]/20 text-[#3E3D38] px-2.5 py-0.5 rounded-full mt-1.5">
-                      Current
-                    </span>
-                  )}
-                </div>
-
-                <div className="text-center mb-4">
-                  <div className="flex items-baseline justify-center gap-0.5">
-                    <span className={`font-['Unbounded'] text-3xl font-black ${isSelected ? 'text-white' : 'text-[#3E3D38]'}`}>
-                      ${plan.price}
-                    </span>
-                    <span className={`text-sm ${isSelected ? 'text-white/50' : 'text-[#9A9A94]'}`}>
-                      {plan.per}
-                    </span>
-                  </div>
-                  {plan.pricePerMonth && (
-                    <p className={`text-xs mt-1 ${isSelected ? 'text-white/50' : 'text-[#9A9A94]'}`}>
-                      {plan.pricePerMonth}
-                    </p>
-                  )}
-                </div>
-
-                <div className={`w-full h-px mb-4 ${isSelected ? 'bg-white/15' : 'bg-[#E5E0D8]'}`} />
-
-                <ul className="space-y-2.5 flex-1">
-                  {(plan.features || []).map(f => (
-                    <li key={f} className="flex items-start gap-2">
-                      <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5
-                        ${isSelected ? 'bg-white/20' : ''}`}
-                        style={!isSelected ? { backgroundColor: `${theme.accent}15` } : undefined}
-                      >
-                        <Check size={9} className={isSelected ? 'text-white' : ''} style={!isSelected ? { color: theme.accent } : undefined} />
-                      </div>
-                      <span className={`text-xs leading-relaxed ${isSelected ? 'text-white/70' : 'text-[#6B6B66]'}`}>{f}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <div className={`mt-5 py-2.5 rounded-xl text-center text-xs font-bold transition-all
-                  ${isSelected ? 'bg-white' : 'bg-[#FBF8E4] text-[#9A9A94]'}`}
-                  style={isSelected ? { color: theme.accent } : undefined}
-                >
-                  {isSelected ? (isCurrent ? 'Current Plan' : 'Selected') : 'Select'}
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Change plan button */}
-      {selected !== (user?.subscription || 'monthly') && (
-        <div className="flex justify-center">
+      {/* ── Payment method ──────────────────────────────────── */}
+      <div className="bg-white rounded-2xl p-5 border border-[#E5E0D8]">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: theme.accent }}>
+              <CreditCard size={16} className="text-white" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-[#3E3D38]">Visa •••• 4242</p>
+              <p className="text-xs text-[#9A9A94]">Expires 12/28</p>
+            </div>
+          </div>
           <button
-            onClick={handleChange}
-            className="text-white font-bold py-3.5 px-10 rounded-xl transition-all flex items-center gap-2 shadow-lg"
-            style={{ backgroundColor: theme.accent }}
+            className="text-xs text-[#6B6B66] border border-[#E5E0D8] px-3 py-1.5 rounded-lg hover:text-[#2DA4D6] hover:border-[#2DA4D6] transition-colors"
           >
-            Switch to {selectedPlan?.label} — ${selectedPlan?.price}{selectedPlan?.per}
-            <ArrowRight size={16} />
+            Update
           </button>
         </div>
-      )}
+      </div>
 
-      {/* Confirm modal */}
-      {confirming && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-            <div className="w-12 h-12 bg-[#E89560]/15 rounded-2xl flex items-center justify-center mb-4 mx-auto">
-              <AlertCircle size={24} className="text-[#E89560]" />
-            </div>
-            <h3 className="font-['Unbounded'] text-base font-black text-[#3E3D38] mb-2 text-center">Confirm Plan Change</h3>
-            <p className="text-[#6B6B66] text-sm mb-5 leading-relaxed text-center">
-              You're switching from <strong className="text-[#3E3D38]">{currentPlan?.label}</strong> to{' '}
-              <strong className="text-[#3E3D38]">{selectedPlan?.label}</strong> for{' '}
-              <strong className="text-[#3E3D38]">${selectedPlan?.price}{selectedPlan?.per}</strong>.
-            </p>
-            <div className="flex gap-3">
-              <button onClick={() => setConfirming(false)}
-                className="flex-1 py-2.5 border border-[#E5E0D8] rounded-xl text-sm font-medium text-[#6B6B66] hover:border-[#9A9A94] transition-colors">
-                Cancel
-              </button>
-              <button onClick={confirmChange} disabled={changing}
-                className="flex-1 py-2.5 text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
-                style={{ backgroundColor: theme.accent }}>
-                {changing ? <ButtonLoader size={14} /> : 'Confirm'}
-              </button>
-            </div>
-          </div>
+      {/* ── Transactions ────────────────────────────────────── */}
+      <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
+        <div className="px-6 py-4 border-b border-[#E5E0D8]">
+          <h3 className="font-['Unbounded'] text-xs font-bold text-[#3E3D38] tracking-wider uppercase">
+            Transactions
+          </h3>
         </div>
-      )}
 
-      {/* Cancel */}
-      <p className="text-center text-[#9A9A94] text-xs pb-4">
-        Cancel anytime. No lock-in contracts. Payments processed securely.
+        <div className="divide-y divide-[#E5E0D8]/50">
+          {payments.map((p) => (
+            <div key={p.id} className="px-6 py-4 flex items-center justify-between hover:bg-[#FDFCF8] transition-colors">
+              <div className="flex items-center gap-4">
+                <div className="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <CheckCircle size={14} className="text-emerald-500" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-[#3E3D38]">{p.plan} Subscription</p>
+                  <p className="text-xs text-[#9A9A94]">{p.date} · {p.invoice}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="text-right">
+                  <p className="font-['Unbounded'] text-sm font-bold text-[#3E3D38]">
+                    ${Number(p.amount || 0).toFixed(2)}
+                  </p>
+                  <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                    {p.status}
+                  </span>
+                </div>
+                <button className="p-1.5 hover:bg-[#FBF8E4] rounded-lg transition-colors text-[#9A9A94] hover:text-[#3E3D38]">
+                  <Download size={14} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {payments.length === 0 && (
+          <div className="px-6 py-12 text-center">
+            <CreditCard size={32} className="text-[#E5E0D8] mx-auto mb-3" />
+            <p className="text-[#9A9A94] text-sm">No payments yet</p>
+          </div>
+        )}
+      </div>
+
+      <p className="text-center text-[#9A9A94] text-xs">
+        Need a receipt or have billing questions? Contact{' '}
+        <a href="mailto:admin@movingguru.co" className="text-[#2DA4D6] hover:underline">admin@movingguru.co</a>
       </p>
     </div>
   );

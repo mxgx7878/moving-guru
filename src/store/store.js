@@ -7,6 +7,7 @@ import paymentReducer from "./slices/paymentSlice";
 import jobReducer from "./slices/jobSlice";
 import growReducer from "./slices/growSlice";
 import postReducer from "./slices/postSlice";
+import reviewReducer from "./slices/reviewSlice";
 
 const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ const store = configureStore({
     job: jobReducer,
     grow: growReducer,
     post: postReducer,
+    review: reviewReducer,
   },
   devTools: import.meta.env.DEV,
 });

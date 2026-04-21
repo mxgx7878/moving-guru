@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import {
   Search, MapPin, Calendar, Clock, Briefcase, X, Filter, ChevronDown,
   MessageCircle, Bookmark, BookmarkCheck, Users, GraduationCap, Check,
-  XCircle, Clock3,
+  XCircle, Clock3, Lock,
 } from 'lucide-react';
 
 import { fetchJobs, applyToJob } from '../../store/actions/jobAction';
@@ -33,7 +33,13 @@ export default function FindWork() {
   useEffect(() => { dispatch(fetchJobs()); }, [dispatch]);
   useEffect(() => { saveSavedJobs(savedJobs); }, [savedJobs]);
 
-  const activeJobs = useMemo(() => jobs.filter((j) => j.is_active !== false), [jobs]);
+  // Filter out inactive listings. We leave "full" listings in because
+  // instructors who were already accepted still need to see them, and
+  // the JobCard handles the closed state inline.
+  const activeJobs = useMemo(
+    () => jobs.filter((j) => j.is_active !== false),
+    [jobs],
+  );
 
   const allDisciplines = useMemo(() => (
     [...new Set(activeJobs.flatMap((j) => j.disciplines || []))].sort()
@@ -72,8 +78,6 @@ export default function FindWork() {
     if (applyToJob.fulfilled.match(result)) {
       toast.success('Application sent — the studio will be in touch.');
     } else {
-      // Backend returns a human-friendly message for the re-apply lock;
-      // surface it verbatim so instructors see the unlock date.
       toast.error(result.payload || 'Could not send application.');
     }
   };
@@ -125,9 +129,7 @@ export default function FindWork() {
 
       {loading && <CardSkeleton count={4} />}
 
-      {!loading && filtered.length === 0 && (
-        <EmptyState onClear={clearFilters} />
-      )}
+      {!loading && filtered.length === 0 && <EmptyState onClear={clearFilters} />}
 
       {!loading && filtered.length > 0 && (
         <div className="space-y-4">
@@ -184,9 +186,9 @@ function JobStatsRow({ jobs }) {
   return (
     <div className="grid grid-cols-3 gap-4">
       {stats.map((s) => (
-        <div key={s.label} className="bg-white rounded-2xl p-4 border border-[#E5E0D8] text-center">
+        <div key={s.label} className="bg-white rounded-2xl border border-[#E5E0D8] p-4 text-center">
           <p className={`font-['Unbounded'] text-2xl font-black ${s.color}`}>{s.count}</p>
-          <p className="text-[#9A9A94] text-xs font-semibold mt-1">{s.label}</p>
+          <p className="text-[#9A9A94] text-xs mt-1 font-semibold">{s.label}</p>
         </div>
       ))}
     </div>
@@ -195,28 +197,29 @@ function JobStatsRow({ jobs }) {
 
 function SearchBar({ query, setQuery, showFilters, toggleFilters, hasFilters, filterTypeActive }) {
   return (
-    <div className="flex gap-3">
+    <div className="flex items-center gap-2">
       <div className="flex-1 flex items-center gap-2 bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-2.5">
-        <Search size={16} className="text-[#9A9A94] flex-shrink-0" />
+        <Search size={16} className="text-[#9A9A94]" />
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search by title, location, discipline..."
+          placeholder="Search title, discipline, location..."
           className="flex-1 bg-transparent border-none outline-none text-sm text-[#3E3D38] placeholder-[#C4BCB4]"
         />
         {query && (
-          <button onClick={() => setQuery('')}>
-            <X size={14} className="text-[#9A9A94]" />
+          <button onClick={() => setQuery('')} className="text-[#9A9A94] hover:text-[#3E3D38]">
+            <X size={14} />
           </button>
         )}
       </div>
       <button
         onClick={toggleFilters}
-        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all
-          ${showFilters ? 'bg-[#CE4F56] border-[#CE4F56] text-white' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#CE4F56]'}`}
+        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all
+          ${showFilters || hasFilters
+            ? 'bg-[#CE4F56] text-white border-[#CE4F56]'
+            : 'bg-white border-[#E5E0D8] text-[#6B6B66] hover:border-[#CE4F56]'}`}
       >
         <Filter size={14} /> Filters
-        {hasFilters && !filterTypeActive && <span className="w-2 h-2 rounded-full bg-[#CE4F56]" />}
       </button>
     </div>
   );
@@ -229,7 +232,7 @@ function FilterTabs({ activeId, onPick, jobs }) {
         <button
           key={t.id}
           onClick={() => onPick(t.id)}
-          className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all
+          className={`px-4 py-2 rounded-full text-xs font-semibold transition-all
             ${activeId === t.id ? 'shadow-sm' : 'bg-[#FBF8E4] text-[#6B6B66] hover:bg-[#E6FF80]'}`}
           style={activeId === t.id ? { backgroundColor: t.color, color: t.activeText } : {}}
         >
@@ -292,12 +295,26 @@ function EmptyState({ onClear }) {
 export function JobCard({ job, user, isSaved, isApplying, onToggleSave, onApply }) {
   const typeInfo = TYPE_STYLES[job.type] || TYPE_STYLES.hire;
   const TypeIcon = typeInfo.icon;
-  const applyState = getApplyState(job.application);
+  // Pass the whole job so getApplyState can factor in capacity state.
+  const applyState = getApplyState(job);
   const userDisciplines = user?.disciplines || user?.detail?.disciplines || [];
   const isMatch = userDisciplines.some((d) => (job.disciplines || []).includes(d));
 
+  const vacancies = job.vacancies || 1;
+  const filled = job.positions_filled || 0;
+  const isFull = applyState === 'full';
+
   return (
-    <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden hover:border-[#CE4F56]/30 hover:shadow-sm transition-all">
+    <div className={`bg-white rounded-2xl border overflow-hidden transition-all
+      ${isFull ? 'border-[#E5E0D8] opacity-85' : 'border-[#E5E0D8] hover:border-[#CE4F56]/30 hover:shadow-sm'}`}>
+      {/* Capacity banner when full */}
+      {isFull && (
+        <div className="bg-[#FBF8E4] border-b border-[#E5E0D8] px-6 py-2 flex items-center gap-2 text-xs text-[#6B6B66]">
+          <Lock size={12} />
+          <span className="font-semibold">Position filled — this listing is no longer accepting applications.</span>
+        </div>
+      )}
+
       <div className="p-6">
         <div className="flex items-start gap-4 mb-4">
           <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${typeInfo.bg}`}>
@@ -368,6 +385,13 @@ export function JobCard({ job, user, isSaved, isApplying, onToggleSave, onApply 
               ✓ Matches your disciplines
             </div>
           )}
+          {/* Vacancy indicator — helps instructor see at-a-glance whether
+              they're applying to a 1-person gig or a team hire */}
+          {vacancies > 1 && !isFull && (
+            <div className="flex items-center gap-1.5 text-xs text-[#6B6B66] bg-[#2DA4D6]/10 text-[#2DA4D6] px-3 py-1.5 rounded-full">
+              <Users size={12} /> {filled} of {vacancies} filled
+            </div>
+          )}
           <div className="flex-1" />
           <button onClick={onToggleSave}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold border transition-all
@@ -430,6 +454,16 @@ function ApplyButton({ state, application, isApplying, onApply }) {
       <button disabled
         className="flex items-center gap-2 px-5 py-2.5 bg-[#CE4F56]/80 text-white rounded-xl text-xs font-bold cursor-default">
         <ButtonLoader size={13} /> Sending...
+      </button>
+    );
+  }
+
+  // New state — listing has filled all vacancies / is inactive.
+  if (state === 'full') {
+    return (
+      <button disabled
+        className="flex items-center gap-2 px-5 py-2.5 bg-[#FBF8E4] border border-[#E5E0D8] text-[#9A9A94] rounded-xl text-xs font-bold cursor-not-allowed">
+        <Lock size={13} /> Position Closed
       </button>
     );
   }

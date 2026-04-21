@@ -40,6 +40,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminGrowPosts from './pages/admin/AdminGrowPosts';
 import AdminUsers     from './pages/admin/AdminUsers';
 import AdminPosts     from './pages/admin/AdminPosts';
+import InstructorDetail from './pages/studio/InstructorDetail';
 
 function RoleRedirect() {
   const dispatch = useDispatch();
@@ -119,6 +120,7 @@ export default function App() {
           <Route path="search"      element={<SearchInstructors />} />
           <Route path="favourites"  element={<Favourites />} />
           <Route path="jobs"        element={<JobListings />} />
+          <Route path="instructors/:id" element={<InstructorDetail />} />
           <Route path="grow"            element={<Grow />} />
           <Route path="grow/new"        element={<GrowPostForm />} />
           <Route path="grow/edit/:id"   element={<GrowPostForm />} />
