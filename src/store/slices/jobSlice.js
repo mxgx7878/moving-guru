@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { STATUS } from '../../constants/apiConstants';
-import { DUMMY_JOBS } from '../../data/dummyData';
 import {
   fetchJobs,
   fetchMyJobs,
@@ -82,16 +81,11 @@ const jobSlice = createSlice({
       .addCase(fetchJobs.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
         const list = unwrapJobs(payload);
-        if (Array.isArray(list) && list.length > 0) {
-          state.jobs = list;
-        } else if (Array.isArray(list)) {
-          // Empty array from API is a legitimate "no listings yet"
-          state.jobs = [];
-        }
+        state.jobs = Array.isArray(list) ? list : [];
       })
-      .addCase(fetchJobs.rejected, (state) => {
-        // Silent: keep whatever was already in state (dummy or stale)
+      .addCase(fetchJobs.rejected, (state, { payload }) => {
         state.status = STATUS.FAILED;
+        state.error = payload;
       })
 
       // ═══ Studio: my listings ═══════════════════════════════
