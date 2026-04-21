@@ -45,7 +45,7 @@ import AdminSubscriptions from './pages/admin/AdminSubscriptions';
 import AdminSettings      from './pages/admin/AdminSettings';
 import InstructorDetail   from './pages/studio/InstructorDetail';
 import StudioDetail       from './pages/public/StudioDetail';
-import MyApplications from './pages/instructor/Myapplications';
+import MyApplications from './pages/instructor/MyApplications';
 
 function RoleRedirect() {
   const dispatch = useDispatch();
