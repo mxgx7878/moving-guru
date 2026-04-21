@@ -45,6 +45,7 @@ import AdminSubscriptions from './pages/admin/AdminSubscriptions';
 import AdminSettings      from './pages/admin/AdminSettings';
 import InstructorDetail   from './pages/studio/InstructorDetail';
 import StudioDetail       from './pages/public/StudioDetail';
+import MyApplications from './pages/instructor/Myapplications';
 
 function RoleRedirect() {
   const dispatch = useDispatch();
@@ -104,6 +105,7 @@ export default function App() {
           <Route path="profile"    element={<ProfilePage />} />
           <Route path="find-work"  element={<FindWork />} />
           <Route path="saved-jobs" element={<SavedJobs />} />
+          <Route path="applications" element={<MyApplications />} />
           <Route path="grow"            element={<Grow />} />
           <Route path="grow/new"        element={<GrowPostForm />} />
           <Route path="grow/edit/:id"   element={<GrowPostForm />} />

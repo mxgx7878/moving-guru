@@ -1,48 +1,75 @@
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
-  Check, XCircle, MessageCircle, MapPin, Clock, Users, Loader2,
+  X, Check, XCircle, MessageCircle, MapPin, Clock, Users, Loader2,
   ExternalLink, Star, UserCheck,
-} from 'lucide-react';
+} from "lucide-react";
 import {
   fetchJobApplicants,
   updateApplicationStatus,
-} from '../../store/actions/jobAction';
-import { fetchUserReviews } from '../../store/actions/reviewAction';
-import { STATUS } from '../../constants/apiConstants';
-import { Modal, Button, StarRating } from '../../components/ui';
-import ReviewFormModal from './ReviewFormModal';
+} from "../../store/actions/jobAction";
+import { fetchUserReviews, fetchMyReviews } from "../../store/actions/reviewAction";
+import { STATUS } from "../../constants/apiConstants";
+import { ButtonLoader } from "../../components/feedback";
+import  StarRating  from "../../components/ui/StarRating";
+import ReviewFormModal from "./ReviewFormModal";
 
 // Tone + label for each status the studio can land an applicant in.
 const STATUS_STYLES = {
-  pending:  { label: 'New',      bg: 'bg-[#2DA4D6]/10', text: 'text-[#2DA4D6]' },
-  viewed:   { label: 'Viewed',   bg: 'bg-[#FBF8E4]',    text: 'text-[#6B6B66]' },
-  accepted: { label: 'Hired',    bg: 'bg-emerald-50',   text: 'text-emerald-600' },
-  rejected: { label: 'Declined', bg: 'bg-red-50',       text: 'text-red-500' },
+  pending:  { label: "New",      bg: "bg-[#2DA4D6]/10", text: "text-[#2DA4D6]" },
+  viewed:   { label: "Viewed",   bg: "bg-[#FBF8E4]",    text: "text-[#6B6B66]" },
+  accepted: { label: "Hired",    bg: "bg-emerald-50",   text: "text-emerald-600" },
+  rejected: { label: "Declined", bg: "bg-red-50",       text: "text-red-500" },
 };
 
+/**
+ * JobApplicantsModal
+ * -----------------------------------------------------------------
+ * Studio-facing modal listing applicants for a single listing.
+ *
+ * Review UX
+ * -----------------------------------------------------------------
+ * Once a studio has hired an applicant, they get a "Leave Review" CTA.
+ * After the review is posted (or if they've already reviewed this
+ * instructor for this listing in the past), the CTA is replaced by
+ * a disabled green "Reviewed" badge so the studio can't double-submit
+ * and can see at a glance who still needs feedback.
+ *
+ * The duplicate check is a two-layer belt-and-braces:
+ *   1. Client-side via `state.review.myReviews` (fetched on mount).
+ *   2. Server-side via a unique index on (reviewer, reviewee, listing).
+ *
+ * When ReviewForm closes after a successful post, the slice has
+ * already unshifted the new review into `myReviews`, so the badge
+ * flips without another round-trip.
+ */
 export default function JobApplicantsModal({ job, onClose }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { applicantsByJobId, mutatingApplicationId } = useSelector((s) => s.job);
   const reviewsByUserId = useSelector((s) => s.review.byUserId);
+  const myReviews = useSelector((s) => s.review.myReviews);
 
   const bucket = (job && applicantsByJobId[job.id]) || {};
   const applicants = bucket.applicants || [];
-  const freshJob = bucket.job || job;
-  const loading = bucket.status === STATUS.LOADING;
+  const freshJob   = bucket.job || job;
+  const loading    = bucket.status === STATUS.LOADING;
 
   const vacancies = freshJob?.vacancies || 1;
-  const filled = freshJob?.positions_filled || 0;
-  const canHire = filled < vacancies;
+  const filled    = freshJob?.positions_filled || 0;
+  const canHire   = filled < vacancies;
 
   const [reviewTarget, setReviewTarget] = useState(null);
 
   useEffect(() => {
     if (job?.id) dispatch(fetchJobApplicants(job.id));
+    // Keep myReviews fresh so the "already reviewed" badge is accurate
+    // even on the first open after a reload.
+    dispatch(fetchMyReviews());
   }, [job?.id, dispatch]);
 
+  // Pre-fetch review summaries for visible applicants.
   useEffect(() => {
     applicants.forEach((app) => {
       const id = app.instructor?.id;
@@ -53,6 +80,19 @@ export default function JobApplicantsModal({ job, onClose }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [applicants.length]);
 
+  // Build an O(1) lookup of (revieweeId, jobListingId) pairs I've
+  // already reviewed, so the per-applicant render is cheap.
+  const reviewedKeys = useMemo(() => {
+    const s = new Set();
+    myReviews.forEach((r) => {
+      s.add(`${r.reviewee_id}:${r.job_listing_id || 'null'}`);
+    });
+    return s;
+  }, [myReviews]);
+
+  const hasReviewed = (instructorId) =>
+    reviewedKeys.has(`${instructorId}:${job.id}`);
+
   if (!job) return null;
 
   const handleAccept = (app) => {
@@ -60,7 +100,7 @@ export default function JobApplicantsModal({ job, onClose }) {
     dispatch(updateApplicationStatus({
       applicationId: app.id,
       jobId: job.id,
-      status: 'accepted',
+      status: "accepted",
     }));
   };
 
@@ -68,13 +108,13 @@ export default function JobApplicantsModal({ job, onClose }) {
     dispatch(updateApplicationStatus({
       applicationId: app.id,
       jobId: job.id,
-      status: 'rejected',
+      status: "rejected",
     }));
   };
 
   const handleMessage = () => {
     onClose();
-    navigate('/studio/messages');
+    navigate("/studio/messages");
   };
 
   const handleViewProfile = (instructorId) => {
@@ -84,25 +124,37 @@ export default function JobApplicantsModal({ job, onClose }) {
   };
 
   return (
-    <>
-      <Modal
-        open
-        size="xl"
-        zIndex="z-[60]"
-        onClose={onClose}
-        title="Applicants"
-        subtitle={`For ${job.title}`}
-        bodyClassName="p-0"
-        footer={<Button variant="secondary" onClick={onClose}>Close</Button>}
-      >
-        <div className="px-6 py-3 border-b border-[#E5E0D8] flex items-center justify-between">
-          <span
-            className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold
-              ${canHire ? 'bg-[#2DA4D6]/10 text-[#2DA4D6]' : 'bg-emerald-50 text-emerald-600'}`}
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start justify-center z-[60] p-4 overflow-y-auto">
+      <div className="bg-white rounded-2xl w-full max-w-3xl shadow-2xl my-8">
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-[#E5E0D8] flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-8 h-8 rounded-lg bg-[#2DA4D6]/10 flex items-center justify-center">
+                <Users size={14} className="text-[#2DA4D6]" />
+              </div>
+              <h2 className="font-['Unbounded'] text-base font-black text-[#3E3D38] truncate">
+                Applicants
+              </h2>
+              <span
+                className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold
+                  ${canHire ? 'bg-[#2DA4D6]/10 text-[#2DA4D6]' : 'bg-emerald-50 text-emerald-600'}`}
+              >
+                <UserCheck size={10} />
+                {filled} of {vacancies} filled
+              </span>
+            </div>
+            <p className="text-[#9A9A94] text-xs truncate">
+              For <span className="font-semibold text-[#3E3D38]">{job.title}</span>
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 hover:bg-[#FBF8E4] rounded-lg transition-colors text-[#9A9A94] flex-shrink-0"
+            aria-label="Close"
           >
-            <UserCheck size={10} />
-            {filled} of {vacancies} filled
-          </span>
+            <X size={18} />
+          </button>
         </div>
 
         {!canHire && (
@@ -111,7 +163,8 @@ export default function JobApplicantsModal({ job, onClose }) {
           </div>
         )}
 
-        <div className="p-6 max-h-[60vh] overflow-y-auto">
+        {/* Body */}
+        <div className="p-6 max-h-[70vh] overflow-y-auto">
           {loading && applicants.length === 0 && (
             <div className="flex items-center justify-center py-12">
               <Loader2 size={24} className="animate-spin text-[#2DA4D6]" />
@@ -130,24 +183,173 @@ export default function JobApplicantsModal({ job, onClose }) {
 
           {applicants.length > 0 && (
             <div className="space-y-3">
-              {applicants.map((app) => (
-                <ApplicantCard
-                  key={app.id}
-                  app={app}
-                  reviewSummary={reviewsByUserId[app.instructor?.id]?.summary}
-                  isMutating={mutatingApplicationId === app.id}
-                  canHire={canHire}
-                  onViewProfile={() => handleViewProfile(app.instructor?.id)}
-                  onMessage={handleMessage}
-                  onAccept={() => handleAccept(app)}
-                  onReject={() => handleReject(app)}
-                  onReview={() => setReviewTarget({ user: app.instructor, jobId: job.id, jobTitle: job.title })}
-                />
-              ))}
+              {applicants.map((app) => {
+                const inst = app.instructor || {};
+                const detail = inst.detail || {};
+                const initials = (inst.name || "?")
+                  .split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
+                const style = STATUS_STYLES[app.status] || STATUS_STYLES.pending;
+                const isMutating = mutatingApplicationId === app.id;
+                const disciplines = detail.disciplines || inst.disciplines || [];
+                const reviewBucket = reviewsByUserId[inst.id];
+                const reviewSummary = reviewBucket?.summary || null;
+                const alreadyReviewed = hasReviewed(inst.id);
+
+                return (
+                  <div
+                    key={app.id}
+                    className="bg-white rounded-2xl border border-[#E5E0D8] p-4 hover:border-[#2DA4D6]/40 transition-colors"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center text-white text-xs font-bold font-['Unbounded'] overflow-hidden flex-shrink-0">
+                        {detail.profile_picture_url || detail.profile_picture ? (
+                          <img
+                            src={detail.profile_picture_url || detail.profile_picture}
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
+                        ) : initials}
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="font-['Unbounded'] text-sm font-black text-[#3E3D38] truncate">
+                            {inst.name || "Unknown"}
+                          </p>
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${style.bg} ${style.text}`}>
+                            {style.label}
+                          </span>
+                          {reviewSummary && reviewSummary.count > 0 && (
+                            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#FBF8E4] text-[#3E3D38]">
+                              <Star size={10} className="text-[#E89560]" fill="#E89560" />
+                              {reviewSummary.average.toFixed(1)}
+                              <span className="text-[#9A9A94]">({reviewSummary.count})</span>
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-3 mt-1 flex-wrap">
+                          {detail.location && (
+                            <span className="flex items-center gap-1 text-[11px] text-[#6B6B66]">
+                              <MapPin size={10} /> {detail.location}
+                            </span>
+                          )}
+                          {app.created_at && (
+                            <span className="flex items-center gap-1 text-[11px] text-[#9A9A94]">
+                              <Clock size={10} />
+                              {new Date(app.created_at).toLocaleDateString()}
+                            </span>
+                          )}
+                          {reviewSummary && reviewSummary.count > 0 && (
+                            <StarRating value={reviewSummary.average} size={10} />
+                          )}
+                        </div>
+
+                        {app.message && (
+                          <p className="mt-2 text-[#6B6B66] text-xs leading-relaxed whitespace-pre-line bg-[#FBF8E4] rounded-xl px-3 py-2">
+                            {app.message}
+                          </p>
+                        )}
+
+                        {disciplines.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {disciplines.slice(0, 5).map((d) => (
+                              <span
+                                key={d}
+                                className="px-2 py-0.5 bg-[#2DA4D6]/10 text-[#2DA4D6] text-[10px] font-medium rounded-full"
+                              >
+                                {d}
+                              </span>
+                            ))}
+                            {disciplines.length > 5 && (
+                              <span className="text-[10px] text-[#9A9A94]">
+                                +{disciplines.length - 5} more
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[#E5E0D8] flex-wrap">
+                      <button
+                        onClick={() => handleViewProfile(inst.id)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E5E0D8] text-xs font-semibold text-[#6B6B66] hover:border-[#2DA4D6] hover:text-[#2DA4D6] transition-colors"
+                      >
+                        <ExternalLink size={12} /> View Profile
+                      </button>
+                      <button
+                        onClick={handleMessage}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E5E0D8] text-xs font-semibold text-[#6B6B66] hover:border-[#2DA4D6] hover:text-[#2DA4D6] transition-colors"
+                      >
+                        <MessageCircle size={12} /> Message
+                      </button>
+
+                      <div className="flex-1" />
+
+                      {/* Review button / already-reviewed badge.
+                          alreadyReviewed wins over the "Leave Review"
+                          button even if status !== 'accepted' — if the
+                          studio somehow got a review out (legacy data,
+                          mis-click), we still show the badge rather
+                          than dead-ending with nothing. */}
+                      {app.status === "accepted" && alreadyReviewed && (
+                        <span
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600 text-xs font-bold cursor-default"
+                          title="You've already reviewed this instructor for this listing"
+                        >
+                          <Check size={12} /> Reviewed
+                        </span>
+                      )}
+                      {app.status === "accepted" && !alreadyReviewed && (
+                        <button
+                          onClick={() => setReviewTarget({ user: inst, jobId: job.id, jobTitle: job.title })}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#2DA4D6] text-white text-xs font-bold hover:bg-[#2590bd] transition-colors"
+                        >
+                          <Star size={12} /> Leave Review
+                        </button>
+                      )}
+
+                      {(app.status === "pending" || app.status === "viewed") && (
+                        <>
+                          <button
+                            onClick={() => handleReject(app)}
+                            disabled={isMutating}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E5E0D8] text-xs font-semibold text-[#6B6B66] hover:border-red-500 hover:text-red-500 transition-colors disabled:opacity-60"
+                          >
+                            {isMutating ? <ButtonLoader size={11} color="#CE4F56" /> : <XCircle size={12} />}
+                            Decline
+                          </button>
+
+                          <button
+                            onClick={() => handleAccept(app)}
+                            disabled={isMutating || !canHire}
+                            title={!canHire ? 'All positions have been filled' : undefined}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500 text-white text-xs font-bold hover:bg-emerald-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {isMutating ? <ButtonLoader size={11} /> : <Check size={12} />}
+                            Hire
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
-      </Modal>
+
+        <div className="px-6 py-4 border-t border-[#E5E0D8] flex items-center justify-end">
+          <button
+            onClick={onClose}
+            className="px-5 py-2.5 border border-[#E5E0D8] rounded-xl text-sm font-medium text-[#6B6B66] hover:border-[#9A9A94] transition-colors"
+          >
+            Close
+          </button>
+        </div>
+      </div>
 
       {reviewTarget && (
         <ReviewFormModal
@@ -157,125 +359,6 @@ export default function JobApplicantsModal({ job, onClose }) {
           onClose={() => setReviewTarget(null)}
         />
       )}
-    </>
-  );
-}
-
-function ApplicantCard({ app, reviewSummary, isMutating, canHire, onViewProfile, onMessage, onAccept, onReject, onReview }) {
-  const inst = app.instructor || {};
-  const detail = inst.detail || {};
-  const initials = (inst.name || '?')
-    .split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase();
-  const style = STATUS_STYLES[app.status] || STATUS_STYLES.pending;
-  const disciplines = detail.disciplines || inst.disciplines || [];
-  const avatar = detail.profile_picture_url || detail.profile_picture;
-
-  return (
-    <div className="bg-white rounded-2xl border border-[#E5E0D8] p-4 hover:border-[#2DA4D6]/40 transition-colors">
-      <div className="flex items-start gap-3">
-        <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center text-white text-xs font-bold font-['Unbounded'] overflow-hidden flex-shrink-0">
-          {avatar ? <img src={avatar} alt="" className="w-full h-full object-cover" /> : initials}
-        </div>
-
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <p className="font-['Unbounded'] text-sm font-black text-[#3E3D38] truncate">
-              {inst.name || 'Unknown'}
-            </p>
-            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${style.bg} ${style.text}`}>
-              {style.label}
-            </span>
-            {reviewSummary && reviewSummary.count > 0 && (
-              <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#FBF8E4] text-[#3E3D38]">
-                <Star size={10} className="text-[#E89560]" fill="#E89560" />
-                {reviewSummary.average.toFixed(1)}
-                <span className="text-[#9A9A94]">({reviewSummary.count})</span>
-              </span>
-            )}
-          </div>
-
-          <div className="flex items-center gap-3 mt-1 flex-wrap">
-            {detail.location && (
-              <span className="flex items-center gap-1 text-[11px] text-[#6B6B66]">
-                <MapPin size={10} /> {detail.location}
-              </span>
-            )}
-            {app.created_at && (
-              <span className="flex items-center gap-1 text-[11px] text-[#9A9A94]">
-                <Clock size={10} />
-                {new Date(app.created_at).toLocaleDateString()}
-              </span>
-            )}
-            {reviewSummary && reviewSummary.count > 0 && (
-              <StarRating value={reviewSummary.average} size={10} />
-            )}
-          </div>
-
-          {app.message && (
-            <p className="mt-2 text-[#6B6B66] text-xs leading-relaxed whitespace-pre-line bg-[#FBF8E4] rounded-xl px-3 py-2">
-              {app.message}
-            </p>
-          )}
-
-          {disciplines.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-2">
-              {disciplines.slice(0, 5).map((d) => (
-                <span key={d} className="px-2 py-0.5 bg-[#2DA4D6]/10 text-[#2DA4D6] text-[10px] font-medium rounded-full">
-                  {d}
-                </span>
-              ))}
-              {disciplines.length > 5 && (
-                <span className="text-[10px] text-[#9A9A94]">
-                  +{disciplines.length - 5} more
-                </span>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[#E5E0D8] flex-wrap">
-        <Button variant="secondary" size="xs" icon={ExternalLink} onClick={onViewProfile}>
-          View Profile
-        </Button>
-        <Button variant="secondary" size="xs" icon={MessageCircle} onClick={onMessage}>
-          Message
-        </Button>
-
-        <div className="flex-1" />
-
-        {app.status === 'accepted' && (
-          <Button variant="primary" size="xs" icon={Star} onClick={onReview}>
-            Leave Review
-          </Button>
-        )}
-
-        {(app.status === 'pending' || app.status === 'viewed') && (
-          <>
-            <Button
-              variant="secondary"
-              size="xs"
-              icon={XCircle}
-              loading={isMutating}
-              onClick={onReject}
-              className="hover:!border-red-500 hover:!text-red-500"
-            >
-              Decline
-            </Button>
-            <Button
-              variant="success"
-              size="xs"
-              icon={Check}
-              loading={isMutating}
-              disabled={!canHire}
-              title={!canHire ? 'All positions have been filled' : undefined}
-              onClick={onAccept}
-            >
-              Hire
-            </Button>
-          </>
-        )}
-      </div>
     </div>
   );
 }
