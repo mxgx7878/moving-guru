@@ -22,6 +22,10 @@ export const API_ENDPOINTS = {
   UNSAVE_INSTRUCTOR: "/instructors/unsave", // POST with instructor_id
   SAVED_INSTRUCTORS: "/instructors/saved",
 
+  // Studios (instructor-side discovery)
+  STUDIOS: "/studios",
+  STUDIO_DETAIL: "/studios", // append /:id
+
   // Messages
   CONVERSATIONS: "/conversations",
   MESSAGES: "/conversations", // append /:id/messages
@@ -87,6 +91,16 @@ export const API_ENDPOINTS = {
   ADMIN_POST_DELETE: "/admin/posts", // DELETE /:id
   ADMIN_POST_PUBLISH: "/admin/posts", // PATCH /:id/publish
   ADMIN_POST_UNPUBLISH: "/admin/posts", // PATCH /:id/unpublish
+
+  // ── Admin: Job management ────────────────────────────────
+  ADMIN_JOBS: "/admin/jobs",               // GET list with filters
+  ADMIN_JOB_DETAIL: "/admin/jobs",         // GET /:id
+  ADMIN_JOB_DEACTIVATE: "/admin/jobs",     // PATCH /:id/deactivate
+  ADMIN_JOB_ACTIVATE: "/admin/jobs",       // PATCH /:id/activate
+  ADMIN_JOB_DELETE: "/admin/jobs",         // DELETE /:id
+
+  // ── Admin: Subscriptions ─────────────────────────────────
+  ADMIN_SUBSCRIPTIONS: "/admin/subscriptions",
 };
 
 // Roles

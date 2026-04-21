@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchInstructors, saveInstructor, unsaveInstructor, fetchSavedInstructors } from '../../store/actions/instructorAction';
 import { STATUS } from '../../constants/apiConstants';
 import { CardSkeleton, ButtonLoader } from '../../components/feedback';
-import { InstructorProfileModal } from '../../components/modals';
+import { InstructorProfileModal } from '../../features/modals';
 import { OPEN_TO as ALL_OPEN_TO } from '../../constants/profileConstants';
 
 export default function SearchInstructors() {
@@ -163,7 +163,7 @@ export default function SearchInstructors() {
               <div
                 key={inst.id}
                 className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden hover:border-[#2DA4D6] hover:shadow-sm transition-all group cursor-pointer"
-                onClick={() => setSelectedInstructor(inst)}
+                onClick={() => navigate(`/studio/instructors/${inst.id}`)}
               >
                 <div className="bg-gradient-to-br from-[#FDFCF8] to-[#f5fca6]/20 px-5 pt-5 pb-4">
                   <div className="flex items-start justify-between">
@@ -226,18 +226,18 @@ export default function SearchInstructors() {
 
                   <p className="text-[#9A9A94] text-xs line-clamp-2">{inst.bio}</p>
 
-                  <div className="flex gap-2">
+                  <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
                     <button
-                      onClick={e => { e.stopPropagation(); setSelectedInstructor(inst); }}
+                      onClick={() => setSelectedInstructor(inst)}
                       className="flex-1 flex items-center justify-center gap-1.5 py-2.5 border border-[#E5E0D8] text-[#6B6B66] rounded-xl text-xs font-bold hover:border-[#2DA4D6] hover:text-[#2DA4D6] transition-all"
                     >
-                      <Eye size={12} /> View Profile
+                      <Eye size={12} /> Quick View
                     </button>
                     <button
-                      onClick={e => { e.stopPropagation(); navigate('/studio/messages'); }}
+                      onClick={() => navigate(`/studio/instructors/${inst.id}`)}
                       className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-[#2DA4D6] text-white rounded-xl text-xs font-bold hover:bg-[#2590bd] transition-all"
                     >
-                      <MessageCircle size={12} /> Message
+                      Full Profile
                     </button>
                   </div>
                 </div>

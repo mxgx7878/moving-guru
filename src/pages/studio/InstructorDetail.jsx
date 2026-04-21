@@ -13,7 +13,7 @@ import {
   unsaveInstructor,
 } from '../../store/actions/instructorAction';
 import { STATUS } from '../../constants/apiConstants';
-import  ReviewList  from '../../components/ReviewList';
+import { ReviewList } from '../../features/reviews';
 import { ButtonLoader } from '../../components/feedback';
 
 /**

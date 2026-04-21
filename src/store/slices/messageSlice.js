@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { STATUS } from '../../constants/apiConstants';
-import { DUMMY_CONVERSATIONS, DUMMY_MESSAGES } from '../../data/dummyData';
 import {
   fetchConversations,
   fetchMessages,
@@ -9,9 +8,8 @@ import {
 } from '../actions/messageAction';
 
 const initialState = {
-  conversations: DUMMY_CONVERSATIONS,
-  messages: DUMMY_MESSAGES['conv_001'] || [],
-  allMessages: DUMMY_MESSAGES,
+  conversations: [],
+  messages: [],
   status: STATUS.IDLE,
   sendStatus: STATUS.IDLE,
   error: null,
@@ -30,7 +28,6 @@ const messageSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Fetch conversations
       .addCase(fetchConversations.pending, (state) => {
         state.status = STATUS.LOADING;
         state.error = null;
@@ -38,53 +35,42 @@ const messageSlice = createSlice({
       .addCase(fetchConversations.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
         const apiData = payload.data?.conversations || payload.data;
-        if (apiData && Array.isArray(apiData) && apiData.length > 0) {
-          state.conversations = apiData;
-        }
+        state.conversations = Array.isArray(apiData) ? apiData : [];
       })
-      .addCase(fetchConversations.rejected, (state) => {
-        state.status = STATUS.SUCCEEDED;
-        // Keep dummy conversations
+      .addCase(fetchConversations.rejected, (state, { payload }) => {
+        state.status = STATUS.FAILED;
+        state.error = payload;
       })
 
-      // Fetch messages
       .addCase(fetchMessages.pending, (state) => {
         state.status = STATUS.LOADING;
       })
       .addCase(fetchMessages.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
         const apiMsgs = payload.data?.messages || payload.data;
-        if (apiMsgs && Array.isArray(apiMsgs) && apiMsgs.length > 0) {
-          state.messages = apiMsgs;
-        }
+        state.messages = Array.isArray(apiMsgs) ? apiMsgs : [];
       })
-      .addCase(fetchMessages.rejected, (state) => {
-        state.status = STATUS.SUCCEEDED;
-        // Keep dummy messages
+      .addCase(fetchMessages.rejected, (state, { payload }) => {
+        state.status = STATUS.FAILED;
+        state.error = payload;
       })
 
-      // Send message
       .addCase(sendMessage.pending, (state) => {
         state.sendStatus = STATUS.LOADING;
       })
       .addCase(sendMessage.fulfilled, (state, { payload }) => {
         state.sendStatus = STATUS.SUCCEEDED;
         const newMsg = payload.data?.message || payload.data;
-        if (newMsg) {
-          state.messages.push(newMsg);
-        }
+        if (newMsg) state.messages.push(newMsg);
       })
       .addCase(sendMessage.rejected, (state, { payload }) => {
         state.sendStatus = STATUS.FAILED;
         state.error = payload;
       })
 
-      // Create conversation
       .addCase(createConversation.fulfilled, (state, { payload }) => {
         const newConvo = payload.data?.conversation || payload.data;
-        if (newConvo) {
-          state.conversations.unshift(newConvo);
-        }
+        if (newConvo) state.conversations.unshift(newConvo);
       });
   },
 });

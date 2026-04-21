@@ -53,6 +53,7 @@ export const NAV_CONFIG = {
   admin: [
     { to: '/admin/dashboard',     icon: LayoutDashboard, label: 'Dashboard'        },
     { to: '/admin/users',         icon: Users,           label: 'User Management'  },
+    { to: '/admin/jobs',          icon: Briefcase,       label: 'Job Listings'     },
     { to: '/admin/grow',          icon: Sprout,          label: 'Grow Posts'       },
     { to: '/admin/posts',         icon: FileText,        label: 'Posts / Events'   },
     { to: '/admin/subscriptions', icon: Star,            label: 'Subscriptions'    },

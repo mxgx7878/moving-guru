@@ -8,18 +8,16 @@ import {
 
 import axiosInstance from '../../config/axiosInstance';
 import { API_ENDPOINTS } from '../../constants/apiConstants';
-import { DUMMY_DASHBOARD_STATS, DUMMY_DASHBOARD_ACTIVITY } from '../../data/adminData';
 
-// ── Component ────────────────────────────────────────────────────
+// Dashboard is a read-only aggregator. Local state keeps it thin — no
+// shared store needed for data that appears on a single page.
 export default function AdminDashboard() {
   const { user } = useSelector((s) => s.auth);
   const adminName = user?.name?.split(' ')[0] || 'Admin';
 
-  // Local state — dashboard is just a read-only aggregator, no shared
-  // store needed. Falls back to dummy data silently when APIs fail.
-  const [stats,    setStats]    = useState(DUMMY_DASHBOARD_STATS);
-  const [activity, setActivity] = useState(DUMMY_DASHBOARD_ACTIVITY);
-  const [loading,  setLoading]  = useState(false);
+  const [stats,    setStats]    = useState(null);
+  const [activity, setActivity] = useState(null);
+  const [loading,  setLoading]  = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -30,15 +28,8 @@ export default function AdminDashboard() {
       axiosInstance.get(API_ENDPOINTS.ADMIN_DASHBOARD_ACTIVITY),
     ]).then(([statsRes, activityRes]) => {
       if (cancelled) return;
-
-      if (statsRes.status === 'fulfilled' && statsRes.value?.data?.data) {
-        setStats(statsRes.value.data.data);
-      }
-      if (activityRes.status === 'fulfilled' && activityRes.value?.data?.data) {
-        setActivity(activityRes.value.data.data);
-      }
-      // Rejections are intentionally silent — the user already sees the
-      // dummy fallback rendered above.
+      if (statsRes.status === 'fulfilled') setStats(statsRes.value?.data?.data || null);
+      if (activityRes.status === 'fulfilled') setActivity(activityRes.value?.data?.data || null);
       setLoading(false);
     });
 
