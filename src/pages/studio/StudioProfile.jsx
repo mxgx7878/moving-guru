@@ -5,11 +5,12 @@ import { STATUS } from '../../constants/apiConstants';
 import { DISCIPLINE_CATEGORIES } from '../../data/disciplines';
 import {
   Upload, X, Instagram, Save, Eye,
-  Briefcase, Calendar, GraduationCap, Clock, ChevronDown
+  Briefcase, Calendar, GraduationCap, Clock, ChevronDown, Search,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { ButtonLoader } from '../../components/feedback';
 import { StudioPreviewModal } from '../../features/modals';
+import { ReviewList } from '../../features/reviews';
 
 const OPEN_TO = ['Direct Hire', 'Swaps', 'Energy Exchange'];
 const STUDIO_SIZES = ['1–5 instructors', '6–15 instructors', '16–30 instructors', '30+ instructors'];
@@ -110,7 +111,7 @@ export default function StudioProfile() {
     update('photos', files.map(f => URL.createObjectURL(f)));
   };
 
-const handleSave = async () => {
+  const handleSave = async () => {
     // When the studio is actively hiring, the role description is required.
     if (form.profileStatus === 'active' && !form.hiringRoleDescription.trim()) {
       toast.error('Please describe the role you’re hiring for, or switch to Not Hiring.');
@@ -138,7 +139,7 @@ const handleSave = async () => {
 
     // ── Active hiring details ──────────────────────────────────────
     // Always send the keys so toggling Not Hiring → server can clear them.
-    // Backend should accept both snake_case and camelCase; we send snake_case.
+    // Backend accepts both snake_case and camelCase; we send snake_case.
     const isHiring = form.profileStatus === 'active';
     fd.append('hiring_role_description',    isHiring ? (form.hiringRoleDescription || '') : '');
     fd.append('hiring_position_type',       isHiring ? (form.hiringPositionType    || '') : '');
@@ -160,31 +161,15 @@ const handleSave = async () => {
     items: cat.items.filter(d => !disciplineSearch || d.toLowerCase().includes(disciplineSearch.toLowerCase())),
   })).filter(cat => cat.items.length > 0);
 
+  const initials = (form.studioName || user?.name || 'Studio')
+    .split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">Studio Profile</h1>
-          <p className="text-[#9A9A94] text-sm mt-1">How instructors see your studio on Moving Guru</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setPreview(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[#E5E0D8] text-sm font-medium text-[#6B6B66] hover:border-[#3E3D38] transition-all"
-          >
-            <Eye size={14} />
-            Preview
-          </button>
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#2DA4D6] text-white rounded-xl text-sm font-bold hover:bg-[#2590bd] transition-all disabled:opacity-50"
-          >
-            {saving ? <ButtonLoader size={16} /> : <Save size={14} />}
-            Save Changes
-          </button>
-        </div>
+    <div className="max-w-6xl mx-auto">
+      {/* ── Header ── */}
+      <div className="mb-6">
+        <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">Studio Profile</h1>
+        <p className="text-[#9A9A94] text-sm mt-1">How instructors see your studio on Moving Guru</p>
       </div>
 
       {/* ── Preview modal — shows the studio exactly as instructors will see it ── */}
@@ -197,9 +182,14 @@ const handleSave = async () => {
         />
       )}
 
+      {/* ══════════════════════════════════════
+           2-COLUMN LAYOUT
+         ══════════════════════════════════════ */}
       <div className="grid lg:grid-cols-3 gap-6">
-        {/* Left: form */}
+
+        {/* ─────── LEFT COLUMN — Form cards ─────── */}
         <div className="lg:col-span-2 space-y-6">
+
           {/* Basic info */}
           <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 space-y-5">
             <h2 className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">Studio Info</h2>
@@ -207,56 +197,59 @@ const handleSave = async () => {
             <Field label="Studio Name">
               <input value={form.studioName} onChange={e => update('studioName', e.target.value)}
                 className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                placeholder="e.g. Flow Studio Bali" />
+                placeholder="e.g. Zen Flow Studio" />
             </Field>
 
-            <Field label="Contact Name">
-              <input value={form.contactName} onChange={e => update('contactName', e.target.value)}
-                className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                placeholder="Who manages this account?" />
-            </Field>
+            <div className="grid grid-cols-2 gap-4">
+              <Field label="Contact Name">
+                <input value={form.contactName} onChange={e => update('contactName', e.target.value)}
+                  className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
+                  placeholder="e.g. Sarah Mitchell" />
+              </Field>
+              <Field label="Phone">
+                <input value={form.phone} onChange={e => update('phone', e.target.value)}
+                  className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
+                  placeholder="+1 234 567 8900" />
+              </Field>
+            </div>
 
             <div className="grid grid-cols-2 gap-4">
               <Field label="City / Location">
                 <input value={form.location} onChange={e => update('location', e.target.value)}
                   className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                  placeholder="e.g. Bali" />
+                  placeholder="e.g. Sydney" />
               </Field>
               <Field label="Country">
                 <input value={form.country} onChange={e => update('country', e.target.value)}
                   className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                  placeholder="e.g. Indonesia" />
+                  placeholder="e.g. Australia" />
               </Field>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <Field label="Phone">
-                <input value={form.phone} onChange={e => update('phone', e.target.value)} type="tel"
-                  className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                  placeholder="+62 ..." />
-              </Field>
               <Field label="Website">
-                <input value={form.website} onChange={e => update('website', e.target.value)} type="url"
+                <input value={form.website} onChange={e => update('website', e.target.value)}
                   className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                  placeholder="https://..." />
+                  placeholder="https://yourstudio.com" />
+              </Field>
+              <Field label="Instagram">
+                <div className="relative">
+                  <Instagram size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9A9A94]" />
+                  <input value={form.instagram} onChange={e => update('instagram', e.target.value)}
+                    className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl pl-9 pr-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
+                    placeholder="@yourstudio" />
+                </div>
               </Field>
             </div>
 
-            <Field label="Instagram">
-              <div className="relative">
-                <Instagram size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#9A9A94]" />
-                <input value={form.instagram} onChange={e => update('instagram', e.target.value)}
-                  className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl pl-9 pr-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                  placeholder="@yourstudio" />
-              </div>
-            </Field>
-
             <Field label="Studio Size">
-              <div className="grid grid-cols-2 gap-2">
+              <div className="flex flex-wrap gap-2">
                 {STUDIO_SIZES.map(sz => (
                   <button key={sz} type="button" onClick={() => update('studioSize', sz)}
-                    className={`px-3 py-2.5 rounded-xl text-xs font-medium border transition-all text-left
-                      ${form.studioSize === sz ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}>
+                    className={`px-4 py-2 rounded-full text-xs font-medium border transition-all
+                      ${form.studioSize === sz
+                        ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
+                        : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}>
                     {sz}
                   </button>
                 ))}
@@ -267,6 +260,7 @@ const handleSave = async () => {
           {/* About */}
           <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 space-y-5">
             <h2 className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">About the Studio</h2>
+
             <Field label="Bio">
               <textarea value={form.bio} onChange={e => update('bio', e.target.value)} rows={5}
                 className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all resize-none"
@@ -278,32 +272,19 @@ const handleSave = async () => {
                 {OPEN_TO.map(opt => (
                   <button key={opt} type="button" onClick={() => toggleItem('openTo', opt)}
                     className={`px-4 py-2 rounded-full text-xs font-medium border transition-all
-                      ${form.openTo.includes(opt) ? 'bg-[#2DA4D6] text-white border-[#2DA4D6]' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}>
+                      ${form.openTo.includes(opt)
+                        ? 'bg-[#2DA4D6] text-white border-[#2DA4D6]'
+                        : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}>
                     {opt}
                   </button>
                 ))}
               </div>
             </Field>
 
-            <Field label="Profile Status">
-              <div className="flex gap-3">
-                {['active', 'inactive'].map(s => (
-                  <button key={s} type="button" onClick={() => update('profileStatus', s)}
-                    className={`flex-1 py-2.5 rounded-xl text-xs font-semibold border capitalize transition-all
-                      ${form.profileStatus === s
-                        ? s === 'active' ? 'bg-[#6BE6A4]/20 border-[#6BE6A4] text-[#3E3D38]' : 'bg-[#FBF8E4] border-[#9A9A94] text-[#6B6B66]'
-                        : 'border-[#E5E0D8] text-[#9A9A94] hover:border-[#9A9A94]'}`}>
-                    {s === 'active' ? '✓ Actively Hiring' : 'Not Hiring'}
-                  </button>
-                ))}
-              </div>
-            </Field>
-
             {/* ── Active hiring details ──
-                Per the client's request: when the studio toggles "Actively
-                Hiring" on, surface a box where they can describe the role
-                in detail (start date, position type, qualification, etc).
-                Hidden when "Not Hiring" so the form stays tidy. */}
+                When studio toggles "Actively Hiring" on, surface a box
+                where they describe the role in detail (start date, position
+                type, qualification, etc). Hidden when "Not Hiring". */}
             {form.profileStatus === 'active' && (
               <div className="rounded-2xl border border-[#6BE6A4] bg-[#6BE6A4]/10 p-5 space-y-4">
                 <div className="flex items-center gap-2.5">
@@ -337,56 +318,57 @@ const handleSave = async () => {
                         onClick={() => update('hiringPositionType', o.id)}
                         className={`px-3.5 py-2 rounded-full text-xs font-semibold border transition-all
                           ${form.hiringPositionType === o.id
-                            ? 'bg-[#CCFF00] text-[#3E3D38] border-[#CCFF00]'
-                            : 'bg-white border-[#E5E0D8] text-[#6B6B66] hover:border-[#3E3D38]'}`}
-                      >
+                            ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
+                            : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}>
                         {o.label}
                       </button>
                     ))}
                   </div>
                 </Field>
 
-                <div className="grid sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <Field label="Start Date">
                     <div className="relative">
-                      <Calendar size={13} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none" />
+                      <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none" />
                       <input
                         type="date"
                         value={form.hiringStartDate}
                         onChange={e => update('hiringStartDate', e.target.value)}
-                        className="w-full bg-white border border-[#E5E0D8] rounded-xl pl-9 pr-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
+                        min={new Date().toISOString().split('T')[0]}
+                        className="w-full bg-white border border-[#E5E0D8] rounded-xl pl-9 pr-3 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
                       />
                     </div>
                   </Field>
-                  <Field label="Duration (optional)">
+
+                  <Field label="Duration">
                     <div className="relative">
-                      <Clock size={13} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none" />
+                      <Clock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none" />
                       <input
                         value={form.hiringDuration}
                         onChange={e => update('hiringDuration', e.target.value)}
-                        placeholder="e.g. 4 weekends, 3 months, ongoing"
-                        className="w-full bg-white border border-[#E5E0D8] rounded-xl pl-9 pr-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
+                        placeholder="e.g. 4 weekends, 3 months"
+                        className="w-full bg-white border border-[#E5E0D8] rounded-xl pl-9 pr-3 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
                       />
                     </div>
                   </Field>
                 </div>
 
-                <Field label="Compensation (optional)">
+                <Field label="Compensation / Offer">
                   <input
                     value={form.hiringCompensation}
                     onChange={e => update('hiringCompensation', e.target.value)}
-                    placeholder="e.g. $50/class, $800/week, energy exchange + accommodation"
+                    placeholder="e.g. $80/class, shared accommodation, energy exchange"
                     className="w-full bg-white border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
                   />
                 </Field>
 
                 <Field label="Minimum Qualification">
                   <div className="relative">
-                    <GraduationCap size={13} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2DA4D6] pointer-events-none" />
+                    <GraduationCap size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none" />
                     <select
                       value={form.hiringQualificationLevel}
                       onChange={e => update('hiringQualificationLevel', e.target.value)}
-                      className="w-full appearance-none bg-white border border-[#E5E0D8] rounded-xl pl-9 pr-10 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
+                      className="w-full appearance-none bg-white border border-[#E5E0D8] rounded-xl pl-9 pr-9 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
                     >
                       {QUALIFICATION_LEVELS.map(q => (
                         <option key={q.id} value={q.id}>{q.label}</option>
@@ -394,28 +376,29 @@ const handleSave = async () => {
                     </select>
                     <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none" />
                   </div>
-                  <p className="text-[10px] text-[#3E3D38]/70 mt-1.5">
-                    Pick "Not required" if any background is welcome.
-                  </p>
                 </Field>
               </div>
             )}
           </div>
 
           {/* Disciplines */}
-          <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 space-y-4">
-            <h2 className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">Disciplines Offered</h2>
+          <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 space-y-5">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <h2 className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">Disciplines Offered</h2>
+              {(form.disciplines || []).length > 0 && (
+                <span className="text-[10px] font-bold text-[#2DA4D6] bg-[#2DA4D6]/10 px-2.5 py-1 rounded-full">
+                  {form.disciplines.length} selected
+                </span>
+              )}
+            </div>
 
-            <input type="text" value={disciplineSearch} onChange={e => setDisciplineSearch(e.target.value)}
-              placeholder="Search disciplines..."
-              className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-2.5 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-[#2DA4D6] transition-all" />
-
-            {form.disciplines.length > 0 && (
-              <div className="flex flex-wrap gap-1.5">
+            {/* Selected chips */}
+            {(form.disciplines || []).length > 0 && (
+              <div className="flex flex-wrap gap-2 p-3 bg-[#2DA4D6]/10 rounded-xl border border-[#2DA4D6]/20">
                 {form.disciplines.map(d => (
-                  <span key={d} className="flex items-center gap-1 px-2.5 py-1 bg-[#2DA4D6]/10 text-[#2DA4D6] rounded-full text-xs font-medium">
+                  <span key={d} className="flex items-center gap-1 bg-[#2DA4D6] text-white text-xs font-medium px-2.5 py-1 rounded-full">
                     {d}
-                    <button onClick={() => toggleItem('disciplines', d)} className="hover:text-red-500 transition-colors">
+                    <button type="button" onClick={() => toggleItem('disciplines', d)}>
                       <X size={10} />
                     </button>
                   </span>
@@ -423,15 +406,37 @@ const handleSave = async () => {
               </div>
             )}
 
-            <div className="max-h-56 overflow-y-auto space-y-4">
+            {/* Search */}
+            <div className="flex items-center gap-2 bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-3 py-2">
+              <Search size={14} className="text-[#9A9A94]" />
+              <input
+                type="text"
+                value={disciplineSearch}
+                onChange={e => setDisciplineSearch(e.target.value)}
+                placeholder="Search disciplines..."
+                className="flex-1 bg-transparent border-none outline-none text-sm text-[#3E3D38] placeholder-[#C4BCB4]"
+              />
+              {disciplineSearch && (
+                <button onClick={() => setDisciplineSearch('')}>
+                  <X size={12} className="text-[#9A9A94]" />
+                </button>
+              )}
+            </div>
+
+            {/* Category list */}
+            <div className="space-y-5 max-h-96 overflow-y-auto pr-1">
               {filteredDisciplines.map(cat => (
-                <div key={cat.label}>
-                  <p className="text-[9px] text-[#9A9A94] tracking-widest uppercase font-semibold mb-2">{cat.label}</p>
+                <div key={cat.id}>
+                  <p className="text-[9px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">
+                    {cat.emoji} {cat.label}
+                  </p>
                   <div className="flex flex-wrap gap-1.5">
                     {cat.items.map(d => (
                       <button key={d} type="button" onClick={() => toggleItem('disciplines', d)}
                         className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
-                          ${form.disciplines.includes(d) ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}>
+                          ${form.disciplines.includes(d)
+                            ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
+                            : 'border-[#E5E0D8] text-[#3E3D38] hover:border-[#2DA4D6] hover:bg-[#FBF8E4]'}`}>
                         {d}
                       </button>
                     ))}
@@ -440,79 +445,150 @@ const handleSave = async () => {
               ))}
             </div>
           </div>
+
+          {/* ══════════════════════════════════════
+               REVIEWS FROM INSTRUCTORS
+             ══════════════════════════════════════ */}
+          <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">Reviews from Instructors</h2>
+            </div>
+            <p className="text-xs text-[#9A9A94]">
+              Feedback from instructors you've hired. Instructors can review you after an accepted job application.
+            </p>
+            <ReviewList
+              userId={user?.user_id}
+              direction="instructor_to_studio"
+              emptyLabel="No reviews yet — instructors can leave a review after you hire them on Moving Guru."
+            />
+          </div>
+
         </div>
 
-        {/* Right: photos + preview card */}
-        <div className="space-y-5">
-          {/* Main photo */}
-          <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
-            <h3 className="font-['Unbounded'] text-sm font-black text-[#3E3D38] mb-4">Studio Photo</h3>
-            <div
-              onClick={() => avatarRef.current?.click()}
-              className="w-full h-44 border-2 border-dashed border-[#E5E0D8] rounded-xl overflow-hidden cursor-pointer hover:border-[#2DA4D6] transition-all flex items-center justify-center bg-[#FDFCF8]"
-            >
-              {form.avatarPreview ? (
-                <img src={form.avatarPreview} alt="Studio" className="w-full h-full object-cover" />
-              ) : (
-                <div className="text-center p-4">
-                  <Upload size={24} className="text-[#C4BCB4] mx-auto mb-2" />
-                  <p className="text-[#9A9A94] text-xs">Click to upload</p>
-                </div>
-              )}
-            </div>
-            <input ref={avatarRef} type="file" accept="image/*" onChange={handleAvatar} className="hidden" />
-          </div>
+        {/* ─────── RIGHT COLUMN — Sticky sidebar ─────── */}
+        <aside className="lg:col-span-1">
+          <div className="lg:sticky lg:top-6 space-y-5">
 
-          {/* Gallery */}
-          <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
-            <h3 className="font-['Unbounded'] text-sm font-black text-[#3E3D38] mb-4">Gallery (up to 4)</h3>
-            <div className="grid grid-cols-2 gap-2">
-              {[0, 1, 2, 3].map(i => (
-                <div key={i} onClick={() => photosRef.current?.click()}
-                  className="aspect-square border-2 border-dashed border-[#E5E0D8] rounded-xl overflow-hidden cursor-pointer hover:border-[#2DA4D6] transition-all flex items-center justify-center bg-[#FDFCF8]">
-                  {form.photos[i] ? (
-                    <img src={form.photos[i]} alt={`Gallery ${i + 1}`} className="w-full h-full object-cover" />
-                  ) : (
-                    <Upload size={16} className="text-[#C4BCB4]" />
-                  )}
-                </div>
-              ))}
-            </div>
-            <input ref={photosRef} type="file" accept="image/*" multiple onChange={handlePhotos} className="hidden" />
-          </div>
-
-          {/* Profile card preview */}
-          <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
-            <p className="text-[9px] text-[#9A9A94] tracking-widest uppercase font-semibold mb-3">Profile preview</p>
-            <div className="bg-[#FDFCF8] rounded-xl p-4 border border-[#E5E0D8]">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#2DA4D6] to-[#2590bd] flex items-center justify-center text-white text-xs font-bold font-['Unbounded'] overflow-hidden">
-                  {form.avatarPreview
-                    ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
-                    : (form.studioName || 'S')[0].toUpperCase()}
-                </div>
-                <div>
-                  <p className="text-[#3E3D38] text-xs font-bold">{form.studioName || 'Your Studio Name'}</p>
-                  <p className="text-[#9A9A94] text-[10px]">{form.location || 'Location'}{form.country ? `, ${form.country}` : ''}</p>
-                </div>
+            {/* Avatar card */}
+            <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
+              <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-3">
+                Studio Photo
+              </p>
+              <div
+                onClick={() => avatarRef.current?.click()}
+                className="w-full aspect-square border-2 border-dashed border-[#E5E0D8] rounded-xl overflow-hidden cursor-pointer hover:border-[#2DA4D6] transition-all flex items-center justify-center bg-[#FDFCF8] relative group"
+              >
+                {form.avatarPreview ? (
+                  <>
+                    <img src={form.avatarPreview} alt="Studio" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-[#3E3D38]/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Upload size={22} className="text-white" />
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center p-4">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2DA4D6] to-[#2590bd] flex items-center justify-center text-white font-['Unbounded'] font-black text-lg mx-auto mb-3">
+                      {initials}
+                    </div>
+                    <Upload size={18} className="text-[#C4BCB4] mx-auto mb-1" />
+                    <p className="text-[10px] text-[#9A9A94]">Click to upload</p>
+                  </div>
+                )}
               </div>
-              {form.bio && <p className="text-[#6B6B66] text-[10px] leading-relaxed line-clamp-3">{form.bio}</p>}
-              {form.openTo.length > 0 && (
-                <div className="flex flex-wrap gap-1 mt-2">
-                  {form.openTo.map(o => (
-                    <span key={o} className="px-2 py-0.5 bg-[#2DA4D6]/10 text-[#2DA4D6] text-[9px] rounded-full">{o}</span>
-                  ))}
-                </div>
+              <input ref={avatarRef} type="file" accept="image/*" onChange={handleAvatar} className="hidden" />
+              <p className="text-center text-sm font-['Unbounded'] font-black text-[#3E3D38] mt-3 truncate">
+                {form.studioName || 'Your Studio'}
+              </p>
+              {(form.location || form.country) && (
+                <p className="text-center text-[10px] text-[#9A9A94] mt-0.5 truncate">
+                  {[form.location, form.country].filter(Boolean).join(', ')}
+                </p>
               )}
             </div>
-            <button
-              onClick={() => setPreview(true)}
-              className="w-full mt-3 flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-[#E5E0D8] text-xs font-bold text-[#3E3D38] hover:border-[#3E3D38] transition-all"
-            >
-              <Eye size={12} /> See full preview
-            </button>
+
+            {/* Hiring status toggle */}
+            <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
+              <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-3">
+                Hiring Status
+              </p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => update('profileStatus', 'active')}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold border transition-all
+                    ${form.profileStatus === 'active'
+                      ? 'bg-[#6BE6A4]/20 border-[#6BE6A4] text-[#3E3D38]'
+                      : 'border-[#E5E0D8] text-[#9A9A94] hover:border-[#6BE6A4]'}`}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${form.profileStatus === 'active' ? 'bg-[#6BE6A4]' : 'bg-[#9A9A94]'}`} />
+                  Hiring
+                </button>
+                <button
+                  type="button"
+                  onClick={() => update('profileStatus', 'inactive')}
+                  className={`flex-1 py-2.5 rounded-xl text-xs font-semibold border transition-all
+                    ${form.profileStatus === 'inactive'
+                      ? 'bg-[#FBF8E4] border-[#9A9A94] text-[#6B6B66]'
+                      : 'border-[#E5E0D8] text-[#9A9A94] hover:border-[#9A9A94]'}`}
+                >
+                  Not Hiring
+                </button>
+              </div>
+              <p className="text-[10px] text-[#9A9A94] mt-2 leading-relaxed">
+                {form.profileStatus === 'active'
+                  ? 'Visible to instructors looking for work'
+                  : 'Hidden from the instructor feed'}
+              </p>
+            </div>
+
+            {/* Gallery mini-grid */}
+            <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
+              <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-3">
+                Gallery ({(form.photos || []).length}/4)
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                {[0, 1, 2, 3].map(i => (
+                  <div
+                    key={i}
+                    onClick={() => photosRef.current?.click()}
+                    className="aspect-square border-2 border-dashed border-[#E5E0D8] rounded-xl overflow-hidden cursor-pointer hover:border-[#2DA4D6] transition-all flex items-center justify-center bg-[#FDFCF8] relative group"
+                  >
+                    {form.photos[i] ? (
+                      <>
+                        <img src={form.photos[i]} alt={`Gallery ${i + 1}`} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-[#3E3D38]/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Upload size={14} className="text-white" />
+                        </div>
+                      </>
+                    ) : (
+                      <Upload size={16} className="text-[#C4BCB4]" />
+                    )}
+                  </div>
+                ))}
+              </div>
+              <input ref={photosRef} type="file" accept="image/*" multiple onChange={handlePhotos} className="hidden" />
+              <p className="text-[10px] text-[#9A9A94] text-center mt-2">Click any slot to upload 4 photos</p>
+            </div>
+
+            {/* Action buttons — sticky Save */}
+            <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5 space-y-2">
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-[#2DA4D6] text-white rounded-xl text-sm font-bold hover:bg-[#2590bd] transition-all disabled:opacity-50"
+              >
+                {saving ? <ButtonLoader size={16} /> : <><Save size={14} /> Save Changes</>}
+              </button>
+              <button
+                onClick={() => setPreview(true)}
+                className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm border border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6] hover:text-[#2DA4D6] transition-all"
+              >
+                <Eye size={14} /> Preview
+              </button>
+            </div>
+
           </div>
-        </div>
+        </aside>
       </div>
     </div>
   );
