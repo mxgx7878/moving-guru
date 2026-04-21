@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { STATUS } from '../../constants/apiConstants';
-import { DUMMY_PLATFORM_POSTS } from '../../data/adminData';
 import {
   fetchPosts,
   createPost,
@@ -11,7 +10,7 @@ import {
 } from '../actions/postAction';
 
 const initialState = {
-  posts: DUMMY_PLATFORM_POSTS,   // dummy fallback until APIs are ready
+  posts: [],
   pagination: null,
   status: STATUS.IDLE,
   mutating: STATUS.IDLE,
@@ -73,15 +72,12 @@ const postSlice = createSlice({
       .addCase(fetchPosts.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
         const apiData = payload?.data;
-        if (Array.isArray(apiData) && apiData.length > 0) {
-          state.posts = apiData;
-          state.pagination = payload.meta || null;
-        }
-        // else: keep dummy fallback
+        state.posts = Array.isArray(apiData) ? apiData : [];
+        state.pagination = payload?.meta || null;
       })
-      .addCase(fetchPosts.rejected, (state) => {
-        // Silent: keep dummy data, no toast
-        state.status = STATUS.SUCCEEDED;
+      .addCase(fetchPosts.rejected, (state, { payload }) => {
+        state.status = STATUS.FAILED;
+        state.error = payload;
       })
 
       .addCase(createPost.pending,   (state) => { state.mutating = STATUS.LOADING; })

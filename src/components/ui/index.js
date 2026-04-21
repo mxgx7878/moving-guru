@@ -1,5 +1,9 @@
+export { default as Button } from './Button';
+export { default as Modal } from './Modal';
 export { default as Input } from './Input';
 export { default as Field } from './Field';
 export { default as Section } from './Section';
 export { default as StatCard } from './StatCard';
 export { default as BarChart } from './BarChart';
+export { default as Toggle } from './Toggle';
+export { default as StarRating } from './StarRating';

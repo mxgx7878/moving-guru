@@ -1,9 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { changePassword, forgotPassword } from '../../store/actions/authAction';
-import { DUMMY_USER } from '../../data/dummyData';
-import BarChart from '../../components/ui/BarChart';
-import StatCard from '../../components/ui/StatCard';
+import { fetchMyApplications } from '../../store/actions/jobAction';
+import { BarChart, StatCard } from '../../components/ui';
 import {
   Eye, MessageCircle, Heart, TrendingUp, Globe,
   MapPin, Calendar, Star, ArrowUpRight, Zap, Megaphone,
@@ -13,14 +12,18 @@ import {
 export default function Dashboard() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  const profileData = user || DUMMY_USER;
+  const { myApplications } = useSelector((s) => s.job);
+  const profileData = user || {};
 
-  // API returns profile_views as a number; DUMMY_USER may have profileViews array
+  useEffect(() => { dispatch(fetchMyApplications()); }, [dispatch]);
+
   const viewsArray = profileData.profileViews || [];
   const totalViews = profileData.profile_views || viewsArray.reduce((s, d) => s + d.views, 0) || 0;
   const thisMonth = viewsArray[viewsArray.length - 1]?.views || 0;
   const lastMonth = viewsArray[viewsArray.length - 2]?.views || 0;
   const growth = lastMonth > 0 ? Math.round(((thisMonth - lastMonth) / lastMonth) * 100) : 0;
+  const pendingApps = myApplications.filter((a) => a.status === 'pending' || a.status === 'viewed').length;
+  const favouritedCount = profileData.saved_by_count ?? profileData.stats?.saved_by_count ?? 0;
 
   // Account settings state
   const [currentPassword, setCurrentPassword] = useState('');
@@ -114,12 +117,12 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Stats grid */}
+      {/* Stats grid — all values come from the store */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard icon={Eye} label="Profile Views" value={thisMonth} sub="This month" color="coral" trend={growth > 0 ? growth : null} />
         <StatCard icon={TrendingUp} label="Total Views" value={totalViews} sub="All time" color="default" />
-        <StatCard icon={MessageCircle} label="Messages" value="3" sub="Unread" color="orange" />
-        <StatCard icon={Heart} label="Favourited" value="12" sub="Times saved" color="default" />
+        <StatCard icon={MessageCircle} label="Active Apps" value={pendingApps} sub={`${myApplications.length} total`} color="orange" />
+        <StatCard icon={Heart} label="Favourited" value={favouritedCount} sub="Times saved by studios" color="default" />
       </div>
 
       {/* Chart + Quick info */}
