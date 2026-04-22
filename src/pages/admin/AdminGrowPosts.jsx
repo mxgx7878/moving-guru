@@ -21,8 +21,8 @@ import {
 } from '../../components/ui';
 import {
   GrowPostRow, GrowPostPreviewModal, RejectReasonModal,
-  GROW_STATUS_TABS, GROW_TYPE_OPTIONS,
 } from '../../features/growPosts';
+import { GROW_STATUS_TABS, GROW_TYPE_OPTIONS } from '../../constants/growConstants';
 import { ConfirmModal } from '../../features/modals';
 
 export default function AdminGrowPosts() {

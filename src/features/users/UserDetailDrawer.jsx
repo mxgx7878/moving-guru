@@ -6,7 +6,8 @@ import {
 import {
   Drawer, Avatar, Chip, StatusPill, StatTile, LabeledBlock, InfoRow, Button,
 } from '../../components/ui';
-import { USER_STATUS_CONFIG, resolveUserStatus } from './userStatus';
+import { USER_STATUS_CONFIG } from '../../constants/userConstants';
+import { resolveUserStatus } from './userStatus';
 
 const HEADER_BG = {
   studio:     'bg-[#2DA4D6]/10',

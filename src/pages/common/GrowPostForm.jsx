@@ -2,9 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'sonner';
-import {
-  ArrowLeft, Loader2, BookOpen, Palmtree, Calendar,
-} from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 
 import {
   fetchGrowPostDetail,
@@ -19,19 +17,13 @@ import {
 } from '../../store/slices/growSlice';
 import { ROLE_THEME } from '../../config/portalConfig';
 import { STATUS } from '../../constants/apiConstants';
-import { EMPTY_GROW_FORM as EMPTY_FORM } from '../../constants/growConstants';
+import {
+  GROW_TYPES,
+  EMPTY_GROW_FORM as EMPTY_FORM,
+} from '../../constants/growConstants';
 import { Field } from '../../components/ui';
 import { postToGrowForm as postToForm } from '../../utils/postToForm';
 import { validateGrowForm } from '../../utils/validators';
-
-// Local labels — the Grow form uses longer labels than the public list
-// (e.g. "Teacher Training" vs "Training"), so we override the shared icons
-// from growConstants to use a different colour palette.
-const GROW_TYPES = [
-  { id: 'training', label: 'Teacher Training', color: '#2DA4D6', icon: BookOpen },
-  { id: 'retreat',  label: 'Retreats',         color: '#6BE6A4', icon: Palmtree },
-  { id: 'event',    label: 'Events',           color: '#E89560', icon: Calendar },
-];
 
 const DISCIPLINE_LIST = [
   'Reformer Pilates', 'Mat Pilates', 'Vinyasa Yoga', 'Hatha Yoga', 'Yin Yoga',

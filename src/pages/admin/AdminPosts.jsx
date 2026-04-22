@@ -23,9 +23,10 @@ import {
 } from '../../components/ui';
 import { AdminPostForm } from '../../features/forms';
 import { PostPreviewModal, ConfirmModal } from '../../features/modals';
+import { PostCard } from '../../features/platformPosts';
 import {
-  PostCard, POST_TYPES, POST_TYPE_TABS, POST_AUDIENCE_OPTIONS,
-} from '../../features/platformPosts';
+  POST_TYPES, POST_TYPE_TABS, POST_AUDIENCE_OPTIONS,
+} from '../../constants/postConstants';
 
 export default function AdminPosts() {
   const dispatch = useDispatch();

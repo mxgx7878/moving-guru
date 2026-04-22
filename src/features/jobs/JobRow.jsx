@@ -2,8 +2,8 @@ import {
   Building2, MapPin, Users, Eye, Ban, CheckCircle2, Trash2,
 } from 'lucide-react';
 import { StatusPill, IconButton } from '../../components/ui';
-import { TYPE_STYLES, ROLE_TYPE_LABELS } from '../../constants/jobConstants';
-import { JOB_STATUS_CONFIG, resolveJobStatus } from './jobStatus';
+import { TYPE_STYLES, ROLE_TYPE_LABELS, JOB_STATUS_CONFIG } from '../../constants/jobConstants';
+import { resolveJobStatus } from './jobStatus';
 
 // One row in the admin job listings table. All mutation callbacks are
 // optional — the parent decides which actions are live for the row.

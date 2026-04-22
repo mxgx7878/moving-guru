@@ -1,5 +1,5 @@
 import { Chip } from '../../components/ui';
-import { POST_AUDIENCE_OPTIONS } from './postConfig';
+import { POST_AUDIENCE_OPTIONS } from '../../constants/postConstants';
 
 // Small neutral chip showing who the post is broadcast to.
 export default function AudiencePill({ audience }) {

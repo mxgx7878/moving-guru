@@ -1,5 +1,5 @@
 import { StatusPill } from '../../components/ui';
-import { PUBLISH_STATUS_CONFIG } from './postConfig';
+import { PUBLISH_STATUS_CONFIG } from '../../constants/postConstants';
 
 // Dedicated wrapper around StatusPill so callers just pass a post and the
 // Published/Draft vocabulary stays owned by this module.

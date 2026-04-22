@@ -1,6 +1,6 @@
 import { MapPin, Calendar, Users, ExternalLink } from 'lucide-react';
 import { Modal, Chip, StatusPill, LabeledBlock } from '../../components/ui';
-import { GROW_TYPE_META, GROW_STATUS_CONFIG } from './growConfig';
+import { GROW_TYPE_META, GROW_STATUS_CONFIG } from '../../constants/growConstants';
 
 // Read-only preview modal for a grow post — used by admins to vet a
 // submission before approving/rejecting. Uses the shared Modal shell

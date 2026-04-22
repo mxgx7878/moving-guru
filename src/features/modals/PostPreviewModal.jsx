@@ -1,17 +1,6 @@
-import { Calendar, Megaphone, Bell, MapPin, Globe, Users, Building2, Lock } from 'lucide-react';
+import { MapPin, Lock } from 'lucide-react';
 import { Modal } from '../../components/ui';
-
-const POST_TYPES = [
-  { id: 'announcement', label: 'Announcement', icon: Megaphone, color: '#7F77DD' },
-  { id: 'event',        label: 'Event',        icon: Calendar,  color: '#E89560' },
-  { id: 'news',         label: 'News',         icon: Bell,      color: '#2DA4D6' },
-];
-
-const AUDIENCE_OPTIONS = [
-  { id: 'all',         label: 'Everyone',    icon: Globe },
-  { id: 'instructors', label: 'Instructors', icon: Users },
-  { id: 'studios',     label: 'Studios',     icon: Building2 },
-];
+import { POST_TYPES, POST_AUDIENCE_OPTIONS as AUDIENCE_OPTIONS } from '../../constants/postConstants';
 
 // Read-only preview of a broadcast post — shown from the admin moderation
 // page so admins can see what recipients will actually see.

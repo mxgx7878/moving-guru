@@ -3,7 +3,7 @@ import {
 } from 'lucide-react';
 import { StatusPill, IconButton, Chip } from '../../components/ui';
 import { STATUS } from '../../constants/apiConstants';
-import { GROW_TYPE_META, GROW_STATUS_CONFIG } from './growConfig';
+import { GROW_TYPE_META, GROW_STATUS_CONFIG } from '../../constants/growConstants';
 
 // Reusing the shared IconButton — the "yellow-active" tone used by the
 // feature button doesn't exist in the shared component, so we hand it a

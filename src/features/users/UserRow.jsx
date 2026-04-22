@@ -3,7 +3,8 @@ import {
   ShieldCheck, Ban, Trash2,
 } from 'lucide-react';
 import { Avatar, StatusPill, IconButton } from '../../components/ui';
-import { USER_STATUS_CONFIG, resolveUserStatus } from './userStatus';
+import { USER_STATUS_CONFIG } from '../../constants/userConstants';
+import { resolveUserStatus } from './userStatus';
 import RolePill from './RolePill';
 
 const AVATAR_TONE = {

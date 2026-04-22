@@ -6,9 +6,11 @@ import {
 import {
   Drawer, Chip, StatusPill, StatTile, LabeledBlock, InfoRow, Avatar, Button, EmptyState,
 } from '../../components/ui';
-import { TYPE_STYLES, ROLE_TYPE_LABELS, QUALIFICATION_LABELS } from '../../constants/jobConstants';
+import {
+  TYPE_STYLES, ROLE_TYPE_LABELS, QUALIFICATION_LABELS, JOB_STATUS_CONFIG,
+} from '../../constants/jobConstants';
 import { STATUS } from '../../constants/apiConstants';
-import { JOB_STATUS_CONFIG, resolveJobStatus } from './jobStatus';
+import { resolveJobStatus } from './jobStatus';
 import ApplicantRow from './ApplicantRow';
 
 // Full-screen drawer for the admin job view. Lists applicants, shows

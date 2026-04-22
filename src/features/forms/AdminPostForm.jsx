@@ -1,21 +1,8 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import {
-  Calendar, Megaphone, Bell, Globe, Users, Building2, Check,
-} from 'lucide-react';
+import { Check } from 'lucide-react';
 import { Modal, Button, Input } from '../../components/ui';
-
-const POST_TYPES = [
-  { id: 'announcement', label: 'Announcement', icon: Megaphone, color: '#7F77DD' },
-  { id: 'event',        label: 'Event',        icon: Calendar,  color: '#E89560' },
-  { id: 'news',         label: 'News',         icon: Bell,      color: '#2DA4D6' },
-];
-
-const AUDIENCE_OPTIONS = [
-  { id: 'all',         label: 'Everyone',    icon: Globe },
-  { id: 'instructors', label: 'Instructors', icon: Users },
-  { id: 'studios',     label: 'Studios',     icon: Building2 },
-];
+import { POST_TYPES, POST_AUDIENCE_OPTIONS as AUDIENCE_OPTIONS } from '../../constants/postConstants';
 
 const EMPTY_FORM = {
   type: 'announcement',

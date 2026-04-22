@@ -2,7 +2,7 @@ import {
   Calendar, MapPin, Clock, Eye, Edit3, EyeOff, Send, Trash2,
 } from 'lucide-react';
 import { IconButton } from '../../components/ui';
-import { POST_TYPES } from './postConfig';
+import { POST_TYPES } from '../../constants/postConstants';
 import PublishPill from './PublishPill';
 import AudiencePill from './AudiencePill';
 

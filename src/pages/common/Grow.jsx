@@ -3,9 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'sonner';
 import {
-  BookOpen, Palmtree, Calendar, MapPin, Users, ExternalLink,
-  Search, X, Filter, Edit3, Trash2, Plus, Loader2, CheckCircle2,
-  Clock, AlertCircle,
+  Calendar, MapPin, Users, ExternalLink,
+  Search, X, Filter, Edit3, Trash2, Plus, Loader2,
 } from 'lucide-react';
 import {
   fetchGrowPosts,
@@ -15,32 +14,17 @@ import {
 import { clearGrowMessage, clearGrowError } from '../../store/slices/growSlice';
 import { ROLE_THEME } from '../../config/portalConfig';
 import { STATUS } from '../../constants/apiConstants';
+import {
+  GROW_FILTER_TABS as GROW_TYPES,
+  GROW_TYPE_META,
+  GROW_TYPE_BG as TYPE_BG,
+  GROW_STATUS_PUBLIC_CONFIG as STATUS_BADGE,
+} from '../../constants/growConstants';
 
-// ── Constants ────────────────────────────────────────────────────
-const GROW_TYPES = [
-  { id: 'all',      label: 'All Posts',        color: '#3E3D38' },
-  { id: 'training', label: 'Teacher Training', color: '#2DA4D6' },
-  { id: 'retreat',  label: 'Retreats',         color: '#6BE6A4' },
-  { id: 'event',    label: 'Events',           color: '#E89560' },
-];
-
-const TYPE_ICONS = {
-  training: BookOpen,
-  retreat:  Palmtree,
-  event:    Calendar,
-};
-
-const TYPE_BG = {
-  training: 'bg-[#2DA4D6]/10 text-[#2DA4D6]',
-  retreat:  'bg-[#6BE6A4]/30 text-[#3E3D38]',
-  event:    'bg-[#E89560]/15 text-[#E89560]',
-};
-
-const STATUS_BADGE = {
-  pending:  { label: 'Pending Approval', icon: Clock,        cls: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
-  approved: { label: 'Live',             icon: CheckCircle2, cls: 'bg-green-50 text-green-700 border-green-200'  },
-  rejected: { label: 'Rejected',         icon: AlertCircle,  cls: 'bg-red-50 text-red-700 border-red-200'        },
-};
+// Icon lookup keyed by post type, derived from the centralised meta.
+const TYPE_ICONS = Object.fromEntries(
+  Object.entries(GROW_TYPE_META).map(([id, meta]) => [id, meta.icon]),
+);
 
 // ── Component ────────────────────────────────────────────────────
 export default function Grow() {
