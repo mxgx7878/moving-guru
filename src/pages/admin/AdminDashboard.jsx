@@ -18,6 +18,7 @@ import {
 import axiosInstance from "../../config/axiosInstance";
 import { API_ENDPOINTS } from "../../constants/apiConstants";
 import { DashboardSkeleton } from "../../components/feedback";
+import { formatRelative } from "../../utils/formatters";
 
 // Dashboard is a read-only aggregator. Local state keeps it thin — no
 // shared store needed for data that appears on a single page.
@@ -370,17 +371,4 @@ function ActivityCard({
       </div>
     </div>
   );
-}
-
-// Lightweight relative time helper — avoids pulling in dayjs/moment.
-function formatRelative(iso) {
-  if (!iso) return "";
-  const then = new Date(iso).getTime();
-  if (Number.isNaN(then)) return "";
-  const diff = Math.floor((Date.now() - then) / 1000);
-  if (diff < 60) return "just now";
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  if (diff < 7 * 86400) return `${Math.floor(diff / 86400)}d ago`;
-  return new Date(iso).toLocaleDateString();
 }
