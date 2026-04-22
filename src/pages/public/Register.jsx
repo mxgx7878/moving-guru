@@ -9,9 +9,10 @@ import { COUNTRIES, COUNTRIES_AND_REGIONS } from '../../data/countries';
 import { ROLE_THEME } from '../../config/portalConfig';
 import {
   Globe, ArrowRight, ArrowLeft, Check, Upload, X,
-  User, MapPin, Dumbbell, FileText, CreditCard, Building2, ChevronDown, Calendar
+  User, MapPin, Dumbbell, FileText, CreditCard, Building2, Calendar
 } from 'lucide-react';
-import Input from '../../components/ui/Input';
+import { Input, SelectField } from '../../components/ui';
+import { formatDateRange } from '../../features/profile';
 
 // ─── Steps ──────────────────────────────────────────────────────
 const STEPS_INSTRUCTOR = [
@@ -42,40 +43,6 @@ const PLANS = [
   { id:'biannual', label:'6 Months',  price:45, per:'/6mo', desc:'Save 50% vs monthly',      highlight:true  },
   { id:'annual',   label:'12 Months', price:60, per:'/yr',  desc:'Best value — ~$5/mo',      highlight:false },
 ];
-
-// ─── Helpers ─────────────────────────────────────────────────────
-function SelectInput({ label, value, onChange, options, placeholder, error }) {
-  return (
-    <div>
-      {label && <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">{label}</label>}
-      <div className="relative">
-        <select value={value || ''}
-          onChange={e => onChange(e.target.value)}
-          className={`w-full appearance-none border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2DA4D6] bg-white pr-10
-            ${error ? 'border-red-400' : 'border-[#E5E0D8]'}
-            ${!value ? 'text-[#C4BCB4]' : 'text-[#3E3D38]'}`}>
-          <option value="">{placeholder}</option>
-          {options.map(o => <option key={o} value={o}>{o}</option>)}
-        </select>
-        <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none" />
-      </div>
-      {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
-    </div>
-  );
-}
-
-function formatDateRange(from, to) {
-  if (!from && !to) return '';
-  const fmt = (d) => {
-    if (!d) return '';
-    const [y, m] = d.split('-');
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    return `${months[parseInt(m) - 1]} ${y}`;
-  };
-  if (from && to) return `${fmt(from)} – ${fmt(to)}`;
-  if (from) return `From ${fmt(from)}`;
-  return `Until ${fmt(to)}`;
-}
 
 // ─── Main ────────────────────────────────────────────────────────
 export default function Register() {
@@ -363,7 +330,7 @@ export default function Register() {
                       placeholder="e.g. 30" className={`${inp} ${errors.age ? 'border-red-400' : ''}`} />
                     {errors.age && <p className="text-red-400 text-xs mt-1">{errors.age}</p>}
                   </div>
-                  <SelectInput label="Pronouns" value={form.pronouns} onChange={v => update('pronouns', v)} options={PRONOUNS} placeholder="Select pronouns..." />
+                  <SelectField accent="#2DA4D6" label="Pronouns" value={form.pronouns} onChange={v => update('pronouns', v)} options={PRONOUNS} placeholder="Select pronouns..." />
                 </div>
                 <Input label="Current Studio / Employer" name="studio" form={form} update={update} errors={errors} placeholder="e.g. STRIVE, Marrickville" />
                 <div>
@@ -408,7 +375,7 @@ export default function Register() {
                       placeholder="e.g. Bali" className={`${inp} ${errors.location ? 'border-red-400' : ''}`} />
                     {errors.location && <p className="text-red-400 text-xs mt-1">{errors.location}</p>}
                   </div>
-                  <SelectInput label="Country *" value={form.country} onChange={v => update('country', v)} options={COUNTRIES} placeholder="Select country..." error={errors.country} />
+                  <SelectField accent="#2DA4D6" label="Country *" value={form.country} onChange={v => update('country', v)} options={COUNTRIES} placeholder="Select country..." error={errors.country} />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <Input label="Phone (optional)" name="phone" form={form} update={update} errors={errors} placeholder="+62 ..." />
@@ -440,11 +407,11 @@ export default function Register() {
                 <Input label="Current Location" name="location" form={form} update={update} errors={errors} placeholder="City, Country (e.g. Sydney, Australia)" />
 
                 <div className="grid grid-cols-2 gap-4">
-                  <SelectInput label="Country From *" value={form.countryFrom} onChange={v => update('countryFrom', v)}
+                  <SelectField accent="#2DA4D6" label="Country From *" value={form.countryFrom} onChange={v => update('countryFrom', v)}
                     options={COUNTRIES} placeholder="Select your country..." error={errors.countryFrom} />
                   <div>
                     <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Traveling To</label>
-                    <SelectInput value={form.travelingTo} onChange={v => update('travelingTo', v)}
+                    <SelectField accent="#2DA4D6" value={form.travelingTo} onChange={v => update('travelingTo', v)}
                       options={COUNTRIES_AND_REGIONS} placeholder="Select destination..." />
                     <input value={form.travelingTo} onChange={e => update('travelingTo', e.target.value)}
                       placeholder="Or type: Italy, Bali, Thailand..."

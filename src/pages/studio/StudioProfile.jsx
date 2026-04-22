@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { ButtonLoader } from '../../components/feedback';
+import { Field } from '../../components/ui';
 import { StudioPreviewModal } from '../../features/modals';
 import { ReviewList } from '../../features/reviews';
 
@@ -46,15 +47,6 @@ export const QUALIFICATION_LEVELS = [
 const QUALIFICATION_LABELS = QUALIFICATION_LEVELS.reduce(
   (acc, q) => ({ ...acc, [q.id]: q.label }), {}
 );
-
-function Field({ label, children }) {
-  return (
-    <div>
-      <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-1.5">{label}</label>
-      {children}
-    </div>
-  );
-}
 
 export default function StudioProfile() {
   const dispatch = useDispatch();
