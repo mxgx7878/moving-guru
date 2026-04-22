@@ -6,10 +6,10 @@ import { Bookmark, Briefcase } from 'lucide-react';
 import { fetchJobs, applyToJob } from '../../store/actions/jobAction';
 import { STATUS } from '../../constants/apiConstants';
 import { CardSkeleton } from '../../components/feedback';
+import { EmptyState } from '../../components/ui';
 import { ApplyJobModal } from '../../features/modals';
+import { InstructorJobCard } from '../../features/jobs';
 import { loadSavedJobs, saveSavedJobs, toggleSavedJob } from '../../utils/savedJobsStorage';
-
-import { JobCard } from './FindWork';
 
 export default function SavedJobs() {
   const dispatch = useDispatch();
@@ -59,19 +59,19 @@ export default function SavedJobs() {
       {loading && <CardSkeleton count={3} />}
 
       {!loading && saved.length === 0 && (
-        <div className="bg-white rounded-2xl border border-[#E5E0D8] p-12 text-center">
-          <Bookmark size={32} className="text-[#C4BCB4] mx-auto mb-3" />
-          <p className="text-[#3E3D38] font-semibold">No saved jobs yet</p>
-          <p className="text-[#9A9A94] text-sm mt-1">
-            Tap the bookmark icon on any listing in Find Work to save it here.
-          </p>
+        <div className="bg-white rounded-2xl border border-[#E5E0D8]">
+          <EmptyState
+            icon={Bookmark}
+            title="No saved jobs yet"
+            message="Tap the bookmark icon on any listing in Find Work to save it here."
+          />
         </div>
       )}
 
       {!loading && saved.length > 0 && (
         <div className="space-y-4">
           {saved.map((job) => (
-            <JobCard
+            <InstructorJobCard
               key={job.id}
               job={job}
               user={user}
@@ -81,12 +81,6 @@ export default function SavedJobs() {
               onApply={() => setApplyTarget(job)}
             />
           ))}
-        </div>
-      )}
-
-      {!loading && saved.length === 0 && jobs.length === 0 && (
-        <div className="text-center">
-          <Briefcase size={18} className="text-[#C4BCB4] inline-block" />
         </div>
       )}
 

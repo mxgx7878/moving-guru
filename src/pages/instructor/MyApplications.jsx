@@ -13,7 +13,8 @@ import {
 import { fetchMyReviews } from '../../store/actions/reviewAction';
 import { STATUS } from '../../constants/apiConstants';
 import { CardSkeleton, ButtonLoader } from '../../components/feedback';
-import { StarRating } from '../../components/ui';
+import { Avatar, Button, EmptyState } from '../../components/ui';
+import { ConfirmModal } from '../../features/modals';
 import ReviewForm from '../../features/modals/ReviewFormModal';
 
 /**
@@ -46,6 +47,7 @@ export default function MyApplications() {
 
   const [reviewTarget, setReviewTarget] = useState(null);
   const [filter, setFilter] = useState('all');
+  const [withdrawTarget, setWithdrawTarget] = useState(null);
 
   useEffect(() => {
     dispatch(fetchMyApplications());
@@ -83,9 +85,11 @@ export default function MyApplications() {
     return myApplications.filter((a) => a.status === filter);
   }, [myApplications, filter]);
 
-  const handleWithdraw = (id) => {
-    if (!window.confirm('Withdraw this application? You can re-apply later if the listing is still open.')) return;
-    dispatch(withdrawApplication(id));
+  const confirmWithdraw = async () => {
+    if (!withdrawTarget) return;
+    const id = withdrawTarget;
+    setWithdrawTarget(null);
+    await dispatch(withdrawApplication(id));
   };
 
   const loading = myApplicationsStatus === STATUS.LOADING && myApplications.length === 0;
@@ -112,22 +116,19 @@ export default function MyApplications() {
       {loading && <CardSkeleton count={3} />}
 
       {!loading && filtered.length === 0 && (
-        <div className="bg-white rounded-2xl border border-[#E5E0D8] p-12 text-center">
-          <Briefcase size={32} className="text-[#C4BCB4] mx-auto mb-3" />
-          <p className="text-[#3E3D38] font-semibold">
-            {myApplications.length === 0 ? "You haven't applied to anything yet" : 'No applications match this filter'}
-          </p>
-          <p className="text-[#9A9A94] text-sm mt-1">
-            {myApplications.length === 0
+        <div className="bg-white rounded-2xl border border-[#E5E0D8]">
+          <EmptyState
+            icon={Briefcase}
+            title={myApplications.length === 0 ? "You haven't applied to anything yet" : 'No applications match this filter'}
+            message={myApplications.length === 0
               ? 'Head to Find Work to see what studios are hiring for'
               : 'Try switching to a different tab'}
-          </p>
-          {myApplications.length === 0 && (
-            <button onClick={() => navigate('/portal/find-work')}
-              className="mt-4 px-5 py-2.5 bg-[#CE4F56] text-white rounded-xl text-sm font-bold hover:bg-[#b8454c] transition-all">
-              Find Work
-            </button>
-          )}
+            action={myApplications.length === 0 && (
+              <Button variant="danger" size="md" onClick={() => navigate('/portal/find-work')}>
+                Find Work
+              </Button>
+            )}
+          />
         </div>
       )}
 
@@ -157,7 +158,7 @@ export default function MyApplications() {
                   jobId: job.id,
                   jobTitle: job.title,
                 })}
-                onWithdraw={() => handleWithdraw(app.id)}
+                onWithdraw={() => setWithdrawTarget(app.id)}
                 onMessage={() => navigate('/portal/messages')}
               />
             );
@@ -171,6 +172,17 @@ export default function MyApplications() {
           jobListingId={reviewTarget.jobId}
           jobTitle={reviewTarget.jobTitle}
           onClose={() => setReviewTarget(null)}
+        />
+      )}
+
+      {withdrawTarget && (
+        <ConfirmModal
+          title="Withdraw application?"
+          message="You can re-apply later if the listing is still open."
+          confirmLabel="Withdraw"
+          loading={mutatingApplicationId === withdrawTarget}
+          onCancel={() => setWithdrawTarget(null)}
+          onConfirm={confirmWithdraw}
         />
       )}
     </div>
@@ -197,9 +209,6 @@ function ApplicationCard({
   app, job, studio, studioName, reviewed, isWithdrawing,
   onReview, onWithdraw, onMessage,
 }) {
-  const initials = studioName
-    .split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase();
-
   const statusMeta = (() => {
     switch (app.status) {
       case 'accepted':
@@ -230,16 +239,13 @@ function ApplicationCard({
   return (
     <div className="bg-white rounded-2xl border border-[#E5E0D8] p-4 hover:border-[#CE4F56]/30 transition-colors">
       <div className="flex items-start gap-3">
-        {/* Studio avatar */}
-        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#2DA4D6] to-[#2590bd] flex items-center justify-center text-white text-xs font-bold font-['Unbounded'] overflow-hidden flex-shrink-0">
-          {studio.detail?.profile_picture || studio.profile_picture ? (
-            <img
-              src={studio.detail?.profile_picture || studio.profile_picture}
-              alt=""
-              className="w-full h-full object-cover"
-            />
-          ) : initials}
-        </div>
+        <Avatar
+          name={studioName}
+          src={studio.detail?.profile_picture || studio.profile_picture}
+          size="md"
+          shape="square"
+          tone="blue"
+        />
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
