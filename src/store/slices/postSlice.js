@@ -7,15 +7,25 @@ import {
   deletePost,
   publishPost,
   unpublishPost,
+  fetchAnnouncements,
+  fetchAnnouncementDetail,
 } from '../actions/postAction';
 
 const initialState = {
+  // Admin moderation
   posts: [],
   pagination: null,
   status: STATUS.IDLE,
   mutating: STATUS.IDLE,
   message: null,
   error: null,
+  fieldErrors: null,
+
+  // User-facing announcements
+  announcements: [],
+  selectedAnnouncement: null,
+  announcementsStatus: STATUS.IDLE,
+  announcementsPagination: null,
 };
 
 const replacePost = (state, updated) => {
@@ -24,45 +34,13 @@ const replacePost = (state, updated) => {
   if (idx !== -1) state.posts[idx] = updated;
 };
 
-const newId = () => `post_${Date.now().toString(36)}`;
-
 const postSlice = createSlice({
   name: 'post',
   initialState,
   reducers: {
-    clearPostError(state)   { state.error   = null; },
+    clearPostError(state)   { state.error = null; },
     clearPostMessage(state) { state.message = null; },
-    // Local-only mutations on dummy data (used while admin APIs are not ready)
-    locallyCreatePost(state, { payload }) {
-      state.posts.unshift({
-        id: newId(),
-        status: 'draft',
-        published_at: null,
-        created_at: new Date().toISOString(),
-        ...payload,
-      });
-      state.message = 'Post created.';
-    },
-    locallyUpdatePost(state, { payload }) {
-      replacePost(state, { ...payload, updated_at: new Date().toISOString() });
-      state.message = 'Post updated.';
-    },
-    locallyDeletePost(state, { payload: id }) {
-      state.posts = state.posts.filter((p) => p.id !== id);
-      state.message = 'Post deleted.';
-    },
-    locallyTogglePublish(state, { payload: id }) {
-      const idx = state.posts.findIndex((p) => p.id === id);
-      if (idx === -1) return;
-      const p = state.posts[idx];
-      const isPublished = p.status === 'published';
-      state.posts[idx] = {
-        ...p,
-        status: isPublished ? 'draft' : 'published',
-        published_at: isPublished ? null : new Date().toISOString(),
-      };
-      state.message = isPublished ? 'Post unpublished.' : 'Post published.';
-    },
+    clearFieldErrors(state) { state.fieldErrors = null; },
   },
   extraReducers: (builder) => {
     builder
@@ -80,26 +58,36 @@ const postSlice = createSlice({
         state.error = payload;
       })
 
-      .addCase(createPost.pending,   (state) => { state.mutating = STATUS.LOADING; })
+      .addCase(createPost.pending, (state) => {
+        state.mutating = STATUS.LOADING;
+        state.fieldErrors = null;
+      })
       .addCase(createPost.fulfilled, (state, { payload }) => {
         state.mutating = STATUS.SUCCEEDED;
+        state.fieldErrors = null;
         if (payload?.data) state.posts.unshift(payload.data);
         state.message = payload?.message || 'Post created.';
       })
-      .addCase(createPost.rejected,  (state, { payload }) => {
+      .addCase(createPost.rejected, (state, { payload }) => {
         state.mutating = STATUS.FAILED;
-        state.error = payload;
+        state.error = payload?.message || 'Failed to create post.';
+        state.fieldErrors = payload?.fieldErrors || null;
       })
 
-      .addCase(updatePost.pending,   (state) => { state.mutating = STATUS.LOADING; })
+      .addCase(updatePost.pending, (state) => {
+        state.mutating = STATUS.LOADING;
+        state.fieldErrors = null;
+      })
       .addCase(updatePost.fulfilled, (state, { payload }) => {
         state.mutating = STATUS.SUCCEEDED;
+        state.fieldErrors = null;
         replacePost(state, payload?.data);
         state.message = payload?.message || 'Post updated.';
       })
-      .addCase(updatePost.rejected,  (state, { payload }) => {
+      .addCase(updatePost.rejected, (state, { payload }) => {
         state.mutating = STATUS.FAILED;
-        state.error = payload;
+        state.error = payload?.message || 'Failed to update post.';
+        state.fieldErrors = payload?.fieldErrors || null;
       })
 
       .addCase(deletePost.fulfilled, (state, { payload: id }) => {
@@ -118,17 +106,35 @@ const postSlice = createSlice({
         replacePost(state, payload?.data);
         state.message = payload?.message || 'Post unpublished.';
       })
-      .addCase(unpublishPost.rejected, (state, { payload }) => { state.error = payload; });
+      .addCase(unpublishPost.rejected, (state, { payload }) => { state.error = payload; })
+
+      // ═══ User-facing announcements ═════════════════════════
+      .addCase(fetchAnnouncements.pending, (state) => {
+        state.announcementsStatus = STATUS.LOADING;
+      })
+      .addCase(fetchAnnouncements.fulfilled, (state, { payload }) => {
+        state.announcementsStatus = STATUS.SUCCEEDED;
+        state.announcements = payload?.data?.posts || payload?.data || [];
+        state.announcementsPagination = payload?.data?.meta || payload?.meta || null;
+      })
+      .addCase(fetchAnnouncements.rejected, (state, { payload }) => {
+        state.announcementsStatus = STATUS.FAILED;
+        state.error = payload;
+      })
+
+      .addCase(fetchAnnouncementDetail.fulfilled, (state, { payload }) => {
+        state.selectedAnnouncement = payload?.data?.post || payload?.data || null;
+      })
+      .addCase(fetchAnnouncementDetail.rejected, (state, { payload }) => {
+        state.error = payload;
+      });
   },
 });
 
 export const {
   clearPostError,
   clearPostMessage,
-  locallyCreatePost,
-  locallyUpdatePost,
-  locallyDeletePost,
-  locallyTogglePublish,
+  clearFieldErrors,
 } = postSlice.actions;
 
 export default postSlice.reducer;

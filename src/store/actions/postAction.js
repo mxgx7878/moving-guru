@@ -8,7 +8,7 @@ export const fetchPosts = createAsyncThunk(
   async (params = {}, { rejectWithValue }) => {
     try {
       const { data } = await axiosInstance.get(API_ENDPOINTS.ADMIN_POSTS, { params });
-      return data;
+      return data.data;
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));
     }
@@ -75,6 +75,31 @@ export const unpublishPost = createAsyncThunk(
       const { data } = await axiosInstance.patch(
         `${API_ENDPOINTS.ADMIN_POST_UNPUBLISH}/${id}/unpublish`,
       );
+      return data;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+);
+
+
+export const fetchAnnouncements = createAsyncThunk(
+  'post/fetchAnnouncements',
+  async (params = {}, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.get(API_ENDPOINTS.POSTS, { params });
+      return data;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+);
+
+export const fetchAnnouncementDetail = createAsyncThunk(
+  'post/fetchAnnouncementDetail',
+  async (id, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.get(`${API_ENDPOINTS.POST_DETAIL}/${id}`);
       return data;
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));

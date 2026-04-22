@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { ProtectedRoute, PortalLayout } from './components/layout';
+import { ProtectedRoute, PortalLayout, RequireApproved } from './components/layout';
 import { FullPageLoader, ToastListener } from './components/feedback';
 import { ROLE_THEME } from './config/portalConfig';
 import { STATUS } from './constants/apiConstants';
@@ -46,6 +46,7 @@ import AdminSettings      from './pages/admin/AdminSettings';
 import InstructorDetail   from './pages/studio/InstructorDetail';
 import StudioDetail       from './pages/public/StudioDetail';
 import MyApplications from './pages/instructor/MyApplications';
+import Announcements from './pages/common/Announcements';
 
 function RoleRedirect() {
   const dispatch = useDispatch();
@@ -101,18 +102,23 @@ export default function App() {
           </ProtectedRoute>
         }>
           <Route index             element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard"  element={<Dashboard />} />
-          <Route path="profile"    element={<ProfilePage />} />
-          <Route path="find-work"  element={<FindWork />} />
-          <Route path="saved-jobs" element={<SavedJobs />} />
-          <Route path="applications" element={<MyApplications />} />
-          <Route path="grow"            element={<Grow />} />
-          <Route path="grow/new"        element={<GrowPostForm />} />
-          <Route path="grow/edit/:id"   element={<GrowPostForm />} />
-          <Route path="studios/:id" element={<StudioDetail />} />
-          <Route path="messages"   element={<Messages />} />
+
+          {/* Always accessible — needed to reach approval */}
+          <Route path="dashboard"   element={<Dashboard />} />
+          <Route path="profile"     element={<ProfilePage />} />
           <Route path="subscription" element={<Subscription />} />
-          <Route path="payments"   element={<Payments />} />
+          <Route path="payments"    element={<Payments />} />
+
+          {/* Gated — require approval */}
+          <Route path="find-work"    element={<RequireApproved><FindWork /></RequireApproved>} />
+          <Route path="saved-jobs"   element={<RequireApproved><SavedJobs /></RequireApproved>} />
+          <Route path="applications" element={<RequireApproved><MyApplications /></RequireApproved>} />
+          <Route path="grow"         element={<RequireApproved><Grow /></RequireApproved>} />
+          <Route path="grow/new"     element={<RequireApproved><GrowPostForm /></RequireApproved>} />
+          <Route path="grow/edit/:id" element={<RequireApproved><GrowPostForm /></RequireApproved>} />
+          <Route path="studios/:id"  element={<RequireApproved><StudioDetail /></RequireApproved>} />
+          <Route path="messages"     element={<RequireApproved><Messages /></RequireApproved>} />
+          <Route path="announcements" element={<Announcements />} />
         </Route>
 
         {/* ── Studio portal ──────────────────────────────────── */}
@@ -121,21 +127,28 @@ export default function App() {
             <PortalLayout />
           </ProtectedRoute>
         }>
-          <Route index              element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard"   element={<StudioDashboard />} />
-          <Route path="profile"     element={<StudioProfile />} />
-          <Route path="search"      element={<SearchInstructors />} />
-          <Route path="favourites"  element={<Favourites />} />
-          <Route path="jobs"        element={<JobListings />} />
-          <Route path="instructors/:id" element={<InstructorDetail />} />
-          <Route path="studios/:id"     element={<StudioDetail />} />
-          <Route path="grow"            element={<Grow />} />
-          <Route path="grow/new"        element={<GrowPostForm />} />
-          <Route path="grow/edit/:id"   element={<GrowPostForm />} />
-          <Route path="messages"    element={<Messages />} />
+          <Route index               element={<Navigate to="dashboard" replace />} />
+
+          {/* Always accessible */}
+          <Route path="dashboard"    element={<StudioDashboard />} />
+          <Route path="profile"      element={<StudioProfile />} />
           <Route path="subscription" element={<Subscription />} />
-          <Route path="payments"    element={<Payments />} />
+          <Route path="payments"     element={<Payments />} />
+
+          {/* Gated */}
+          <Route path="search"        element={<RequireApproved><SearchInstructors /></RequireApproved>} />
+          <Route path="favourites"    element={<RequireApproved><Favourites /></RequireApproved>} />
+          <Route path="jobs"          element={<RequireApproved><JobListings /></RequireApproved>} />
+          <Route path="instructors/:id" element={<RequireApproved><InstructorDetail /></RequireApproved>} />
+          <Route path="studios/:id"   element={<RequireApproved><StudioDetail /></RequireApproved>} />
+          <Route path="grow"          element={<RequireApproved><Grow /></RequireApproved>} />
+          <Route path="grow/new"      element={<RequireApproved><GrowPostForm /></RequireApproved>} />
+          <Route path="grow/edit/:id" element={<RequireApproved><GrowPostForm /></RequireApproved>} />
+          <Route path="messages"      element={<RequireApproved><Messages /></RequireApproved>} />
+          <Route path="announcements" element={<Announcements />} />
         </Route>
+
+        {/* Admin portal — unchanged, admins bypass all gating */}
 
         {/* ── Admin portal ───────────────────────────────────── */}
         <Route path="/admin" element={
@@ -147,6 +160,7 @@ export default function App() {
           <Route path="dashboard"       element={<AdminDashboard />} />
           <Route path="users"           element={<AdminUsers />} />
           <Route path="jobs"            element={<AdminJobs />} />
+          <Route path="announcements"  element={<AdminPosts />} />
           <Route path="posts"           element={<AdminPosts />} />
           <Route path="grow"            element={<AdminGrowPosts />} />
           <Route path="grow/edit/:id"   element={<GrowPostForm />} />

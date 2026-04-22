@@ -11,6 +11,11 @@ import {
   applyToJob,
   withdrawApplication,
   fetchMyApplications,
+  fetchAdminJobs,
+  fetchAdminJobDetail,
+  deactivateAdminJob,
+  activateAdminJob,
+  deleteAdminJob,
 } from '../actions/jobAction';
 
 const initialState = {
@@ -35,6 +40,11 @@ const initialState = {
 
   error: null,
   message: null,
+
+   adminJobs: [],
+  adminJobsStatus: STATUS.IDLE,
+  adminJobsPagination: null,
+  selectedJob: null,
 };
 
 // Helpers — unwrap backend envelope { status, data: { jobs } } or legacy
@@ -63,12 +73,8 @@ const jobSlice = createSlice({
   reducers: {
     clearJobError(state)   { state.error = null; },
     clearJobMessage(state) { state.message = null; },
-    // Optimistic toggle for the instructor's Apply button — the thunk
-    // will reconcile against the server response afterwards.
-    locallyMarkApplied(state, { payload: jobId }) {
-      const apply = (arr) => replaceInArr(arr, { id: jobId, has_applied: true });
-      apply(state.jobs);
-      apply(state.myJobs);
+    clearSelectedJob(state) {
+      state.selectedJob = null;
     },
   },
   extraReducers: (builder) => {
@@ -256,9 +262,62 @@ const jobSlice = createSlice({
       .addCase(fetchMyApplications.rejected, (state, { payload }) => {
         state.myApplicationsStatus = STATUS.FAILED;
         state.error = payload;
-      });
+      })
+      .addCase(fetchAdminJobs.pending, (state) => {
+        state.adminJobsStatus = STATUS.LOADING;
+        state.error = null;
+      })
+      .addCase(fetchAdminJobs.fulfilled, (state, { payload }) => {
+        state.adminJobsStatus = STATUS.SUCCEEDED;
+        state.adminJobs = unwrapJobs(payload);
+        state.adminJobsPagination = payload?.data?.meta || payload?.meta || null;
+      })
+      .addCase(fetchAdminJobs.rejected, (state, { payload }) => {
+        state.adminJobsStatus = STATUS.FAILED;
+        state.error = payload;
+      })
+
+      // ═══ Admin: fetch job detail — reuses selectedJob ──────
+      .addCase(fetchAdminJobDetail.fulfilled, (state, { payload }) => {
+        state.selectedJob = unwrapJob(payload);
+      })
+      .addCase(fetchAdminJobDetail.rejected, (state, { meta, payload }) => {
+        // Fall back to list entry so the drawer renders something
+        const found = state.adminJobs.find((j) => j.id === meta.arg);
+        if (found) state.selectedJob = found;
+        state.error = payload;
+      })
+
+      // ═══ Admin: activate / deactivate / delete ─────────────
+      // These reuse replaceInArr but target adminJobs list
+      .addCase(activateAdminJob.fulfilled, (state, { payload, meta }) => {
+        const updated = unwrapJob(payload) || { id: meta.arg, is_active: true };
+        replaceInArr(state.adminJobs, updated);
+        if (state.selectedJob?.id === updated.id) {
+          state.selectedJob = { ...state.selectedJob, ...updated };
+        }
+        state.message = payload?.message || 'Listing activated.';
+      })
+      .addCase(activateAdminJob.rejected, (state, { payload }) => { state.error = payload; })
+
+      .addCase(deactivateAdminJob.fulfilled, (state, { payload, meta }) => {
+        const updated = unwrapJob(payload) || { id: meta.arg, is_active: false };
+        replaceInArr(state.adminJobs, updated);
+        if (state.selectedJob?.id === updated.id) {
+          state.selectedJob = { ...state.selectedJob, ...updated };
+        }
+        state.message = payload?.message || 'Listing deactivated.';
+      })
+      .addCase(deactivateAdminJob.rejected, (state, { payload }) => { state.error = payload; })
+
+      .addCase(deleteAdminJob.fulfilled, (state, { payload: id }) => {
+        state.adminJobs = state.adminJobs.filter((j) => j.id !== id);
+        if (state.selectedJob?.id === id) state.selectedJob = null;
+        state.message = 'Listing deleted.';
+      })
+      .addCase(deleteAdminJob.rejected, (state, { payload }) => { state.error = payload; })
   },
 });
 
-export const { clearJobError, clearJobMessage, locallyMarkApplied } = jobSlice.actions;
+export const { clearJobError, clearJobMessage, clearSelectedJob } = jobSlice.actions;
 export default jobSlice.reducer;

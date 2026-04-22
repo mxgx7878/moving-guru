@@ -17,9 +17,6 @@ import {
 import {
   clearGrowError,
   clearGrowMessage,
-  locallySetGrowStatus,
-  locallyToggleGrowFeatured,
-  locallyDeleteGrow,
 } from '../../store/slices/growSlice';
 import { STATUS } from '../../constants/apiConstants';
 
@@ -105,17 +102,15 @@ export default function AdminGrowPosts() {
   // falls back to a local mutation so the dummy data updates visually.
   const handleApprove = async (post) => {
     setActingId(post.id);
-    const res = await dispatch(approveGrowPost(post.id));
-    if (res.meta.requestStatus === 'rejected') {
-      dispatch(locallySetGrowStatus({ id: post.id, status: 'approved' }));
-      toast.success('Post approved.');
-    }
+    await dispatch(approveGrowPost(post.id));
+    // actingId clears via the existing moderationStatus effect
   };
 
   const openReject = (post) => {
     setRejectingId(post.id);
     setRejectReason('');
   };
+
 
   const confirmReject = async () => {
     if (!rejectingId) return;
@@ -124,30 +119,17 @@ export default function AdminGrowPosts() {
     setActingId(id);
     setRejectingId(null);
     setRejectReason('');
-
-    const res = await dispatch(rejectGrowPost({ id, reason }));
-    if (res.meta.requestStatus === 'rejected') {
-      dispatch(locallySetGrowStatus({ id, status: 'rejected', reason }));
-      toast.success('Post rejected.');
-    }
+    await dispatch(rejectGrowPost({ id, reason }));
   };
 
   const handleBoost = async (post) => {
-    const res = await dispatch(boostGrowPost({ id: post.id, is_featured: !post.is_featured }));
-    if (res.meta.requestStatus === 'rejected') {
-      dispatch(locallyToggleGrowFeatured(post.id));
-      toast.success(post.is_featured ? 'Removed feature.' : 'Post featured.');
-    }
+    await dispatch(boostGrowPost({ id: post.id, is_featured: !post.is_featured }));
   };
 
   const handleDelete = async (post) => {
     if (!window.confirm(`Delete "${post.title}"? This cannot be undone.`)) return;
     setActingId(post.id);
-    const res = await dispatch(adminDeleteGrowPost(post.id));
-    if (res.meta.requestStatus === 'rejected') {
-      dispatch(locallyDeleteGrow(post.id));
-      toast.success('Post deleted.');
-    }
+    await dispatch(adminDeleteGrowPost(post.id));
   };
 
   const isLoading = adminStatus === STATUS.LOADING;

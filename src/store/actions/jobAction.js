@@ -67,11 +67,14 @@ export const deleteJob = createAsyncThunk(
 
 export const fetchJobApplicants = createAsyncThunk(
   'job/fetchApplicants',
-  async (jobId, { rejectWithValue }) => {
+  async (jobId, { rejectWithValue, getState }) => {
     try {
-      const { data } = await axiosInstance.get(
-        `${API_ENDPOINTS.JOB_APPLICANTS}/${jobId}/applicants`,
-      );
+      const role = getState().auth?.user?.role;
+      const base = role === 'admin'
+        ? API_ENDPOINTS.ADMIN_JOBS
+        : API_ENDPOINTS.JOB_APPLICANTS;
+
+      const { data } = await axiosInstance.get(`${base}/${jobId}/applicants`);
       return { jobId, payload: data };
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));
@@ -133,6 +136,72 @@ export const fetchMyApplications = createAsyncThunk(
     try {
       const { data } = await axiosInstance.get(API_ENDPOINTS.APPLICATIONS_MINE);
       return data;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+);
+
+
+export const fetchAdminJobs = createAsyncThunk(
+  'job/adminFetchAll',
+  async (params = {}, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.get(API_ENDPOINTS.ADMIN_JOBS, { params });
+      return data;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+);
+
+export const fetchAdminJobDetail = createAsyncThunk(
+  'job/adminFetchDetail',
+  async (id, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.get(`${API_ENDPOINTS.ADMIN_JOB_DETAIL}/${id}`);
+      return data;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+);
+
+
+export const deactivateAdminJob = createAsyncThunk(
+  'job/adminDeactivate',
+  async (id, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.patch(
+        `${API_ENDPOINTS.ADMIN_JOB_DEACTIVATE}/${id}/deactivate`,
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+);
+
+export const activateAdminJob = createAsyncThunk(
+  'job/adminActivate',
+  async (id, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.patch(
+        `${API_ENDPOINTS.ADMIN_JOB_ACTIVATE}/${id}/activate`,
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+);
+
+export const deleteAdminJob = createAsyncThunk(
+  'job/adminDelete',
+  async (id, { rejectWithValue }) => {
+    try {
+      await axiosInstance.delete(`${API_ENDPOINTS.ADMIN_JOB_DELETE}/${id}`);
+      return id;
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));
     }

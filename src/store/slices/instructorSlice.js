@@ -9,6 +9,9 @@ import {
   fetchAdminUsers,
   fetchAdminUserDetail,
   updateAdminUser,
+  createAdminUser,
+  approveAdminUser,
+  rejectAdminUser,
   suspendAdminUser,
   activateAdminUser,
   verifyAdminUser,
@@ -16,7 +19,6 @@ import {
 } from '../actions/instructorAction';
 
 const initialState = {
-  // Studio "Find Instructors" search
   instructors: [],
   savedIds: [],
   selectedInstructor: null,
@@ -24,7 +26,6 @@ const initialState = {
   status: STATUS.IDLE,
   error: null,
 
-  // Admin user management (instructors + studios in one list)
   users: [],
   userDetail: null,
   usersPagination: null,
@@ -33,7 +34,6 @@ const initialState = {
   message: null,
 };
 
-// Replace a user wherever it appears in state
 const replaceUser = (state, updated) => {
   if (!updated) return;
   const idx = state.users.findIndex((u) => u.id === updated.id);
@@ -41,8 +41,6 @@ const replaceUser = (state, updated) => {
   if (state.userDetail?.id === updated.id) state.userDetail = updated;
 };
 
-// Merge a new/updated instructor profile into state.instructors by id.
-// Used after fetchSavedInstructors so Favourites can render on cold load.
 const upsertInstructor = (state, inst) => {
   if (!inst || !inst.id) return;
   const idx = state.instructors.findIndex((i) => i.id === inst.id);
@@ -50,8 +48,6 @@ const upsertInstructor = (state, inst) => {
   else state.instructors[idx] = { ...state.instructors[idx], ...inst };
 };
 
-// Unwrap the backend's standard envelope: { data: { instructors: [...], meta: {...} } }
-// Falls back gracefully for older { data: [...] } shapes.
 const unwrapInstructors = (payload) => {
   const d = payload?.data;
   if (Array.isArray(d?.instructors)) return d.instructors;
@@ -63,30 +59,13 @@ const instructorSlice = createSlice({
   name: 'instructor',
   initialState,
   reducers: {
-    clearInstructorError(state) {
-      state.error = null;
-    },
-    clearSelectedInstructor(state) {
-      state.selectedInstructor = null;
-    },
-    clearUserDetail(state) {
-      state.userDetail = null;
-    },
-    clearInstructorMessage(state) {
-      state.message = null;
-    },
-    // Local-only mutations on dummy data (used while admin APIs are not ready)
-    locallyMutateUser(state, { payload }) {
-      replaceUser(state, payload);
-    },
-    locallyDeleteUser(state, { payload: id }) {
-      state.users = state.users.filter((u) => u.id !== id);
-      if (state.userDetail?.id === id) state.userDetail = null;
-    },
+    clearInstructorError(state)    { state.error = null; },
+    clearSelectedInstructor(state) { state.selectedInstructor = null; },
+    clearUserDetail(state)         { state.userDetail = null; },
+    clearInstructorMessage(state)  { state.message = null; },
   },
   extraReducers: (builder) => {
     builder
-      // ── Fetch instructors (studio search) ───────────────────
       .addCase(fetchInstructors.pending, (state) => {
         state.status = STATUS.LOADING;
         state.error = null;
@@ -107,9 +86,7 @@ const instructorSlice = createSlice({
         state.error = payload;
       })
 
-      .addCase(fetchInstructorDetail.pending, (state) => {
-        state.status = STATUS.LOADING;
-      })
+      .addCase(fetchInstructorDetail.pending, (state) => { state.status = STATUS.LOADING; })
       .addCase(fetchInstructorDetail.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
         const inst = payload?.data?.instructor || payload?.data || null;
@@ -129,19 +106,13 @@ const instructorSlice = createSlice({
         state.savedIds = state.savedIds.filter((id) => id !== meta.arg);
       })
 
-      // ── Fetch saved instructors ─────────────────────────────
-      // Merge full profiles into state.instructors so the Favourites
-      // page renders correctly on cold load without having hit the
-      // Find Instructors page first.
       .addCase(fetchSavedInstructors.fulfilled, (state, { payload }) => {
         const list = unwrapInstructors(payload);
         state.savedIds = list.map((i) => i.id);
         list.forEach((inst) => upsertInstructor(state, inst));
       })
 
-      // ═══════════════════════════════════════════════════════
-      //  Admin user management (instructors + studios)
-      // ═══════════════════════════════════════════════════════
+      // ═══ Admin user management ═════════════════════════════
       .addCase(fetchAdminUsers.pending, (state) => {
         state.usersStatus = STATUS.LOADING;
       })
@@ -168,6 +139,18 @@ const instructorSlice = createSlice({
         state.error = payload;
       })
 
+      .addCase(createAdminUser.pending, (state) => { state.userMutating = STATUS.LOADING; })
+      .addCase(createAdminUser.fulfilled, (state, { payload }) => {
+        state.userMutating = STATUS.SUCCEEDED;
+        const created = payload?.data;
+        if (created?.id) state.users.unshift(created);
+        state.message = payload?.message || 'User created.';
+      })
+      .addCase(createAdminUser.rejected, (state, { payload }) => {
+        state.userMutating = STATUS.FAILED;
+        state.error = payload;
+      })
+
       .addCase(updateAdminUser.pending, (state) => { state.userMutating = STATUS.LOADING; })
       .addCase(updateAdminUser.fulfilled, (state, { payload }) => {
         state.userMutating = STATUS.SUCCEEDED;
@@ -178,6 +161,18 @@ const instructorSlice = createSlice({
         state.userMutating = STATUS.FAILED;
         state.error = payload;
       })
+
+      .addCase(approveAdminUser.fulfilled, (state, { payload }) => {
+        replaceUser(state, payload?.data);
+        state.message = payload?.message || 'User approved.';
+      })
+      .addCase(approveAdminUser.rejected, (state, { payload }) => { state.error = payload; })
+
+      .addCase(rejectAdminUser.fulfilled, (state, { payload }) => {
+        replaceUser(state, payload?.data);
+        state.message = payload?.message || 'User rejected.';
+      })
+      .addCase(rejectAdminUser.rejected, (state, { payload }) => { state.error = payload; })
 
       .addCase(suspendAdminUser.fulfilled, (state, { payload }) => {
         replaceUser(state, payload?.data);
@@ -211,8 +206,6 @@ export const {
   clearSelectedInstructor,
   clearUserDetail,
   clearInstructorMessage,
-  locallyMutateUser,
-  locallyDeleteUser,
 } = instructorSlice.actions;
 
 export default instructorSlice.reducer;

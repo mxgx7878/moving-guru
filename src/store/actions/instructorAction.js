@@ -161,3 +161,44 @@ export const deleteAdminUser = createAsyncThunk(
     }
   },
 );
+
+export const createAdminUser = createAsyncThunk(
+  'instructor/adminCreateUser',
+  async (payload, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.post(API_ENDPOINTS.ADMIN_USER_CREATE, payload);
+      return data;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+);
+
+export const approveAdminUser = createAsyncThunk(
+  'instructor/adminApproveUser',
+  async (id, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.patch(
+        `${API_ENDPOINTS.ADMIN_USER_APPROVE}/${id}/approve`,
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+);
+
+export const rejectAdminUser = createAsyncThunk(
+  'instructor/adminRejectUser',
+  async ({ id, reason }, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.patch(
+        `${API_ENDPOINTS.ADMIN_USER_REJECT}/${id}/reject`,
+        { reason },
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+);

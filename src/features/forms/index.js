@@ -2,3 +2,4 @@
 // structure can evolve without touching every caller.
 export { default as JobForm }        from './JobForm';
 export { default as AdminPostForm }  from './AdminPostForm';
+export { default as UserForm }       from './UserForm'; 

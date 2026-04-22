@@ -1,6 +1,6 @@
 // Base URL
-// export const BASE_URL = "http://localhost:8000/api";
-export const BASE_URL = 'https://demowebportals.com/moving-guru-backend/public/api';
+export const BASE_URL = "http://localhost:8000/api";
+// export const BASE_URL = 'https://demowebportals.com/moving-guru-backend/public/api';
 
 // API Endpoints
 export const API_ENDPOINTS = {
@@ -77,10 +77,13 @@ export const API_ENDPOINTS = {
   // ── Admin: Users (instructors + studios) ─────────────────
   // Filterable list: ?role=instructor|studio&status=active|suspended|pending&q=...&page=
   ADMIN_USERS: "/admin/users",
+  ADMIN_USER_CREATE: "/admin/users", 
   ADMIN_USER_DETAIL: "/admin/users", // GET /:id
   ADMIN_USER_UPDATE: "/admin/users", // PATCH /:id  body: { is_active, is_verified, role, ... }
   ADMIN_USER_SUSPEND: "/admin/users", // PATCH /:id/suspend  body: { reason }
   ADMIN_USER_ACTIVATE: "/admin/users", // PATCH /:id/activate
+  ADMIN_USER_APPROVE: "/admin/users",          // PATCH /:id/approve
+  ADMIN_USER_REJECT: "/admin/users", 
   ADMIN_USER_VERIFY: "/admin/users", // PATCH /:id/verify   (studios)
   ADMIN_USER_DELETE: "/admin/users", // DELETE /:id
 
@@ -94,13 +97,17 @@ export const API_ENDPOINTS = {
 
   // ── Admin: Job management ────────────────────────────────
   ADMIN_JOBS: "/admin/jobs",               // GET list with filters
-  ADMIN_JOB_DETAIL: "/admin/jobs",         // GET /:id
+  ADMIN_JOB_DETAIL: "/admin/jobs",         // GET /:id (includes applicants)
+  ADMIN_JOB_APPLICANTS: "/admin/jobs",     // GET /:id/applicants
   ADMIN_JOB_DEACTIVATE: "/admin/jobs",     // PATCH /:id/deactivate
   ADMIN_JOB_ACTIVATE: "/admin/jobs",       // PATCH /:id/activate
-  ADMIN_JOB_DELETE: "/admin/jobs",         // DELETE /:id
+  ADMIN_JOB_DELETE: "/admin/jobs",   
 
   // ── Admin: Subscriptions ─────────────────────────────────
   ADMIN_SUBSCRIPTIONS: "/admin/subscriptions",
+
+  POSTS:        "/posts",          // GET list
+  POST_DETAIL:  "/posts",
 };
 
 // Roles

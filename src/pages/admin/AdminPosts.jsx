@@ -18,10 +18,6 @@ import {
 import {
   clearPostError,
   clearPostMessage,
-  locallyCreatePost,
-  locallyUpdatePost,
-  locallyDeletePost,
-  locallyTogglePublish,
 } from '../../store/slices/postSlice';
 import { STATUS } from '../../constants/apiConstants';
 import { Button } from '../../components/ui';
@@ -44,8 +40,10 @@ const AUDIENCE_OPTIONS = [
 export default function AdminPosts() {
   const dispatch = useDispatch();
   const {
-    posts, status: postsStatus, mutating: postMutating, message, error,
+    posts, status: postsStatus, mutating: postMutating,
+    message, error, fieldErrors,
   } = useSelector((s) => s.post);
+
 
   const [typeTab, setTypeTab]         = useState('all');
   const [audience, setAudience]       = useState('all');
@@ -83,39 +81,28 @@ export default function AdminPosts() {
     return c;
   }, [posts]);
 
-  const handleSubmit = async (payload) => {
+ const handleSubmit = async (payload) => {
     if (editing) {
-      const res = await dispatch(updatePost({ id: editing.id, ...payload }));
-      if (res.meta.requestStatus === 'rejected') {
-        dispatch(locallyUpdatePost({ ...editing, ...payload }));
-        setFormOpen(false);
-        setEditing(null);
-      }
+      await dispatch(updatePost({ id: editing.id, ...payload }));
     } else {
-      const res = await dispatch(createPost(payload));
-      if (res.meta.requestStatus === 'rejected') {
-        dispatch(locallyCreatePost(payload));
-        setFormOpen(false);
-      }
+      await dispatch(createPost(payload));
     }
   };
 
   const handleConfirmDelete = async () => {
     if (!deletingTarget) return;
-    if (previewPost?.id === deletingTarget.id) setPreviewPost(null);
-    const res = await dispatch(deletePost(deletingTarget.id));
-    if (res.meta.requestStatus === 'rejected') {
-      dispatch(locallyDeletePost(deletingTarget.id));
-    }
+    const target = deletingTarget;
+    if (previewPost?.id === target.id) setPreviewPost(null);
     setDeletingTarget(null);
-  };
 
+    // Error surfaces via toast through the existing error useEffect.
+    await dispatch(deletePost(target.id));
+  };
+  
   const handleTogglePublish = async (post) => {
+    console.log('Toggling publish for post', post);
     const action = post.status === 'published' ? unpublishPost : publishPost;
-    const res = await dispatch(action(post.id));
-    if (res.meta.requestStatus === 'rejected') {
-      dispatch(locallyTogglePublish(post.id));
-    }
+    await dispatch(action(post.id));
   };
 
   const isLoading = postsStatus === STATUS.LOADING && posts.length === 0;
@@ -129,7 +116,7 @@ export default function AdminPosts() {
           </div>
           <div>
             <p className="text-[#F59E0B] text-xs font-semibold tracking-widest uppercase mb-1">
-              Admin &nbsp;/&nbsp; Posts &amp; Events
+              Admin &nbsp;/&nbsp; Announcements
             </p>
             <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">
               Platform Announcements
@@ -208,10 +195,15 @@ export default function AdminPosts() {
       )}
 
       {formOpen && (
-        <AdminPostForm
+         <AdminPostForm
           post={editing}
           saving={postMutating === STATUS.LOADING}
-          onCancel={() => { setFormOpen(false); setEditing(null); }}
+          fieldErrors={fieldErrors}
+          onCancel={() => {
+            setFormOpen(false);
+            setEditing(null);
+            dispatch(clearFieldErrors());
+          }}
           onSubmit={handleSubmit}
         />
       )}

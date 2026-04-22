@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import Sidebar from './Sidebar';
 import { Menu, Bell } from 'lucide-react';
 import { ROLE_THEME } from '../../config/portalConfig';
+import AccessBanner from './AccessBanner';
 
 export default function PortalLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -53,6 +54,8 @@ export default function PortalLayout() {
             </div>
           </div>
         </header>
+
+         <AccessBanner />
 
         {/* Page content */}
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">

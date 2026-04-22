@@ -57,34 +57,6 @@ const growSlice = createSlice({
       state.submitStatus = STATUS.IDLE;
       state.submitError = null;
     },
-    // Local-only mutations on dummy data (used while admin APIs are not ready)
-    locallySetGrowStatus(state, { payload: { id, status, reason = null } }) {
-      const updated = (post) => post && {
-        ...post, status,
-        rejection_reason: status === 'rejected' ? reason : null,
-      };
-      const apply = (arr) => {
-        const i = arr.findIndex((p) => p.id === id);
-        if (i !== -1) arr[i] = updated(arr[i]);
-      };
-      apply(state.adminPosts);
-      apply(state.posts);
-      apply(state.myPosts);
-    },
-    locallyToggleGrowFeatured(state, { payload: id }) {
-      const apply = (arr) => {
-        const i = arr.findIndex((p) => p.id === id);
-        if (i !== -1) arr[i] = { ...arr[i], is_featured: !arr[i].is_featured };
-      };
-      apply(state.adminPosts);
-      apply(state.posts);
-      apply(state.myPosts);
-    },
-    locallyDeleteGrow(state, { payload: id }) {
-      state.adminPosts = state.adminPosts.filter((p) => p.id !== id);
-      state.posts      = state.posts.filter((p) => p.id !== id);
-      state.myPosts    = state.myPosts.filter((p) => p.id !== id);
-    },
   },
   extraReducers: (builder) => {
     builder
@@ -231,9 +203,6 @@ export const {
   clearGrowError,
   clearGrowMessage,
   resetSubmitStatus,
-  locallySetGrowStatus,
-  locallyToggleGrowFeatured,
-  locallyDeleteGrow,
 } = growSlice.actions;
 
 export default growSlice.reducer;

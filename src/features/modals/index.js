@@ -6,5 +6,6 @@ export { default as JobApplicantsModal }     from './JobApplicantsModal';
 export { default as ReviewFormModal }        from './ReviewFormModal';
 export { default as StudioPreviewModal }     from './StudioPreviewModal';
 export { default as SuspendUserModal }       from './SuspendUserModal';
+export { default as RejectUserModal }        from './RejectUserModal';
 export { default as ConfirmModal }           from './ConfirmModal';
 export { default as PostPreviewModal }        from './PostPreviewModal';
