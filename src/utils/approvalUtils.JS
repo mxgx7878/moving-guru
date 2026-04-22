@@ -24,6 +24,8 @@ export const isProfileComplete = (user) => {
       && user.disciplines.length > 0;
   }
 
+  
+
   return true;
 };
 
