@@ -7,3 +7,19 @@ export { default as StatCard } from './StatCard';
 export { default as BarChart } from './BarChart';
 export { default as Toggle } from './Toggle';
 export { default as StarRating } from './StarRating';
+
+// Shared primitives extracted from inline page helpers.
+export { default as StatusPill } from './StatusPill';
+export { default as IconButton } from './IconButton';
+export { default as Avatar } from './Avatar';
+export { default as Chip } from './Chip';
+export { default as SearchBar } from './SearchBar';
+export { default as FilterSelect } from './FilterSelect';
+export { default as TabBar } from './TabBar';
+export { default as FileDropzone } from './FileDropzone';
+export { default as EmptyState } from './EmptyState';
+export { default as Drawer } from './Drawer';
+export { default as SelectField } from './SelectField';
+export { default as StatTile } from './StatTile';
+export { default as LabeledBlock } from './LabeledBlock';
+export { default as InfoRow } from './InfoRow';
