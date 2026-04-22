@@ -1,23 +1,33 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 import {
-  Users, Building2, Sprout, Briefcase, FileText, CreditCard,
-  CheckCircle2, Clock, TrendingUp, ArrowRight, Loader2,
-} from 'lucide-react';
+  Users,
+  Building2,
+  Sprout,
+  Briefcase,
+  FileText,
+  CreditCard,
+  CheckCircle2,
+  Clock,
+  TrendingUp,
+  ArrowRight,
+  Loader2,
+} from "lucide-react";
 
-import axiosInstance from '../../config/axiosInstance';
-import { API_ENDPOINTS } from '../../constants/apiConstants';
+import axiosInstance from "../../config/axiosInstance";
+import { API_ENDPOINTS } from "../../constants/apiConstants";
+import { DashboardSkeleton } from "../../components/feedback";
 
 // Dashboard is a read-only aggregator. Local state keeps it thin — no
 // shared store needed for data that appears on a single page.
 export default function AdminDashboard() {
   const { user } = useSelector((s) => s.auth);
-  const adminName = user?.name?.split(' ')[0] || 'Admin';
+  const adminName = user?.name?.split(" ")[0] || "Admin";
 
-  const [stats,    setStats]    = useState(null);
+  const [stats, setStats] = useState(null);
   const [activity, setActivity] = useState(null);
-  const [loading,  setLoading]  = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -28,65 +38,78 @@ export default function AdminDashboard() {
       axiosInstance.get(API_ENDPOINTS.ADMIN_DASHBOARD_ACTIVITY),
     ]).then(([statsRes, activityRes]) => {
       if (cancelled) return;
-      if (statsRes.status === 'fulfilled') setStats(statsRes.value?.data?.data || null);
-      if (activityRes.status === 'fulfilled') setActivity(activityRes.value?.data?.data || null);
+      if (statsRes.status === "fulfilled")
+        setStats(statsRes.value?.data?.data || null);
+      if (activityRes.status === "fulfilled")
+        setActivity(activityRes.value?.data?.data || null);
       setLoading(false);
     });
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // ── Stat tiles configuration ──────────────────────────────────
   const tiles = [
     {
-      label: 'Instructors',
+      label: "Instructors",
       value: stats?.instructors?.total,
       delta: stats?.instructors?.growth,
-      sub:   `${stats?.instructors?.new_this_month ?? 0} this month`,
-      icon:  Users,    color: '#CE4F56',
-      to:    '/admin/users?role=instructor',
+      sub: `${stats?.instructors?.new_this_month ?? 0} this month`,
+      icon: Users,
+      color: "#CE4F56",
+      to: "/admin/users?role=instructor",
     },
     {
-      label: 'Studios',
+      label: "Studios",
       value: stats?.studios?.total,
       delta: stats?.studios?.growth,
-      sub:   `${stats?.studios?.new_this_month ?? 0} this month`,
-      icon:  Building2, color: '#2DA4D6',
-      to:    '/admin/users?role=studio',
+      sub: `${stats?.studios?.new_this_month ?? 0} this month`,
+      icon: Building2,
+      color: "#2DA4D6",
+      to: "/admin/users?role=studio",
     },
     {
-      label: 'Grow Posts',
+      label: "Grow Posts",
       value: stats?.grow_posts?.total,
-      sub:   `${stats?.grow_posts?.pending ?? 0} pending review`,
-      icon:  Sprout, color: '#7F77DD',
-      to:    '/admin/grow',
+      sub: `${stats?.grow_posts?.pending ?? 0} pending review`,
+      icon: Sprout,
+      color: "#7F77DD",
+      to: "/admin/grow",
     },
     {
-      label: 'Job Listings',
+      label: "Job Listings",
       value: stats?.jobs?.total,
-      sub:   `${stats?.jobs?.active ?? 0} active`,
-      icon:  Briefcase, color: '#E89560',
-      to:    '/admin/jobs',
+      sub: `${stats?.jobs?.active ?? 0} active`,
+      icon: Briefcase,
+      color: "#E89560",
+      to: "/admin/jobs",
     },
     {
-      label: 'Active Subscriptions',
+      label: "Active Subscriptions",
       value: stats?.subscriptions?.active,
-      sub:   `${stats?.subscriptions?.trialing ?? 0} on trial`,
-      icon:  CreditCard, color: '#10B981',
-      to:    '/admin/subscriptions',
+      sub: `${stats?.subscriptions?.trialing ?? 0} on trial`,
+      icon: CreditCard,
+      color: "#10B981",
+      to: "/admin/subscriptions",
     },
     {
-      label: 'Platform Posts',
+      label: "Platform Posts",
       value: stats?.platform_posts?.published,
-      sub:   `${stats?.platform_posts?.draft ?? 0} drafts`,
-      icon:  FileText, color: '#F59E0B',
-      to:    '/admin/posts',
+      sub: `${stats?.platform_posts?.draft ?? 0} drafts`,
+      icon: FileText,
+      color: "#F59E0B",
+      to: "/admin/posts",
     },
   ];
 
+  if (loading && !stats && !activity) {
+    return <DashboardSkeleton />;
+  }
+
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-
       {/* ── Header ─────────────────────────────────────────────── */}
       <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 flex items-center justify-between flex-wrap gap-4">
         <div>
@@ -119,7 +142,9 @@ export default function AdminDashboard() {
 
       {/* ── Stat tiles ─────────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {tiles.map((t) => <StatTile key={t.label} {...t} />)}
+        {tiles.map((t) => (
+          <StatTile key={t.label} {...t} />
+        ))}
       </div>
 
       {/* ── Activity grid ──────────────────────────────────────── */}
@@ -136,9 +161,11 @@ export default function AdminDashboard() {
           renderItem={(p) => (
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0 flex-1">
-                <p className="font-semibold text-[#3E3D38] text-xs truncate">{p.title}</p>
+                <p className="font-semibold text-[#3E3D38] text-xs truncate">
+                  {p.title}
+                </p>
                 <p className="text-[10px] text-[#9A9A94]">
-                  {p.type?.toUpperCase()} · {p.posted_by || p.user?.name || '—'}
+                  {p.type?.toUpperCase()} · {p.posted_by || p.user?.name || "—"}
                 </p>
               </div>
               <span className="text-[10px] text-[#9A9A94] whitespace-nowrap">
@@ -159,12 +186,21 @@ export default function AdminDashboard() {
           empty="No new signups."
           renderItem={(u) => (
             <div className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-[10px] flex-shrink-0
-                ${u.role === 'studio' ? 'bg-[#2DA4D6]' : 'bg-[#CE4F56]'}`}>
-                {(u.name || '?').split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()}
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-[10px] flex-shrink-0
+                ${u.role === "studio" ? "bg-[#2DA4D6]" : "bg-[#CE4F56]"}`}
+              >
+                {(u.name || "?")
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .slice(0, 2)
+                  .toUpperCase()}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="font-semibold text-[#3E3D38] text-xs truncate">{u.name}</p>
+                <p className="font-semibold text-[#3E3D38] text-xs truncate">
+                  {u.name}
+                </p>
                 <p className="text-[10px] text-[#9A9A94] capitalize">
                   {u.role} · {u.email}
                 </p>
@@ -188,9 +224,11 @@ export default function AdminDashboard() {
           renderItem={(j) => (
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0 flex-1">
-                <p className="font-semibold text-[#3E3D38] text-xs truncate">{j.title}</p>
+                <p className="font-semibold text-[#3E3D38] text-xs truncate">
+                  {j.title}
+                </p>
                 <p className="text-[10px] text-[#9A9A94]">
-                  {j.studio_name || j.studio?.name || '—'} · {j.location || '—'}
+                  {j.studio_name || j.studio?.name || "—"} · {j.location || "—"}
                 </p>
               </div>
               {j.is_active ? (
@@ -219,10 +257,10 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0 flex-1">
                 <p className="font-semibold text-[#3E3D38] text-xs truncate">
-                  {s.user?.name || s.user_name || '—'}
+                  {s.user?.name || s.user_name || "—"}
                 </p>
                 <p className="text-[10px] text-[#9A9A94]">
-                  {s.plan_name || s.plan?.name || '—'} · {s.status}
+                  {s.plan_name || s.plan?.name || "—"} · {s.status}
                 </p>
               </div>
               <span className="text-[10px] text-[#9A9A94] whitespace-nowrap">
@@ -241,25 +279,33 @@ export default function AdminDashboard() {
 // ═══════════════════════════════════════════════════════════════
 
 function StatTile({ label, value, sub, delta, icon: Icon, color, to }) {
-  const display = value ?? '—';
+  const display = value ?? "—";
   return (
     <Link
       to={to}
-      className="group bg-white rounded-2xl border border-[#E5E0D8] p-5 hover:shadow-md transition-all hover:border-[#3E3D38]/20">
+      className="group bg-white rounded-2xl border border-[#E5E0D8] p-5 hover:shadow-md transition-all hover:border-[#3E3D38]/20"
+    >
       <div className="flex items-start justify-between mb-4">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center"
-          style={{ backgroundColor: color + '15' }}>
+        <div
+          className="w-10 h-10 rounded-xl flex items-center justify-center"
+          style={{ backgroundColor: color + "15" }}
+        >
           <Icon size={18} style={{ color }} />
         </div>
-        {typeof delta === 'number' && delta !== 0 && (
-          <span className={`flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full
-            ${delta > 0 ? 'text-emerald-600 bg-emerald-50' : 'text-red-600 bg-red-50'}`}>
-            <TrendingUp size={9} className={delta < 0 ? 'rotate-180' : ''} />
-            {delta > 0 ? '+' : ''}{delta}%
+        {typeof delta === "number" && delta !== 0 && (
+          <span
+            className={`flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full
+            ${delta > 0 ? "text-emerald-600 bg-emerald-50" : "text-red-600 bg-red-50"}`}
+          >
+            <TrendingUp size={9} className={delta < 0 ? "rotate-180" : ""} />
+            {delta > 0 ? "+" : ""}
+            {delta}%
           </span>
         )}
       </div>
-      <p className="font-['Unbounded'] text-2xl font-black text-[#3E3D38] mb-1">{display}</p>
+      <p className="font-['Unbounded'] text-2xl font-black text-[#3E3D38] mb-1">
+        {display}
+      </p>
       <p className="text-xs font-semibold text-[#6B6B66]">{label}</p>
       {sub && <p className="text-[10px] text-[#9A9A94] mt-0.5">{sub}</p>}
       <span className="mt-3 inline-flex items-center gap-1 text-[10px] font-semibold text-[#9A9A94] group-hover:text-[#3E3D38]">
@@ -269,21 +315,38 @@ function StatTile({ label, value, sub, delta, icon: Icon, color, to }) {
   );
 }
 
-function ActivityCard({ title, subtitle, icon: Icon, accent, to, items, loading, empty, renderItem }) {
+function ActivityCard({
+  title,
+  subtitle,
+  icon: Icon,
+  accent,
+  to,
+  items,
+  loading,
+  empty,
+  renderItem,
+}) {
   return (
     <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
       <div className="px-5 py-4 border-b border-[#E5E0D8] flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-            style={{ backgroundColor: accent + '15' }}>
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center"
+            style={{ backgroundColor: accent + "15" }}
+          >
             <Icon size={15} style={{ color: accent }} />
           </div>
           <div>
-            <p className="font-['Unbounded'] text-xs font-bold text-[#3E3D38]">{title}</p>
+            <p className="font-['Unbounded'] text-xs font-bold text-[#3E3D38]">
+              {title}
+            </p>
             <p className="text-[10px] text-[#9A9A94]">{subtitle}</p>
           </div>
         </div>
-        <Link to={to} className="text-[10px] font-semibold text-[#9A9A94] hover:text-[#3E3D38] flex items-center gap-1">
+        <Link
+          to={to}
+          className="text-[10px] font-semibold text-[#9A9A94] hover:text-[#3E3D38] flex items-center gap-1"
+        >
           View all <ArrowRight size={10} />
         </Link>
       </div>
@@ -311,13 +374,13 @@ function ActivityCard({ title, subtitle, icon: Icon, accent, to, items, loading,
 
 // Lightweight relative time helper — avoids pulling in dayjs/moment.
 function formatRelative(iso) {
-  if (!iso) return '';
+  if (!iso) return "";
   const then = new Date(iso).getTime();
-  if (Number.isNaN(then)) return '';
+  if (Number.isNaN(then)) return "";
   const diff = Math.floor((Date.now() - then) / 1000);
-  if (diff < 60)        return 'just now';
-  if (diff < 3600)      return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400)     return `${Math.floor(diff / 3600)}h ago`;
+  if (diff < 60) return "just now";
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
   if (diff < 7 * 86400) return `${Math.floor(diff / 86400)}d ago`;
   return new Date(iso).toLocaleDateString();
 }
