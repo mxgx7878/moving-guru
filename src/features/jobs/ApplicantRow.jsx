@@ -13,6 +13,10 @@ const APPLICATION_STATUS = {
 export default function ApplicantRow({ app }) {
   const user = app.instructor || app.user || {};
   const name = user.name || 'Unknown';
+  const profilePicture = user.detail?.profile_picture_url
+    || user.detail?.profile_picture
+    || user.profile_picture_url
+    || user.profile_picture;
   const cfg  = APPLICATION_STATUS[app.status] || {
     label: app.status || 'Pending',
     cls:   'bg-gray-100 text-gray-500',
@@ -21,7 +25,7 @@ export default function ApplicantRow({ app }) {
   return (
     <div className="flex items-center justify-between gap-3 bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl p-3">
       <div className="flex items-center gap-3 min-w-0">
-        <Avatar name={name} />
+        <Avatar name={name} src={profilePicture} />
         <div className="min-w-0">
           <p className="font-semibold text-[#3E3D38] text-xs truncate">{name}</p>
           {user.email && (

@@ -167,7 +167,7 @@ export default function SearchInstructors() {
                     <div className="flex items-center gap-3">
                       <Avatar
                         name={inst.name}
-                        src={inst?.detail?.profile_picture}
+                        src={inst?.detail?.profile_picture_url || inst?.detail?.profile_picture}
                         size="md"
                         tone="coral"
                       />

@@ -55,7 +55,12 @@ export default function Sidebar({ mobileOpen, onClose }) {
         {/* User / Studio card */}
         <Link to={theme.profilePath} className="px-4 py-4 border-b border-[#E5E0D8]">
           <div className="flex items-center gap-3 bg-[#f5fca6]/25 rounded-xl p-3">
-            <Avatar name={displayName} src={user?.profile_picture} size="sm" tone={theme.avatarTone} />
+            <Avatar
+              name={displayName}
+              src={user?.profile_picture_url || user?.profile_picture}
+              size="sm"
+              tone={theme.avatarTone}
+            />
             <div className="min-w-0">
               <p className="text-[#3E3D38] text-xs font-semibold truncate">{displayName}</p>
               <div className="flex items-center gap-1 mt-0.5">

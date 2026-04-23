@@ -155,7 +155,12 @@ export default function StudioDashboard() {
               const initials = inst.initials || inst.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
               return (
                 <div key={inst.id} className="px-6 py-4 flex items-center gap-4 hover:bg-[#FDFCF8] transition-colors group">
-                 <Avatar name={inst.name} src={inst.detail.profile_picture} size="md" tone="default" />
+                 <Avatar
+                   name={inst.name}
+                   src={inst.detail?.profile_picture_url || inst.detail?.profile_picture}
+                   size="md"
+                   tone="coral"
+                 />
                   <div className="flex-1 min-w-0">
                     <p className="text-[#3E3D38] text-sm font-semibold truncate">{inst.name}</p>
                     <p className="text-[#9A9A94] text-xs">{(inst.detail.disciplines || []).join(', ')}</p>

@@ -39,7 +39,7 @@ export default function SavedInstructorCard({
           <div className="flex items-center gap-3">
             <Avatar
               name={inst.name}
-              src={instDetail?.profile_picture}
+              src={instDetail?.profile_picture_url || instDetail?.profile_picture}
               size="md"
               tone="coral"
             />

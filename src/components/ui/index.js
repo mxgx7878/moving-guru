@@ -12,6 +12,7 @@ export { default as StarRating } from './StarRating';
 export { default as StatusPill } from './StatusPill';
 export { default as IconButton } from './IconButton';
 export { default as Avatar } from './Avatar';
+export { default as SocialLinksRow } from './SocialLinksRow';
 export { default as Chip } from './Chip';
 export { default as SearchBar } from './SearchBar';
 export { default as FilterSelect } from './FilterSelect';

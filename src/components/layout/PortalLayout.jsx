@@ -49,10 +49,19 @@ export default function PortalLayout() {
               <Bell size={18} className="text-[#6B6B66]" />
               <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-[#CE4F56] rounded-full" />
             </button>
-            <Link to={theme.profilePath} className="flex items-center gap-2 text-sm">
+            <Link
+              to={theme.profilePath}
+              className="flex items-center gap-2 text-sm hover:bg-[#FBF8E4] rounded-lg px-2 py-1 -mx-2 -my-1 transition-colors"
+              title="View your profile"
+            >
               <span className="text-[#9A9A94] hidden sm:inline">Hi,</span>
-              <Avatar name={displayName} src={user?.profile_picture} size="sm" tone={theme.avatarTone} /> 
-              <span className="font-semibold text-[#3E3D38]">{firstName}</span>
+              <Avatar
+                name={displayName}
+                src={user?.profile_picture_url || user?.profile_picture}
+                size="sm"
+                tone={theme.avatarTone}
+              />
+              <span className="font-semibold text-[#3E3D38] hover:text-[#CE4F56]">{firstName}</span>
             </Link>
           </div>
         </header>

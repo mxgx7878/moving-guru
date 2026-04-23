@@ -146,12 +146,12 @@ export default function Messages() {
                   className={`w-full text-left px-4 py-3.5 flex items-center gap-3 transition-colors border-b border-[#E5E0D8]/50
                     ${activeConvo?.id === convo.id ? `bg-[${theme.accent}]/5` : 'hover:bg-[#FDFCF8]'}`}
                 >
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-white text-xs font-bold font-['Unbounded'] flex-shrink-0"
-                    style={{ background: `linear-gradient(135deg, #CE4F56, #E89560)` }}
-                  >
-                    {convo.initials || convo.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
-                  </div>
+                  <Avatar
+                    name={convo.name}
+                    src={convo.profile_picture_url || convo.profile_picture || convo.avatar_url || convo.avatar}
+                    size="md"
+                    tone="coral"
+                  />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-0.5">
                       <p className="text-[#3E3D38] text-sm font-semibold truncate">{convo.name}</p>
@@ -199,7 +199,12 @@ export default function Messages() {
                     <ArrowLeft size={20} />
                   </button>
 
-                  <Avatar name={activeConvo.name} size="sm" tone={theme.avatarTone} /> 
+                  <Avatar
+                    name={activeConvo.name}
+                    src={activeConvo.profile_picture_url || activeConvo.profile_picture || activeConvo.avatar_url || activeConvo.avatar}
+                    size="sm"
+                    tone={theme.avatarTone}
+                  />
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-[#3E3D38] truncate">{activeConvo.name}</p>
                     <p className="text-[10px] text-[#6BE6A4] font-medium truncate">

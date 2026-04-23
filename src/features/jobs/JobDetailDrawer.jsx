@@ -158,7 +158,13 @@ export default function JobDetailDrawer({
       {job.studio && (
         <div className="bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl p-4 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <Avatar name={job.studio.studio_name || job.studio.name} tone="blue" shape="square" size="md" />
+            <Avatar
+              name={job.studio.studio_name || job.studio.name}
+              src={job.studio.detail?.profile_picture_url || job.studio.detail?.profile_picture || job.studio.profile_picture}
+              tone="blue"
+              shape="square"
+              size="md"
+            />
             <div className="min-w-0">
               <p className="font-['Unbounded'] text-xs font-black text-[#3E3D38] truncate">
                 {job.studio.studio_name || job.studio.name}
