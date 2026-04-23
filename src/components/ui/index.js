@@ -23,3 +23,9 @@ export { default as SelectField } from './SelectField';
 export { default as StatTile } from './StatTile';
 export { default as LabeledBlock } from './LabeledBlock';
 export { default as InfoRow } from './InfoRow';
+
+// Universal page-level components — one shape per page concern.
+export { default as PageHeader } from './PageHeader';
+export { default as Toolbar } from './Toolbar';
+export { default as DataTable } from './DataTable';
+export { default as StatTileGroup } from './StatTileGroup';
