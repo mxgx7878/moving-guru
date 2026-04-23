@@ -5,7 +5,7 @@ import { Heart } from 'lucide-react';
 import { fetchSavedInstructors, unsaveInstructor } from '../../store/actions/instructorAction';
 import { STATUS } from '../../constants/apiConstants';
 import { CardSkeleton } from '../../components/feedback';
-import { SearchBar } from '../../components/ui';
+import { Button, SearchBar } from '../../components/ui';
 import { SavedInstructorCard } from '../../features/instructors';
 
 // Saved instructors grid. "View Profile" routes studios to the dedicated

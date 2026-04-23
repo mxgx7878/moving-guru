@@ -232,7 +232,7 @@ export default function Grow() {
             variant="accent"
             size="md"
             onClick={goNew}
-            className="bg-[#f5fca6] text-[#3E3D38] border-[#f5fca6] hover:bg-white"
+            className="bg-[#f5fca6] !text-[#3E3D38] border-[#f5fca6] hover:bg-white"
           >
             Post Now
           </Button>

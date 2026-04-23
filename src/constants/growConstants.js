@@ -21,7 +21,7 @@ export const GROW_TYPE_META = GROW_TYPES.reduce(
 
 // Filter tabs — prepends "All" to the public Grow page tabs.
 export const GROW_FILTER_TABS = [
-  { id: 'all', label: 'All Posts', color: '#3E3D38' },
+  { id: 'all', label: 'All Posts',  },
   ...GROW_TYPES,
 ];
 
