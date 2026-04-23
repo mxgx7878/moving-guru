@@ -2,9 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'sonner';
-import {
-  ArrowLeft, Loader2, BookOpen, Palmtree, Calendar,
-} from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 
 import {
   fetchGrowPostDetail,
@@ -19,19 +17,13 @@ import {
 } from '../../store/slices/growSlice';
 import { ROLE_THEME } from '../../config/portalConfig';
 import { STATUS } from '../../constants/apiConstants';
-import { EMPTY_GROW_FORM as EMPTY_FORM } from '../../constants/growConstants';
-import { Field } from '../../components/ui';
+import {
+  GROW_TYPES,
+  EMPTY_GROW_FORM as EMPTY_FORM,
+} from '../../constants/growConstants';
+import { Field, Button, TabBar } from '../../components/ui';
 import { postToGrowForm as postToForm } from '../../utils/postToForm';
 import { validateGrowForm } from '../../utils/validators';
-
-// Local labels — the Grow form uses longer labels than the public list
-// (e.g. "Teacher Training" vs "Training"), so we override the shared icons
-// from growConstants to use a different colour palette.
-const GROW_TYPES = [
-  { id: 'training', label: 'Teacher Training', color: '#2DA4D6', icon: BookOpen },
-  { id: 'retreat',  label: 'Retreats',         color: '#6BE6A4', icon: Palmtree },
-  { id: 'event',    label: 'Events',           color: '#E89560', icon: Calendar },
-];
 
 const DISCIPLINE_LIST = [
   'Reformer Pilates', 'Mat Pilates', 'Vinyasa Yoga', 'Hatha Yoga', 'Yin Yoga',
@@ -213,23 +205,13 @@ export default function GrowPostForm() {
 
         {/* Type */}
         <Field label="Type *">
-          <div className="flex gap-2">
-            {GROW_TYPES.map((t) => {
-              const Icon = t.icon;
-              const active = form.type === t.id;
-              return (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => update('type', t.id)}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold border transition-all
-                    ${active ? 'text-white' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#3E3D38]'}`}
-                  style={active ? { backgroundColor: t.color, borderColor: t.color } : {}}>
-                  <Icon size={12} /> {t.label}
-                </button>
-              );
-            })}
-          </div>
+          <TabBar
+            tabs={GROW_TYPES}
+            activeId={form.type}
+            onChange={(id) => update('type', id)}
+            layout="stretch"
+            size="md"
+          />
         </Field>
 
         <Field label="Title *" error={errors.title}>
@@ -365,20 +347,18 @@ export default function GrowPostForm() {
 
         {/* Actions */}
         <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-3 border-t border-[#F0EBE3]">
-          <button
-            type="button"
-            onClick={() => navigate(basePath)}
-            className="px-5 py-2.5 rounded-xl border border-[#E5E0D8] text-sm font-semibold text-[#6B6B66] hover:bg-[#F5F0E8] transition-colors">
+          <Button variant="secondary" size="md" onClick={() => navigate(basePath)}>
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             type="submit"
-            aria-busy={isSaving}
-            className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-colors"
-            style={{ backgroundColor: theme.accent }}>
-            {isSaving && <Loader2 size={14} className="animate-spin" />}
+            variant="primary"
+            size="md"
+            loading={isSaving}
+            style={{ backgroundColor: theme.accent, borderColor: theme.accent }}
+          >
             {isEditing ? 'Save Changes' : 'Submit for Approval'}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

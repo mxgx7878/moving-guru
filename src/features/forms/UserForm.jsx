@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Check, User, Building2, Shield } from 'lucide-react';
-import { Modal, Button, Input } from '../../components/ui';
+import { Modal, Button, Input, SelectField } from '../../components/ui';
 
 const ROLE_OPTIONS = [
   { id: 'instructor', label: 'Instructor', icon: User,       color: '#CE4F56' },
@@ -222,18 +222,13 @@ export default function UserForm({ user, saving = false, onCancel, onSubmit }) {
       {/* Status + verification */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">
-            Account Status
-          </label>
-          <select
+          <SelectField
+            label="Account Status"
             value={form.status}
-            onChange={(e) => update('status', e.target.value)}
-            className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none"
-          >
-            {STATUS_OPTIONS.map((s) => (
-              <option key={s.id} value={s.id}>{s.label}</option>
-            ))}
-          </select>
+            onChange={(v) => update('status', v)}
+            options={STATUS_OPTIONS.map((s) => ({ value: s.id, label: s.label }))}
+            placeholder="Select status"
+          />
         </div>
 
         {isStudio && (

@@ -10,28 +10,7 @@ import { fetchInstructors, fetchSavedInstructors } from '../../store/actions/ins
 import { fetchMyJobs } from '../../store/actions/jobAction';
 import { changePassword, forgotPassword } from '../../store/actions/authAction';
 import { CardSkeleton } from '../../components/feedback';
-
-function StatCard({ icon: Icon, label, value, sub, color = 'default' }) {
-  const colors = {
-    blue:    { bg: 'bg-[#2DA4D6]/8',   icon: 'text-[#2DA4D6]', val: 'text-[#2DA4D6]' },
-    coral:   { bg: 'bg-[#CE4F56]/8',   icon: 'text-[#CE4F56]', val: 'text-[#CE4F56]' },
-    green:   { bg: 'bg-[#6BE6A4]/20',  icon: 'text-[#3E3D38]', val: 'text-[#3E3D38]' },
-    default: { bg: 'bg-white',          icon: 'text-[#9A9A94]', val: 'text-[#3E3D38]' },
-  };
-  const c = colors[color] || colors.default;
-  return (
-    <div className={`${c.bg} rounded-2xl p-5 border border-[#E5E0D8]`}>
-      <div className="flex items-start justify-between mb-3">
-        <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-white shadow-sm">
-          <Icon size={16} className={c.icon} />
-        </div>
-      </div>
-      <p className={`font-['Unbounded'] text-2xl font-black ${c.val}`}>{value}</p>
-      <p className="text-[#3E3D38] text-xs font-semibold mt-1">{label}</p>
-      {sub && <p className="text-[#9A9A94] text-xs mt-0.5">{sub}</p>}
-    </div>
-  );
-}
+import { DashboardStatCard, Button } from '../../components/ui';
 
 export default function StudioDashboard() {
   const navigate = useNavigate();
@@ -110,19 +89,19 @@ export default function StudioDashboard() {
           <p className="text-[#6B6B66] text-sm">Find your next great instructor from the Moving Guru network</p>
         </div>
         <div className="relative z-10 hidden sm:block">
-          <button onClick={() => navigate('/studio/search')}
-            className="flex items-center gap-2 px-5 py-3 bg-[#2DA4D6] text-white rounded-xl text-sm font-bold hover:bg-[#2590bd] transition-all shadow-sm">
-            <Search size={16} /> Find Instructors
-          </button>
+          <Button variant="primary" size="lg" icon={Search} className="shadow-sm"
+            onClick={() => navigate('/studio/search')}>
+            Find Instructors
+          </Button>
         </div>
       </div>
 
       {/* Stats — pulled from the live store */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={Eye}          label="Active Listings" value={activeListings}      sub={`${myJobs.length} total`}        color="blue" />
-        <StatCard icon={MessageCircle} label="Applicants"     value={totalApplicants}     sub="Across your listings"           color="coral" />
-        <StatCard icon={Heart}        label="Saved"           value={savedIds.length}     sub="Instructors in favourites"      color="green" />
-        <StatCard icon={Users}        label="Network"         value={instructors.length}  sub="Active instructors on platform" color="default" />
+        <DashboardStatCard icon={Eye}          label="Active Listings" value={activeListings}      sub={`${myJobs.length} total`}        color="blue" />
+        <DashboardStatCard icon={MessageCircle} label="Applicants"     value={totalApplicants}     sub="Across your listings"           color="coral" />
+        <DashboardStatCard icon={Heart}        label="Saved"           value={savedIds.length}     sub="Instructors in favourites"      color="green" />
+        <DashboardStatCard icon={Users}        label="Network"         value={instructors.length}  sub="Active instructors on platform" color="default" />
       </div>
 
       {/* Quick actions */}

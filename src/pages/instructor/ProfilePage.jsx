@@ -1,15 +1,16 @@
-import { useState, useRef, useId } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateProfile } from '../../store/actions/authAction';
 import { DISCIPLINE_CATEGORIES } from '../../data/disciplines';
 import { COUNTRIES, COUNTRIES_AND_REGIONS } from '../../data/countries';
-import Section from '../../components/ui/Section';
-import Field from '../../components/ui/Field';
+import { Section, Field, SelectField, Button } from '../../components/ui';
 import { ReviewList } from '../../features/reviews';
+import { ScallopedFrame } from '../../features/profile';
+import { formatDateRange } from '../../utils/formatters';
 import {
   Save, Upload, X, Check, User, MapPin, Globe, Calendar,
-  Edit3, Eye, EyeOff, MessageCircle, Heart, Star, Image, ChevronDown,
+  Edit3, Eye, EyeOff, MessageCircle, Heart, Star, Image,
 } from 'lucide-react';
 
 // ─── Constants ──────────────────────────────────────────────────
@@ -31,72 +32,6 @@ const SOCIAL_PLATFORMS = [
 const PRONOUNS = ['He/Him', 'She/Her', 'They/Them', 'He/They', 'She/They', 'Prefer not to say'];
 const LANGUAGES = ['English','Spanish','French','Portuguese','Italian','German','Japanese','Mandarin','Arabic','Hindi','Korean','Indonesian','Russian','Polish','Cantonese','Ukrainian','Nigerian','Thai'];
 const OPEN_TO = ['Direct Hire', 'Swaps', 'Energy Exchange'];
-
-// ─── Scalloped frame ─────────────────────────────────────────────
-function ScallopedFrame({ size = 200, borderWidth = 2, children, className = '', onClick }) {
-  const uid = useId();
-  const s = size, cx = s / 2, cy = s / 2, r = s / 2 - borderWidth;
-  const bumps = 12, bumpDepth = r * 0.13;
-  let path = '';
-  for (let i = 0; i < bumps; i++) {
-    const a1 = (i / bumps) * Math.PI * 2;
-    const a2 = ((i + 1) / bumps) * Math.PI * 2;
-    const aMid = (a1 + a2) / 2;
-    const x1 = cx + r * Math.cos(a1), y1 = cy + r * Math.sin(a1);
-    const xMid = cx + (r - bumpDepth) * Math.cos(aMid);
-    const yMid = cy + (r - bumpDepth) * Math.sin(aMid);
-    const x2 = cx + r * Math.cos(a2), y2 = cy + r * Math.sin(a2);
-    if (i === 0) path += `M ${x1} ${y1} `;
-    path += `Q ${xMid} ${yMid} ${x2} ${y2} `;
-  }
-  path += 'Z';
-  const clipId = `scallop${uid}`;
-  return (
-    <div className={`relative ${className}`} style={{ width: s, height: s }} onClick={onClick}>
-      <svg width={s} height={s} viewBox={`0 0 ${s} ${s}`} className="absolute inset-0 z-[1]" style={{ pointerEvents: 'none' }}>
-        <defs><clipPath id={clipId}><path d={path} /></clipPath></defs>
-        <path d={path} fill="none" stroke="#3E3D38" strokeWidth={borderWidth} />
-      </svg>
-      <div className="absolute inset-0 overflow-hidden" style={{ clipPath: `url(#${clipId})` }}>
-        {children}
-      </div>
-    </div>
-  );
-}
-
-// ─── Reusable dropdown ───────────────────────────────────────────
-function SelectField({ value, onChange, options, placeholder, error }) {
-  return (
-    <div className="relative">
-      <select
-        value={value || ''}
-        onChange={e => onChange(e.target.value)}
-        className={`w-full appearance-none border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#CE4F56] bg-white pr-9
-          ${error ? 'border-red-400' : 'border-[#E5E0D8]'}
-          ${!value ? 'text-[#C4BCB4]' : 'text-[#3E3D38]'}`}
-      >
-        <option value="">{placeholder}</option>
-        {options.map(o => <option key={o} value={o}>{o}</option>)}
-      </select>
-      <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none" />
-      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
-    </div>
-  );
-}
-
-// ─── Format date range for display / FormData ────────────────────
-function formatDateRange(from, to) {
-  if (!from && !to) return '';
-  const fmt = (d) => {
-    if (!d) return '';
-    const [y, m] = d.split('-');
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    return `${months[parseInt(m) - 1]} ${y}`;
-  };
-  if (from && to) return `${fmt(from)} – ${fmt(to)}`;
-  if (from) return `From ${fmt(from)}`;
-  return `Until ${fmt(to)}`;
-}
 
 // ─── Main component ──────────────────────────────────────────────
 export default function ProfilePage() {
@@ -385,7 +320,7 @@ export default function ProfilePage() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <Field label="Pronouns">
-                    <SelectField
+                    <SelectField size="sm"
                       value={form.pronouns}
                       onChange={v => set('pronouns', v)}
                       options={PRONOUNS}
@@ -473,7 +408,7 @@ export default function ProfilePage() {
               {/* Country From → Traveling To */}
               <div className="grid grid-cols-2 gap-4">
                 <Field label="Country From">
-                  <SelectField
+                  <SelectField size="sm"
                     value={form.countryFrom}
                     onChange={v => set('countryFrom', v)}
                     options={COUNTRIES}
@@ -482,7 +417,7 @@ export default function ProfilePage() {
                 </Field>
                 <Field label="Traveling To" hint="Countries or regions you plan to visit">
                   <div className="space-y-2">
-                    <SelectField
+                    <SelectField size="sm"
                       value={form.travelingTo?.split(',')[0]?.trim() || ''}
                       onChange={v => set('travelingTo', v)}
                       options={COUNTRIES_AND_REGIONS}
@@ -782,25 +717,26 @@ export default function ProfilePage() {
 
             {/* Action buttons — sticky Save */}
             <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5 space-y-2">
-              <button
+              <Button
+                variant={saved ? 'success' : 'primary'}
+                size="lg"
+                fullWidth
+                loading={saving}
+                icon={saved ? Check : Save}
                 onClick={handleSave}
-                disabled={saving}
-                className={`w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all duration-300 disabled:opacity-60
-                  ${saved ? 'bg-emerald-500 text-white' : 'bg-[#2DA4D6] text-white hover:bg-[#2590bd]'}`}
               >
-                {saving
-                  ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</>
-                  : saved
-                    ? <><Check size={15} /> Saved!</>
-                    : <><Save size={15} /> Save Changes</>
-                }
-              </button>
-              <button
+                {saved ? 'Saved!' : 'Save Changes'}
+              </Button>
+              <Button
+                variant="secondary"
+                size="md"
+                fullWidth
+                icon={showPreview ? EyeOff : Eye}
                 onClick={() => setShowPreview(!showPreview)}
-                className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm border border-[#E5E0D8] text-[#6B6B66] hover:border-[#CE4F56] hover:text-[#CE4F56] transition-all"
+                className="hover:border-[#CE4F56] hover:text-[#CE4F56]"
               >
-                {showPreview ? <><EyeOff size={14} /> Hide Preview</> : <><Eye size={14} /> Show Preview</>}
-              </button>
+                {showPreview ? 'Hide Preview' : 'Show Preview'}
+              </Button>
             </div>
 
           </div>

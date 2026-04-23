@@ -1,36 +1,74 @@
-import { BookOpen, Palmtree, Calendar, Check, X, Clock } from 'lucide-react';
+import {
+  BookOpen, Palmtree, Calendar, Clock, CheckCircle2, AlertCircle, Sprout,
+} from 'lucide-react';
 
-// Post categories shown in the create form
+// ── Grow post types ───────────────────────────────────────────────
+// Canonical palette used by the public Grow feed, the create form,
+// and the admin moderation view. Blue = training, green = retreat,
+// orange = event. Any visual change here propagates everywhere.
 export const GROW_TYPES = [
-  { id: 'training', label: 'Training',  icon: BookOpen, color: '#CE4F56' },
-  { id: 'retreat',  label: 'Retreat',   icon: Palmtree, color: '#6BE6A4' },
-  { id: 'event',    label: 'Event',     icon: Calendar, color: '#2DA4D6' },
+  { id: 'training', label: 'Teacher Training', icon: BookOpen, color: '#2DA4D6' },
+  { id: 'retreat',  label: 'Retreats',         icon: Palmtree, color: '#6BE6A4' },
+  { id: 'event',    label: 'Events',           icon: Calendar, color: '#E89560' },
 ];
 
-// Tabs on the public Grow page (includes "All")
+// Lookup by id for quick meta access. Shape matches individual GROW_TYPES
+// entries so it's a drop-in when you already have a type string.
+export const GROW_TYPE_META = GROW_TYPES.reduce(
+  (acc, t) => ({ ...acc, [t.id]: t }),
+  {},
+);
+
+// Filter tabs — prepends "All" to the public Grow page tabs.
 export const GROW_FILTER_TABS = [
-  { id: 'all',      label: 'All',      icon: null,     color: '#3E3D38' },
+  { id: 'all', label: 'All Posts',  },
   ...GROW_TYPES,
 ];
 
-export const GROW_TYPE_ICONS = {
-  training: BookOpen,
-  retreat:  Palmtree,
-  event:    Calendar,
-};
-
+// Tailwind background + text helper classes (used by card rendering
+// where the author wants tinted pills, not the flat color dot).
 export const GROW_TYPE_BG = {
-  training: 'bg-[#CE4F56]/10',
-  retreat:  'bg-[#6BE6A4]/20',
-  event:    'bg-[#2DA4D6]/10',
+  training: 'bg-[#2DA4D6]/10 text-[#2DA4D6]',
+  retreat:  'bg-[#6BE6A4]/30 text-[#3E3D38]',
+  event:    'bg-[#E89560]/15 text-[#E89560]',
 };
 
-export const GROW_STATUS_BADGE = {
-  pending:  { label: 'Pending Review', icon: Clock, class: 'bg-amber-50 text-amber-600 border border-amber-200' },
-  approved: { label: 'Approved',       icon: Check, class: 'bg-emerald-50 text-emerald-600 border border-emerald-200' },
-  rejected: { label: 'Rejected',       icon: X,     class: 'bg-red-50 text-red-500 border border-red-200' },
+// ── Moderation status ─────────────────────────────────────────────
+// Shape matches the StatusPill `config` prop — `{ label, icon, cls }`.
+//
+// Admin-facing labels (used on the moderation queue).
+export const GROW_STATUS_CONFIG = {
+  pending:  { label: 'Pending',  icon: Clock,        cls: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
+  approved: { label: 'Approved', icon: CheckCircle2, cls: 'bg-green-50 text-green-700 border-green-200'    },
+  rejected: { label: 'Rejected', icon: AlertCircle,  cls: 'bg-red-50 text-red-700 border-red-200'          },
 };
 
+// Author-facing labels (used on the public Grow page so authors see
+// "Live" instead of "Approved" on their own posts). Same keys so both
+// configs stay interchangeable.
+export const GROW_STATUS_PUBLIC_CONFIG = {
+  pending:  { label: 'Pending Approval', icon: Clock,        cls: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
+  approved: { label: 'Live',             icon: CheckCircle2, cls: 'bg-green-50 text-green-700 border-green-200'    },
+  rejected: { label: 'Rejected',         icon: AlertCircle,  cls: 'bg-red-50 text-red-700 border-red-200'          },
+};
+
+// Tab definitions used by the admin moderation page.
+export const GROW_STATUS_TABS = [
+  { id: 'pending',  label: 'Pending',  icon: Clock,        color: '#F59E0B' },
+  { id: 'approved', label: 'Approved', icon: CheckCircle2, color: '#10B981' },
+  { id: 'rejected', label: 'Rejected', icon: AlertCircle,  color: '#EF4444' },
+  { id: 'all',      label: 'All',      icon: Sprout,       color: '#7F77DD' },
+];
+
+// Options for the "All types" filter dropdown on the admin page.
+export const GROW_TYPE_OPTIONS = [
+  { id: 'all',      label: 'All types' },
+  { id: 'training', label: 'Training'  },
+  { id: 'retreat',  label: 'Retreat'   },
+  { id: 'event',    label: 'Event'     },
+];
+
+// ── Create/edit form defaults ─────────────────────────────────────
 export const EMPTY_GROW_FORM = {
   type:         'training',
   title:        '',
