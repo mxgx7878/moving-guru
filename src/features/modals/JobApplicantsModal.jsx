@@ -12,6 +12,7 @@ import {
 import { fetchUserReviews, fetchMyReviews } from "../../store/actions/reviewAction";
 import { STATUS } from "../../constants/apiConstants";
 import { ButtonLoader } from "../../components/feedback";
+import { Button } from "../../components/ui";
 import  StarRating  from "../../components/ui/StarRating";
 import ReviewFormModal from "./ReviewFormModal";
 
@@ -273,64 +274,52 @@ export default function JobApplicantsModal({ job, onClose }) {
 
                     {/* Actions */}
                     <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[#E5E0D8] flex-wrap">
-                      <button
+                      <Button variant="secondary" size="xs" icon={ExternalLink}
                         onClick={() => handleViewProfile(inst.id)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E5E0D8] text-xs font-semibold text-[#6B6B66] hover:border-[#2DA4D6] hover:text-[#2DA4D6] transition-colors"
-                      >
-                        <ExternalLink size={12} /> View Profile
-                      </button>
-                      <button
+                        className="hover:border-[#2DA4D6] hover:text-[#2DA4D6]">
+                        View Profile
+                      </Button>
+                      <Button variant="secondary" size="xs" icon={MessageCircle}
                         onClick={handleMessage}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E5E0D8] text-xs font-semibold text-[#6B6B66] hover:border-[#2DA4D6] hover:text-[#2DA4D6] transition-colors"
-                      >
-                        <MessageCircle size={12} /> Message
-                      </button>
+                        className="hover:border-[#2DA4D6] hover:text-[#2DA4D6]">
+                        Message
+                      </Button>
 
                       <div className="flex-1" />
 
-                      {/* Review button / already-reviewed badge.
-                          alreadyReviewed wins over the "Leave Review"
-                          button even if status !== 'accepted' — if the
-                          studio somehow got a review out (legacy data,
-                          mis-click), we still show the badge rather
-                          than dead-ending with nothing. */}
+                      {/* "Reviewed" badge wins over "Leave Review" even when
+                          status != 'accepted' — legacy data may have slipped
+                          through, so we show the record instead of nothing. */}
                       {app.status === "accepted" && alreadyReviewed && (
-                        <span
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600 text-xs font-bold cursor-default"
-                          title="You've already reviewed this instructor for this listing"
-                        >
-                          <Check size={12} /> Reviewed
-                        </span>
+                        <Button variant="successSoft" size="xs" icon={Check} state="static"
+                          title="You've already reviewed this instructor for this listing">
+                          Reviewed
+                        </Button>
                       )}
                       {app.status === "accepted" && !alreadyReviewed && (
-                        <button
-                          onClick={() => setReviewTarget({ user: inst, jobId: job.id, jobTitle: job.title })}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#2DA4D6] text-white text-xs font-bold hover:bg-[#2590bd] transition-colors"
-                        >
-                          <Star size={12} /> Leave Review
-                        </button>
+                        <Button variant="primary" size="xs" icon={Star}
+                          onClick={() => setReviewTarget({ user: inst, jobId: job.id, jobTitle: job.title })}>
+                          Leave Review
+                        </Button>
                       )}
 
                       {(app.status === "pending" || app.status === "viewed") && (
                         <>
-                          <button
+                          <Button variant="secondary" size="xs" icon={XCircle}
                             onClick={() => handleReject(app)}
                             disabled={isMutating}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E5E0D8] text-xs font-semibold text-[#6B6B66] hover:border-red-500 hover:text-red-500 transition-colors disabled:opacity-60"
-                          >
-                            {isMutating ? <ButtonLoader size={11} color="#CE4F56" /> : <XCircle size={12} />}
+                            loading={isMutating}
+                            className="hover:border-red-500 hover:text-red-500">
                             Decline
-                          </button>
+                          </Button>
 
-                          <button
+                          <Button variant="success" size="xs" icon={Check}
                             onClick={() => handleAccept(app)}
                             disabled={isMutating || !canHire}
-                            title={!canHire ? 'All positions have been filled' : undefined}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500 text-white text-xs font-bold hover:bg-emerald-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            {isMutating ? <ButtonLoader size={11} /> : <Check size={12} />}
+                            loading={isMutating}
+                            title={!canHire ? 'All positions have been filled' : undefined}>
                             Hire
-                          </button>
+                          </Button>
                         </>
                       )}
                     </div>
@@ -342,12 +331,7 @@ export default function JobApplicantsModal({ job, onClose }) {
         </div>
 
         <div className="px-6 py-4 border-t border-[#E5E0D8] flex items-center justify-end">
-          <button
-            onClick={onClose}
-            className="px-5 py-2.5 border border-[#E5E0D8] rounded-xl text-sm font-medium text-[#6B6B66] hover:border-[#9A9A94] transition-colors"
-          >
-            Close
-          </button>
+          <Button variant="secondary" size="md" onClick={onClose}>Close</Button>
         </div>
       </div>
 
