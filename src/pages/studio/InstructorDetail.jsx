@@ -13,6 +13,7 @@ import {
   unsaveInstructor,
 } from '../../store/actions/instructorAction';
 import { STATUS } from '../../constants/apiConstants';
+import { Section, InfoTile } from '../../components/ui';
 import { ReviewList } from '../../features/reviews';
 import { ButtonLoader } from '../../components/feedback';
 
@@ -275,26 +276,6 @@ export default function InstructorDetail() {
           )}
         </div>
       </div>
-    </div>
-  );
-}
-
-function InfoTile({ icon, label, value }) {
-  return (
-    <div className="bg-[#FBF8E4]/50 rounded-xl p-3">
-      <p className="text-[9px] text-[#9A9A94] uppercase tracking-wider font-bold mb-1">{label}</p>
-      <p className="text-[#3E3D38] text-xs font-medium flex items-center gap-1.5">
-        <span className="text-[#9A9A94]">{icon}</span> {value}
-      </p>
-    </div>
-  );
-}
-
-function Section({ title, children }) {
-  return (
-    <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
-      <h3 className="font-['Unbounded'] text-sm font-black text-[#3E3D38] mb-4">{title}</h3>
-      {children}
     </div>
   );
 }

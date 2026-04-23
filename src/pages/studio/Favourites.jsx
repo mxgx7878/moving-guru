@@ -6,8 +6,8 @@ import {
 } from 'lucide-react';
 import { fetchSavedInstructors, unsaveInstructor } from '../../store/actions/instructorAction';
 import { STATUS } from '../../constants/apiConstants';
-import { CardSkeleton, ButtonLoader } from '../../components/feedback';
-import { Button } from '../../components/ui';
+import { CardSkeleton } from '../../components/feedback';
+import { SavedInstructorCard } from '../../features/instructors';
 
 // Saved instructors grid. "View Profile" routes studios to the dedicated
 // instructor detail page — modals are reserved for quick, short interactions
@@ -112,136 +112,6 @@ export default function Favourites() {
           ))}
         </div>
       )}
-    </div>
-  );
-}
-
-function SavedInstructorCard({ instructor, unsaving, onUnsave, onView, onMessage }) {
-  const inst = instructor;
-  const initials = inst.initials || inst.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-  const travelingTo = inst.travelingTo || inst.traveling_to || '';
-  const countryFrom = inst.countryFrom || inst.country_from || inst.location || '';
-  const openTo = inst.openTo || inst.open_to || [];
-  const languages = inst.languages || [];
-  const disciplines = inst.disciplines || [];
-
-  return (
-    <div
-      onClick={onView}
-      className="bg-white rounded-2xl border border-[#CE4F56]/20 overflow-hidden hover:border-[#CE4F56]/50 hover:shadow-sm transition-all cursor-pointer"
-    >
-      <div className="bg-gradient-to-br from-[#FDFCF8] to-[#CE4F56]/5 px-5 pt-5 pb-4">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center text-white font-bold text-sm font-['Unbounded'] overflow-hidden flex-shrink-0">
-              {inst.profile_picture
-                ? <img src={inst.profile_picture} alt="" className="w-full h-full object-cover rounded-full" />
-                : initials}
-            </div>
-            <div>
-              <p className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">{inst.name}</p>
-              <p className="text-[#9A9A94] text-[10px]">
-                {inst.pronouns}{inst.age ? ` · ${inst.age} yrs` : ''}
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={onUnsave}
-            disabled={unsaving}
-            className="p-1.5 rounded-lg text-[#CE4F56] hover:bg-red-50 transition-all"
-            title="Remove from saved"
-          >
-            {unsaving ? <ButtonLoader size={16} color="#CE4F56" /> : <Heart size={16} fill="currentColor" />}
-          </button>
-        </div>
-        <div className="flex items-center gap-1 mt-3">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#6BE6A4]" />
-          <span className="text-[#6B6B66] text-[10px] font-semibold">Actively Seeking</span>
-        </div>
-      </div>
-
-      <div className="px-5 pb-4 space-y-3">
-        {disciplines.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {disciplines.slice(0, 4).map((d) => (
-              <span key={d} className="px-2 py-0.5 bg-[#2DA4D6]/10 text-[#2DA4D6] text-[10px] font-medium rounded-full">{d}</span>
-            ))}
-            {disciplines.length > 4 && (
-              <span className="px-2 py-0.5 bg-[#FBF8E4] text-[#9A9A94] text-[10px] rounded-full">
-                +{disciplines.length - 4}
-              </span>
-            )}
-          </div>
-        )}
-
-        <div className="space-y-1.5">
-          {(countryFrom || travelingTo) && (
-            <div className="flex items-center gap-1.5 text-xs text-[#6B6B66]">
-              <MapPin size={11} className="text-[#9A9A94] flex-shrink-0" />
-              <span className="truncate">
-                {countryFrom}{travelingTo && ` → ${travelingTo}`}
-              </span>
-            </div>
-          )}
-          {inst.availability && (
-            <div className="flex items-center gap-1.5 text-xs text-[#6B6B66]">
-              <Calendar size={11} className="text-[#9A9A94] flex-shrink-0" />
-              <span className="truncate">{inst.availability}</span>
-            </div>
-          )}
-          {languages.length > 0 && (
-            <div className="flex items-center gap-1.5 text-xs text-[#6B6B66]">
-              <Globe size={11} className="text-[#9A9A94] flex-shrink-0" />
-              <span className="truncate">{languages.join(', ')}</span>
-            </div>
-          )}
-          {inst.stats?.applications_count !== undefined && (
-            <div className="flex items-center gap-1.5 text-xs text-[#6B6B66]">
-              <Users size={11} className="text-[#9A9A94] flex-shrink-0" />
-              <span className="truncate">{inst.stats.applications_count} applications</span>
-            </div>
-          )}
-        </div>
-
-        {openTo.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {openTo.map((o) => (
-              <span
-                key={o}
-                className={`px-2 py-0.5 text-[10px] rounded-full font-medium
-                  ${o === 'Direct Hire' ? 'bg-[#2DA4D6]/10 text-[#2DA4D6]' :
-                    o === 'Swaps' ? 'bg-[#E89560]/15 text-[#E89560]' :
-                    'bg-[#6BE6A4]/15 text-[#3E3D38]'}`}
-              >
-                {o}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {inst.bio && <p className="text-[#9A9A94] text-xs line-clamp-2">{inst.bio}</p>}
-
-        <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-          <Button
-            variant="secondary"
-            size="sm"
-            icon={Eye}
-            fullWidth
-            onClick={onView}
-          >
-            View Profile
-          </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            icon={MessageCircle}
-            fullWidth
-            onClick={onMessage}
-          >
-            Message
-          </Button>
-        </div>
-      </div>
     </div>
   );
 }

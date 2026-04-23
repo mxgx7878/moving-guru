@@ -8,7 +8,7 @@ import {
 
 import axiosInstance from '../../config/axiosInstance';
 import { API_ENDPOINTS } from '../../constants/apiConstants';
-import { Section, Button } from '../../components/ui';
+import { Section, Button, InfoTile } from '../../components/ui';
 import { ReviewList } from '../../features/reviews';
 
 /**
@@ -272,13 +272,3 @@ export default function StudioDetail() {
   );
 }
 
-function InfoTile({ icon, label, value }) {
-  return (
-    <div className="bg-[#FBF8E4]/50 rounded-xl p-3">
-      <p className="text-[9px] text-[#9A9A94] uppercase tracking-wider font-bold mb-1">{label}</p>
-      <p className="text-[#3E3D38] text-xs font-medium flex items-center gap-1.5">
-        <span className="text-[#9A9A94]">{icon}</span> {value}
-      </p>
-    </div>
-  );
-}

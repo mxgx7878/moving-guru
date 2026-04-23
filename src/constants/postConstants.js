@@ -19,6 +19,13 @@ export const POST_TYPE_TABS = [
   ...POST_TYPES,
 ];
 
+// Lookup by id for quick meta access. Same shape as individual entries
+// so it's a drop-in when you already have a post.type string.
+export const POST_TYPE_META = POST_TYPES.reduce(
+  (acc, t) => ({ ...acc, [t.id]: t }),
+  {},
+);
+
 // Audience options for both the filter dropdown and the AudiencePill.
 export const POST_AUDIENCE_OPTIONS = [
   { id: 'all',         label: 'Everyone',    icon: Globe },
