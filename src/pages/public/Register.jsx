@@ -12,7 +12,7 @@ import {
   User, MapPin, Dumbbell, FileText, CreditCard, Building2, Calendar
 } from 'lucide-react';
 import { Input, SelectField } from '../../components/ui';
-import { formatDateRange } from '../../features/profile';
+import { formatDateRange } from '../../utils/formatters';
 
 // ─── Steps ──────────────────────────────────────────────────────
 const STEPS_INSTRUCTOR = [

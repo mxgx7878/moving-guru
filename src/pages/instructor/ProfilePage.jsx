@@ -6,7 +6,8 @@ import { DISCIPLINE_CATEGORIES } from '../../data/disciplines';
 import { COUNTRIES, COUNTRIES_AND_REGIONS } from '../../data/countries';
 import { Section, Field, SelectField } from '../../components/ui';
 import { ReviewList } from '../../features/reviews';
-import { ScallopedFrame, formatDateRange } from '../../features/profile';
+import { ScallopedFrame } from '../../features/profile';
+import { formatDateRange } from '../../utils/formatters';
 import {
   Save, Upload, X, Check, User, MapPin, Globe, Calendar,
   Edit3, Eye, EyeOff, MessageCircle, Heart, Star, Image,

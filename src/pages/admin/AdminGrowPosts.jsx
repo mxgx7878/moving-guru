@@ -19,11 +19,11 @@ import { STATUS } from '../../constants/apiConstants';
 import {
   SearchBar, FilterSelect, TabBar, EmptyState,
 } from '../../components/ui';
+import { GrowPostRow } from '../../features/growPosts';
 import {
-  GrowPostRow, GrowPostPreviewModal, RejectReasonModal,
-} from '../../features/growPosts';
+  GrowPostPreviewModal, RejectReasonModal, ConfirmModal,
+} from '../../features/modals';
 import { GROW_STATUS_TABS, GROW_TYPE_OPTIONS } from '../../constants/growConstants';
-import { ConfirmModal } from '../../features/modals';
 
 export default function AdminGrowPosts() {
   const dispatch = useDispatch();
