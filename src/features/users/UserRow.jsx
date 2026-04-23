@@ -39,7 +39,7 @@ export default function UserRow({
     <tr className="border-t border-[#F0EBE3] hover:bg-[#FDFCF8]">
       <td className="py-3 px-4">
         <div className="flex items-center gap-3">
-          <Avatar name={display} tone={AVATAR_TONE[user.role] || 'coral'} />
+          <Avatar name={display} src={user?.profile_picture} tone={AVATAR_TONE[user.role] || 'coral'} />
           <div className="min-w-0">
             <p className="font-semibold text-[#3E3D38] text-xs flex items-center gap-1.5">
               {display}

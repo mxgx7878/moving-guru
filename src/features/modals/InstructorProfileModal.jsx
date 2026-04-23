@@ -1,6 +1,6 @@
 import { MapPin, Calendar, MessageCircle, Heart, Instagram, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { Modal, Button } from '../../components/ui';
+import { Modal, Button, Avatar } from '../../components/ui';
 
 // Quick-look instructor preview modal. For the full experience studios are
 // routed to the dedicated detail page; this modal gives a brief glance from
@@ -12,12 +12,14 @@ export default function InstructorProfileModal({ instructor, isSaved, onClose, o
   const initials = instructor.initials ||
     instructor.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
 
-  const travelingTo = instructor.travelingTo || instructor.traveling_to || '';
-  const countryFrom = instructor.countryFrom || instructor.country_from || instructor.location || '';
-  const openTo = instructor.openTo || instructor.open_to || [];
-  const availability = instructor.availability || '';
-  const languages = instructor.languages || [];
-  const instagram = instructor.instagram || instructor.social_links?.instagram;
+    const instructorDetail = instructor.detail || {};
+
+  const travelingTo = instructorDetail?.travelingTo || instructorDetail?.traveling_to || '';
+  const countryFrom = instructorDetail?.countryFrom || instructorDetail?.country_from || instructorDetail?.location || '';
+  const openTo = instructorDetail?.openTo || instructorDetail?.open_to || [];
+  const availability = instructorDetail?.availability || '';
+  const languages = instructorDetail?.languages || [];
+  const instagram = instructorDetail?.instagram || instructorDetail?.social_links?.find(s => s.instagram)?.instagram || '';
 
   const goFullProfile = () => {
     onClose?.();
@@ -31,7 +33,7 @@ export default function InstructorProfileModal({ instructor, isSaved, onClose, o
       onClose={onClose}
       hideClose={false}
       title={instructor.name}
-      subtitle={[instructor.pronouns, instructor.age ? `${instructor.age} yrs` : null]
+      subtitle={[instructorDetail.pronouns, instructorDetail.age ? `${instructorDetail.age} yrs` : null]
         .filter(Boolean).join(' · ')}
       footer={
         <>
@@ -52,11 +54,7 @@ export default function InstructorProfileModal({ instructor, isSaved, onClose, o
       }
     >
       <div className="flex items-start gap-4 mb-5">
-        <div className="w-16 h-16 rounded-full border-4 border-white shadow-md overflow-hidden bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center flex-shrink-0">
-          {instructor.profile_picture
-            ? <img src={instructor.profile_picture} alt={instructor.name} className="w-full h-full object-cover" />
-            : <span className="font-['Unbounded'] text-lg font-black text-white">{initials}</span>}
-        </div>
+        <Avatar name={instructor.name} src={instructorDetail?.profile_picture} size="xl" tone="coral" />
         <div className="flex-1 min-w-0">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold bg-[#6BE6A4]/20 text-[#3E3D38]">
             <span className="w-1.5 h-1.5 rounded-full bg-[#6BE6A4]" />
@@ -64,7 +62,7 @@ export default function InstructorProfileModal({ instructor, isSaved, onClose, o
           </span>
           {instagram && (
             <a
-              href={instagram.startsWith('http') ? instagram : `https://instagram.com/${instagram.replace('@', '')}`}
+              href={instagram}
               target="_blank" rel="noopener noreferrer"
               className="ml-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#FBF8E4] text-[#6B6B66] hover:bg-[#E89560]/10"
             >
@@ -96,21 +94,21 @@ export default function InstructorProfileModal({ instructor, isSaved, onClose, o
         )}
       </div>
 
-      {(instructor.disciplines || []).length > 0 && (
+      {(instructorDetail.disciplines || []).length > 0 && (
         <div className="mb-4">
           <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-bold mb-2">Disciplines</p>
           <div className="flex flex-wrap gap-1.5">
-            {instructor.disciplines.map(d => (
+            {instructorDetail?.disciplines.map(d => (
               <span key={d} className="px-2.5 py-1 bg-[#2DA4D6]/10 text-[#2DA4D6] text-[10px] font-medium rounded-full">{d}</span>
             ))}
           </div>
         </div>
       )}
 
-      {instructor.bio && (
+      {instructorDetail.bio && (
         <div className="mb-2">
           <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-bold mb-2">About</p>
-          <p className="text-[#6B6B66] text-sm leading-relaxed line-clamp-4">{instructor.bio}</p>
+          <p className="text-[#6B6B66] text-sm leading-relaxed line-clamp-4">{instructorDetail.bio}</p>
         </div>
       )}
     </Modal>

@@ -89,6 +89,7 @@ const instructorSlice = createSlice({
       .addCase(fetchInstructorDetail.pending, (state) => { state.status = STATUS.LOADING; })
       .addCase(fetchInstructorDetail.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
+        console.log(payload, "payload in slice");
         const inst = payload?.data?.instructor || payload?.data || null;
         state.selectedInstructor = inst;
         if (inst) upsertInstructor(state, inst);
@@ -129,7 +130,8 @@ const instructorSlice = createSlice({
       .addCase(fetchAdminUserDetail.pending, (state) => { state.userMutating = STATUS.LOADING; })
       .addCase(fetchAdminUserDetail.fulfilled, (state, { payload }) => {
         state.userMutating = STATUS.SUCCEEDED;
-        if (payload?.data) state.userDetail = payload.data;
+        console.log(payload, "payload in user detail slice");
+        if (payload?.data) state.userDetail = payload.data.user;
       })
       .addCase(fetchAdminUserDetail.rejected, (state, { meta, payload }) => {
         state.userMutating = STATUS.FAILED;

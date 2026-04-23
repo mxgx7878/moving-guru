@@ -6,6 +6,7 @@ import { fetchConversations, fetchMessages, sendMessage as sendMessageAction } f
 import { STATUS } from '../../constants/apiConstants';
 import { TableSkeleton } from '../../components/feedback';
 import { ButtonLoader } from '../../components/feedback';
+import { Avatar } from '../../components/ui';
 
 export default function Messages() {
   const dispatch = useDispatch();
@@ -198,12 +199,7 @@ export default function Messages() {
                     <ArrowLeft size={20} />
                   </button>
 
-                  <div
-                    className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold font-['Unbounded'] flex-shrink-0"
-                    style={{ background: `linear-gradient(135deg, #CE4F56, #E89560)` }}
-                  >
-                    {activeConvo.initials || activeConvo.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
-                  </div>
+                  <Avatar name={activeConvo.name} size="sm" tone={theme.avatarTone} /> 
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-[#3E3D38] truncate">{activeConvo.name}</p>
                     <p className="text-[10px] text-[#6BE6A4] font-medium truncate">

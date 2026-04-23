@@ -1,9 +1,10 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logoutUser } from '../../store/actions/authAction';
 import { LogOut, ChevronRight } from 'lucide-react';
 import logo from '../../assets/logo.png';
 import { NAV_CONFIG, ROLE_THEME } from '../../config/portalConfig';
+import Avatar from '../ui/Avatar';
 
 export default function Sidebar({ mobileOpen, onClose }) {
   const dispatch = useDispatch();
@@ -52,11 +53,9 @@ export default function Sidebar({ mobileOpen, onClose }) {
         </div>
 
         {/* User / Studio card */}
-        <div className="px-4 py-4 border-b border-[#E5E0D8]">
+        <Link to={theme.profilePath} className="px-4 py-4 border-b border-[#E5E0D8]">
           <div className="flex items-center gap-3 bg-[#f5fca6]/25 rounded-xl p-3">
-            <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${theme.avatarGradient} flex items-center justify-center text-white font-bold text-xs font-['Unbounded'] flex-shrink-0`}>
-              {initials}
-            </div>
+            <Avatar name={displayName} src={user?.profile_picture} size="sm" tone={theme.avatarTone} />
             <div className="min-w-0">
               <p className="text-[#3E3D38] text-xs font-semibold truncate">{displayName}</p>
               <div className="flex items-center gap-1 mt-0.5">
@@ -65,7 +64,7 @@ export default function Sidebar({ mobileOpen, onClose }) {
               </div>
             </div>
           </div>
-        </div>
+        </Link>
 
         {/* Navigation */}
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">

@@ -153,6 +153,8 @@ export default function AdminUsers() {
     await dispatch(deleteAdminUser(id));
   };
 
+  console.log(userDetail, "userDetail");
+
   const isLoading = usersStatus === STATUS.LOADING && users.length === 0;
   const busy      = userMutating === STATUS.LOADING;
 

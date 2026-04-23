@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchInstructors, saveInstructor, unsaveInstructor, fetchSavedInstructors } from '../../store/actions/instructorAction';
 import { STATUS } from '../../constants/apiConstants';
 import { CardSkeleton } from '../../components/feedback';
-import { Button, SelectField } from '../../components/ui';
+import { Avatar, Button, SelectField } from '../../components/ui';
 import { InstructorProfileModal } from '../../features/modals';
 import { OPEN_TO as ALL_OPEN_TO } from '../../constants/profileConstants';
 
@@ -151,9 +151,9 @@ export default function SearchInstructors() {
         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
           {filtered.map(inst => {
             const initials = inst.initials || inst.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-            const travelingTo = inst.travelingTo || inst.traveling_to || '';
-            const countryFrom = inst.countryFrom || inst.country_from || inst.location || '';
-            const openTo = inst.openTo || inst.open_to || [];
+            const travelingTo = inst.detail.travelingTo || inst.detail.traveling_to || '';
+            const countryFrom = inst.detail.countryFrom || inst.detail.country_from || inst.detail.location || '';
+            const openTo = inst.detail.openTo || inst.detail.open_to || [];
             const isSaved = savedIds.includes(inst.id);
 
             return (
@@ -165,14 +165,15 @@ export default function SearchInstructors() {
                 <div className="bg-gradient-to-br from-[#FDFCF8] to-[#f5fca6]/20 px-5 pt-5 pb-4">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center text-white font-bold text-sm font-['Unbounded'] overflow-hidden flex-shrink-0">
-                        {inst.profile_picture
-                          ? <img src={inst.profile_picture} alt="" className="w-full h-full object-cover" />
-                          : initials}
-                      </div>
+                      <Avatar
+                        name={inst.name}
+                        src={inst?.detail?.profile_picture}
+                        size="md"
+                        tone="coral"
+                      />
                       <div>
                         <p className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">{inst.name}</p>
-                        <p className="text-[#9A9A94] text-[10px]">{inst.pronouns}</p>
+                        <p className="text-[#9A9A94] text-[10px]">{inst.detail.pronouns}</p>
                       </div>
                     </div>
                     <button onClick={e => toggleSave(inst.id, e)} disabled={savingId === inst.id}
@@ -190,11 +191,11 @@ export default function SearchInstructors() {
 
                 <div className="px-5 pb-4 space-y-3">
                   <div className="flex flex-wrap gap-1">
-                    {(inst.disciplines || []).slice(0, 3).map(d => (
+                    {(inst.detail.disciplines || []).slice(0, 3).map(d => (
                       <span key={d} className="px-2 py-0.5 bg-[#FBF8E4] text-[#6B6B66] text-[10px] rounded-full">{d}</span>
                     ))}
-                    {(inst.disciplines || []).length > 3 && (
-                      <span className="px-2 py-0.5 bg-[#FBF8E4] text-[#9A9A94] text-[10px] rounded-full">+{inst.disciplines.length - 3}</span>
+                    {(inst.detail.disciplines || []).length > 3 && (
+                      <span className="px-2 py-0.5 bg-[#FBF8E4] text-[#9A9A94] text-[10px] rounded-full">+{inst.detail.disciplines.length - 3}</span>
                     )}
                   </div>
 
@@ -206,7 +207,7 @@ export default function SearchInstructors() {
                     </div>
                     <div className="flex items-center gap-1.5 text-xs text-[#6B6B66]">
                       <Calendar size={11} className="text-[#9A9A94]" />
-                      <span>{inst.availability}</span>
+                      <span>{inst?.detail.availability}</span>
                     </div>
                   </div>
 
@@ -221,7 +222,7 @@ export default function SearchInstructors() {
                     ))}
                   </div>
 
-                  <p className="text-[#9A9A94] text-xs line-clamp-2">{inst.bio}</p>
+                  <p className="text-[#9A9A94] text-xs line-clamp-2">{inst?.detail.bio}</p>
 
                   <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
                     <Button

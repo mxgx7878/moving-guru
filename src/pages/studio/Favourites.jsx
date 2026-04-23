@@ -39,6 +39,8 @@ export default function Favourites() {
 
   const loading = status === STATUS.LOADING && saved.length === 0;
 
+  console.log(instructors )
+
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div>

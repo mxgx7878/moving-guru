@@ -65,7 +65,7 @@ export default function TabBar({
           : undefined;
 
         const activeCls = active
-          ? (isPill ? 'shadow-sm' : 'text-white border-transparent')
+          ? (isPill ? 'shadow-sm' : 'text-white bg-[#2da4d6] border-transparent')
           : resting;
 
         return (

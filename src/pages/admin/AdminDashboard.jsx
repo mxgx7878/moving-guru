@@ -167,7 +167,7 @@ export default function AdminDashboard() {
           empty="No new signups."
           renderItem={(u) => (
             <div className="flex items-center gap-3">
-              <Avatar name={u.name} tone={u.role === 'studio' ? 'blue' : 'coral'} size="xs" />
+              <Avatar name={u.name} src={u?.detail?.profile_picture} tone={u.role === 'studio' ? 'blue' : 'coral'} size="xs" />
               <div className="min-w-0 flex-1">
                 <p className="font-semibold text-[#3E3D38] text-xs truncate">{u.name}</p>
                 <p className="text-[10px] text-[#9A9A94] capitalize">

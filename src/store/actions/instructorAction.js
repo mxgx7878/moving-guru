@@ -20,6 +20,7 @@ export const fetchInstructorDetail = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       const { data } = await axiosInstance.get(`${API_ENDPOINTS.INSTRUCTOR_DETAIL}/${id}`);
+      console.log('Fetched instructor detail:', data);
       return data;
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));

@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Sidebar from './Sidebar';
 import { Menu, Bell } from 'lucide-react';
 import { ROLE_THEME } from '../../config/portalConfig';
 import AccessBanner from './AccessBanner';
+import { Avatar } from '../ui';
 
 export default function PortalLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -48,10 +49,11 @@ export default function PortalLayout() {
               <Bell size={18} className="text-[#6B6B66]" />
               <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-[#CE4F56] rounded-full" />
             </button>
-            <div className="flex items-center gap-2 text-sm">
+            <Link to={theme.profilePath} className="flex items-center gap-2 text-sm">
               <span className="text-[#9A9A94] hidden sm:inline">Hi,</span>
+              <Avatar name={displayName} src={user?.profile_picture} size="sm" tone={theme.avatarTone} /> 
               <span className="font-semibold text-[#3E3D38]">{firstName}</span>
-            </div>
+            </Link>
           </div>
         </header>
 

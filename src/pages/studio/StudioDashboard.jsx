@@ -10,7 +10,7 @@ import { fetchInstructors, fetchSavedInstructors } from '../../store/actions/ins
 import { fetchMyJobs } from '../../store/actions/jobAction';
 import { changePassword, forgotPassword } from '../../store/actions/authAction';
 import { CardSkeleton } from '../../components/feedback';
-import { DashboardStatCard, Button } from '../../components/ui';
+import { DashboardStatCard, Button, Avatar } from '../../components/ui';
 
 export default function StudioDashboard() {
   const navigate = useNavigate();
@@ -155,19 +155,17 @@ export default function StudioDashboard() {
               const initials = inst.initials || inst.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
               return (
                 <div key={inst.id} className="px-6 py-4 flex items-center gap-4 hover:bg-[#FDFCF8] transition-colors group">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center text-white text-xs font-bold font-['Unbounded'] flex-shrink-0">
-                    {initials}
-                  </div>
+                 <Avatar name={inst.name} src={inst.detail.profile_picture} size="md" tone="default" />
                   <div className="flex-1 min-w-0">
                     <p className="text-[#3E3D38] text-sm font-semibold truncate">{inst.name}</p>
-                    <p className="text-[#9A9A94] text-xs">{(inst.disciplines || []).join(', ')}</p>
+                    <p className="text-[#9A9A94] text-xs">{(inst.detail.disciplines || []).join(', ')}</p>
                   </div>
                   <div className="hidden md:flex items-center gap-1 text-xs text-[#9A9A94]">
-                    <MapPin size={11} />{inst.location}
+                    <MapPin size={11} />{inst.detail.location}
                   </div>
                   <div className="hidden lg:block">
                     <span className="px-2.5 py-1 bg-[#6BE6A4]/20 text-[#3E3D38] text-[10px] font-semibold rounded-full">
-                      {inst.availability}
+                      {inst.detail.availability}
                     </span>
                   </div>
                   <button onClick={() => navigate('/studio/messages')}

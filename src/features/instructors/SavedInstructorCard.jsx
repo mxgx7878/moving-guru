@@ -22,11 +22,12 @@ export default function SavedInstructorCard({
   onMessage,
 }) {
   const inst = instructor;
-  const travelingTo = inst.travelingTo || inst.traveling_to || '';
-  const countryFrom = inst.countryFrom || inst.country_from || inst.location || '';
-  const openTo      = inst.openTo || inst.open_to || [];
-  const languages   = inst.languages   || [];
-  const disciplines = inst.disciplines || [];
+  const instDetail = instructor.detail || {};
+  const travelingTo = instDetail.travelingTo || instDetail.traveling_to || '';
+  const countryFrom = instDetail.countryFrom || instDetail.country_from || instDetail.location || '';
+  const openTo      = instDetail.openTo || instDetail.open_to || [];
+  const languages   = instDetail.languages   || [];
+  const disciplines = instDetail.disciplines || [];
 
   return (
     <div
@@ -38,14 +39,14 @@ export default function SavedInstructorCard({
           <div className="flex items-center gap-3">
             <Avatar
               name={inst.name}
-              src={inst.profile_picture}
+              src={instDetail?.profile_picture}
               size="md"
               tone="coral"
             />
             <div>
               <p className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">{inst.name}</p>
               <p className="text-[#9A9A94] text-[10px]">
-                {inst.pronouns}{inst.age ? ` · ${inst.age} yrs` : ''}
+                {instDetail.pronouns}{instDetail.age ? ` · ${instDetail.age} yrs` : ''}
               </p>
             </div>
           </div>
@@ -85,10 +86,10 @@ export default function SavedInstructorCard({
               </span>
             </div>
           )}
-          {inst.availability && (
+          {instDetail.availability && (
             <div className="flex items-center gap-1.5 text-xs text-[#6B6B66]">
               <Calendar size={11} className="text-[#9A9A94] flex-shrink-0" />
-              <span className="truncate">{inst.availability}</span>
+              <span className="truncate">{instDetail.availability}</span>
             </div>
           )}
           {languages.length > 0 && (
@@ -118,7 +119,7 @@ export default function SavedInstructorCard({
           </div>
         )}
 
-        {inst.bio && <p className="text-[#9A9A94] text-xs line-clamp-2">{inst.bio}</p>}
+        {instDetail.bio && <p className="text-[#9A9A94] text-xs line-clamp-2">{instDetail.bio}</p>}
 
         <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
           <Button variant="secondary" size="sm" icon={Eye} fullWidth onClick={onView}>

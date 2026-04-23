@@ -12,6 +12,7 @@ export const ROLE_THEME = {
     avatarGradient: 'from-[#CE4F56] to-[#E89560]',
     label: 'Member Portal',
     defaultPath: '/portal/dashboard',
+    profilePath: '/portal/profile'
   },
   studio: {
     accent: '#2DA4D6',
@@ -19,6 +20,7 @@ export const ROLE_THEME = {
     avatarGradient: 'from-[#2DA4D6] to-[#2590bd]',
     label: 'Studio Portal',
     defaultPath: '/studio/dashboard',
+    profilePath: '/studio/profile'
   },
   admin: {
     accent: '#7F77DD',
@@ -26,6 +28,7 @@ export const ROLE_THEME = {
     avatarGradient: 'from-[#7F77DD] to-[#534AB7]',
     label: 'Admin Portal',
     defaultPath: '/admin/dashboard',
+    profilePath: '/admin/settings'
   },
 };
 

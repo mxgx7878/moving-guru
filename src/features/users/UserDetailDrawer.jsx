@@ -55,7 +55,7 @@ export default function UserDetailDrawer({
 
   const header = (
     <div className="flex items-center gap-4">
-      <Avatar name={display} size="lg" shape="square" tone={AVATAR_TONE[user.role] || 'coral'} />
+      <Avatar name={display} src={user.profile_picture} size="lg" shape="square" tone={AVATAR_TONE[user.role] || 'coral'} />
       <div>
         <h2 className="font-['Unbounded'] text-base font-black text-[#3E3D38] flex items-center gap-2">
           {display}
