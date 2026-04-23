@@ -39,6 +39,17 @@ export default function GrowPostPreviewModal({ post, onClose }) {
 
       {headerBadges}
 
+      {(post.images?.[0] || post.cover_image) && (
+  <div className="-mx-6 mt-4 mb-4 h-56 bg-[#F5F0E8] overflow-hidden">
+    <img
+      src={post.images?.[0] || post.cover_image}
+      alt={post.title}
+      className="w-full h-full object-cover"
+      onError={(e) => { e.currentTarget.style.display = 'none'; }}
+    />
+  </div>
+)}
+
       <div className="mt-4">
         <h2 className="font-['Unbounded'] text-lg font-black text-[#3E3D38]">{post.title}</h2>
         {post.subtitle && <p className="text-[#6B6B66] text-sm mt-1">{post.subtitle}</p>}
