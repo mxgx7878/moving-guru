@@ -17,16 +17,16 @@ import {
   clearFieldErrors,
 } from '../../store/slices/postSlice';
 import { STATUS } from '../../constants/apiConstants';
+import {
+  POST_TYPES, POST_TYPE_TABS, POST_AUDIENCE_OPTIONS,
+} from '../../constants/postConstants';
 
 import {
-  Button, SearchBar, FilterSelect, TabBar, EmptyState,
+  Button, PageHeader, Toolbar, TabBar, EmptyState,
 } from '../../components/ui';
 import { AdminPostForm } from '../../features/forms';
 import { PostPreviewModal, ConfirmModal } from '../../features/modals';
 import { PostCard } from '../../features/platformPosts';
-import {
-  POST_TYPES, POST_TYPE_TABS, POST_AUDIENCE_OPTIONS,
-} from '../../constants/postConstants';
 
 export default function AdminPosts() {
   const dispatch = useDispatch();
@@ -94,31 +94,21 @@ export default function AdminPosts() {
   return (
     <div className="max-w-6xl mx-auto space-y-6">
 
-      {/* Header */}
-      <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 flex items-start justify-between gap-4 flex-wrap">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-[#F59E0B]/10 rounded-2xl flex items-center justify-center">
-            <FileText size={22} className="text-[#F59E0B]" />
-          </div>
-          <div>
-            <p className="text-[#F59E0B] text-xs font-semibold tracking-widest uppercase mb-1">
-              Admin &nbsp;/&nbsp; Announcements
-            </p>
-            <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">
-              Platform Announcements
-            </h1>
-            <p className="text-[#6B6B66] text-xs mt-0.5">
-              Broadcast announcements, news and events to instructors and studios.
-            </p>
-          </div>
-        </div>
+      <PageHeader
+        icon={FileText}
+        iconBg="#F59E0B1A"
+        iconColor="#F59E0B"
+        eyebrow="Admin / Announcements"
+        eyebrowColor="#F59E0B"
+        title="Platform Announcements"
+        description="Broadcast announcements, news and events to instructors and studios."
+        actions={(
+          <Button variant="accent" icon={Plus} onClick={() => { setEditing(null); setFormOpen(true); }}>
+            New Post
+          </Button>
+        )}
+      />
 
-        <Button variant="accent" icon={Plus} onClick={() => { setEditing(null); setFormOpen(true); }}>
-          New Post
-        </Button>
-      </div>
-
-      {/* Type tabs */}
       <TabBar
         tabs={POST_TYPE_TABS}
         activeId={typeTab}
@@ -126,21 +116,20 @@ export default function AdminPosts() {
         counts={counts}
       />
 
-      {/* Search + audience filter */}
-      <div className="bg-white rounded-2xl border border-[#E5E0D8] p-4 flex gap-3 flex-wrap">
-        <SearchBar
-          value={query}
-          onChange={setQuery}
-          placeholder="Search title or body..."
-        />
-        <FilterSelect
-          value={audience}
-          onChange={setAudience}
-          options={POST_AUDIENCE_OPTIONS}
-        />
-      </div>
+      <Toolbar
+        search={{
+          value: query,
+          onChange: setQuery,
+          placeholder: 'Search title or body...',
+        }}
+        filters={[{
+          id: 'audience',
+          value: audience,
+          onChange: setAudience,
+          options: POST_AUDIENCE_OPTIONS,
+        }]}
+      />
 
-      {/* Grid / loading / empty */}
       {isLoading ? (
         <div className="bg-white rounded-2xl border border-[#E5E0D8] flex items-center justify-center py-16">
           <div className="w-6 h-6 border-2 border-[#F59E0B] border-t-transparent rounded-full animate-spin" />
@@ -168,7 +157,6 @@ export default function AdminPosts() {
         </div>
       )}
 
-      {/* Modals */}
       {formOpen && (
         <AdminPostForm
           post={editing}

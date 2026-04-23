@@ -7,13 +7,13 @@ import {
 import { STATUS } from '../../constants/apiConstants';
 import { JOB_TYPES, EMPTY_JOB_FORM } from '../../constants/jobConstants';
 import { CardSkeleton } from '../../components/feedback';
-import { Button, TabBar, EmptyState } from '../../components/ui';
+import {
+  Button, PageHeader, TabBar, EmptyState, StatTileGroup,
+} from '../../components/ui';
 import { JobApplicantsModal, ConfirmModal } from '../../features/modals';
 import { JobForm } from '../../features/forms';
 import { StudioJobCard } from '../../features/jobs';
 
-// Filter tabs (prepend "All"). The "All" tile uses the studio brand lime
-// background so its active state reads as the studio portal's default.
 const FILTER_TABS = [
   { id: 'all', label: 'All', color: '#CCFF00' },
   ...JOB_TYPES.map((t) => ({ id: t.id, label: t.label, icon: t.icon, color: t.color })),
@@ -96,26 +96,26 @@ export default function JobListings() {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
 
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">Job Listings</h1>
-          <p className="text-[#9A9A94] text-sm mt-1">Post opportunities and review applicants</p>
-        </div>
-        <Button variant="primary" icon={Plus} onClick={openCreate}>
-          Post a Listing
-        </Button>
-      </div>
+      <PageHeader
+        title="Job Listings"
+        description="Post opportunities and review applicants"
+        actions={(
+          <Button variant="primary" icon={Plus} onClick={openCreate}>
+            Post a Listing
+          </Button>
+        )}
+      />
 
-      {/* KPI tiles */}
-      <div className="grid grid-cols-4 gap-4">
-        <KpiTile value={myJobs.length} label="Total" />
-        <KpiTile value={myJobs.filter((j) => j.is_active !== false).length} label="Active" color="text-[#2DA4D6]" />
-        <KpiTile value={myJobs.reduce((s, j) => s + (j.positions_filled || 0), 0)} label="Hired" color="text-emerald-600" />
-        <KpiTile value={myJobs.reduce((sum, j) => sum + (j.applicants_count || 0), 0)} label="Applicants" color="text-[#E89560]" />
-      </div>
+      <StatTileGroup
+        columns={4}
+        tiles={[
+          { label: 'Total',      value: myJobs.length },
+          { label: 'Active',     value: myJobs.filter((j) => j.is_active !== false).length, color: 'text-[#2DA4D6]' },
+          { label: 'Hired',      value: myJobs.reduce((s, j) => s + (j.positions_filled || 0), 0), color: 'text-emerald-600' },
+          { label: 'Applicants', value: myJobs.reduce((sum, j) => sum + (j.applicants_count || 0), 0), color: 'text-[#E89560]' },
+        ]}
+      />
 
-      {/* Type filter */}
       <TabBar
         tabs={FILTER_TABS}
         activeId={filterType}
@@ -187,18 +187,6 @@ export default function JobListings() {
           onConfirm={handleConfirmDelete}
         />
       )}
-    </div>
-  );
-}
-
-// KPI tile — simple numeric counter card. Distinct from the shared
-// StatCard (which has an icon+trend layout) and the shared StatTile
-// (which has a cream background for drawer use).
-function KpiTile({ value, label, color = 'text-[#3E3D38]' }) {
-  return (
-    <div className="bg-white rounded-2xl p-4 border border-[#E5E0D8] text-center">
-      <p className={`font-['Unbounded'] text-2xl font-black ${color}`}>{value}</p>
-      <p className="text-[#9A9A94] text-xs font-semibold mt-1">{label}</p>
     </div>
   );
 }

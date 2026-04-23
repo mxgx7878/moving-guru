@@ -1,12 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'sonner';
-import { Bookmark, Briefcase } from 'lucide-react';
+import { Bookmark } from 'lucide-react';
 
 import { fetchJobs, applyToJob } from '../../store/actions/jobAction';
 import { STATUS } from '../../constants/apiConstants';
 import { CardSkeleton } from '../../components/feedback';
-import { EmptyState } from '../../components/ui';
+import { PageHeader, EmptyState } from '../../components/ui';
 import { ApplyJobModal } from '../../features/modals';
 import { InstructorJobCard } from '../../features/jobs';
 import { loadSavedJobs, saveSavedJobs, toggleSavedJob } from '../../utils/savedJobsStorage';
@@ -20,7 +20,6 @@ export default function SavedJobs() {
   const [applyTarget, setApplyTarget] = useState(null);
 
   useEffect(() => {
-    // Always refresh the public list so we have fresh titles/details to render.
     if (jobs.length === 0) dispatch(fetchJobs());
   }, [dispatch, jobs.length]);
 
@@ -48,13 +47,16 @@ export default function SavedJobs() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      <div className="bg-gradient-to-br from-[#FDFCF8] to-[#CE4F56]/5 rounded-2xl p-6 border border-[#E5E0D8]">
-        <p className="text-[#CE4F56] text-xs font-semibold tracking-widest uppercase mb-2">Saved Jobs</p>
-        <h1 className="font-['Unbounded'] text-2xl font-black text-[#3E3D38] mb-1">Your Shortlist</h1>
-        <p className="text-[#6B6B66] text-sm">
-          {saved.length} saved listing{saved.length !== 1 ? 's' : ''} — apply when you're ready
-        </p>
-      </div>
+
+      <PageHeader
+        variant="gradient"
+        gradientFrom="#FDFCF8"
+        gradientTo="#CE4F5610"
+        eyebrow="Saved Jobs"
+        eyebrowColor="#CE4F56"
+        title="Your Shortlist"
+        description={`${saved.length} saved listing${saved.length !== 1 ? 's' : ''} — apply when you're ready`}
+      />
 
       {loading && <CardSkeleton count={3} />}
 

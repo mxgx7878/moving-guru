@@ -20,7 +20,7 @@ import { STATUS } from '../../constants/apiConstants';
 import { JOB_TYPES } from '../../constants/jobConstants';
 
 import {
-  SearchBar, FilterSelect, TabBar, EmptyState,
+  PageHeader, Toolbar, TabBar, DataTable, EmptyState,
 } from '../../components/ui';
 import { JobRow, JobDetailDrawer } from '../../features/jobs';
 import { ConfirmModal } from '../../features/modals';
@@ -32,11 +32,18 @@ const STATUS_OPTIONS = [
   { id: 'full',     label: 'Closed / Full'},
 ];
 
-// Type tabs for the TabBar — prepends an "All" tab to the JOB_TYPES list
-// so the filter covers every case without each page rebuilding the array.
 const TYPE_TABS = [
   { id: 'all', label: 'All Listings', color: '#3E3D38' },
   ...JOB_TYPES.map((t) => ({ id: t.id, label: t.label, icon: t.icon, color: t.color })),
+];
+
+const JOB_COLUMNS = [
+  { key: 'listing',    label: 'Listing' },
+  { key: 'studio',     label: 'Studio' },
+  { key: 'location',   label: 'Location' },
+  { key: 'applicants', label: 'Applicants' },
+  { key: 'status',     label: 'Status' },
+  { key: 'actions',    label: 'Actions', align: 'right' },
 ];
 
 export default function AdminJobs() {
@@ -55,12 +62,10 @@ export default function AdminJobs() {
   const [deletingTarget, setDeletingTarget] = useState(null);
   const [mutating,       setMutating]       = useState(false);
 
-  // Applicants for the currently-opened job — reuses the shared bucket
   const applicantBucket  = previewId ? applicantsByJobId[previewId] : null;
   const applicants       = applicantBucket?.applicants || [];
   const applicantsStatus = applicantBucket?.status || STATUS.IDLE;
 
-  // ── Fetch on filter change ───────────────────────────────────
   useEffect(() => {
     const params = {};
     if (typeTab   !== 'all') params.type   = typeTab;
@@ -69,7 +74,6 @@ export default function AdminJobs() {
     dispatch(fetchAdminJobs(params));
   }, [dispatch, typeTab, statusTab, query]);
 
-  // ── Fetch detail + applicants when drawer opens ──────────────
   useEffect(() => {
     if (previewId) {
       dispatch(fetchAdminJobDetail(previewId));
@@ -79,7 +83,6 @@ export default function AdminJobs() {
     }
   }, [previewId, dispatch]);
 
-  // ── Toasts ───────────────────────────────────────────────────
   useEffect(() => {
     if (message) { toast.success(message); dispatch(clearJobMessage()); }
   }, [message, dispatch]);
@@ -120,7 +123,6 @@ export default function AdminJobs() {
     });
   }, [adminJobs, typeTab, statusTab, query]);
 
-  // ── Handlers ─────────────────────────────────────────────────
   const runMutation = async (thunk) => {
     setMutating(true);
     await dispatch(thunk);
@@ -143,27 +145,16 @@ export default function AdminJobs() {
   return (
     <div className="max-w-6xl mx-auto space-y-6">
 
-      {/* ── Header ───────────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 flex items-start justify-between gap-4 flex-wrap">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-[#E89560]/10 rounded-2xl flex items-center justify-center">
-            <Briefcase size={22} className="text-[#E89560]" />
-          </div>
-          <div>
-            <p className="text-[#E89560] text-xs font-semibold tracking-widest uppercase mb-1">
-              Admin &nbsp;/&nbsp; Job Management
-            </p>
-            <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">
-              Platform Job Listings
-            </h1>
-            <p className="text-[#6B6B66] text-xs mt-0.5">
-              Moderate listings posted by studios. View applicants, deactivate spam, or delete outright.
-            </p>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        icon={Briefcase}
+        iconBg="#E895601A"
+        iconColor="#E89560"
+        eyebrow="Admin / Job Management"
+        eyebrowColor="#E89560"
+        title="Platform Job Listings"
+        description="Moderate listings posted by studios. View applicants, deactivate spam, or delete outright."
+      />
 
-      {/* ── Type tabs ────────────────────────────────────────── */}
       <TabBar
         tabs={TYPE_TABS}
         activeId={typeTab}
@@ -171,67 +162,41 @@ export default function AdminJobs() {
         counts={counts}
       />
 
-      {/* ── Search + status filter ───────────────────────────── */}
-      <div className="bg-white rounded-2xl border border-[#E5E0D8] p-4 flex gap-3 flex-wrap">
-        <SearchBar
-          value={query}
-          onChange={setQuery}
-          placeholder="Search by title, location, studio name..."
-        />
-        <FilterSelect
-          value={statusTab}
-          onChange={setStatusTab}
-          options={STATUS_OPTIONS.map((s) => ({
+      <Toolbar
+        search={{
+          value: query,
+          onChange: setQuery,
+          placeholder: 'Search by title, location, studio name...',
+        }}
+        filters={[{
+          id: 'status',
+          value: statusTab,
+          onChange: setStatusTab,
+          options: STATUS_OPTIONS.map((s) => ({
             id:    s.id,
             label: counts[s.id] !== undefined ? `${s.label} (${counts[s.id]})` : s.label,
-          }))}
-        />
-      </div>
+          })),
+        }]}
+      />
 
-      {/* ── Table ─────────────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="w-6 h-6 border-2 border-[#E89560] border-t-transparent rounded-full animate-spin" />
-          </div>
-        ) : filtered.length === 0 ? (
-          <EmptyState
-            icon={Briefcase}
-            title="No listings found"
-            message="Try adjusting your search or filters."
+      <DataTable
+        columns={JOB_COLUMNS}
+        rows={filtered}
+        loading={isLoading}
+        emptyState={<EmptyState icon={Briefcase} title="No listings found" message="Try adjusting your search or filters." />}
+        renderRow={(job) => (
+          <JobRow
+            key={job.id}
+            job={job}
+            busy={mutating}
+            onPreview={() => setPreviewId(job.id)}
+            onActivate={() => handleActivate(job)}
+            onDeactivate={() => handleDeactivate(job)}
+            onDelete={() => setDeletingTarget(job)}
           />
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-[#FDFCF8] text-left">
-                <tr className="text-[10px] text-[#9A9A94] uppercase tracking-wider">
-                  <th className="py-3 px-4 font-semibold">Listing</th>
-                  <th className="py-3 px-4 font-semibold">Studio</th>
-                  <th className="py-3 px-4 font-semibold">Location</th>
-                  <th className="py-3 px-4 font-semibold">Applicants</th>
-                  <th className="py-3 px-4 font-semibold">Status</th>
-                  <th className="py-3 px-4 font-semibold text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((job) => (
-                  <JobRow
-                    key={job.id}
-                    job={job}
-                    busy={mutating}
-                    onPreview={() => setPreviewId(job.id)}
-                    onActivate={() => handleActivate(job)}
-                    onDeactivate={() => handleDeactivate(job)}
-                    onDelete={() => setDeletingTarget(job)}
-                  />
-                ))}
-              </tbody>
-            </table>
-          </div>
         )}
-      </div>
+      />
 
-      {/* ── Detail Drawer ──────────────────────────────────────── */}
       {previewId && (
         <JobDetailDrawer
           job={selectedJob || adminJobs.find((j) => j.id === previewId)}
@@ -245,7 +210,6 @@ export default function AdminJobs() {
         />
       )}
 
-      {/* ── Delete confirmation ─────────────────────────────── */}
       {deletingTarget && (
         <ConfirmModal
           title="Delete listing?"

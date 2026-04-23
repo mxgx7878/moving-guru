@@ -24,7 +24,7 @@ import {
 import { STATUS } from '../../constants/apiConstants';
 
 import {
-  Button, SearchBar, FilterSelect, TabBar, EmptyState,
+  Button, PageHeader, Toolbar, TabBar, DataTable, EmptyState,
 } from '../../components/ui';
 import { UserRow, UserDetailDrawer } from '../../features/users';
 import {
@@ -46,6 +46,15 @@ const STATUS_FILTERS = [
   { id: 'rejected',  label: 'Rejected'  },
 ];
 
+const USER_COLUMNS = [
+  { key: 'user',     label: 'User' },
+  { key: 'role',     label: 'Role' },
+  { key: 'location', label: 'Location' },
+  { key: 'joined',   label: 'Joined' },
+  { key: 'status',   label: 'Status' },
+  { key: 'actions',  label: 'Actions', align: 'right' },
+];
+
 export default function AdminUsers() {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -56,11 +65,9 @@ export default function AdminUsers() {
 
   const initialRole = searchParams.get('role') || 'all';
 
-  const [roleTab,      setRoleTab]      = useState(initialRole);
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [query,        setQuery]        = useState('');
-
-  // Modal / drawer state
+  const [roleTab,        setRoleTab]        = useState(initialRole);
+  const [statusFilter,   setStatusFilter]   = useState('all');
+  const [query,          setQuery]          = useState('');
   const [previewId,      setPreviewId]      = useState(null);
   const [suspendingId,   setSuspendingId]   = useState(null);
   const [rejectingId,    setRejectingId]    = useState(null);
@@ -68,7 +75,6 @@ export default function AdminUsers() {
   const [formOpen,       setFormOpen]       = useState(false);
   const [editingUser,    setEditingUser]    = useState(null);
 
-  // ── Sync URL ↔ role tab ───────────────────────────────────────
   useEffect(() => {
     if (roleTab === 'all') searchParams.delete('role');
     else                   searchParams.set('role', roleTab);
@@ -76,7 +82,6 @@ export default function AdminUsers() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roleTab]);
 
-  // ── Fetch users when filters change ────────────────────────────
   useEffect(() => {
     const params = {};
     if (roleTab      !== 'all') params.role   = roleTab;
@@ -85,13 +90,11 @@ export default function AdminUsers() {
     dispatch(fetchAdminUsers(params));
   }, [dispatch, roleTab, statusFilter, query]);
 
-  // ── Fetch detail when preview opens ────────────────────────────
   useEffect(() => {
     if (previewId) dispatch(fetchAdminUserDetail(previewId));
     else           dispatch(clearUserDetail());
   }, [previewId, dispatch]);
 
-  // ── Toasts ────────────────────────────────────────────────────
   useEffect(() => {
     if (message) { toast.success(message); dispatch(clearInstructorMessage()); }
   }, [message, dispatch]);
@@ -106,24 +109,18 @@ export default function AdminUsers() {
     }
   }, [userMutating]);
 
-  // Counts for the role tabs
   const counts = useMemo(() => ({
     all:        users.length,
     instructor: users.filter((u) => u.role === 'instructor').length,
     studio:     users.filter((u) => u.role === 'studio').length,
   }), [users]);
 
-  // ── Handlers ──────────────────────────────────────────────────
   const openCreate = () => { setEditingUser(null); setFormOpen(true); };
   const openEdit   = (u) => { setEditingUser(u);   setFormOpen(true); };
 
   const handleSubmitForm = async (payload) => {
-    if (editingUser) {
-      await dispatch(updateAdminUser({ id: editingUser.id, ...payload }));
-    } else {
-      await dispatch(createAdminUser(payload));
-    }
-    // Close-on-success is handled by the userMutating effect above.
+    if (editingUser) await dispatch(updateAdminUser({ id: editingUser.id, ...payload }));
+    else             await dispatch(createAdminUser(payload));
   };
 
   const handleApprove = (u) => dispatch(approveAdminUser(u.id));
@@ -162,36 +159,26 @@ export default function AdminUsers() {
   return (
     <div className="max-w-6xl mx-auto space-y-6">
 
-      {/* ── Header ───────────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 flex items-start justify-between gap-4 flex-wrap">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-[#7F77DD]/10 rounded-2xl flex items-center justify-center">
-            <Users size={22} className="text-[#7F77DD]" />
-          </div>
-          <div>
-            <p className="text-[#7F77DD] text-xs font-semibold tracking-widest uppercase mb-1">
-              Admin &nbsp;/&nbsp; User Management
-            </p>
-            <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">
-              Instructors &amp; Studios
-            </h1>
-            <p className="text-[#6B6B66] text-xs mt-0.5">
-              Approve signups, verify studios, suspend or remove accounts.
-            </p>
-          </div>
-        </div>
+      <PageHeader
+        icon={Users}
+        iconBg="#7F77DD1A"
+        iconColor="#7F77DD"
+        eyebrow="Admin / User Management"
+        eyebrowColor="#7F77DD"
+        title="Instructors & Studios"
+        description="Approve signups, verify studios, suspend or remove accounts."
+        actions={(
+          <Button
+            variant="primary"
+            icon={Plus}
+            onClick={openCreate}
+            style={{ backgroundColor: '#7F77DD', borderColor: '#7F77DD' }}
+          >
+            New User
+          </Button>
+        )}
+      />
 
-        <Button
-          variant="primary"
-          icon={Plus}
-          onClick={openCreate}
-          style={{ backgroundColor: '#7F77DD', borderColor: '#7F77DD' }}
-        >
-          New User
-        </Button>
-      </div>
-
-      {/* ── Role tabs ────────────────────────────────────────── */}
       <TabBar
         tabs={ROLE_TABS}
         activeId={roleTab}
@@ -199,68 +186,42 @@ export default function AdminUsers() {
         counts={counts}
       />
 
-      {/* ── Search + status filter ───────────────────────────── */}
-      <div className="bg-white rounded-2xl border border-[#E5E0D8] p-4 flex gap-3 flex-wrap">
-        <SearchBar
-          value={query}
-          onChange={setQuery}
-          placeholder="Search by name, email, studio name..."
-        />
-        <FilterSelect
-          value={statusFilter}
-          onChange={setStatusFilter}
-          options={STATUS_FILTERS}
-        />
-      </div>
+      <Toolbar
+        search={{
+          value: query,
+          onChange: setQuery,
+          placeholder: 'Search by name, email, studio name...',
+        }}
+        filters={[{
+          id: 'status',
+          value: statusFilter,
+          onChange: setStatusFilter,
+          options: STATUS_FILTERS,
+        }]}
+      />
 
-      {/* ── Table ─────────────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="w-6 h-6 border-2 border-[#7F77DD] border-t-transparent rounded-full animate-spin" />
-          </div>
-        ) : users.length === 0 ? (
-          <EmptyState
-            icon={Users}
-            title="No users found"
-            message="Try adjusting your search or filters."
+      <DataTable
+        columns={USER_COLUMNS}
+        rows={users}
+        loading={isLoading}
+        emptyState={<EmptyState icon={Users} title="No users found" message="Try adjusting your search or filters." />}
+        renderRow={(u) => (
+          <UserRow
+            key={u.id}
+            user={u}
+            busy={busy}
+            onPreview={() => setPreviewId(u.id)}
+            onEdit={() => openEdit(u)}
+            onApprove={() => handleApprove(u)}
+            onReject={() => setRejectingId(u.id)}
+            onSuspend={() => setSuspendingId(u.id)}
+            onActivate={() => handleActivate(u)}
+            onVerify={() => handleVerify(u)}
+            onDelete={() => setDeletingTarget(u)}
           />
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-[#FDFCF8] text-left">
-                <tr className="text-[10px] text-[#9A9A94] uppercase tracking-wider">
-                  <th className="py-3 px-4 font-semibold">User</th>
-                  <th className="py-3 px-4 font-semibold">Role</th>
-                  <th className="py-3 px-4 font-semibold">Location</th>
-                  <th className="py-3 px-4 font-semibold">Joined</th>
-                  <th className="py-3 px-4 font-semibold">Status</th>
-                  <th className="py-3 px-4 font-semibold text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((u) => (
-                  <UserRow
-                    key={u.id}
-                    user={u}
-                    busy={busy}
-                    onPreview={() => setPreviewId(u.id)}
-                    onEdit={() => openEdit(u)}
-                    onApprove={() => handleApprove(u)}
-                    onReject={() => setRejectingId(u.id)}
-                    onSuspend={() => setSuspendingId(u.id)}
-                    onActivate={() => handleActivate(u)}
-                    onVerify={() => handleVerify(u)}
-                    onDelete={() => setDeletingTarget(u)}
-                  />
-                ))}
-              </tbody>
-            </table>
-          </div>
         )}
-      </div>
+      />
 
-      {/* ── Detail Drawer ──────────────────────────────────────── */}
       {previewId && (
         <UserDetailDrawer
           user={userDetail || users.find((u) => u.id === previewId)}
@@ -276,7 +237,6 @@ export default function AdminUsers() {
         />
       )}
 
-      {/* ── Modals ─────────────────────────────────────────────── */}
       {formOpen && (
         <UserForm
           user={editingUser}
