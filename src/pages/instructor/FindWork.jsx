@@ -1,14 +1,14 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'sonner';
-import { ChevronDown, Briefcase } from 'lucide-react';
+import { Briefcase } from 'lucide-react';
 
 import { fetchJobs, applyToJob } from '../../store/actions/jobAction';
 import { STATUS } from '../../constants/apiConstants';
 import { JOB_FILTER_TABS } from '../../constants/jobConstants';
 import { CardSkeleton } from '../../components/feedback';
 import {
-  PageHeader, StatTileGroup, Toolbar, TabBar, EmptyState,
+  PageHeader, StatTileGroup, Toolbar, TabBar, EmptyState, SelectField, Input,
 } from '../../components/ui';
 import { ApplyJobModal } from '../../features/modals';
 import { InstructorJobCard } from '../../features/jobs';
@@ -121,33 +121,20 @@ export default function FindWork() {
           toggleLabel: 'Filters',
           children: (
             <div className="grid md:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-[#9A9A94] text-[10px] uppercase tracking-wider font-semibold mb-1.5">
-                  Discipline
-                </label>
-                <div className="relative">
-                  <select
-                    value={filterDiscipline}
-                    onChange={(e) => setFilterDiscipline(e.target.value)}
-                    className="w-full appearance-none bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-3 py-2.5 text-sm text-[#3E3D38] focus:outline-none focus:border-[#CE4F56] pr-8"
-                  >
-                    <option value="">All disciplines</option>
-                    {allDisciplines.map((d) => <option key={d}>{d}</option>)}
-                  </select>
-                  <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none" />
-                </div>
-              </div>
-              <div>
-                <label className="block text-[#9A9A94] text-[10px] uppercase tracking-wider font-semibold mb-1.5">
-                  Location
-                </label>
-                <input
-                  value={filterLocation}
-                  onChange={(e) => setFilterLocation(e.target.value)}
-                  placeholder="e.g. Bali, Europe, Thailand..."
-                  className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-3 py-2.5 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-[#CE4F56]"
-                />
-              </div>
+              <SelectField
+                label="Discipline"
+                value={filterDiscipline}
+                onChange={setFilterDiscipline}
+                options={allDisciplines}
+                placeholder="All disciplines"
+                size="sm"
+              />
+              <Input
+                label="Location"
+                value={filterLocation}
+                onChange={(e) => setFilterLocation(e.target.value)}
+                placeholder="e.g. Bali, Europe, Thailand..."
+              />
             </div>
           ),
         }}

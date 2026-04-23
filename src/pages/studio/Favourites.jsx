@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import {
-  Heart, MessageCircle, MapPin, Calendar, Search, X, Eye, Globe, Users,
-} from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { fetchSavedInstructors, unsaveInstructor } from '../../store/actions/instructorAction';
 import { STATUS } from '../../constants/apiConstants';
 import { CardSkeleton } from '../../components/feedback';
+import { SearchBar } from '../../components/ui';
 import { SavedInstructorCard } from '../../features/instructors';
 
 // Saved instructors grid. "View Profile" routes studios to the dedicated
@@ -50,20 +49,12 @@ export default function Favourites() {
       </div>
 
       {saved.length > 0 && (
-        <div className="flex items-center gap-2 bg-white border border-[#E5E0D8] rounded-xl px-4 py-2.5">
-          <Search size={16} className="text-[#9A9A94]" />
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search saved instructors..."
-            className="flex-1 bg-transparent border-none outline-none text-sm text-[#3E3D38] placeholder-[#C4BCB4]"
-          />
-          {query && (
-            <button onClick={() => setQuery('')}>
-              <X size={14} className="text-[#9A9A94]" />
-            </button>
-          )}
-        </div>
+        <SearchBar
+          value={query}
+          onChange={setQuery}
+          placeholder="Search saved instructors..."
+          className="bg-white"
+        />
       )}
 
       {loading && <CardSkeleton count={6} />}

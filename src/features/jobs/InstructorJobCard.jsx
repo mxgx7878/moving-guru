@@ -3,11 +3,11 @@ import {
   MapPin, Calendar, Clock, MessageCircle, Bookmark, BookmarkCheck,
   Users, GraduationCap, Check, XCircle, Clock3, Lock, ExternalLink,
 } from 'lucide-react';
-import { Chip } from '../../components/ui';
-import { ButtonLoader } from '../../components/feedback';
+import { Button, Chip } from '../../components/ui';
 import {
   ROLE_TYPE_LABELS, QUALIFICATION_LABELS, TYPE_STYLES,
 } from '../../constants/jobConstants';
+import { formatShortDate } from '../../utils/formatters';
 import { getApplyState } from '../../utils/jobHelpers';
 
 // Job card rendered on the instructor-side feeds (Find Work + Saved Jobs).
@@ -128,15 +128,15 @@ export default function InstructorJobCard({
             </div>
           )}
           <div className="flex-1" />
-          <button
+          <Button
+            variant={isSaved ? 'outlineDanger' : 'secondary'}
+            size="sm"
+            icon={isSaved ? BookmarkCheck : Bookmark}
             onClick={onToggleSave}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold border transition-all
-              ${isSaved
-                ? 'border-[#CE4F56] text-[#CE4F56] bg-[#CE4F56]/5'
-                : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#CE4F56] hover:text-[#CE4F56]'}`}
+            className={isSaved ? 'bg-[#CE4F56]/5' : 'hover:border-[#CE4F56] hover:text-[#CE4F56]'}
           >
-            {isSaved ? <><BookmarkCheck size={13} /> Saved</> : <><Bookmark size={13} /> Save</>}
-          </button>
+            {isSaved ? 'Saved' : 'Save'}
+          </Button>
           <ApplyButton
             state={applyState}
             application={job.application}
@@ -181,58 +181,51 @@ function JobMetaRow({ job }) {
   );
 }
 
-// Apply CTA — one of six states driven by getApplyState(job):
+// Apply CTA — one of seven states driven by getApplyState(job):
 // none | pending | viewed | accepted | rejected_open | rejected_locked | full.
+// Each state maps to a Button variant; `state="static"` turns the button
+// into a result badge (full opacity, no cursor change).
 function ApplyButton({ state, application, isApplying, onApply }) {
   if (isApplying) {
     return (
-      <button disabled
-        className="flex items-center gap-2 px-5 py-2.5 bg-[#CE4F56]/80 text-white rounded-xl text-xs font-bold cursor-default">
-        <ButtonLoader size={13} /> Sending...
-      </button>
+      <Button variant="danger" size="md" loading state="static">
+        Sending...
+      </Button>
     );
   }
 
   if (state === 'full') {
     return (
-      <button disabled
-        className="flex items-center gap-2 px-5 py-2.5 bg-[#FBF8E4] border border-[#E5E0D8] text-[#9A9A94] rounded-xl text-xs font-bold cursor-not-allowed">
-        <Lock size={13} /> Position Closed
-      </button>
+      <Button variant="mutedSoft" size="md" state="static" icon={Lock}>
+        Position Closed
+      </Button>
     );
   }
 
   if (state === 'accepted') {
     return (
-      <button disabled
-        className="flex items-center gap-2 px-5 py-2.5 bg-emerald-500 text-white rounded-xl text-xs font-bold cursor-default">
-        <Check size={13} /> Accepted
-      </button>
+      <Button variant="success" size="md" state="static" icon={Check}>
+        Accepted
+      </Button>
     );
   }
 
   if (state === 'pending' || state === 'viewed') {
     const label = state === 'viewed' ? 'Studio has viewed' : 'Applied';
     return (
-      <button disabled
-        className="flex items-center gap-2 px-5 py-2.5 bg-[#2DA4D6]/10 border border-[#2DA4D6]/30 text-[#2DA4D6] rounded-xl text-xs font-bold cursor-default">
-        <Check size={13} /> {label}
-      </button>
+      <Button variant="infoSoft" size="md" state="static" icon={Check}>
+        {label}
+      </Button>
     );
   }
 
   if (state === 'rejected_locked') {
-    const dateStr = application?.can_reapply_at
-      ? new Date(application.can_reapply_at).toLocaleDateString(undefined, {
-          month: 'short', day: 'numeric', year: 'numeric',
-        })
-      : 'later';
+    const dateStr = formatShortDate(application?.can_reapply_at) || 'later';
     return (
       <div className="flex flex-col items-end gap-0.5">
-        <button disabled
-          className="flex items-center gap-2 px-5 py-2.5 bg-red-50 border border-red-200 text-red-500 rounded-xl text-xs font-bold cursor-not-allowed">
-          <XCircle size={13} /> Not selected
-        </button>
+        <Button variant="dangerSoft" size="md" state="static" icon={XCircle}>
+          Not selected
+        </Button>
         <span className="flex items-center gap-1 text-[10px] text-[#9A9A94]">
           <Clock3 size={10} /> Can re-apply after {dateStr}
         </span>
@@ -242,9 +235,8 @@ function ApplyButton({ state, application, isApplying, onApply }) {
 
   const label = state === 'rejected_open' ? 'Re-apply' : 'Express Interest';
   return (
-    <button onClick={onApply}
-      className="flex items-center gap-2 px-5 py-2.5 bg-[#CE4F56] text-white rounded-xl text-xs font-bold hover:bg-[#b8454c] transition-all">
-      <MessageCircle size={13} /> {label}
-    </button>
+    <Button variant="danger" size="md" icon={MessageCircle} onClick={onApply}>
+      {label}
+    </Button>
   );
 }

@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { updateProfile } from '../../store/actions/authAction';
 import { DISCIPLINE_CATEGORIES } from '../../data/disciplines';
 import { COUNTRIES, COUNTRIES_AND_REGIONS } from '../../data/countries';
-import { Section, Field, SelectField } from '../../components/ui';
+import { Section, Field, SelectField, Button } from '../../components/ui';
 import { ReviewList } from '../../features/reviews';
 import { ScallopedFrame } from '../../features/profile';
 import { formatDateRange } from '../../utils/formatters';
@@ -717,25 +717,26 @@ export default function ProfilePage() {
 
             {/* Action buttons — sticky Save */}
             <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5 space-y-2">
-              <button
+              <Button
+                variant={saved ? 'success' : 'primary'}
+                size="lg"
+                fullWidth
+                loading={saving}
+                icon={saved ? Check : Save}
                 onClick={handleSave}
-                disabled={saving}
-                className={`w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all duration-300 disabled:opacity-60
-                  ${saved ? 'bg-emerald-500 text-white' : 'bg-[#2DA4D6] text-white hover:bg-[#2590bd]'}`}
               >
-                {saving
-                  ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</>
-                  : saved
-                    ? <><Check size={15} /> Saved!</>
-                    : <><Save size={15} /> Save Changes</>
-                }
-              </button>
-              <button
+                {saved ? 'Saved!' : 'Save Changes'}
+              </Button>
+              <Button
+                variant="secondary"
+                size="md"
+                fullWidth
+                icon={showPreview ? EyeOff : Eye}
                 onClick={() => setShowPreview(!showPreview)}
-                className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm border border-[#E5E0D8] text-[#6B6B66] hover:border-[#CE4F56] hover:text-[#CE4F56] transition-all"
+                className="hover:border-[#CE4F56] hover:text-[#CE4F56]"
               >
-                {showPreview ? <><EyeOff size={14} /> Hide Preview</> : <><Eye size={14} /> Show Preview</>}
-              </button>
+                {showPreview ? 'Hide Preview' : 'Show Preview'}
+              </Button>
             </div>
 
           </div>

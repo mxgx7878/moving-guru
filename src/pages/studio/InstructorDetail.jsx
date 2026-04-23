@@ -13,7 +13,7 @@ import {
   unsaveInstructor,
 } from '../../store/actions/instructorAction';
 import { STATUS } from '../../constants/apiConstants';
-import { Section, InfoTile } from '../../components/ui';
+import { Section, InfoTile, Button } from '../../components/ui';
 import { ReviewList } from '../../features/reviews';
 import { ButtonLoader } from '../../components/feedback';
 
@@ -115,25 +115,19 @@ export default function InstructorDetail() {
           <ArrowLeft size={16} /> Back
         </button>
         <div className="flex items-center gap-2">
-          <button
+          <Button
+            variant={isSaved ? 'outlineDanger' : 'secondary'}
+            size="md"
+            icon={Heart}
+            loading={savingToggle}
             onClick={handleToggleSave}
-            disabled={savingToggle}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border transition-all disabled:opacity-60
-              ${isSaved
-                ? 'bg-[#CE4F56]/5 border-[#CE4F56] text-[#CE4F56]'
-                : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#CE4F56] hover:text-[#CE4F56]'}`}
+            className={isSaved ? 'bg-[#CE4F56]/5' : 'hover:border-[#CE4F56] hover:text-[#CE4F56]'}
           >
-            {savingToggle
-              ? <ButtonLoader size={14} color="#CE4F56" />
-              : <Heart size={14} fill={isSaved ? 'currentColor' : 'none'} />}
             {isSaved ? 'Saved' : 'Save'}
-          </button>
-          <button
-            onClick={handleMessage}
-            className="flex items-center gap-2 px-4 py-2.5 bg-[#2DA4D6] text-white rounded-xl text-sm font-bold hover:bg-[#2590bd] transition-all"
-          >
-            <MessageCircle size={14} /> Message
-          </button>
+          </Button>
+          <Button variant="primary" size="md" icon={MessageCircle} onClick={handleMessage}>
+            Message
+          </Button>
         </div>
       </div>
 

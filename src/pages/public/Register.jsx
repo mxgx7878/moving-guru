@@ -11,7 +11,7 @@ import {
   Globe, ArrowRight, ArrowLeft, Check, Upload, X,
   User, MapPin, Dumbbell, FileText, CreditCard, Building2, Calendar
 } from 'lucide-react';
-import { Input, SelectField } from '../../components/ui';
+import { Input, SelectField, Button } from '../../components/ui';
 import { formatDateRange } from '../../utils/formatters';
 
 // ─── Steps ──────────────────────────────────────────────────────
@@ -624,29 +624,35 @@ export default function Register() {
           {/* Navigation */}
           <div className="px-6 pb-6 flex items-center justify-between">
             {step > 1 ? (
-              <button type="button" onClick={prev}
-                className="flex items-center gap-2 px-5 py-2.5 border border-[#E5E0D8] text-[#6B6B66] rounded-xl text-sm font-medium hover:border-[#9A9A94] transition-all">
-                <ArrowLeft size={16} /> Back
-              </button>
+              <Button variant="secondary" size="md" icon={ArrowLeft} onClick={prev}>
+                Back
+              </Button>
             ) : (
               <button type="button" onClick={() => setStep(0)} className="text-sm text-[#9A9A94] hover:text-[#3E3D38] transition-colors">
                 ← Change role
               </button>
             )}
             {step < STEPS.length ? (
-              <button type="button" onClick={next}
-                className="flex items-center gap-2 px-6 py-2.5 text-white rounded-xl text-sm font-bold transition-all"
-                style={{ backgroundColor: accentColor }}>
-                Continue <ArrowRight size={16} />
-              </button>
+              <Button
+                variant="primary"
+                size="md"
+                iconRight={ArrowRight}
+                onClick={next}
+                style={{ backgroundColor: accentColor, borderColor: accentColor }}
+              >
+                Continue
+              </Button>
             ) : (
-              <button type="button" onClick={handleSubmit} disabled={loading}
-                className="flex items-center gap-2 px-6 py-2.5 text-white rounded-xl text-sm font-bold transition-all disabled:opacity-50"
-                style={{ backgroundColor: accentColor }}>
-                {loading
-                  ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  : <>{role === 'studio' ? 'Create Studio Account' : 'Create Account'} <ArrowRight size={16} /></>}
-              </button>
+              <Button
+                variant="primary"
+                size="md"
+                iconRight={ArrowRight}
+                loading={loading}
+                onClick={handleSubmit}
+                style={{ backgroundColor: accentColor, borderColor: accentColor }}
+              >
+                {role === 'studio' ? 'Create Studio Account' : 'Create Account'}
+              </Button>
             )}
           </div>
         </div>

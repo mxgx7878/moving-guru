@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Check } from 'lucide-react';
-import { Modal, Button, Input } from '../../components/ui';
+import { Modal, Button, Input, TabBar, Field } from '../../components/ui';
 import { POST_TYPES, POST_AUDIENCE_OPTIONS as AUDIENCE_OPTIONS } from '../../constants/postConstants';
+
+// Audience tabs need a solid purple active state — add activeText for TabBar
+const AUDIENCE_TABS = AUDIENCE_OPTIONS.map((o) => ({ ...o, color: '#7F77DD' }));
 
 const EMPTY_FORM = {
   type: 'announcement',
@@ -119,27 +122,15 @@ export default function AdminPostForm({
         </>
       }
     >
-      {/* Type */}
-      <div>
-        <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">
-          Type *
-        </label>
-        <div className="flex gap-2">
-          {POST_TYPES.map((t) => {
-            const Icon = t.icon;
-            const active = form.type === t.id;
-            return (
-              <button key={t.id} type="button" onClick={() => update('type', t.id)}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold border transition-all
-                  ${active ? 'text-white' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#3E3D38]'}`}
-                style={active ? { backgroundColor: t.color, borderColor: t.color } : {}}>
-                <Icon size={12} /> {t.label}
-              </button>
-            );
-          })}
-        </div>
-        {errors.type && <p className="text-red-500 text-xs mt-1">{errors.type}</p>}
-      </div>
+      <Field label="Type *" error={errors.type}>
+        <TabBar
+          tabs={POST_TYPES}
+          activeId={form.type}
+          onChange={(id) => update('type', id)}
+          layout="stretch"
+          size="md"
+        />
+      </Field>
 
       <Input
         label="Title *"
@@ -161,28 +152,15 @@ export default function AdminPostForm({
         error={errors.body}
       />
 
-      {/* Audience */}
-      <div>
-        <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">
-          Audience *
-        </label>
-        <div className="flex gap-2">
-          {AUDIENCE_OPTIONS.map((o) => {
-            const Icon = o.icon;
-            const active = form.audience === o.id;
-            return (
-              <button key={o.id} type="button" onClick={() => update('audience', o.id)}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold border transition-all
-                  ${active
-                    ? 'bg-[#7F77DD] text-white border-[#7F77DD]'
-                    : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#3E3D38]'}`}>
-                <Icon size={12} /> {o.label}
-              </button>
-            );
-          })}
-        </div>
-        {errors.audience && <p className="text-red-500 text-xs mt-1">{errors.audience}</p>}
-      </div>
+      <Field label="Audience *" error={errors.audience}>
+        <TabBar
+          tabs={AUDIENCE_TABS}
+          activeId={form.audience}
+          onChange={(id) => update('audience', id)}
+          layout="stretch"
+          size="md"
+        />
+      </Field>
 
       {/* Event-specific fields */}
       {form.type === 'event' && (

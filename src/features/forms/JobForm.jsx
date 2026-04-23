@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { ChevronDown, Check, X } from 'lucide-react';
+import { Check, X } from 'lucide-react';
+import { SelectField } from '../../components/ui';
 import { Modal, Button, Input, Toggle } from '../../components/ui';
 import {
   JOB_TYPES, DURATION_OPTIONS, ROLE_TYPE_OPTIONS,
@@ -131,21 +132,14 @@ export default function JobForm({
         </div>
       </div>
 
-      <div>
-        <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Qualification Required</label>
-        <div className="relative">
-          <select
-            value={form.qualification_level}
-            onChange={(e) => update('qualification_level', e.target.value)}
-            className="w-full appearance-none bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6] transition-all pr-10"
-          >
-            {QUALIFICATION_LEVELS.map((q) => (
-              <option key={q.id} value={q.id}>{q.label}</option>
-            ))}
-          </select>
-          <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none" />
-        </div>
-      </div>
+      <SelectField
+        label="Qualification Required"
+        value={form.qualification_level}
+        onChange={(v) => update('qualification_level', v)}
+        options={QUALIFICATION_LEVELS.map((q) => ({ value: q.id, label: q.label }))}
+        placeholder="Select qualification"
+        accent="#2DA4D6"
+      />
 
       <div className="grid grid-cols-2 gap-4">
         <Input
@@ -165,20 +159,14 @@ export default function JobForm({
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Duration</label>
-          <div className="relative">
-            <select
-              value={form.duration}
-              onChange={(e) => update('duration', e.target.value)}
-              className="w-full appearance-none bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6] transition-all pr-10"
-            >
-              <option value="">Select duration</option>
-              {DURATION_OPTIONS.map((d) => <option key={d} value={d}>{d}</option>)}
-            </select>
-            <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none" />
-          </div>
-        </div>
+        <SelectField
+          label="Duration"
+          value={form.duration}
+          onChange={(v) => update('duration', v)}
+          options={DURATION_OPTIONS}
+          placeholder="Select duration"
+          accent="#2DA4D6"
+        />
         <Input
           label="Compensation"
           value={form.compensation}

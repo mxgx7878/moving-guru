@@ -1,10 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Search, MapPin, Calendar, Filter, X, Heart, MessageCircle, ChevronDown, Eye } from 'lucide-react';
+import { Search, MapPin, Calendar, Filter, X, Heart, MessageCircle, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchInstructors, saveInstructor, unsaveInstructor, fetchSavedInstructors } from '../../store/actions/instructorAction';
 import { STATUS } from '../../constants/apiConstants';
-import { CardSkeleton, ButtonLoader } from '../../components/feedback';
+import { CardSkeleton } from '../../components/feedback';
+import { Button, SelectField } from '../../components/ui';
 import { InstructorProfileModal } from '../../features/modals';
 import { OPEN_TO as ALL_OPEN_TO } from '../../constants/profileConstants';
 
@@ -95,28 +96,24 @@ export default function SearchInstructors() {
 
         {showFilters && (
           <div className="grid md:grid-cols-3 gap-3 pt-1 border-t border-[#E5E0D8]">
-            <div>
-              <label className="block text-[#9A9A94] text-[10px] uppercase tracking-wider font-semibold mb-1.5">Discipline</label>
-              <div className="relative">
-                <select value={filters.discipline} onChange={e => setFilters(f => ({ ...f, discipline: e.target.value }))}
-                  className="w-full appearance-none bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-3 py-2.5 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6] pr-8">
-                  <option value="">All disciplines</option>
-                  {allDisciplines.map(d => <option key={d}>{d}</option>)}
-                </select>
-                <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none" />
-              </div>
-            </div>
-            <div>
-              <label className="block text-[#9A9A94] text-[10px] uppercase tracking-wider font-semibold mb-1.5">Open To</label>
-              <div className="relative">
-                <select value={filters.openTo} onChange={e => setFilters(f => ({ ...f, openTo: e.target.value }))}
-                  className="w-full appearance-none bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-3 py-2.5 text-sm text-[#3E3D38] focus:outline-none focus:border-[#2DA4D6] pr-8">
-                  <option value="">Any arrangement</option>
-                  {ALL_OPEN_TO.map(o => <option key={o}>{o}</option>)}
-                </select>
-                <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none" />
-              </div>
-            </div>
+            <SelectField
+              label="Discipline"
+              value={filters.discipline}
+              onChange={(v) => setFilters((f) => ({ ...f, discipline: v }))}
+              options={allDisciplines}
+              placeholder="All disciplines"
+              accent="#2DA4D6"
+              size="sm"
+            />
+            <SelectField
+              label="Open To"
+              value={filters.openTo}
+              onChange={(v) => setFilters((f) => ({ ...f, openTo: v }))}
+              options={ALL_OPEN_TO}
+              placeholder="Any arrangement"
+              accent="#2DA4D6"
+              size="sm"
+            />
             <div>
               <label className="block text-[#9A9A94] text-[10px] uppercase tracking-wider font-semibold mb-1.5">Location / Traveling To</label>
               <input type="text" value={filters.location} onChange={e => setFilters(f => ({ ...f, location: e.target.value }))}
@@ -227,18 +224,24 @@ export default function SearchInstructors() {
                   <p className="text-[#9A9A94] text-xs line-clamp-2">{inst.bio}</p>
 
                   <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-                    <button
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      icon={Eye}
+                      fullWidth
                       onClick={() => setSelectedInstructor(inst)}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 border border-[#E5E0D8] text-[#6B6B66] rounded-xl text-xs font-bold hover:border-[#2DA4D6] hover:text-[#2DA4D6] transition-all"
+                      className="hover:border-[#2DA4D6] hover:text-[#2DA4D6]"
                     >
-                      <Eye size={12} /> Quick View
-                    </button>
-                    <button
+                      Quick View
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      fullWidth
                       onClick={() => navigate(`/studio/instructors/${inst.id}`)}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-[#2DA4D6] text-white rounded-xl text-xs font-bold hover:bg-[#2590bd] transition-all"
                     >
                       Full Profile
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>

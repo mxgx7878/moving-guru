@@ -10,7 +10,7 @@ import { fetchInstructors, fetchSavedInstructors } from '../../store/actions/ins
 import { fetchMyJobs } from '../../store/actions/jobAction';
 import { changePassword, forgotPassword } from '../../store/actions/authAction';
 import { CardSkeleton } from '../../components/feedback';
-import { DashboardStatCard } from '../../components/ui';
+import { DashboardStatCard, Button } from '../../components/ui';
 
 export default function StudioDashboard() {
   const navigate = useNavigate();
@@ -89,10 +89,10 @@ export default function StudioDashboard() {
           <p className="text-[#6B6B66] text-sm">Find your next great instructor from the Moving Guru network</p>
         </div>
         <div className="relative z-10 hidden sm:block">
-          <button onClick={() => navigate('/studio/search')}
-            className="flex items-center gap-2 px-5 py-3 bg-[#2DA4D6] text-white rounded-xl text-sm font-bold hover:bg-[#2590bd] transition-all shadow-sm">
-            <Search size={16} /> Find Instructors
-          </button>
+          <Button variant="primary" size="lg" icon={Search} className="shadow-sm"
+            onClick={() => navigate('/studio/search')}>
+            Find Instructors
+          </Button>
         </div>
       </div>
 

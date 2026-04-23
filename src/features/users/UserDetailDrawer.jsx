@@ -91,18 +91,16 @@ export default function UserDetailDrawer({
       )}
 
       {isStudio && !isPending && (
-        <button
-          type="button"
+        <Button
+          variant={user.is_verified ? 'successSoft' : 'secondary'}
+          size="sm"
+          icon={ShieldCheck}
           onClick={() => onVerify?.(user)}
           disabled={busy}
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold border transition-colors disabled:opacity-60
-            ${user.is_verified
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
-              : 'border-[#E5E0D8] text-[#6B6B66] hover:border-emerald-500 hover:text-emerald-600'}`}
+          className={user.is_verified ? '' : 'hover:border-emerald-500 hover:text-emerald-600'}
         >
-          <ShieldCheck size={13} />
           {user.is_verified ? 'Verified' : 'Mark Verified'}
-        </button>
+        </Button>
       )}
 
       {!isPending && (

@@ -8,8 +8,7 @@ import {
   Briefcase, Calendar, GraduationCap, Clock, ChevronDown, Search,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { ButtonLoader } from '../../components/feedback';
-import { Field } from '../../components/ui';
+import { Field, Button } from '../../components/ui';
 import { StudioPreviewModal } from '../../features/modals';
 import { ReviewList } from '../../features/reviews';
 
@@ -564,19 +563,26 @@ export default function StudioProfile() {
 
             {/* Action buttons — sticky Save */}
             <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5 space-y-2">
-              <button
+              <Button
+                variant="primary"
+                size="lg"
+                icon={Save}
+                fullWidth
+                loading={saving}
                 onClick={handleSave}
-                disabled={saving}
-                className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-[#2DA4D6] text-white rounded-xl text-sm font-bold hover:bg-[#2590bd] transition-all disabled:opacity-50"
               >
-                {saving ? <ButtonLoader size={16} /> : <><Save size={14} /> Save Changes</>}
-              </button>
-              <button
+                Save Changes
+              </Button>
+              <Button
+                variant="secondary"
+                size="md"
+                icon={Eye}
+                fullWidth
                 onClick={() => setPreview(true)}
-                className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm border border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6] hover:text-[#2DA4D6] transition-all"
+                className="hover:border-[#2DA4D6] hover:text-[#2DA4D6]"
               >
-                <Eye size={14} /> Preview
-              </button>
+                Preview
+              </Button>
             </div>
 
           </div>
