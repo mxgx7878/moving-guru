@@ -58,13 +58,15 @@ export default function ForgotPassword() {
             <p className="text-ink-soft text-xs mb-6">
               Didn&apos;t receive the email? Check your spam folder or
             </p>
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="sm"
               onClick={() => { setSubmittedEmail(null); reset(); dispatch(clearMessage()); }}
-              className="text-coral text-sm font-medium hover:underline"
+              className="!text-coral hover:!underline !bg-transparent"
             >
               Try another email address
-            </button>
+            </Button>
             <div className="mt-8">
               <Link
                 to="/login"

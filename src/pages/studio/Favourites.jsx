@@ -85,9 +85,9 @@ export default function Favourites() {
       {!loading && saved.length > 0 && filtered.length === 0 && (
         <div className="bg-white rounded-2xl border border-[#E5E0D8] p-10 text-center">
           <p className="text-[#9A9A94] text-sm">No results match your search</p>
-          <button onClick={() => setQuery('')} className="mt-3 text-sm text-[#2DA4D6] hover:underline">
+          <Button variant="ghost" size="sm" onClick={() => setQuery('')} className="!text-sky-mg hover:!underline mt-3">
             Clear
-          </button>
+          </Button>
         </div>
       )}
 

@@ -2,8 +2,7 @@ import {
   MapPin, Calendar, Clock, Clock3, MessageCircle, Building2,
   Star, Check, Trash2, CheckCircle2, XCircle,
 } from 'lucide-react';
-import { Avatar } from '../../components/ui';
-import { ButtonLoader } from '../../components/feedback';
+import { Avatar, Button } from '../../components/ui';
 import { formatShortDate } from '../../utils/formatters';
 
 // Card rendered in the instructor's My Applications list.
@@ -91,42 +90,38 @@ export default function ApplicationCard({
         </div>
       </div>
 
-      <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[#E5E0D8] flex-wrap">
-        <button
-          onClick={onMessage}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E5E0D8] text-xs font-semibold text-[#6B6B66] hover:border-[#2DA4D6] hover:text-[#2DA4D6] transition-colors"
-        >
-          <MessageCircle size={12} /> Message
-        </button>
+      <div className="flex items-center gap-2 mt-3 pt-3 border-t border-edge flex-wrap">
+        <Button variant="secondary" size="xs" icon={MessageCircle} onClick={onMessage}
+          className="hover:border-sky-mg hover:text-sky-mg">
+          Message
+        </Button>
 
         <div className="flex-1" />
 
         {app.status === 'accepted' && reviewed && (
-          <span
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600 text-xs font-bold cursor-default"
-            title="You've already reviewed this studio for this listing"
-          >
-            <Check size={12} /> Reviewed
-          </span>
+          <Button variant="successSoft" size="xs" icon={Check} state="static"
+            title="You've already reviewed this studio for this listing">
+            Reviewed
+          </Button>
         )}
         {app.status === 'accepted' && !reviewed && studio.id && (
-          <button
-            onClick={onReview}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#CE4F56] text-white text-xs font-bold hover:bg-[#b8454c] transition-colors"
-          >
-            <Star size={12} /> Leave Review
-          </button>
+          <Button variant="danger" size="xs" icon={Star} onClick={onReview}>
+            Leave Review
+          </Button>
         )}
 
         {(app.status === 'pending' || app.status === 'viewed') && (
-          <button
-            onClick={onWithdraw}
+          <Button
+            variant="secondary"
+            size="xs"
+            icon={Trash2}
+            loading={isWithdrawing}
             disabled={isWithdrawing}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E5E0D8] text-xs font-semibold text-[#6B6B66] hover:border-red-500 hover:text-red-500 transition-colors disabled:opacity-60"
+            onClick={onWithdraw}
+            className="hover:border-red-500 hover:text-red-500"
           >
-            {isWithdrawing ? <ButtonLoader size={11} color="#CE4F56" /> : <Trash2 size={11} />}
             Withdraw
-          </button>
+          </Button>
         )}
       </div>
     </div>

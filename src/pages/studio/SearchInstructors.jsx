@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchInstructors, saveInstructor, unsaveInstructor, fetchSavedInstructors } from '../../store/actions/instructorAction';
 import { STATUS } from '../../constants/apiConstants';
 import { CardSkeleton } from '../../components/feedback';
-import { Avatar, Button, SelectField } from '../../components/ui';
+import { Avatar, Button, Input, SelectField } from '../../components/ui';
 import { InstructorProfileModal } from '../../features/modals';
 import { OPEN_TO as ALL_OPEN_TO } from '../../constants/profileConstants';
 
@@ -86,12 +86,16 @@ export default function SearchInstructors() {
               className="flex-1 bg-transparent border-none outline-none text-sm text-[#3E3D38] placeholder-[#C4BCB4]" />
             {query && <button onClick={() => setQuery('')} className="text-[#9A9A94] hover:text-[#CE4F56]"><X size={14} /></button>}
           </div>
-          <button onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all
-              ${showFilters ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}>
-            <Filter size={14} /> Filters
-            {hasActiveFilters && <span className="w-2 h-2 rounded-full bg-[#CE4F56]" />}
-          </button>
+          <Button
+            variant={showFilters ? 'primary' : 'secondary'}
+            size="md"
+            icon={Filter}
+            onClick={() => setShowFilters(!showFilters)}
+            className={showFilters ? '' : 'hover:border-sky-mg'}
+          >
+            Filters
+            {hasActiveFilters && <span className="w-2 h-2 rounded-full bg-coral ml-1" />}
+          </Button>
         </div>
 
         {showFilters && (
@@ -114,21 +118,28 @@ export default function SearchInstructors() {
               accent="#2DA4D6"
               size="sm"
             />
-            <div>
-              <label className="block text-[#9A9A94] text-[10px] uppercase tracking-wider font-semibold mb-1.5">Location / Traveling To</label>
-              <input type="text" value={filters.location} onChange={e => setFilters(f => ({ ...f, location: e.target.value }))}
-                placeholder="e.g. Bali, Europe..."
-                className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-3 py-2.5 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-[#2DA4D6]" />
-            </div>
+            <Input
+              label="Location / Traveling To"
+              value={filters.location}
+              onChange={(e) => setFilters((f) => ({ ...f, location: e.target.value }))}
+              placeholder="e.g. Bali, Europe..."
+              accent="#2DA4D6"
+            />
           </div>
         )}
 
         {hasActiveFilters && (
           <div className="flex items-center justify-between pt-2 border-t border-[#E5E0D8]">
             <p className="text-[#9A9A94] text-xs">{filtered.length} result{filtered.length !== 1 ? 's' : ''} found</p>
-            <button onClick={clearFilters} className="text-xs text-[#CE4F56] hover:underline flex items-center gap-1">
-              <X size={11} /> Clear all
-            </button>
+            <Button
+              variant="ghost"
+              size="xs"
+              icon={X}
+              onClick={clearFilters}
+              className="!text-coral hover:!underline"
+            >
+              Clear all
+            </Button>
           </div>
         )}
       </div>
@@ -142,7 +153,9 @@ export default function SearchInstructors() {
           <Search size={32} className="text-[#C4BCB4] mx-auto mb-3" />
           <p className="text-[#3E3D38] font-semibold">No instructors found</p>
           <p className="text-[#9A9A94] text-sm mt-1">Try adjusting your filters</p>
-          <button onClick={clearFilters} className="mt-4 text-sm text-[#2DA4D6] hover:underline">Clear filters</button>
+          <Button variant="ghost" size="sm" onClick={clearFilters} className="!text-sky-mg hover:!underline mt-4">
+            Clear filters
+          </Button>
         </div>
       )}
 

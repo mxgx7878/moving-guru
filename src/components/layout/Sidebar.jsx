@@ -5,6 +5,7 @@ import { LogOut, ChevronRight } from 'lucide-react';
 import logo from '../../assets/logo.png';
 import { NAV_CONFIG, ROLE_THEME } from '../../config/portalConfig';
 import Avatar from '../ui/Avatar';
+import Button from '../ui/Button';
 
 export default function Sidebar({ mobileOpen, onClose }) {
   const dispatch = useDispatch();
@@ -97,14 +98,17 @@ export default function Sidebar({ mobileOpen, onClose }) {
         </nav>
 
         {/* Logout */}
-        <div className="px-3 py-4 border-t border-[#E5E0D8]">
-          <button
+        <div className="px-3 py-4 border-t border-edge">
+          <Button
+            variant="ghost"
+            size="md"
+            fullWidth
+            icon={LogOut}
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-[#9A9A94] hover:bg-red-50 hover:text-red-500 transition-all"
+            className="justify-start !text-ink-soft hover:!bg-red-50 hover:!text-red-500 !border-transparent"
           >
-            <LogOut size={16} />
-            <span>Log Out</span>
-          </button>
+            Log Out
+          </Button>
         </div>
       </aside>
     </>

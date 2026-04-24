@@ -8,7 +8,7 @@ import {
 import { fetchInstructors, fetchSavedInstructors } from '../../store/actions/instructorAction';
 import { fetchMyJobs } from '../../store/actions/jobAction';
 import { CardSkeleton } from '../../components/feedback';
-import { DashboardStatCard, Button, Avatar } from '../../components/ui';
+import { DashboardStatCard, Button, Avatar, Input } from '../../components/ui';
 import { ChangePasswordCard, PasswordResetCard } from '../../features/account';
 
 export default function StudioDashboard() {
@@ -95,10 +95,15 @@ export default function StudioDashboard() {
             <h3 className="font-unbounded text-sm font-black text-[#3E3D38]">Recently Active Instructors</h3>
             <p className="text-xs text-[#9A9A94] mt-0.5">Actively seeking opportunities now</p>
           </div>
-          <button onClick={() => navigate('/studio/search')}
-            className="text-xs text-[#2DA4D6] font-semibold hover:underline flex items-center gap-1">
-            View all <ArrowRight size={12} />
-          </button>
+          <Button
+            variant="ghost"
+            size="xs"
+            iconRight={ArrowRight}
+            onClick={() => navigate('/studio/search')}
+            className="!text-sky-mg hover:!underline"
+          >
+            View all
+          </Button>
         </div>
         {status === 'loading' && instructors.length === 0 ? (
           <div className="p-6"><CardSkeleton count={3} /></div>
@@ -126,10 +131,14 @@ export default function StudioDashboard() {
                       {inst.detail.availability}
                     </span>
                   </div>
-                  <button onClick={() => navigate('/studio/messages')}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity px-3 py-1.5 bg-[#2DA4D6] text-white text-xs font-semibold rounded-lg hover:bg-[#2590bd]">
+                  <Button
+                    variant="primary"
+                    size="xs"
+                    onClick={() => navigate('/studio/messages')}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
                     Message
-                  </button>
+                  </Button>
                 </div>
               );
             })}
@@ -146,10 +155,10 @@ export default function StudioDashboard() {
           <p className="text-[#3E3D38] text-sm font-semibold">Launch Promo Active</p>
           <p className="text-[#6B6B66] text-xs mt-0.5">First 3 months for $2 — founding member pricing locked in forever</p>
         </div>
-        <button onClick={() => navigate('/studio/subscription')}
-          className="text-xs text-[#3E3D38] font-bold hover:underline flex-shrink-0">
+        <Button variant="ghost" size="xs" onClick={() => navigate('/studio/subscription')}
+          className="!text-ink hover:!underline !font-bold flex-shrink-0">
           View plan
-        </button>
+        </Button>
       </div>
 
       {/* ════════════════════════════════════════
@@ -174,10 +183,13 @@ export default function StudioDashboard() {
               <h3 className="font-unbounded text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Email Address</h3>
             </div>
             <div className="p-5">
-              <label className="block text-[10px] font-bold text-[#9A9A94] uppercase tracking-wider mb-1.5">Email</label>
-              <input type="email" value={user?.email || ''} disabled
-                className="w-full border border-[#E5E0D8] rounded-xl px-3.5 py-2.5 text-sm bg-[#FBF8E4]/50 text-[#9A9A94] cursor-not-allowed" />
-              <p className="text-[10px] text-[#9A9A94] mt-2">To change your email, contact admin@movingguru.co</p>
+              <Input
+                type="email"
+                label="Email"
+                value={user?.email || ''}
+                disabled
+                hint="To change your email, contact admin@movingguru.co"
+              />
             </div>
           </div>
 

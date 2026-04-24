@@ -5,6 +5,7 @@ import { ROLE_THEME } from '../../config/portalConfig';
 import { fetchPayments } from '../../store/actions/paymentAction';
 import { STATUS } from '../../constants/apiConstants';
 import { TableSkeleton, CardSkeleton } from '../../components/feedback';
+import { Button } from '../../components/ui';
 
 /**
  * Payments page — shared between instructor and studio portals.
@@ -131,11 +132,9 @@ export default function Payments() {
               <p className="text-xs text-[#9A9A94]">Expires 12/28</p>
             </div>
           </div>
-          <button
-            className="text-xs text-[#6B6B66] border border-[#E5E0D8] px-3 py-1.5 rounded-lg hover:text-[#2DA4D6] hover:border-[#2DA4D6] transition-colors"
-          >
+          <Button variant="secondary" size="xs" className="hover:border-sky-mg hover:text-sky-mg">
             Update
-          </button>
+          </Button>
         </div>
       </div>
 

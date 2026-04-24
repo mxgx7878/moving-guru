@@ -73,12 +73,10 @@ export default function InstructorDetail() {
     return (
       <div className="max-w-5xl mx-auto text-center py-20">
         <p className="text-[#3E3D38] font-semibold">Instructor not found</p>
-        <button
-          onClick={() => navigate('/studio/search')}
-          className="mt-4 text-sm text-[#2DA4D6] hover:underline"
-        >
+        <Button variant="ghost" size="sm" onClick={() => navigate('/studio/search')}
+          className="!text-sky-mg hover:!underline mt-4">
           Back to search
-        </button>
+        </Button>
       </div>
     );
   }
@@ -110,12 +108,10 @@ export default function InstructorDetail() {
     <div className="max-w-5xl mx-auto space-y-6">
       {/* Back + actions */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-sm text-[#6B6B66] hover:text-[#3E3D38] transition-colors"
-        >
-          <ArrowLeft size={16} /> Back
-        </button>
+        <Button variant="ghost" size="sm" icon={ArrowLeft} onClick={() => navigate(-1)}
+          className="!text-ink-muted hover:!text-ink !bg-transparent !border-transparent">
+          Back
+        </Button>
         <div className="flex items-center gap-2">
           <Button
             variant={isSaved ? 'outlineDanger' : 'secondary'}

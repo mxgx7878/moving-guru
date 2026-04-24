@@ -63,12 +63,10 @@ export default function StudioDetail() {
     return (
       <div className="max-w-5xl mx-auto text-center py-20">
         <p className="text-[#3E3D38] font-semibold">{error || 'Studio not found'}</p>
-        <button
-          onClick={() => navigate(-1)}
-          className="mt-4 text-sm text-[#2DA4D6] hover:underline"
-        >
+        <Button variant="ghost" size="sm" onClick={() => navigate(-1)}
+          className="!text-sky-mg hover:!underline mt-4">
           Go back
-        </button>
+        </Button>
       </div>
     );
   }
@@ -92,12 +90,10 @@ export default function StudioDetail() {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-sm text-[#6B6B66] hover:text-[#3E3D38] transition-colors"
-        >
-          <ArrowLeft size={16} /> Back
-        </button>
+        <Button variant="ghost" size="sm" icon={ArrowLeft} onClick={() => navigate(-1)}
+          className="!text-ink-muted hover:!text-ink !bg-transparent !border-transparent">
+          Back
+        </Button>
         <Button variant="primary" icon={MessageCircle} onClick={() => navigate(messagesBase)}>
           Message Studio
         </Button>

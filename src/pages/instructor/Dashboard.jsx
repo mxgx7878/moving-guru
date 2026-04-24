@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchMyApplications } from '../../store/actions/jobAction';
-import { BarChart, StatCard, Button } from '../../components/ui';
+import { BarChart, StatCard, Button, Input } from '../../components/ui';
 import { ChangePasswordCard, PasswordResetCard } from '../../features/account';
 import {
   Eye, MessageCircle, Heart, TrendingUp, Globe,
@@ -190,13 +190,7 @@ export default function Dashboard() {
             </div>
             <div className="p-5">
               <div>
-                <label className="block text-[10px] font-bold text-[#9A9A94] uppercase tracking-wider mb-1.5">Email</label>
-                <input
-                  type="email"
-                  value={user?.email || ''}
-                  disabled
-                  className="w-full border border-[#E5E0D8] rounded-xl px-3.5 py-2.5 text-sm bg-[#FBF8E4]/50 text-[#9A9A94] cursor-not-allowed"
-                />
+                <Input type="email" label="Email" value={user?.email || ''} disabled />
               </div>
             </div>
           </div>

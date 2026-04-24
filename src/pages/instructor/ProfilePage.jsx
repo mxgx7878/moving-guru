@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { updateProfile } from '../../store/actions/authAction';
 import { DISCIPLINE_CATEGORIES } from '../../data/disciplines';
 import { COUNTRIES, COUNTRIES_AND_REGIONS } from '../../data/countries';
-import { Section, Field, SelectField, Button } from '../../components/ui';
+import { Section, Field, SelectField, Button, Input } from '../../components/ui';
 import { ReviewList } from '../../features/reviews';
 import { ScallopedFrame } from '../../features/profile';
 import { instructorProfileSchema, flattenYupErrors } from '../../features/forms';
@@ -185,9 +185,6 @@ export default function ProfilePage() {
   const initials = user?.name?.split(' ').map(n => n[0]).join('') || 'MG';
   const availabilityDisplay = formatDateRange(form.availableFrom, form.availableTo);
 
-  // ─── Input style ──────────────────────────────────────────────
-  const inp = "w-full border border-[#E5E0D8] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#CE4F56] bg-white text-[#3E3D38] placeholder-[#C4BCB4]";
-
   return (
     <div className="max-w-6xl mx-auto">
 
@@ -327,14 +324,23 @@ export default function ProfilePage() {
 
               <div className="flex-1 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <Field label="Full Name">
-                    <input value={form.name || ''} onChange={e => set('name', e.target.value)}
-                      placeholder="Your full name" className={inp} />
-                  </Field>
-                  <Field label="Age">
-                    <input type="number" min="18" max="80" value={form.age || ''} onChange={e => set('age', e.target.value)}
-                      placeholder="e.g. 30" className={inp} />
-                  </Field>
+                  <Input
+                    label="Full Name"
+                    value={form.name || ''}
+                    onChange={(e) => set('name', e.target.value)}
+                    placeholder="Your full name"
+                    error={errors.name}
+                  />
+                  <Input
+                    label="Age"
+                    type="number"
+                    min="18"
+                    max="80"
+                    value={form.age || ''}
+                    onChange={(e) => set('age', e.target.value)}
+                    placeholder="e.g. 30"
+                    error={errors.age}
+                  />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <Field label="Pronouns">
@@ -345,10 +351,12 @@ export default function ProfilePage() {
                       placeholder="Select pronouns..."
                     />
                   </Field>
-                  <Field label="Current Studio / Employer">
-                    <input value={form.studio || ''} onChange={e => set('studio', e.target.value)}
-                      placeholder="e.g. STRIVE, Marrickville" className={inp} />
-                  </Field>
+                  <Input
+                    label="Current Studio / Employer"
+                    value={form.studio || ''}
+                    onChange={(e) => set('studio', e.target.value)}
+                    placeholder="e.g. STRIVE, Marrickville"
+                  />
                 </div>
               </div>
             </div>
@@ -380,9 +388,12 @@ export default function ProfilePage() {
                     <div key={p.key} className="flex items-center gap-2.5">
                       <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: p.color + '15', color: p.color }}>{p.icon}</div>
-                      <input value={form[p.key] || ''} onChange={e => set(p.key, e.target.value)}
+                      <input
+                        value={form[p.key] || ''}
+                        onChange={(e) => set(p.key, e.target.value)}
                         placeholder={`${p.label} URL`}
-                        className="flex-1 border border-[#E5E0D8] rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#CE4F56] bg-white text-[#3E3D38] placeholder-[#C4BCB4]" />
+                        className="flex-1 border border-edge rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-coral bg-white text-ink placeholder-ink-faint"
+                      />
                     </div>
                   ))}
                 </div>
@@ -394,20 +405,28 @@ export default function ProfilePage() {
                SECTION 2 — BIO
              ══════════════════════════════════════ */}
           <Section title="Bio" icon={Edit3}>
-            <Field label={`About You (${(form.bio || '').length}/500)`}>
-              <textarea value={form.bio || ''} onChange={e => set('bio', e.target.value)}
-                rows={4} maxLength={500}
-                placeholder="Tell studios and instructors about yourself, your experience, and your teaching style..."
-                className={`${inp} resize-none`} />
-            </Field>
-            <div className="mt-4 pt-4 border-t border-[#E5E0D8]">
-              <Field label={`What I'm Looking For (${(form.lookingFor || '').length}/2500)`}
-                hint="Describe your ideal opportunity — paid work, swap, or exchange">
-                <textarea value={form.lookingFor || ''} onChange={e => set('lookingFor', e.target.value)}
-                  rows={5} maxLength={2500}
-                  placeholder="e.g. Looking for a 3-month placement in Europe over summer. Open to studio swaps, direct hire, or energy exchange. Flexible on dates..."
-                  className={`${inp} resize-none`} />
-              </Field>
+            <Input
+              textarea
+              rows={4}
+              maxLength={500}
+              label="About You"
+              value={form.bio || ''}
+              onChange={(e) => set('bio', e.target.value)}
+              placeholder="Tell studios and instructors about yourself, your experience, and your teaching style..."
+              error={errors.bio}
+            />
+            <div className="mt-4 pt-4 border-t border-edge">
+              <Input
+                textarea
+                rows={5}
+                maxLength={2500}
+                label="What I'm Looking For"
+                hint="Describe your ideal opportunity — paid work, swap, or exchange"
+                value={form.lookingFor || ''}
+                onChange={(e) => set('lookingFor', e.target.value)}
+                placeholder="e.g. Looking for a 3-month placement in Europe over summer. Open to studio swaps, direct hire, or energy exchange. Flexible on dates..."
+                error={errors.lookingFor}
+              />
             </div>
           </Section>
 
@@ -418,10 +437,14 @@ export default function ProfilePage() {
             <div className="space-y-4">
 
               {/* Current location */}
-              <Field label="Current Location" hint="City and country where you currently live">
-                <input value={form.location || ''} onChange={e => set('location', e.target.value)}
-                  placeholder="e.g. Sydney, Australia" className={inp} />
-              </Field>
+              <Input
+                label="Current Location"
+                hint="City and country where you currently live"
+                value={form.location || ''}
+                onChange={(e) => set('location', e.target.value)}
+                placeholder="e.g. Sydney, Australia"
+                error={errors.location}
+              />
 
               {/* Country From → Traveling To */}
               <div className="grid grid-cols-2 gap-4">
@@ -441,36 +464,42 @@ export default function ProfilePage() {
                       options={COUNTRIES_AND_REGIONS}
                       placeholder="Select destination..."
                     />
-                    <input value={form.travelingTo || ''} onChange={e => set('travelingTo', e.target.value)}
+                    <Input
+                      value={form.travelingTo || ''}
+                      onChange={(e) => set('travelingTo', e.target.value)}
                       placeholder="Or type multiple: Italy, Bali, Thailand"
-                      className={`${inp} text-xs`} />
+                    />
                   </div>
                 </Field>
               </div>
 
               {/* Availability — date range picker */}
               <div>
-                <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">
+                <label className="block text-[10px] font-bold text-ink-soft tracking-widest uppercase mb-2">
                   Availability Dates
                 </label>
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-xs text-[#9A9A94] mb-1.5">Available From</p>
-                    <input type="date" value={form.availableFrom || ''} onChange={e => set('availableFrom', e.target.value)}
-                      min={new Date().toISOString().split('T')[0]}
-                      className={inp} />
-                  </div>
-                  <div>
-                    <p className="text-xs text-[#9A9A94] mb-1.5">Available To</p>
-                    <input type="date" value={form.availableTo || ''} onChange={e => set('availableTo', e.target.value)}
-                      min={form.availableFrom || new Date().toISOString().split('T')[0]}
-                      className={inp} />
-                  </div>
+                  <Input
+                    type="date"
+                    label="Available From"
+                    value={form.availableFrom || ''}
+                    onChange={(e) => set('availableFrom', e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                    error={errors.availableFrom}
+                  />
+                  <Input
+                    type="date"
+                    label="Available To"
+                    value={form.availableTo || ''}
+                    onChange={(e) => set('availableTo', e.target.value)}
+                    min={form.availableFrom || new Date().toISOString().split('T')[0]}
+                    error={errors.availableTo}
+                  />
                 </div>
                 {availabilityDisplay && (
-                  <div className="mt-2 flex items-center gap-2 px-3 py-1.5 bg-[#2DA4D6]/10 rounded-lg w-fit">
-                    <Calendar size={12} className="text-[#2DA4D6]" />
-                    <span className="text-[#2DA4D6] text-xs font-semibold">{availabilityDisplay}</span>
+                  <div className="mt-2 flex items-center gap-2 px-3 py-1.5 bg-sky-soft rounded-lg w-fit">
+                    <Calendar size={12} className="text-sky-mg" />
+                    <span className="text-sky-mg text-xs font-semibold">{availabilityDisplay}</span>
                   </div>
                 )}
               </div>

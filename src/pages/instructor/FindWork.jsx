@@ -8,7 +8,7 @@ import { STATUS } from '../../constants/apiConstants';
 import { JOB_FILTER_TABS } from '../../constants/jobConstants';
 import { CardSkeleton } from '../../components/feedback';
 import {
-  PageHeader, StatTileGroup, Toolbar, TabBar, EmptyState, SelectField, Input,
+  PageHeader, StatTileGroup, Toolbar, TabBar, EmptyState, SelectField, Input, Button,
 } from '../../components/ui';
 import { ApplyJobModal } from '../../features/modals';
 import { InstructorJobCard } from '../../features/jobs';
@@ -161,9 +161,9 @@ export default function FindWork() {
             title="No listings found"
             message="Try adjusting your search or filters"
             action={(
-              <button onClick={clearFilters} className="text-sm text-[#CE4F56] hover:underline">
+              <Button variant="ghost" size="sm" onClick={clearFilters} className="!text-coral hover:!underline">
                 Clear filters
-              </button>
+              </Button>
             )}
           />
         </div>

@@ -8,7 +8,7 @@ import {
   Briefcase, Calendar, GraduationCap, Clock, ChevronDown, Search,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Field, Button } from '../../components/ui';
+import { Field, Button, Input } from '../../components/ui';
 import { StudioPreviewModal } from '../../features/modals';
 import { ReviewList } from '../../features/reviews';
 import { studioProfileSchema, flattenYupErrors } from '../../features/forms';
@@ -207,52 +207,68 @@ export default function StudioProfile() {
           <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 space-y-5">
             <h2 className="font-unbounded text-sm font-black text-[#3E3D38]">Studio Info</h2>
 
-            <Field label="Studio Name">
-              <input value={form.studioName} onChange={e => update('studioName', e.target.value)}
-                className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                placeholder="e.g. Zen Flow Studio" />
-            </Field>
+            <Input
+              label="Studio Name"
+              value={form.studioName}
+              onChange={(e) => update('studioName', e.target.value)}
+              placeholder="e.g. Zen Flow Studio"
+              accent="#2DA4D6"
+              error={errors.studioName}
+            />
 
             <div className="grid grid-cols-2 gap-4">
-              <Field label="Contact Name">
-                <input value={form.contactName} onChange={e => update('contactName', e.target.value)}
-                  className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                  placeholder="e.g. Sarah Mitchell" />
-              </Field>
-              <Field label="Phone">
-                <input value={form.phone} onChange={e => update('phone', e.target.value)}
-                  className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                  placeholder="+1 234 567 8900" />
-              </Field>
+              <Input
+                label="Contact Name"
+                value={form.contactName}
+                onChange={(e) => update('contactName', e.target.value)}
+                placeholder="e.g. Sarah Mitchell"
+                accent="#2DA4D6"
+                error={errors.name}
+              />
+              <Input
+                label="Phone"
+                value={form.phone}
+                onChange={(e) => update('phone', e.target.value)}
+                placeholder="+1 234 567 8900"
+                accent="#2DA4D6"
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <Field label="City / Location">
-                <input value={form.location} onChange={e => update('location', e.target.value)}
-                  className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                  placeholder="e.g. Sydney" />
-              </Field>
-              <Field label="Country">
-                <input value={form.country} onChange={e => update('country', e.target.value)}
-                  className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                  placeholder="e.g. Australia" />
-              </Field>
+              <Input
+                label="City / Location"
+                value={form.location}
+                onChange={(e) => update('location', e.target.value)}
+                placeholder="e.g. Sydney"
+                accent="#2DA4D6"
+              />
+              <Input
+                label="Country"
+                value={form.country}
+                onChange={(e) => update('country', e.target.value)}
+                placeholder="e.g. Australia"
+                accent="#2DA4D6"
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <Field label="Website">
-                <input value={form.website} onChange={e => update('website', e.target.value)}
-                  className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                  placeholder="https://yourstudio.com" />
-              </Field>
-              <Field label="Instagram">
-                <div className="relative">
-                  <Instagram size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9A9A94]" />
-                  <input value={form.instagram} onChange={e => update('instagram', e.target.value)}
-                    className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl pl-9 pr-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                    placeholder="@yourstudio" />
-                </div>
-              </Field>
+              <Input
+                label="Website"
+                value={form.website}
+                onChange={(e) => update('website', e.target.value)}
+                placeholder="https://yourstudio.com"
+                accent="#2DA4D6"
+                error={errors.website}
+              />
+              <Input
+                label="Instagram"
+                value={form.instagram}
+                onChange={(e) => update('instagram', e.target.value)}
+                placeholder="@yourstudio"
+                iconLeft={<Instagram size={14} />}
+                accent="#2DA4D6"
+                error={errors.instagram}
+              />
             </div>
 
             <Field label="Studio Size">
@@ -274,11 +290,16 @@ export default function StudioProfile() {
           <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 space-y-5">
             <h2 className="font-unbounded text-sm font-black text-[#3E3D38]">About the Studio</h2>
 
-            <Field label="Bio">
-              <textarea value={form.bio} onChange={e => update('bio', e.target.value)} rows={5}
-                className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all resize-none"
-                placeholder="Describe your studio — the vibe, community, what makes you unique..." />
-            </Field>
+            <Input
+              textarea
+              rows={5}
+              label="Bio"
+              value={form.bio}
+              onChange={(e) => update('bio', e.target.value)}
+              placeholder="Describe your studio — the vibe, community, what makes you unique..."
+              accent="#2DA4D6"
+              error={errors.description}
+            />
 
             <Field label="Open To">
               <div className="flex flex-wrap gap-2">
@@ -312,15 +333,15 @@ export default function StudioProfile() {
                   </div>
                 </div>
 
-                <Field label="Role Description *">
-                  <textarea
-                    value={form.hiringRoleDescription}
-                    onChange={e => update('hiringRoleDescription', e.target.value)}
-                    rows={4}
-                    placeholder='Please give us much detail as possible — e.g. "Looking for a Vinyasa Yoga instructor to cover Saturday & Sunday morning classes for the next 4 weekends. Must be confident with mixed-level groups and able to start immediately."'
-                    className="w-full bg-white border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all resize-none"
-                  />
-                </Field>
+                <Input
+                  textarea
+                  rows={4}
+                  label="Role Description *"
+                  value={form.hiringRoleDescription}
+                  onChange={(e) => update('hiringRoleDescription', e.target.value)}
+                  placeholder='Please give us much detail as possible — e.g. "Looking for a Vinyasa Yoga instructor to cover Saturday & Sunday morning classes for the next 4 weekends. Must be confident with mixed-level groups and able to start immediately."'
+                  accent="#2DA4D6"
+                />
 
                 <Field label="Position Type">
                   <div className="flex flex-wrap gap-2">
@@ -341,39 +362,34 @@ export default function StudioProfile() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <Field label="Start Date">
-                    <div className="relative">
-                      <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none" />
-                      <input
-                        type="date"
-                        value={form.hiringStartDate}
-                        onChange={e => update('hiringStartDate', e.target.value)}
-                        min={new Date().toISOString().split('T')[0]}
-                        className="w-full bg-white border border-[#E5E0D8] rounded-xl pl-9 pr-3 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                      />
-                    </div>
+                    <Input
+                      type="date"
+                      value={form.hiringStartDate}
+                      onChange={(e) => update('hiringStartDate', e.target.value)}
+                      min={new Date().toISOString().split('T')[0]}
+                      iconLeft={<Calendar size={14} />}
+                      accent="#2DA4D6"
+                    />
                   </Field>
 
                   <Field label="Duration">
-                    <div className="relative">
-                      <Clock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none" />
-                      <input
-                        value={form.hiringDuration}
-                        onChange={e => update('hiringDuration', e.target.value)}
-                        placeholder="e.g. 4 weekends, 3 months"
-                        className="w-full bg-white border border-[#E5E0D8] rounded-xl pl-9 pr-3 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                      />
-                    </div>
+                    <Input
+                      value={form.hiringDuration}
+                      onChange={(e) => update('hiringDuration', e.target.value)}
+                      placeholder="e.g. 4 weekends, 3 months"
+                      iconLeft={<Clock size={14} />}
+                      accent="#2DA4D6"
+                    />
                   </Field>
                 </div>
 
-                <Field label="Compensation / Offer">
-                  <input
-                    value={form.hiringCompensation}
-                    onChange={e => update('hiringCompensation', e.target.value)}
-                    placeholder="e.g. $80/class, shared accommodation, energy exchange"
-                    className="w-full bg-white border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                  />
-                </Field>
+                <Input
+                  label="Compensation / Offer"
+                  value={form.hiringCompensation}
+                  onChange={(e) => update('hiringCompensation', e.target.value)}
+                  placeholder="e.g. $80/class, shared accommodation, energy exchange"
+                  accent="#2DA4D6"
+                />
 
                 <Field label="Minimum Qualification">
                   <div className="relative">
