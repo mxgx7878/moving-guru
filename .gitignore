@@ -8,7 +8,6 @@ dist/
 build/
 # Ignore IDE files
 .idea/
-.vscode/
 # Ignore OS files
 Thumbs.db
 # Ignore coverage reports
@@ -20,3 +19,4 @@ package-lock.json
 yarn.lock
 # Ignore test files
 __tests__/
+config.bat

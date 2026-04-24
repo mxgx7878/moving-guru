@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
 import {
   MapPin, Calendar, Clock, MessageCircle, Bookmark, BookmarkCheck,
-  Users, GraduationCap, Check, XCircle, Clock3, Lock, ExternalLink,
+  Users, GraduationCap, Check, XCircle, Clock3, Lock, ExternalLink, Zap,
 } from 'lucide-react';
-import { Button, Chip, IconButton } from '../../components/ui';
+import { Avatar, Button, Chip, IconButton } from '../../components/ui';
 import {
   ROLE_TYPE_LABELS, QUALIFICATION_LABELS, TYPE_STYLES,
 } from '../../constants/jobConstants';
@@ -21,7 +21,12 @@ export default function InstructorJobCard({
   onToggleSave,
   onApply,
 }) {
-  const typeInfo = TYPE_STYLES[job.type] || TYPE_STYLES.hire;
+  // Primary display type + any secondary types (e.g. "Direct Hire + Swap").
+  const jobTypes = Array.isArray(job.types) && job.types.length
+    ? job.types
+    : job.type ? [job.type] : ['hire'];
+  const primaryType = jobTypes[0];
+  const typeInfo = TYPE_STYLES[primaryType] || TYPE_STYLES.hire;
   const TypeIcon = typeInfo.icon;
   const applyState = getApplyState(job);
   const userDisciplines = user?.disciplines || user?.detail?.disciplines || [];
@@ -30,6 +35,15 @@ export default function InstructorJobCard({
   const vacancies = job.vacancies || 1;
   const filled    = job.positions_filled || 0;
   const isFull    = applyState === 'full';
+
+  const studioName = job.studio?.studio_name || job.studio?.name || job.studio?.detail?.studioName;
+  const studioAvatar = job.studio?.profile_picture
+    || job.studio?.profile_picture_url
+    || job.studio?.detail?.profile_picture
+    || job.studio?.detail?.profile_picture_url;
+  const openToEnergyExchange = job.open_to_energy_exchange
+    ?? job.openToEnergyExchange
+    ?? (job.type === 'energy_exchange');
 
   return (
     <div className={`bg-white rounded-2xl border overflow-hidden transition-all
@@ -46,9 +60,21 @@ export default function InstructorJobCard({
 
       <div className="p-6">
         <div className="flex items-start gap-4 mb-4">
-          <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${typeInfo.bg}`}>
-            <TypeIcon size={18} style={{ color: typeInfo.color }} />
-          </div>
+          {/* Studio's own avatar leads the card — falls back to the
+              listing-type tile when no picture has been uploaded. */}
+          {studioAvatar ? (
+            <Avatar
+              name={studioName || 'Studio'}
+              src={studioAvatar}
+              size="md"
+              tone="blue"
+              className="flex-shrink-0"
+            />
+          ) : (
+            <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${typeInfo.bg}`}>
+              <TypeIcon size={18} style={{ color: typeInfo.color }} />
+            </div>
+          )}
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
@@ -60,20 +86,31 @@ export default function InstructorJobCard({
                     to={`/portal/studios/${job.studio.id}`}
                     className="inline-flex items-center gap-1 text-[#9A9A94] text-xs mt-0.5 hover:text-[#2DA4D6] hover:underline"
                   >
-                    {job.studio?.studio_name || job.studio?.name || job.studio?.detail?.studioName || 'View studio'}
+                    {studioName || 'View studio'}
                     <ExternalLink size={10} />
                   </Link>
                 ) : (
                   <p className="text-[#9A9A94] text-xs mt-0.5">
-                    {job.studio?.name || job.studio?.detail?.studioName || 'Posted by a studio on Moving Guru'}
+                    {studioName || 'Posted by a studio on Moving Guru'}
                   </p>
                 )}
               </div>
               <div className="flex items-center gap-1.5 flex-shrink-0 flex-wrap justify-end">
-                <span className="px-2.5 py-1 rounded-full text-[10px] font-bold text-white"
-                  style={{ backgroundColor: typeInfo.color }}>
-                  {typeInfo.label}
-                </span>
+                {/* One pill per job type — covers "Direct Hire + Swap" posts. */}
+                {jobTypes.map((tid) => {
+                  const info = TYPE_STYLES[tid] || TYPE_STYLES.hire;
+                  return (
+                    <span key={tid} className="px-2.5 py-1 rounded-full text-[10px] font-bold text-white"
+                      style={{ backgroundColor: info.color }}>
+                      {info.label}
+                    </span>
+                  );
+                })}
+                {openToEnergyExchange && (
+                  <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#6BE6A4]/25 text-[#3E3D38]">
+                    <Zap size={10} /> Open to Energy Exchange
+                  </span>
+                )}
                 {job.role_type && (
                   <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#3E3D38] text-white">
                     {ROLE_TYPE_LABELS[job.role_type] || job.role_type}

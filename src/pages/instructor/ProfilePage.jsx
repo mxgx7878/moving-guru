@@ -33,7 +33,7 @@ const SOCIAL_PLATFORMS = [
 
 const PRONOUNS = ['He/Him', 'She/Her', 'They/Them', 'He/They', 'She/They', 'Prefer not to say'];
 const LANGUAGES = ['English','Spanish','French','Portuguese','Italian','German','Japanese','Mandarin','Arabic','Hindi','Korean','Indonesian','Russian','Polish','Cantonese','Ukrainian','Nigerian','Thai'];
-const OPEN_TO = ['Direct Hire', 'Swaps', 'Energy Exchange'];
+const OPEN_TO = ['Direct Hire', 'Swaps'];
 
 // ─── Main component ──────────────────────────────────────────────
 export default function ProfilePage() {
@@ -60,6 +60,8 @@ export default function ProfilePage() {
       travelingTo:   user.traveling_to   || user.travelingTo   || '',
       profileStatus: user.profile_status || user.profileStatus || 'active',
       openTo:        user.open_to        || user.openTo        || [],
+      openToEnergyExchange:
+        user.open_to_energy_exchange ?? user.openToEnergyExchange ?? false,
       ...socialsMap,
     };
   });
@@ -117,7 +119,7 @@ export default function ProfilePage() {
       avatarFile, coverFile, photoFiles,
       instagram, facebook, twitter, tiktok, youtube, linkedin,
       profile_picture, background_image, gallery_photos, social_links,
-      countryFrom, travelingTo, profileStatus, openTo,
+      countryFrom, travelingTo, profileStatus, openTo, openToEnergyExchange,
       availableFrom, availableTo,
       ...rest
     } = form;
@@ -141,6 +143,7 @@ export default function ProfilePage() {
     fd.append('availability',  formatDateRange(availableFrom, availableTo));
 
     (openTo || []).forEach((o, i) => fd.append(`openTo[${i}]`, o));
+    fd.append('open_to_energy_exchange', openToEnergyExchange ? '1' : '0');
 
     if (avatarFile) fd.append('profile_picture', avatarFile);
     if (coverFile)  fd.append('background_image', coverFile);
@@ -535,6 +538,24 @@ export default function ProfilePage() {
                   <p className="text-[10px] text-ink-faint mt-1">Select at least one option</p>
                 )}
               </Field>
+
+              {/* Energy exchange opt-in — separate from Open To so it stays a
+                  secondary signal instead of a headline offering. */}
+              <label className="flex items-start gap-2.5 cursor-pointer select-none p-3 rounded-xl bg-[#FDFCF8] border border-[#E5E0D8] hover:border-[#6BE6A4] transition-colors">
+                <input
+                  type="checkbox"
+                  checked={!!form.openToEnergyExchange}
+                  onChange={(e) => set('openToEnergyExchange', e.target.checked)}
+                  className="mt-0.5 w-4 h-4 accent-[#6BE6A4] flex-shrink-0"
+                />
+                <div className="flex-1">
+                  <p className="text-xs font-semibold text-[#3E3D38]">Open to energy exchange options</p>
+                  <p className="text-[10px] text-[#9A9A94] mt-0.5 leading-snug">
+                    Tick this only if you're open to exchange arrangements when paid options aren't viable.
+                    When on, your profile shows "this user is open to energy exchange options".
+                  </p>
+                </div>
+              </label>
             </div>
           </Section>
 

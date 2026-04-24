@@ -35,19 +35,20 @@ export const DURATION_OPTIONS = [
   '1 week', '2 weeks', '1 month', '2 months', '3 months', '6 months', 'Ongoing',
 ];
 
-// Listing types used in the studio create form (no "All" option)
+// Listing types used in the studio create form (no "All" option).
+// Energy exchange is no longer a standalone job type — it's a separate
+// opt-in flag on the listing. Studios can now select one OR both of
+// these so a single post covers "hire or swap" scenarios.
 export const JOB_TYPES = [
-  { id: 'hire',            label: 'Direct Hire',     icon: Briefcase, color: '#2DA4D6', bg: 'bg-[#2DA4D6]/10' },
-  { id: 'swap',            label: 'Instructor Swap', icon: RefreshCw, color: '#E89560', bg: 'bg-[#E89560]/10' },
-  { id: 'energy_exchange', label: 'Energy Exchange', icon: Zap,       color: '#6BE6A4', bg: 'bg-[#6BE6A4]/20' },
+  { id: 'hire', label: 'Direct Hire',     icon: Briefcase, color: '#2DA4D6', bg: 'bg-[#2DA4D6]/10' },
+  { id: 'swap', label: 'Instructor Swap', icon: RefreshCw, color: '#E89560', bg: 'bg-[#E89560]/10' },
 ];
 
 // Filter tabs shown on the instructor Find Work page (includes "All")
 export const JOB_FILTER_TABS = [
-  { id: 'all',             label: 'All Listings',    color: '#CCFF00', bg: 'bg-[#CCFF00]', activeText: '#3E3D38' },
-  { id: 'hire',            label: 'Direct Hire',     color: '#2DA4D6', bg: 'bg-[#2DA4D6]', activeText: '#FFFFFF' },
-  { id: 'swap',            label: 'Instructor Swap', color: '#E89560', bg: 'bg-[#E89560]', activeText: '#FFFFFF' },
-  { id: 'energy_exchange', label: 'Energy Exchange', color: '#6BE6A4', bg: 'bg-[#6BE6A4]', activeText: '#3E3D38' },
+  { id: 'all',  label: 'All Listings',    color: '#CCFF00', bg: 'bg-[#CCFF00]', activeText: '#3E3D38' },
+  { id: 'hire', label: 'Direct Hire',     color: '#2DA4D6', bg: 'bg-[#2DA4D6]', activeText: '#FFFFFF' },
+  { id: 'swap', label: 'Instructor Swap', color: '#E89560', bg: 'bg-[#E89560]', activeText: '#FFFFFF' },
 ];
 
 // Display styling for job cards on the instructor Find Work feed
@@ -70,6 +71,8 @@ export const JOB_STATUS_CONFIG = {
 export const EMPTY_JOB_FORM = {
   title:               '',
   type:                'hire',
+  types:               ['hire'],
+  open_to_energy_exchange: false,
   role_type:           'permanent',
   description:         '',
   disciplines:         [],
