@@ -60,6 +60,13 @@ export default function Messages() {
     setMobileView('list');
   };
 
+  const convoDisplayName = (convo) => {
+  const r = convo?.role || convo?.participant?.role;
+  // Platform admin messages always appear from "GURU" in the inbox.
+  if (r === 'admin') return 'GURU';
+  return convo?.name || 'Unknown';
+};
+
   const handleSend = async () => {
     if (!msgText.trim() || !activeConvo) return;
     setSending(true);
@@ -70,10 +77,9 @@ export default function Messages() {
     setSending(false);
   };
 
-  const filteredConversations = conversations.filter(c =>
-    !searchQuery || c.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
+const filteredConversations = conversations.filter(c =>
+  !searchQuery || convoDisplayName(c).toLowerCase().includes(searchQuery.toLowerCase())
+);
   const subtitle = role === 'studio'
     ? 'Connect with instructors'
     : 'Connect with studios and instructors';
