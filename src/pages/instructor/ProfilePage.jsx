@@ -144,7 +144,14 @@ export default function ProfilePage() {
 
     if (avatarFile) fd.append('profile_picture', avatarFile);
     if (coverFile)  fd.append('background_image', coverFile);
-    (photoFiles || []).forEach((f, i) => {
+    const existingUrls = (form.photos || []).filter(
+      (p, i) => typeof p === 'string' && !(form.photoFiles?.[i] instanceof File)
+    );
+    existingUrls.forEach((url, i) => {
+      fd.append(`existing_gallery_photos[${i}]`, url);
+    });
+
+    (form.photoFiles || []).forEach((f, i) => {
       if (f instanceof File) fd.append(`gallery_photos[${i}]`, f);
     });
 
