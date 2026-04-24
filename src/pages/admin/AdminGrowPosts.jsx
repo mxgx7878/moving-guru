@@ -24,6 +24,8 @@ import { GrowPostRow } from '../../features/growPosts';
 import {
   GrowPostPreviewModal, RejectReasonModal, ConfirmModal,
 } from '../../features/modals';
+import { createConversation } from '../../store/actions/messageAction';
+import { buildRejectionMessage } from '../../features/modals/RejectReasonModal';
 
 const POST_COLUMNS = [
   { key: 'post',     label: 'Post' },
@@ -70,6 +72,34 @@ export default function AdminGrowPosts() {
     return c;
   }, [adminPosts]);
 
+
+  const confirmReject = async (reason) => {
+  if (!rejectingId) return;
+  const id = rejectingId;
+
+  // Find the post so we can target the author for the follow-up message.
+  const post = adminPosts.find((p) => p.id === id);
+  const authorId = post?.user?.id || post?.user_id || null;
+
+  setActingId(id);
+  setRejectingId(null);
+
+  const res = await dispatch(rejectGrowPost({ id, reason }));
+
+  // Only send the inbox message if the reject call succeeded and we know who
+  // the author is. Any failure here is non-fatal — the rejection still stands.
+  if (rejectGrowPost.fulfilled.match(res) && authorId) {
+    try {
+      await dispatch(createConversation({
+        recipientId: authorId,
+        message:     buildRejectionMessage(reason),
+      }));
+    } catch (_) {
+      // swallow — the admin already saw the reject success toast
+    }
+  }
+};
+
   const filtered = useMemo(() => (
     adminPosts.filter((p) => {
       const matchStatus = activeStatus === 'all' || p.status === activeStatus;
@@ -89,13 +119,6 @@ export default function AdminGrowPosts() {
     await dispatch(approveGrowPost(post.id));
   };
 
-  const confirmReject = async (reason) => {
-    if (!rejectingId) return;
-    const id = rejectingId;
-    setActingId(id);
-    setRejectingId(null);
-    await dispatch(rejectGrowPost({ id, reason }));
-  };
 
   const handleBoost = (post) =>
     dispatch(boostGrowPost({ id: post.id, is_featured: !post.is_featured }));
