@@ -3,16 +3,11 @@ import {
 } from 'lucide-react';
 import { Avatar, Button, Chip } from '../../components/ui';
 import { ButtonLoader } from '../../components/feedback';
-import { getInitials } from '../../utils/getInitials';
+import { OPEN_TO_TONES } from '../../constants/theme';
 
 // Studio-facing card used on the Favourites list. Shows enough of an
 // instructor's profile to decide whether to message them. All action
 // callbacks are optional — parent owns save/unsave/message routing.
-const OPEN_TO_TONES = {
-  'Direct Hire':     'bg-[#2DA4D6]/10 text-[#2DA4D6]',
-  'Swaps':           'bg-[#E89560]/15 text-[#E89560]',
-  'Energy Exchange': 'bg-[#6BE6A4]/15 text-[#3E3D38]',
-};
 
 export default function SavedInstructorCard({
   instructor,
@@ -44,7 +39,7 @@ export default function SavedInstructorCard({
               tone="coral"
             />
             <div>
-              <p className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">{inst.name}</p>
+              <p className="font-unbounded text-sm font-black text-[#3E3D38]">{inst.name}</p>
               <p className="text-[#9A9A94] text-[10px]">
                 {instDetail.pronouns}{instDetail.age ? ` · ${instDetail.age} yrs` : ''}
               </p>
@@ -111,7 +106,7 @@ export default function SavedInstructorCard({
             {openTo.map((o) => (
               <span
                 key={o}
-                className={`px-2 py-0.5 text-[10px] rounded-full font-medium ${OPEN_TO_TONES[o] || 'bg-[#F5F0E8] text-[#6B6B66]'}`}
+                className={`px-2 py-0.5 text-[10px] rounded-full font-medium ${OPEN_TO_TONES[o] || 'bg-tile-neutral text-ink-muted'}`}
               >
                 {o}
               </span>

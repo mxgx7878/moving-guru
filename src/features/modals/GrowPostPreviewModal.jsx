@@ -40,7 +40,7 @@ export default function GrowPostPreviewModal({ post, onClose }) {
       {headerBadges}
 
       <div className="mt-4">
-        <h2 className="font-['Unbounded'] text-lg font-black text-[#3E3D38]">{post.title}</h2>
+        <h2 className="font-unbounded text-lg font-black text-[#3E3D38]">{post.title}</h2>
         {post.subtitle && <p className="text-[#6B6B66] text-sm mt-1">{post.subtitle}</p>}
       </div>
 

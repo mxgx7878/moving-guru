@@ -59,7 +59,7 @@ export default function DashboardStatCard({
           </span>
         )}
       </div>
-      <p className="font-['Unbounded'] text-2xl font-black text-[#3E3D38] mb-1">{display}</p>
+      <p className="font-unbounded text-2xl font-black text-[#3E3D38] mb-1">{display}</p>
       <p className="text-xs font-semibold text-[#6B6B66]">{label}</p>
       {sub && <p className="text-[10px] text-[#9A9A94] mt-0.5">{sub}</p>}
       {to && (

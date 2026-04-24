@@ -15,7 +15,7 @@ export default function StatTileGroup({ tiles, columns = 4, className = '' }) {
       {tiles.map((t) => {
         const content = (
           <>
-            <p className={`font-['Unbounded'] text-2xl font-black ${t.color || 'text-[#3E3D38]'}`}>
+            <p className={`font-unbounded text-2xl font-black ${t.color || 'text-[#3E3D38]'}`}>
               {t.value ?? '—'}
             </p>
             <p className="text-[#9A9A94] text-xs mt-1 font-semibold">{t.label}</p>

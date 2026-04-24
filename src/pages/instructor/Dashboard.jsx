@@ -94,7 +94,7 @@ export default function Dashboard() {
         />
         <div className="relative z-10">
           <p className="text-[#CE4F56] text-xs font-semibold tracking-widest uppercase mb-2">Welcome back</p>
-          <h1 className="font-['Unbounded'] text-2xl font-black text-[#3E3D38] mb-1">
+          <h1 className="font-unbounded text-2xl font-black text-[#3E3D38] mb-1">
             {profileData.name?.split(' ')[0]}
           </h1>
           <p className="text-[#6B6B66] text-sm">
@@ -131,7 +131,7 @@ export default function Dashboard() {
         <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-[#E5E0D8]">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="font-['Unbounded'] text-sm font-bold text-[#3E3D38]">Profile Views</h3>
+              <h3 className="font-unbounded text-sm font-bold text-[#3E3D38]">Profile Views</h3>
               <p className="text-xs text-[#9A9A94] mt-0.5">Monthly breakdown</p>
             </div>
             <div className="flex items-center gap-1.5 bg-[#f5fca6]/50 rounded-lg px-3 py-1.5">
@@ -144,7 +144,7 @@ export default function Dashboard() {
 
         {/* Quick info */}
         <div className="bg-white rounded-2xl p-5 border border-[#E5E0D8] space-y-4">
-          <h3 className="font-['Unbounded'] text-sm font-bold text-[#3E3D38]">Profile Snapshot</h3>
+          <h3 className="font-unbounded text-sm font-bold text-[#3E3D38]">Profile Snapshot</h3>
 
           <div className="space-y-3">
             <div className="flex items-start gap-3">
@@ -195,7 +195,7 @@ export default function Dashboard() {
             <Megaphone size={18} className="text-white" />
           </div>
           <div>
-            <p className="font-['Unbounded'] text-sm font-bold text-white">Post on GROW</p>
+            <p className="font-unbounded text-sm font-bold text-white">Post on GROW</p>
             <p className="text-white/70 text-xs mt-0.5">Advertise your retreat, event, or training program here</p>
           </div>
         </div>
@@ -211,7 +211,7 @@ export default function Dashboard() {
             <Zap size={18} className="text-white" />
           </div>
           <div>
-            <p className="font-['Unbounded'] text-sm font-bold text-white">Boost your profile</p>
+            <p className="font-unbounded text-sm font-bold text-white">Boost your profile</p>
             <p className="text-white/60 text-xs mt-0.5">Get featured at the top of search results for $10/week</p>
           </div>
         </div>
@@ -229,7 +229,7 @@ export default function Dashboard() {
             <Settings size={16} className="text-[#CE4F56]" />
           </div>
           <div>
-            <h2 className="font-['Unbounded'] text-base font-black text-[#3E3D38]">Account Settings</h2>
+            <h2 className="font-unbounded text-base font-black text-[#3E3D38]">Account Settings</h2>
             <p className="text-[#9A9A94] text-xs mt-0.5">Manage your email, password, and security</p>
           </div>
         </div>
@@ -239,7 +239,7 @@ export default function Dashboard() {
           <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
             <div className="px-5 py-3.5 border-b border-[#E5E0D8] flex items-center gap-2.5">
               <Mail size={14} className="text-[#CE4F56]" />
-              <h3 className="font-['Unbounded'] text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Email Address</h3>
+              <h3 className="font-unbounded text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Email Address</h3>
             </div>
             <div className="p-5">
               <div>
@@ -258,7 +258,7 @@ export default function Dashboard() {
           <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
             <div className="px-5 py-3.5 border-b border-[#E5E0D8] flex items-center gap-2.5">
               <Settings size={14} className="text-[#E89560]" />
-              <h3 className="font-['Unbounded'] text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Password Reset</h3>
+              <h3 className="font-unbounded text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Password Reset</h3>
             </div>
             <div className="p-5">
               <p className="text-sm text-[#6B6B66] mb-3">
@@ -299,7 +299,7 @@ export default function Dashboard() {
         <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden mt-4">
           <div className="px-5 py-3.5 border-b border-[#E5E0D8] flex items-center gap-2.5">
             <Lock size={14} className="text-[#CE4F56]" />
-            <h3 className="font-['Unbounded'] text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Change Password</h3>
+            <h3 className="font-unbounded text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Change Password</h3>
           </div>
           <div className="p-5 space-y-3">
             {pwError && (

@@ -106,7 +106,7 @@ export default function AdminDashboard() {
         <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-semibold">
           Signups today
         </p>
-        <p className="font-['Unbounded'] text-2xl font-black text-[#3E3D38]">
+        <p className="font-unbounded text-2xl font-black text-[#3E3D38]">
           {stats.signups_today}
         </p>
       </div>

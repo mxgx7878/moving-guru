@@ -72,7 +72,7 @@ export default function SearchInstructors() {
     <div className="max-w-5xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">Find Instructors</h1>
+        <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Find Instructors</h1>
         <p className="text-[#9A9A94] text-sm mt-1">Browse {instructors.length} active instructors seeking opportunities</p>
       </div>
 
@@ -172,7 +172,7 @@ export default function SearchInstructors() {
                         tone="coral"
                       />
                       <div>
-                        <p className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">{inst.name}</p>
+                        <p className="font-unbounded text-sm font-black text-[#3E3D38]">{inst.name}</p>
                         <p className="text-[#9A9A94] text-[10px]">{inst.detail.pronouns}</p>
                       </div>
                     </div>

@@ -54,7 +54,7 @@ export default function PostPreviewModal({ post, onClose }) {
         )}
 
         <div className="p-6 space-y-4">
-          <h2 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">{post.title}</h2>
+          <h2 className="font-unbounded text-xl font-black text-[#3E3D38]">{post.title}</h2>
 
           {post.type === 'event' && post.event_date && (
             <div className="flex items-center gap-3 text-xs text-[#6B6B66]">

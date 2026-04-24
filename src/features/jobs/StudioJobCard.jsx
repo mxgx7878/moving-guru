@@ -60,7 +60,7 @@ export default function StudioJobCard({
               </span>
             </div>
 
-            <h3 className="font-['Unbounded'] text-base font-black text-[#3E3D38] mb-1 truncate">
+            <h3 className="font-unbounded text-base font-black text-[#3E3D38] mb-1 truncate">
               {job.title}
             </h3>
             <p className="text-[#6B6B66] text-sm line-clamp-2">{job.description}</p>

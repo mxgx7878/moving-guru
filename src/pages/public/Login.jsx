@@ -60,7 +60,7 @@ export default function Login() {
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-2">
             <img src={logo} alt="Moving Guru Logo" height={80} width={80} />
-            <span className="font-['Unbounded'] text-lg font-bold text-white/70 tracking-wider">
+            <span className="font-unbounded text-lg font-bold text-white/70 tracking-wider">
               MOVING GURU
             </span>
           </div>
@@ -68,7 +68,7 @@ export default function Login() {
 
         <div className="relative z-10">
           <p className="text-[11px] text-white/50 tracking-widest uppercase mb-4">Global Wellness Network</p>
-          <h1 className="font-['Unbounded'] text-4xl xl:text-5xl font-black text-white leading-tight mb-6">
+          <h1 className="font-unbounded text-4xl xl:text-5xl font-black text-white leading-tight mb-6">
             YOUR WORLD.<br />YOUR WORK.<br />
             <span className="text-[#f5fca6]">EVERYWHERE.</span>
           </h1>
@@ -79,17 +79,17 @@ export default function Login() {
 
         <div className="relative z-10 flex items-center gap-6">
           <div className="text-center">
-            <p className="font-['Unbounded'] text-2xl font-black text-white">50+</p>
+            <p className="font-unbounded text-2xl font-black text-white">50+</p>
             <p className="text-white/50 text-xs">Countries</p>
           </div>
           <div className="w-px h-8 bg-white/20" />
           <div className="text-center">
-            <p className="font-['Unbounded'] text-2xl font-black text-white">1000+</p>
+            <p className="font-unbounded text-2xl font-black text-white">1000+</p>
             <p className="text-white/50 text-xs">Instructors</p>
           </div>
           <div className="w-px h-8 bg-white/20" />
           <div className="text-center">
-            <p className="font-['Unbounded'] text-2xl font-black text-white">200+</p>
+            <p className="font-unbounded text-2xl font-black text-white">200+</p>
             <p className="text-white/50 text-xs">Studios</p>
           </div>
         </div>
@@ -100,12 +100,12 @@ export default function Login() {
         <div className="w-full max-w-sm">
           <div className="lg:hidden flex items-center gap-2 mb-8">
             <Globe size={18} className="text-[#CE4F56]" />
-            <span className="font-['Unbounded'] text-sm font-bold text-[#3E3D38] tracking-wider">
+            <span className="font-unbounded text-sm font-bold text-[#3E3D38] tracking-wider">
               MOVING <em className="not-italic text-[#CE4F56]">GURU</em>
             </span>
           </div>
 
-          <h2 className="font-['Unbounded'] text-2xl font-black text-[#3E3D38] mb-1">Welcome back</h2>
+          <h2 className="font-unbounded text-2xl font-black text-[#3E3D38] mb-1">Welcome back</h2>
           <p className="text-[#9A9A94] text-sm mb-8">Sign in to your account</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">

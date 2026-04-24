@@ -36,7 +36,7 @@ export default function ForgotPassword() {
         {/* Logo */}
         <div className="flex items-center gap-2 mb-8">
           <Globe size={18} className="text-[#CE4F56]" />
-          <span className="font-['Unbounded'] text-sm font-bold text-[#3E3D38] tracking-wider">
+          <span className="font-unbounded text-sm font-bold text-[#3E3D38] tracking-wider">
             MOVING <em className="not-italic text-[#CE4F56]">GURU</em>
           </span>
         </div>
@@ -47,7 +47,7 @@ export default function ForgotPassword() {
             <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-5">
               <CheckCircle size={28} className="text-emerald-500" />
             </div>
-            <h2 className="font-['Unbounded'] text-xl font-black text-[#3E3D38] mb-2">Check your email</h2>
+            <h2 className="font-unbounded text-xl font-black text-[#3E3D38] mb-2">Check your email</h2>
             <p className="text-[#9A9A94] text-sm mb-1">
               We sent a password reset link to
             </p>
@@ -74,7 +74,7 @@ export default function ForgotPassword() {
           /* Form state */
           <>
             <div className="mb-6">
-              <h2 className="font-['Unbounded'] text-2xl font-black text-[#3E3D38] mb-2">Forgot password?</h2>
+              <h2 className="font-unbounded text-2xl font-black text-[#3E3D38] mb-2">Forgot password?</h2>
               <p className="text-[#9A9A94] text-sm">
                 No worries, we&apos;ll send you a reset link to your email.
               </p>

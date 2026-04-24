@@ -12,7 +12,7 @@ export default function EmptyState({
     <div className={`py-16 text-center ${className}`}>
       {Icon && <Icon size={36} className="mx-auto text-[#C4BCB4] mb-3" />}
       {title && (
-        <p className="font-['Unbounded'] text-sm font-bold text-[#3E3D38]">{title}</p>
+        <p className="font-unbounded text-sm font-bold text-[#3E3D38]">{title}</p>
       )}
       {message && (
         <p className="text-[#9A9A94] text-xs mt-1">{message}</p>

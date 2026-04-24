@@ -85,7 +85,7 @@ export default function StudioDashboard() {
           style={{ backgroundImage: `radial-gradient(circle at 85% 50%, #2DA4D6 0%, transparent 60%)` }} />
         <div className="relative z-10">
           <p className="text-[#2DA4D6] text-xs font-semibold tracking-widest uppercase mb-2">Studio Dashboard</p>
-          <h1 className="font-['Unbounded'] text-2xl font-black text-[#3E3D38] mb-1">{studioName}</h1>
+          <h1 className="font-unbounded text-2xl font-black text-[#3E3D38] mb-1">{studioName}</h1>
           <p className="text-[#6B6B66] text-sm">Find your next great instructor from the Moving Guru network</p>
         </div>
         <div className="relative z-10 hidden sm:block">
@@ -111,7 +111,7 @@ export default function StudioDashboard() {
           <div className="w-10 h-10 bg-[#2DA4D6]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#2DA4D6]/20 transition-colors">
             <Search size={18} className="text-[#2DA4D6]" />
           </div>
-          <p className="font-['Unbounded'] text-sm font-black text-[#3E3D38] mb-1">Find Instructors</p>
+          <p className="font-unbounded text-sm font-black text-[#3E3D38] mb-1">Find Instructors</p>
           <p className="text-[#9A9A94] text-xs">Browse and filter the global network</p>
           <div className="flex items-center gap-1 mt-3 text-[#2DA4D6] text-xs font-semibold">Search now <ArrowRight size={12} /></div>
         </button>
@@ -120,7 +120,7 @@ export default function StudioDashboard() {
           <div className="w-10 h-10 bg-[#CE4F56]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#CE4F56]/20 transition-colors">
             <MessageCircle size={18} className="text-[#CE4F56]" />
           </div>
-          <p className="font-['Unbounded'] text-sm font-black text-[#3E3D38] mb-1">Messages</p>
+          <p className="font-unbounded text-sm font-black text-[#3E3D38] mb-1">Messages</p>
           <p className="text-[#9A9A94] text-xs">3 unread conversations</p>
           <div className="flex items-center gap-1 mt-3 text-[#CE4F56] text-xs font-semibold">View inbox <ArrowRight size={12} /></div>
         </button>
@@ -129,7 +129,7 @@ export default function StudioDashboard() {
           <div className="w-10 h-10 bg-[#E89560]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#E89560]/20 transition-colors">
             <Building2 size={18} className="text-[#E89560]" />
           </div>
-          <p className="font-['Unbounded'] text-sm font-black text-[#3E3D38] mb-1">Studio Profile</p>
+          <p className="font-unbounded text-sm font-black text-[#3E3D38] mb-1">Studio Profile</p>
           <p className="text-[#9A9A94] text-xs">Update your studio details</p>
           <div className="flex items-center gap-1 mt-3 text-[#E89560] text-xs font-semibold">Edit profile <ArrowRight size={12} /></div>
         </button>
@@ -139,7 +139,7 @@ export default function StudioDashboard() {
       <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
         <div className="px-6 py-5 border-b border-[#E5E0D8] flex items-center justify-between">
           <div>
-            <h3 className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">Recently Active Instructors</h3>
+            <h3 className="font-unbounded text-sm font-black text-[#3E3D38]">Recently Active Instructors</h3>
             <p className="text-xs text-[#9A9A94] mt-0.5">Actively seeking opportunities now</p>
           </div>
           <button onClick={() => navigate('/studio/search')}
@@ -208,7 +208,7 @@ export default function StudioDashboard() {
             <Settings size={16} className="text-[#2DA4D6]" />
           </div>
           <div>
-            <h2 className="font-['Unbounded'] text-base font-black text-[#3E3D38]">Account Settings</h2>
+            <h2 className="font-unbounded text-base font-black text-[#3E3D38]">Account Settings</h2>
             <p className="text-[#9A9A94] text-xs mt-0.5">Manage your email, password, and security</p>
           </div>
         </div>
@@ -218,7 +218,7 @@ export default function StudioDashboard() {
           <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
             <div className="px-5 py-3.5 border-b border-[#E5E0D8] flex items-center gap-2.5">
               <Mail size={14} className="text-[#2DA4D6]" />
-              <h3 className="font-['Unbounded'] text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Email Address</h3>
+              <h3 className="font-unbounded text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Email Address</h3>
             </div>
             <div className="p-5">
               <label className="block text-[10px] font-bold text-[#9A9A94] uppercase tracking-wider mb-1.5">Email</label>
@@ -232,7 +232,7 @@ export default function StudioDashboard() {
           <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
             <div className="px-5 py-3.5 border-b border-[#E5E0D8] flex items-center gap-2.5">
               <Settings size={14} className="text-[#E89560]" />
-              <h3 className="font-['Unbounded'] text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Password Reset</h3>
+              <h3 className="font-unbounded text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Password Reset</h3>
             </div>
             <div className="p-5">
               <p className="text-sm text-[#6B6B66] mb-3">Forgot your password? We'll send a reset link to your email.</p>
@@ -263,7 +263,7 @@ export default function StudioDashboard() {
         <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden mt-4">
           <div className="px-5 py-3.5 border-b border-[#E5E0D8] flex items-center gap-2.5">
             <Lock size={14} className="text-[#2DA4D6]" />
-            <h3 className="font-['Unbounded'] text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Change Password</h3>
+            <h3 className="font-unbounded text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Change Password</h3>
           </div>
           <div className="p-5 space-y-3">
             {pwError && (

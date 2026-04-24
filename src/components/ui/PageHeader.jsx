@@ -103,7 +103,7 @@ function HeaderText({ eyebrow, eyebrowColor, title, description }) {
         </p>
       )}
       {title && (
-        <h1 className="font-['Unbounded'] text-xl lg:text-2xl font-black text-[#3E3D38] leading-tight">
+        <h1 className="font-unbounded text-xl lg:text-2xl font-black text-[#3E3D38] leading-tight">
           {title}
         </h1>
       )}

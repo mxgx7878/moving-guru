@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
@@ -71,15 +71,27 @@ export default function JobApplicantsModal({ job, onClose }) {
   }, [job?.id, dispatch]);
 
   // Pre-fetch review summaries for visible applicants.
+  //
+  // Effect runs only when the applicant id-set changes (derived stably via
+  // useMemo), not every time the review cache fills. We read the latest
+  // `reviewsByUserId` through a ref so we don't fire the same fetches
+  // again each render — previously silenced with eslint-disable.
+  const reviewsByUserIdRef = useRef(reviewsByUserId);
+  useEffect(() => { reviewsByUserIdRef.current = reviewsByUserId; }, [reviewsByUserId]);
+
+  const applicantIdsKey = useMemo(
+    () => applicants.map((a) => a.instructor?.id).filter(Boolean).join(','),
+    [applicants],
+  );
+
   useEffect(() => {
-    applicants.forEach((app) => {
-      const id = app.instructor?.id;
-      if (id && !reviewsByUserId[id]) {
+    applicantIdsKey.split(',').filter(Boolean).forEach((raw) => {
+      const id = Number(raw);
+      if (!reviewsByUserIdRef.current[id]) {
         dispatch(fetchUserReviews({ userId: id, direction: 'studio_to_instructor' }));
       }
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [applicants.length]);
+  }, [applicantIdsKey, dispatch]);
 
   // Build an O(1) lookup of (revieweeId, jobListingId) pairs I've
   // already reviewed, so the per-applicant render is cheap.
@@ -134,7 +146,7 @@ export default function JobApplicantsModal({ job, onClose }) {
               <div className="w-8 h-8 rounded-lg bg-[#2DA4D6]/10 flex items-center justify-center">
                 <Users size={14} className="text-[#2DA4D6]" />
               </div>
-              <h2 className="font-['Unbounded'] text-base font-black text-[#3E3D38] truncate">
+              <h2 className="font-unbounded text-base font-black text-[#3E3D38] truncate">
                 Applicants
               </h2>
               <span
@@ -202,7 +214,7 @@ export default function JobApplicantsModal({ job, onClose }) {
                     className="bg-white rounded-2xl border border-[#E5E0D8] p-4 hover:border-[#2DA4D6]/40 transition-colors"
                   >
                     <div className="flex items-start gap-3">
-                      <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center text-white text-xs font-bold font-['Unbounded'] overflow-hidden flex-shrink-0">
+                      <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center text-white text-xs font-bold font-unbounded overflow-hidden flex-shrink-0">
                         {detail.profile_picture_url || detail.profile_picture ? (
                           <img
                             src={detail.profile_picture_url || detail.profile_picture}
@@ -214,7 +226,7 @@ export default function JobApplicantsModal({ job, onClose }) {
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <p className="font-['Unbounded'] text-sm font-black text-[#3E3D38] truncate">
+                          <p className="font-unbounded text-sm font-black text-[#3E3D38] truncate">
                             {inst.name || "Unknown"}
                           </p>
                           <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${style.bg} ${style.text}`}>

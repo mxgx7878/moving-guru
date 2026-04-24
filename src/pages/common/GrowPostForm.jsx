@@ -187,7 +187,7 @@ export default function GrowPostForm() {
           <p className="text-[#9A9A94] text-xs font-semibold tracking-widest uppercase">
             Grow
           </p>
-          <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">
+          <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">
             {isEditing ? 'Edit Post' : 'Post an Opportunity'}
           </h1>
           <p className="text-[#6B6B66] text-xs mt-0.5">

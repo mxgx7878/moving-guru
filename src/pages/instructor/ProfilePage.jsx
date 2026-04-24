@@ -1,12 +1,14 @@
-import { useState, useRef } from 'react';
+import { useCallback, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { toast } from 'sonner';
 import { updateProfile } from '../../store/actions/authAction';
 import { DISCIPLINE_CATEGORIES } from '../../data/disciplines';
 import { COUNTRIES, COUNTRIES_AND_REGIONS } from '../../data/countries';
 import { Section, Field, SelectField, Button } from '../../components/ui';
 import { ReviewList } from '../../features/reviews';
 import { ScallopedFrame } from '../../features/profile';
+import { instructorProfileSchema, flattenYupErrors } from '../../features/forms';
 import { formatDateRange } from '../../utils/formatters';
 import {
   Save, Upload, X, Check, User, MapPin, Globe, Calendar,
@@ -64,6 +66,7 @@ export default function ProfilePage() {
 
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState({});
   const [discSearch, setDiscSearch] = useState('');
   const [showPreview, setShowPreview] = useState(false);
   const [isFavourited, setIsFavourited] = useState(false);
@@ -91,7 +94,22 @@ export default function ProfilePage() {
   };
 
   // ─── Save ──────────────────────────────────────────────────────
-  const handleSave = async () => {
+  // Wrapped in useCallback + `form` dependency so the closure doesn't
+  // capture stale state on re-renders (flagged by react-hooks/exhaustive-deps).
+  const handleSave = useCallback(async () => {
+    // 1. Client-side validation via yup — surface field-level errors so
+    //    the user sees them inline instead of a generic 422 toast.
+    try {
+      await instructorProfileSchema.validate(form, { abortEarly: false });
+      setErrors({});
+    } catch (err) {
+      const fieldErrors = flattenYupErrors(err);
+      setErrors(fieldErrors);
+      const first = Object.values(fieldErrors)[0];
+      if (first) toast.error(first);
+      return;
+    }
+
     setSaving(true);
 
     const {
@@ -142,7 +160,7 @@ export default function ProfilePage() {
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     }
-  };
+  }, [form, dispatch]);
 
   const handleAvatar = (e) => {
     const file = e.target.files[0]; if (!file) return;
@@ -175,7 +193,7 @@ export default function ProfilePage() {
 
       {/* ── Header ── */}
       <div className="mb-6">
-        <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">Edit Profile</h1>
+        <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Edit Profile</h1>
         <p className="text-[#9A9A94] text-sm mt-1">Manage how studios and instructors find you</p>
       </div>
 
@@ -192,7 +210,7 @@ export default function ProfilePage() {
             <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
               <div className="px-6 py-4 border-b border-[#E5E0D8] flex items-center gap-2">
                 <Eye size={15} className="text-[#9A9A94]" />
-                <h3 className="font-['Unbounded'] text-xs font-bold text-[#3E3D38] tracking-wider uppercase">Profile Preview</h3>
+                <h3 className="font-unbounded text-xs font-bold text-[#3E3D38] tracking-wider uppercase">Profile Preview</h3>
                 <span className="text-[10px] text-[#9A9A94] ml-auto">How others see your profile</span>
               </div>
               <div className="p-6">
@@ -213,7 +231,7 @@ export default function ProfilePage() {
                           <div className="w-full h-full bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center">
                             {form.avatarPreview
                               ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
-                              : <span className="font-['Unbounded'] text-xl font-black text-white">{initials}</span>}
+                              : <span className="font-unbounded text-xl font-black text-white">{initials}</span>}
                           </div>
                         </ScallopedFrame>
                       </button>
@@ -221,7 +239,7 @@ export default function ProfilePage() {
                   </div>
 
                   <div className="pt-12 pb-5 px-5 text-center">
-                    <h2 className="font-['Unbounded'] text-base font-black text-[#3E3D38]">{form.name || 'Your Name'}</h2>
+                    <h2 className="font-unbounded text-base font-black text-[#3E3D38]">{form.name || 'Your Name'}</h2>
                     <div className="flex items-center justify-center gap-2 mt-1 text-[#9A9A94] text-xs">
                       {form.age && <span>{form.age}</span>}
                       {form.pronouns && <span>· {form.pronouns}</span>}
@@ -296,7 +314,7 @@ export default function ProfilePage() {
                     <div className="w-full h-full bg-gradient-to-br from-[#d4f53c] to-[#e8834a] flex items-center justify-center relative">
                       {form.avatarPreview
                         ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
-                        : <span className="font-['Unbounded'] text-2xl font-black text-[#3E3D38]">{initials}</span>}
+                        : <span className="font-unbounded text-2xl font-black text-[#3E3D38]">{initials}</span>}
                       <div className="absolute inset-0 bg-[#3E3D38]/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <Upload size={20} className="text-white" />
                       </div>
@@ -630,14 +648,14 @@ export default function ProfilePage() {
                     <div className="w-full h-full bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center relative">
                       {form.avatarPreview
                         ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
-                        : <span className="font-['Unbounded'] text-3xl font-black text-white">{initials}</span>}
+                        : <span className="font-unbounded text-3xl font-black text-white">{initials}</span>}
                       <div className="absolute inset-0 bg-[#3E3D38]/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <Upload size={22} className="text-white" />
                       </div>
                     </div>
                   </ScallopedFrame>
                 </div>
-                <p className="text-center text-sm font-semibold text-[#3E3D38] font-['Unbounded'] mt-3 truncate max-w-full">
+                <p className="text-center text-sm font-semibold text-[#3E3D38] font-unbounded mt-3 truncate max-w-full">
                   {form.name || 'Your Name'}
                 </p>
                 {form.studio && (
@@ -717,6 +735,16 @@ export default function ProfilePage() {
 
             {/* Action buttons — sticky Save */}
             <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5 space-y-2">
+              {Object.keys(errors).length > 0 && (
+                <div className="mb-2 bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700 space-y-0.5" role="alert">
+                  <p className="font-bold">Please fix the following before saving:</p>
+                  <ul className="list-disc list-inside">
+                    {Object.entries(errors).slice(0, 4).map(([field, msg]) => (
+                      <li key={field}><span className="font-semibold capitalize">{field}:</span> {msg}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <Button
                 variant={saved ? 'success' : 'primary'}
                 size="lg"
@@ -756,10 +784,10 @@ export default function ProfilePage() {
               <div className="w-full h-full bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center">
                 {form.avatarPreview
                   ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
-                  : <span className="font-['Unbounded'] text-5xl font-black text-white">{initials}</span>}
+                  : <span className="font-unbounded text-5xl font-black text-white">{initials}</span>}
               </div>
             </ScallopedFrame>
-            <p className="text-center mt-5 font-['Unbounded'] text-lg font-black text-white">{form.name}</p>
+            <p className="text-center mt-5 font-unbounded text-lg font-black text-white">{form.name}</p>
             {form.studio && <p className="text-center text-white/60 text-sm mt-1">{form.studio}</p>}
           </div>
         </div>

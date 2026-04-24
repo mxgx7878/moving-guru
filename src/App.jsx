@@ -44,9 +44,16 @@ import AdminJobs          from './pages/admin/AdminJobs';
 import AdminSubscriptions from './pages/admin/AdminSubscriptions';
 import AdminSettings      from './pages/admin/AdminSettings';
 import InstructorDetail   from './pages/studio/InstructorDetail';
+// StudioDetail lives in `pages/public/` because the view itself is
+// read-only and has no role-specific affordances — it's the same card
+// surface whether a signed-in instructor, a studio, or a logged-out
+// visitor looks at it. The route is mounted in BOTH the public tree
+// (as a shareable deep link) and the protected trees (so the sidebar
+// navigation stays in context). Move it if/when these views diverge.
 import StudioDetail       from './pages/public/StudioDetail';
 import MyApplications from './pages/instructor/MyApplications';
 import Announcements from './pages/common/Announcements';
+import NotFound from './pages/common/NotFound';
 
 function RoleRedirect() {
   const dispatch = useDispatch();
@@ -168,9 +175,11 @@ export default function App() {
           <Route path="settings"        element={<AdminSettings />} />
         </Route>
 
-        {/* ── Catch-all ──────────────────────────────────────── */}
+        {/* ── Root → role home ──────────────────────────────── */}
         <Route path="/"  element={<RoleRedirect />} />
-        <Route path="*"  element={<RoleRedirect />} />
+
+        {/* ── 404 ────────────────────────────────────────────── */}
+        <Route path="*"  element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

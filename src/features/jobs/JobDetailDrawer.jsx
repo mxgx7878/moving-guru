@@ -66,7 +66,7 @@ export default function JobDetailDrawer({
           )}
           <StatusPill status={status} config={JOB_STATUS_CONFIG} size="xs" />
         </div>
-        <h2 className="font-['Unbounded'] text-base font-black text-[#3E3D38]">
+        <h2 className="font-unbounded text-base font-black text-[#3E3D38]">
           {job.title}
         </h2>
         <p className="text-[11px] text-[#6B6B66] mt-0.5">
@@ -166,7 +166,7 @@ export default function JobDetailDrawer({
               size="md"
             />
             <div className="min-w-0">
-              <p className="font-['Unbounded'] text-xs font-black text-[#3E3D38] truncate">
+              <p className="font-unbounded text-xs font-black text-[#3E3D38] truncate">
                 {job.studio.studio_name || job.studio.name}
               </p>
               {job.studio.email && (

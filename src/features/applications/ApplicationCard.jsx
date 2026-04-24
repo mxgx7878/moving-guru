@@ -45,7 +45,7 @@ export default function ApplicationCard({
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <p className="font-['Unbounded'] text-sm font-black text-[#3E3D38] truncate">
+            <p className="font-unbounded text-sm font-black text-[#3E3D38] truncate">
               {job.title || 'Untitled listing'}
             </p>
             <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${statusCfg.bg} ${statusCfg.text}`}>

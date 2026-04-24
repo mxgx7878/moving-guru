@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useCallback, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateProfile } from '../../store/actions/authAction';
 import { STATUS } from '../../constants/apiConstants';
@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { Field, Button } from '../../components/ui';
 import { StudioPreviewModal } from '../../features/modals';
 import { ReviewList } from '../../features/reviews';
+import { studioProfileSchema, flattenYupErrors } from '../../features/forms';
 
 const OPEN_TO = ['Direct Hire', 'Swaps', 'Energy Exchange'];
 const STUDIO_SIZES = ['1–5 instructors', '6–15 instructors', '16–30 instructors', '30+ instructors'];
@@ -82,6 +83,7 @@ export default function StudioProfile() {
     hiringDuration:           user?.hiring_duration            || user?.hiringDuration           || '',
   });
   const [disciplineSearch, setDisciplineSearch] = useState('');
+  const [errors, setErrors] = useState({});
 
   const update = (k, v) => setForm(f => ({ ...f, [k]: v }));
   const toggleItem = (k, v) => setForm(f => ({
@@ -102,7 +104,27 @@ export default function StudioProfile() {
     update('photos', files.map(f => URL.createObjectURL(f)));
   };
 
-  const handleSave = async () => {
+  // useCallback so the memoised closure doesn't capture stale `form`
+  // state if it ever gets passed to a memoised child. Schema validates
+  // shared primitives (studio name, contact name, social URLs) before
+  // we spend a network round-trip.
+  const handleSave = useCallback(async () => {
+    // Schema validation (runs first so we don't build a FormData we'll throw away).
+    try {
+      // Map our form keys to the schema's keys.
+      await studioProfileSchema.validate(
+        { ...form, name: form.contactName, description: form.bio },
+        { abortEarly: false },
+      );
+      setErrors({});
+    } catch (err) {
+      const fieldErrors = flattenYupErrors(err);
+      setErrors(fieldErrors);
+      const first = Object.values(fieldErrors)[0];
+      if (first) toast.error(first);
+      return;
+    }
+
     // When the studio is actively hiring, the role description is required.
     if (form.profileStatus === 'active' && !form.hiringRoleDescription.trim()) {
       toast.error('Please describe the role you’re hiring for, or switch to Not Hiring.');
@@ -145,7 +167,7 @@ export default function StudioProfile() {
     } else {
       toast.error('Failed to save. Please try again.');
     }
-  };
+  }, [form, dispatch]);
 
   const filteredDisciplines = DISCIPLINE_CATEGORIES.map(cat => ({
     ...cat,
@@ -159,7 +181,7 @@ export default function StudioProfile() {
     <div className="max-w-6xl mx-auto">
       {/* ── Header ── */}
       <div className="mb-6">
-        <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">Studio Profile</h1>
+        <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Studio Profile</h1>
         <p className="text-[#9A9A94] text-sm mt-1">How instructors see your studio on Moving Guru</p>
       </div>
 
@@ -183,7 +205,7 @@ export default function StudioProfile() {
 
           {/* Basic info */}
           <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 space-y-5">
-            <h2 className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">Studio Info</h2>
+            <h2 className="font-unbounded text-sm font-black text-[#3E3D38]">Studio Info</h2>
 
             <Field label="Studio Name">
               <input value={form.studioName} onChange={e => update('studioName', e.target.value)}
@@ -250,7 +272,7 @@ export default function StudioProfile() {
 
           {/* About */}
           <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 space-y-5">
-            <h2 className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">About the Studio</h2>
+            <h2 className="font-unbounded text-sm font-black text-[#3E3D38]">About the Studio</h2>
 
             <Field label="Bio">
               <textarea value={form.bio} onChange={e => update('bio', e.target.value)} rows={5}
@@ -283,7 +305,7 @@ export default function StudioProfile() {
                     <Briefcase size={16} className="text-[#3E3D38]" />
                   </div>
                   <div>
-                    <h3 className="font-['Unbounded'] text-xs font-black text-[#3E3D38]">Active Hiring Details</h3>
+                    <h3 className="font-unbounded text-xs font-black text-[#3E3D38]">Active Hiring Details</h3>
                     <p className="text-[10px] text-[#3E3D38]/70">
                       Tell instructors about the role you're hiring for
                     </p>
@@ -375,7 +397,7 @@ export default function StudioProfile() {
           {/* Disciplines */}
           <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 space-y-5">
             <div className="flex items-center justify-between flex-wrap gap-3">
-              <h2 className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">Disciplines Offered</h2>
+              <h2 className="font-unbounded text-sm font-black text-[#3E3D38]">Disciplines Offered</h2>
               {(form.disciplines || []).length > 0 && (
                 <span className="text-[10px] font-bold text-[#2DA4D6] bg-[#2DA4D6]/10 px-2.5 py-1 rounded-full">
                   {form.disciplines.length} selected
@@ -442,7 +464,7 @@ export default function StudioProfile() {
              ══════════════════════════════════════ */}
           <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">Reviews from Instructors</h2>
+              <h2 className="font-unbounded text-sm font-black text-[#3E3D38]">Reviews from Instructors</h2>
             </div>
             <p className="text-xs text-[#9A9A94]">
               Feedback from instructors you've hired. Instructors can review you after an accepted job application.
@@ -478,7 +500,7 @@ export default function StudioProfile() {
                   </>
                 ) : (
                   <div className="text-center p-4">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2DA4D6] to-[#2590bd] flex items-center justify-center text-white font-['Unbounded'] font-black text-lg mx-auto mb-3">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2DA4D6] to-[#2590bd] flex items-center justify-center text-white font-unbounded font-black text-lg mx-auto mb-3">
                       {initials}
                     </div>
                     <Upload size={18} className="text-[#C4BCB4] mx-auto mb-1" />
@@ -487,7 +509,7 @@ export default function StudioProfile() {
                 )}
               </div>
               <input ref={avatarRef} type="file" accept="image/*" onChange={handleAvatar} className="hidden" />
-              <p className="text-center text-sm font-['Unbounded'] font-black text-[#3E3D38] mt-3 truncate">
+              <p className="text-center text-sm font-unbounded font-black text-[#3E3D38] mt-3 truncate">
                 {form.studioName || 'Your Studio'}
               </p>
               {(form.location || form.country) && (
@@ -563,6 +585,16 @@ export default function StudioProfile() {
 
             {/* Action buttons — sticky Save */}
             <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5 space-y-2">
+              {Object.keys(errors).length > 0 && (
+                <div className="mb-2 bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700 space-y-0.5" role="alert">
+                  <p className="font-bold">Please fix the following before saving:</p>
+                  <ul className="list-disc list-inside">
+                    {Object.entries(errors).slice(0, 4).map(([field, msg]) => (
+                      <li key={field}><span className="font-semibold capitalize">{field}:</span> {msg}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <Button
                 variant="primary"
                 size="lg"

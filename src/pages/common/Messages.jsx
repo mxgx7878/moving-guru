@@ -82,7 +82,7 @@ export default function Messages() {
     return (
       <div className="max-w-5xl mx-auto">
         <div className="mb-6">
-          <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">Messages</h1>
+          <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Messages</h1>
           <p className="text-[#9A9A94] text-sm mt-1">{subtitle}</p>
         </div>
         <TableSkeleton rows={6} cols={3} />
@@ -93,7 +93,7 @@ export default function Messages() {
   return (
     <div className="max-w-5xl mx-auto">
       <div className="mb-4 sm:mb-6 hidden md:block">
-        <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">Messages</h1>
+        <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Messages</h1>
         <p className="text-[#9A9A94] text-sm mt-1">{subtitle}</p>
       </div>
 
@@ -117,7 +117,7 @@ export default function Messages() {
           >
             {/* Mobile header inside list */}
             <div className="md:hidden px-4 pt-3 pb-1">
-              <h1 className="font-['Unbounded'] text-lg font-black text-[#3E3D38]">Messages</h1>
+              <h1 className="font-unbounded text-lg font-black text-[#3E3D38]">Messages</h1>
               <p className="text-[#9A9A94] text-xs">{subtitle}</p>
             </div>
 

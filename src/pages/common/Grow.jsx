@@ -115,7 +115,7 @@ export default function Grow() {
         style={{ background: 'linear-gradient(135deg, #f5fca6 0%, #6BE6A4 60%, #2DA4D6 100%)' }}>
         <div className="relative z-10">
           <p className="text-[#3E3D38]/60 text-xs font-semibold tracking-widest uppercase mb-2">Grow</p>
-          <h1 className="font-['Unbounded'] text-2xl font-black text-[#3E3D38] mb-1">
+          <h1 className="font-unbounded text-2xl font-black text-[#3E3D38] mb-1">
             {isStudio ? 'Your Posted Retreats & Events' : 'Training, Retreats & Events'}
           </h1>
           <p className="text-[#3E3D38]/70 text-sm max-w-lg">
@@ -222,7 +222,7 @@ export default function Grow() {
               <BookOpen size={18} className="text-white" />
             </div>
             <div>
-              <p className="font-['Unbounded'] text-sm font-bold text-white">Running a training or retreat?</p>
+              <p className="font-unbounded text-sm font-bold text-white">Running a training or retreat?</p>
               <p className="text-white/60 text-xs mt-0.5">
                 Post it here and reach thousands of wellness professionals globally
               </p>

@@ -146,13 +146,13 @@ export default function InstructorDetail() {
               {profilePicture ? (
                 <img src={profilePicture} alt={inst.name} className="w-full h-full object-cover" />
               ) : (
-                <span className="font-['Unbounded'] text-2xl font-black text-white">
+                <span className="font-unbounded text-2xl font-black text-white">
                   {(inst.name || '?').split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()}
                 </span>
               )}
             </div>
             <div className="flex-1 min-w-0 pt-3">
-              <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38] truncate">
+              <h1 className="font-unbounded text-xl font-black text-[#3E3D38] truncate">
                 {inst.name}
               </h1>
               <div className="flex items-center gap-2 mt-1 text-xs text-[#6B6B66] flex-wrap">

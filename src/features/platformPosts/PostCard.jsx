@@ -48,7 +48,7 @@ export default function PostCard({
           <PublishPill status={post.status} />
         </div>
 
-        <h3 className="font-['Unbounded'] text-sm font-black text-[#3E3D38] line-clamp-2 mb-1.5">
+        <h3 className="font-unbounded text-sm font-black text-[#3E3D38] line-clamp-2 mb-1.5">
           {post.title}
         </h3>
 

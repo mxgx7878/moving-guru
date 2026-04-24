@@ -34,7 +34,7 @@ export default function GrowPostRow({
       <td className="py-3 px-4">
         <div className="flex items-start gap-3 max-w-sm">
           <div className="flex-1 min-w-0">
-            <p className="font-['Unbounded'] text-xs font-bold text-[#3E3D38] line-clamp-1">
+            <p className="font-unbounded text-xs font-bold text-[#3E3D38] line-clamp-1">
               {post.title}
             </p>
             {post.location && (

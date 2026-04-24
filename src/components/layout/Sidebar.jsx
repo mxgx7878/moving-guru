@@ -44,7 +44,7 @@ export default function Sidebar({ mobileOpen, onClose }) {
         <div className="px-6 py-6 border-b border-[#E5E0D8]">
           <a href="/" className="flex items-center gap-1">
             <img src={logo} alt="Moving Guru" height={52} width={52} />
-            <span className="font-['Unbounded'] text-sm font-bold text-[#3E3D38] tracking-wider">
+            <span className="font-unbounded text-sm font-bold text-[#3E3D38] tracking-wider">
               MOVING{' '}
               <em className="not-italic" style={{ color: theme.accent }}>GURU</em>
             </span>

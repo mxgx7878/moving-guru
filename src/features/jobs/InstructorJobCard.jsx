@@ -52,7 +52,7 @@ export default function InstructorJobCard({
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <h3 className="font-['Unbounded'] text-sm font-black text-[#3E3D38] leading-snug">
+                <h3 className="font-unbounded text-sm font-black text-[#3E3D38] leading-snug">
                   {job.title}
                 </h3>
                 {job.studio?.id ? (

@@ -75,12 +75,23 @@ export default function AdminUsers() {
   const [formOpen,       setFormOpen]       = useState(false);
   const [editingUser,    setEditingUser]    = useState(null);
 
+  // Sync ?role=… to the active tab. Deliberately reads `searchParams`
+  // through `setSearchParams`' functional form so we don't have to
+  // depend on `searchParams` (which would re-trigger this effect every
+  // time we update it — an infinite loop). `setSearchParams` has a
+  // stable identity per-location from react-router, so leaving it out
+  // of deps is safe.
   useEffect(() => {
-    if (roleTab === 'all') searchParams.delete('role');
-    else                   searchParams.set('role', roleTab);
-    setSearchParams(searchParams, { replace: true });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roleTab]);
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        if (roleTab === 'all') next.delete('role');
+        else                   next.set('role', roleTab);
+        return next;
+      },
+      { replace: true },
+    );
+  }, [roleTab, setSearchParams]);
 
   useEffect(() => {
     const params = {};

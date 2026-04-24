@@ -44,7 +44,7 @@ export default function ReviewList({ userId, direction, compact = false, emptyLa
     <div className="space-y-4">
       <div className="bg-[#FBF8E4]/50 rounded-xl p-4 flex items-center gap-4">
         <div className="text-center">
-          <p className="font-['Unbounded'] text-3xl font-black text-[#3E3D38] leading-none">
+          <p className="font-unbounded text-3xl font-black text-[#3E3D38] leading-none">
             {summary.count > 0 ? summary.average.toFixed(1) : '—'}
           </p>
           <StarRating value={summary.average} size={12} className="mt-1" />

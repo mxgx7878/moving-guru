@@ -1,4 +1,5 @@
 import { getInitials } from '../../utils/getInitials';
+import { AVATAR_TONES } from '../../constants/theme';
 
 // Initials-based avatar shared across every user/studio/instructor display.
 // Pass `src` to render an image instead (falls back to initials if it fails).
@@ -10,14 +11,6 @@ const SIZE = {
   md: 'w-11 h-11 text-xs',
   lg: 'w-14 h-14 text-sm',
   xl: 'w-20 h-20 text-base',
-};
-
-const TONE = {
-  coral:  'bg-[#CE4F56] text-white',
-  blue:   'bg-[#2DA4D6] text-white',
-  purple: 'bg-[#7F77DD] text-white',
-  dark:   'bg-[#3E3D38] text-white',
-  muted:  'bg-[#F5F0E8] text-[#6B6B66]',
 };
 
 export default function Avatar({
@@ -34,7 +27,7 @@ export default function Avatar({
 
   if (src) {
     return (
-      <div className={`${base} bg-[#F5F0E8]`}>
+      <div className={`${base} bg-tile-neutral`}>
         <img
           src={src}
           alt={name || ''}
@@ -46,7 +39,7 @@ export default function Avatar({
   }
 
   return (
-    <div className={`${base} ${TONE[tone] || TONE.coral}`}>
+    <div className={`${base} ${AVATAR_TONES[tone] || AVATAR_TONES.coral}`} aria-label={name || undefined}>
       {getInitials(name)}
     </div>
   );

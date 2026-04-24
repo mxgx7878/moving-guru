@@ -1,11 +1,23 @@
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 
-// Single reusable text input used across every form. Supports:
-//  - password show/hide
-//  - textarea mode via `textarea` prop
-//  - both controlled (`value` + `onChange`) and form-aware (`form` + `update`) styles
-// Forms can hand over `errors` keyed by field name, or pass a plain `error` string.
+// Single reusable text input used across every form.
+//
+// Error contract
+// ──────────────────────────────────────────────────────────────
+// Parent provides the error in ONE of two ways — never mix both:
+//   • `error`            — string already resolved for THIS field.
+//                          `<Input name="email" error={formErrors.email} />`
+//   • `errors` + `name`  — map keyed by field name; component looks up
+//                          `errors[name]`. Useful with RHF's
+//                          `formState.errors` bag.
+// If both are supplied `error` wins.
+//
+// Styling
+// ──────────────────────────────────────────────────────────────
+// Focus state is driven entirely by Tailwind `focus:` variants — we
+// don't mutate style.borderColor on focus/blur. The accent colour is
+// exposed as a CSS custom property so callers can still theme the ring.
 export default function Input({
   label,
   name,
@@ -38,31 +50,39 @@ export default function Input({
     if (onChange) onChange(e);
   };
 
-  const fieldError = error || (errors && errors[name]);
+  const fieldError = error ?? (errors && name ? errors[name] : undefined);
 
-  const baseCls = `w-full bg-[#FDFCF8] border rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed ${
-    fieldError ? 'border-red-400 focus:border-red-500' : 'border-[#E5E0D8]'
-  } ${iconLeft ? 'pl-10' : ''} ${isPassword ? 'pr-10' : ''}`;
+  const baseCls = [
+    'w-full bg-warm-bg border rounded-xl px-4 py-3 text-sm text-ink placeholder-ink-faint',
+    'focus:outline-none focus:border-[var(--focus)] transition-all',
+    'disabled:opacity-60 disabled:cursor-not-allowed',
+    fieldError ? 'border-red-400 focus:border-red-500' : 'border-edge',
+    iconLeft ? 'pl-10' : '',
+    isPassword ? 'pr-10' : '',
+  ].filter(Boolean).join(' ');
 
-  const focusStyle = { '--tw-ring-color': accent };
+  // Expose the accent through a CSS variable so the `focus:border-[var(--focus)]`
+  // arbitrary class can pick it up — no runtime style mutation needed.
+  const styleVars = { '--focus': accent };
 
   return (
     <div className={className}>
       {label && (
-        <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">
+        <label htmlFor={name} className="block text-[10px] font-bold text-ink-soft tracking-widest uppercase mb-2">
           {label}
         </label>
       )}
 
       <div className="relative">
         {iconLeft && (
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-soft pointer-events-none">
             {iconLeft}
           </span>
         )}
 
         {textarea ? (
           <textarea
+            id={name}
             name={name}
             value={currentValue}
             onChange={handleChange}
@@ -70,14 +90,15 @@ export default function Input({
             rows={rows}
             maxLength={maxLength}
             disabled={disabled}
+            aria-invalid={fieldError ? true : undefined}
+            aria-describedby={fieldError ? `${name}-err` : undefined}
             className={`${baseCls} resize-none`}
-            style={focusStyle}
-            onFocus={(e) => (e.currentTarget.style.borderColor = accent)}
-            onBlur={(e) => (e.currentTarget.style.borderColor = fieldError ? '' : '')}
+            style={styleVars}
             {...rest}
           />
         ) : (
           <input
+            id={name}
             name={name}
             type={inputType}
             value={currentValue}
@@ -85,8 +106,10 @@ export default function Input({
             placeholder={placeholder}
             maxLength={maxLength}
             disabled={disabled}
+            aria-invalid={fieldError ? true : undefined}
+            aria-describedby={fieldError ? `${name}-err` : undefined}
             className={baseCls}
-            onFocus={(e) => (e.currentTarget.style.borderColor = accent)}
+            style={styleVars}
             {...rest}
           />
         )}
@@ -95,7 +118,7 @@ export default function Input({
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A9A94] hover:text-[#6B6B66]"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-soft hover:text-ink-muted"
             aria-label={showPassword ? 'Hide password' : 'Show password'}
           >
             {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -105,10 +128,10 @@ export default function Input({
 
       <div className="flex items-center justify-between mt-1">
         {fieldError
-          ? <p className="text-red-500 text-xs">{fieldError}</p>
-          : hint ? <p className="text-[10px] text-[#9A9A94]">{hint}</p> : <span />}
+          ? <p id={`${name}-err`} className="text-red-500 text-xs">{fieldError}</p>
+          : hint ? <p className="text-[10px] text-ink-soft">{hint}</p> : <span />}
         {maxLength && textarea && (
-          <p className="text-[10px] text-[#9A9A94]">{(currentValue || '').length}/{maxLength}</p>
+          <p className="text-[10px] text-ink-soft">{(currentValue || '').length}/{maxLength}</p>
         )}
       </div>
     </div>
