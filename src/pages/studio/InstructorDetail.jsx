@@ -135,10 +135,14 @@ export default function InstructorDetail() {
 
       {/* Hero card */}
       <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
-        <div className="h-36" style={heroBg} />
+        <div className="h-36 relative" style={heroBg}>
+          {backgroundImage && (
+            <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/20" />
+          )}
+        </div>
         <div className="px-6 pb-6 relative">
-          <div className="flex items-end gap-4 -mt-12 mb-4">
-            <div className="w-24 h-24 rounded-full border-4 border-white shadow-md overflow-hidden bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center flex-shrink-0">
+          <div className="flex items-end gap-4 mb-4">
+            <div className="-mt-12 w-24 h-24 rounded-full border-4 border-white shadow-md overflow-hidden bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center flex-shrink-0">
               {profilePicture ? (
                 <img src={profilePicture} alt={inst.name} className="w-full h-full object-cover" />
               ) : (
@@ -147,11 +151,11 @@ export default function InstructorDetail() {
                 </span>
               )}
             </div>
-            <div className="flex-1 min-w-0 pb-1">
+            <div className="flex-1 min-w-0 pt-3">
               <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38] truncate">
                 {inst.name}
               </h1>
-              <div className="flex items-center gap-2 mt-1 text-xs text-[#9A9A94] flex-wrap">
+              <div className="flex items-center gap-2 mt-1 text-xs text-[#6B6B66] flex-wrap">
                 {detail.age && <span>{detail.age} yrs</span>}
                 {detail.pronouns && <span>· {detail.pronouns}</span>}
                 {detail.studio && <span>· {detail.studio}</span>}
