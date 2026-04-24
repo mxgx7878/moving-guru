@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Check, X } from 'lucide-react';
+import { Check, X, Zap } from 'lucide-react';
 
 import { Modal, Button, RHFInput, SelectField, Toggle, IconButton, ToggleChip, ChipGroup } from '../../components/ui';
 import {
@@ -10,6 +10,30 @@ import {
 } from '../../constants/jobConstants';
 import { DISCIPLINE_CATEGORIES } from '../../data/disciplines';
 import { jobSchema } from './schemas/entitySchema';
+
+// Normalises a job payload (new or loaded) into the multi-type shape
+// the form expects. `type` is still the primary single-value field
+// (kept for backwards compat with the server), but `types` is what the
+// studio actually edits now.
+const normaliseInitial = (initial) => {
+  if (!initial) return EMPTY_JOB_FORM;
+  const types = Array.isArray(initial.types) && initial.types.length
+    ? initial.types
+    : initial.type
+      ? [initial.type]
+      : ['hire'];
+  return {
+    ...EMPTY_JOB_FORM,
+    ...initial,
+    types,
+    type: types[0] || 'hire',
+    open_to_energy_exchange: Boolean(
+      initial.open_to_energy_exchange
+      ?? initial.openToEnergyExchange
+      ?? (initial.type === 'energy_exchange'),
+    ),
+  };
+};
 
 // Shared Job Listing create/edit form used by studios. Uses yup + RHF
 // for validation; controlled via <Controller> for non-text inputs like
@@ -27,12 +51,25 @@ export default function JobForm({
     control, handleSubmit, watch, setValue, formState: { errors },
   } = useForm({
     resolver: yupResolver(jobSchema),
-    defaultValues: { ...EMPTY_JOB_FORM, ...initial },
+    defaultValues: normaliseInitial(initial),
   });
 
   const type = watch('type');
+  const types = watch('types') || [];
+  const openToEnergyExchange = watch('open_to_energy_exchange') || false;
   const roleType = watch('role_type');
   const disciplines = watch('disciplines') || [];
+
+  const toggleType = (id) => {
+    const next = types.includes(id)
+      ? types.filter((t) => t !== id)
+      : [...types, id];
+    // Always keep at least one selected so the "type" primary field
+    // has something to fall back to.
+    if (next.length === 0) return;
+    setValue('types', next, { shouldValidate: true });
+    setValue('type', next[0], { shouldValidate: true });
+  };
 
   const toggleDiscipline = (d) => {
     const next = disciplines.includes(d)
@@ -42,7 +79,18 @@ export default function JobForm({
   };
 
   const submit = (values) => {
-    onSubmit({ ...values, vacancies: Number(values.vacancies) });
+    const selectedTypes = Array.isArray(values.types) && values.types.length
+      ? values.types
+      : [values.type || 'hire'];
+    onSubmit({
+      ...values,
+      types: selectedTypes,
+      // Keep `type` in the payload so older backends still accept it —
+      // it's set to the first selected type.
+      type: selectedTypes[0],
+      open_to_energy_exchange: !!values.open_to_energy_exchange,
+      vacancies: Number(values.vacancies),
+    });
   };
 
   const filteredDisciplines = DISCIPLINE_CATEGORIES.map((cat) => ({
@@ -67,13 +115,15 @@ export default function JobForm({
       }
     >
       <form onSubmit={handleSubmit(submit)} className="space-y-5">
-        {/* Listing type */}
+        {/* Listing type — multi-select */}
         <div>
-          <label className="block text-[10px] font-bold text-ink-soft tracking-widest uppercase mb-2">Listing Type</label>
-          <div className="grid grid-cols-3 gap-3">
+          <label className="block text-[10px] font-bold text-ink-soft tracking-widest uppercase mb-2">
+            Listing Type <span className="text-[#9A9A94] font-normal normal-case">(select one or both)</span>
+          </label>
+          <div className="grid grid-cols-2 gap-3">
             {JOB_TYPES.map((t) => {
               const Icon = t.icon;
-              const active = type === t.id;
+              const active = types.includes(t.id);
               return (
                 <Button
                   key={t.id}
@@ -81,8 +131,8 @@ export default function JobForm({
                   variant={active ? 'primary' : 'secondary'}
                   size="md"
                   fullWidth
-                  icon={Icon}
-                  onClick={() => setValue('type', t.id, { shouldValidate: true })}
+                  icon={active ? Check : Icon}
+                  onClick={() => toggleType(t.id)}
                   style={active ? { borderColor: t.color, backgroundColor: t.color } : undefined}
                 >
                   {t.label}
@@ -90,7 +140,31 @@ export default function JobForm({
               );
             })}
           </div>
-          {errors.type && <p className="text-red-500 text-xs mt-2">{errors.type.message}</p>}
+          {(errors.types || errors.type) && (
+            <p className="text-red-500 text-xs mt-2">
+              {errors.types?.message || errors.type?.message}
+            </p>
+          )}
+
+          {/* Energy exchange opt-in — secondary, not a primary job type */}
+          <label className="mt-3 flex items-start gap-2.5 cursor-pointer select-none p-3 rounded-xl bg-[#FDFCF8] border border-[#E5E0D8] hover:border-[#6BE6A4] transition-colors">
+            <input
+              type="checkbox"
+              checked={!!openToEnergyExchange}
+              onChange={(e) => setValue('open_to_energy_exchange', e.target.checked, { shouldValidate: true })}
+              className="mt-0.5 w-4 h-4 accent-[#6BE6A4] flex-shrink-0"
+            />
+            <div className="flex-1">
+              <p className="text-xs font-semibold text-[#3E3D38] flex items-center gap-1.5">
+                <Zap size={12} className="text-[#6BE6A4]" />
+                Open to energy exchange options
+              </p>
+              <p className="text-[10px] text-[#9A9A94] mt-0.5 leading-snug">
+                We believe in getting paid for our work first — tick this only if you're open to
+                exchange arrangements when paid options aren't viable.
+              </p>
+            </div>
+          </label>
         </div>
 
         <RHFInput control={control} errors={errors} name="title" label="Title"

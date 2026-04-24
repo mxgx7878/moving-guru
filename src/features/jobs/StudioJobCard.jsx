@@ -1,7 +1,7 @@
 import {
-  MapPin, Calendar, Clock, Eye, EyeOff, Edit3, Trash2, Users, UserCheck, Lock,
+  MapPin, Calendar, Clock, Eye, EyeOff, Edit3, Trash2, Users, UserCheck, Lock, Zap,
 } from 'lucide-react';
-import { Button, Chip, IconButton } from '../../components/ui';
+import { Avatar, Button, Chip, IconButton } from '../../components/ui';
 import { ButtonLoader } from '../../components/feedback';
 import { JOB_TYPES } from '../../constants/jobConstants';
 
@@ -16,13 +16,27 @@ export default function StudioJobCard({
   onToggleActive,
   onViewApplicants,
 }) {
-  const typeInfo = JOB_TYPES.find((t) => t.id === job.type) || JOB_TYPES[0];
-  const TypeIcon = typeInfo.icon;
+  const jobTypes = Array.isArray(job.types) && job.types.length
+    ? job.types
+    : job.type ? [job.type] : ['hire'];
+  const typeInfos = jobTypes
+    .map((id) => JOB_TYPES.find((t) => t.id === id))
+    .filter(Boolean);
+  const primaryInfo = typeInfos[0] || JOB_TYPES[0];
   const applicantCount = job.applicants_count || 0;
   const vacancies = job.vacancies || 1;
   const filled    = job.positions_filled || 0;
   const isFull    = filled >= vacancies;
   const isActive  = job.is_active !== false;
+  const openToEnergyExchange = job.open_to_energy_exchange
+    ?? job.openToEnergyExchange
+    ?? (job.type === 'energy_exchange');
+
+  const studioName = job.studio?.studio_name || job.studio?.name;
+  const studioAvatar = job.studio?.profile_picture
+    || job.studio?.profile_picture_url
+    || job.studio?.detail?.profile_picture
+    || job.studio?.detail?.profile_picture_url;
 
   return (
     <div className={`bg-white rounded-2xl border overflow-hidden transition-all
@@ -39,14 +53,34 @@ export default function StudioJobCard({
 
       <div className="p-5">
         <div className="flex items-start justify-between gap-4">
+          {studioAvatar && (
+            <Avatar
+              name={studioName || 'Studio'}
+              src={studioAvatar}
+              size="md"
+              tone="blue"
+              className="flex-shrink-0"
+            />
+          )}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap mb-2">
-              <span
-                className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white"
-                style={{ backgroundColor: typeInfo.color }}
-              >
-                <TypeIcon size={10} /> {typeInfo.label}
-              </span>
+              {typeInfos.map((info) => {
+                const Icon = info.icon;
+                return (
+                  <span
+                    key={info.id}
+                    className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white"
+                    style={{ backgroundColor: info.color }}
+                  >
+                    <Icon size={10} /> {info.label}
+                  </span>
+                );
+              })}
+              {openToEnergyExchange && (
+                <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#6BE6A4]/25 text-[#3E3D38]">
+                  <Zap size={10} /> Open to Energy Exchange
+                </span>
+              )}
               {!isActive && !isFull && (
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FBF8E4] text-[#9A9A94]">
                   Inactive

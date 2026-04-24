@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchMyApplications } from '../../store/actions/jobAction';
 import { BarChart, StatCard, Button, Input } from '../../components/ui';
@@ -44,6 +45,14 @@ export default function Dashboard() {
               ? 'Your profile is live and attracting studios'
               : 'Your profile is currently inactive'}
           </p>
+          {(profileData.id || profileData.user_id) && (
+            <Link
+              to={`/portal/instructors/${profileData.id || profileData.user_id}`}
+              className="mt-3 inline-flex items-center gap-1.5 bg-[#CE4F56] text-white font-bold text-xs px-3 py-1.5 rounded-xl hover:bg-[#b8444a] transition-colors"
+            >
+              <Eye size={12} /> View Profile
+            </Link>
+          )}
         </div>
         <div className="relative z-10 hidden sm:flex flex-col items-end gap-2">
           <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold

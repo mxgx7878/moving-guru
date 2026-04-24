@@ -77,6 +77,11 @@ export default function StudioDetail() {
   const location = [studio.location || detail.location, studio.country || detail.country].filter(Boolean).join(', ');
   const disciplines = studio.disciplines || detail.disciplines || [];
   const openTo = studio.open_to || detail.open_to || studio.openTo || detail.openTo || [];
+  const openToEnergyExchange = studio.open_to_energy_exchange
+    ?? detail.open_to_energy_exchange
+    ?? studio.openToEnergyExchange
+    ?? detail.openToEnergyExchange
+    ?? false;
   const profileStatus = studio.profile_status || detail.profile_status || 'active';
   const isHiring = profileStatus === 'active';
   const amenities = studio.amenities || detail.amenities || [];
@@ -232,7 +237,7 @@ export default function StudioDetail() {
         </div>
 
         <div className="space-y-6">
-          {openTo.length > 0 && (
+          {(openTo.length > 0 || openToEnergyExchange) && (
             <Section>
               <h3 className="font-unbounded text-sm font-black text-[#3E3D38] mb-4">Open To</h3>
               <div className="flex flex-wrap gap-1.5">
@@ -240,6 +245,11 @@ export default function StudioDetail() {
                   <span key={o} className="px-2.5 py-1 bg-[#FBF8E4] text-[#3E3D38] text-xs font-medium rounded-full">{o}</span>
                 ))}
               </div>
+              {openToEnergyExchange && (
+                <p className="mt-3 text-[11px] text-[#6B6B66] leading-snug">
+                  This studio is open to energy exchange options.
+                </p>
+              )}
             </Section>
           )}
 
