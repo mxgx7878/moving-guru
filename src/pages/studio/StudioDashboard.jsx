@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Search, MessageCircle, Heart, Eye, ArrowRight,
   MapPin, Star, Users, Building2, Mail,
+  Settings,
 } from 'lucide-react';
 import { fetchInstructors, fetchSavedInstructors } from '../../store/actions/instructorAction';
 import { fetchMyJobs } from '../../store/actions/jobAction';
