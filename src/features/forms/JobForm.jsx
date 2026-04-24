@@ -3,7 +3,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Check, X } from 'lucide-react';
 
-import { Modal, Button, RHFInput, SelectField, Toggle } from '../../components/ui';
+import { Modal, Button, RHFInput, SelectField, Toggle, IconButton, ToggleChip, ChipGroup } from '../../components/ui';
 import {
   JOB_TYPES, DURATION_OPTIONS, ROLE_TYPE_OPTIONS,
   QUALIFICATION_LEVELS, EMPTY_JOB_FORM,
@@ -111,22 +111,12 @@ export default function JobForm({
 
           <div className="col-span-2">
             <label className="block text-[10px] font-bold text-ink-soft tracking-widest uppercase mb-2">Position Type</label>
-            <div className="flex flex-wrap gap-2">
-              {ROLE_TYPE_OPTIONS.map((o) => {
-                const active = roleType === o.id;
-                return (
-                  <button key={o.id} type="button"
-                    onClick={() => setValue('role_type', o.id, { shouldValidate: true })}
-                    className={`px-3.5 py-2 rounded-full text-xs font-semibold border transition-all
-                      ${active
-                        ? 'bg-chartreuse text-ink border-chartreuse'
-                        : 'bg-white border-edge text-ink-muted hover:border-ink'}`}
-                  >
-                    {o.label}
-                  </button>
-                );
-              })}
-            </div>
+            <ChipGroup
+              options={ROLE_TYPE_OPTIONS}
+              value={roleType}
+              onChange={(v) => setValue('role_type', v, { shouldValidate: true })}
+              tone="chartreuse"
+            />
           </div>
         </div>
 
@@ -197,12 +187,16 @@ export default function JobForm({
           {disciplines.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mb-2">
               {disciplines.map((d) => (
-                <span key={d} className="flex items-center gap-1 px-2.5 py-1 bg-sky-soft text-sky-mg rounded-full text-xs font-medium">
+                <ToggleChip
+                  key={d}
+                  active
+                  tone="softBlue"
+                  size="md"
+                  onClick={() => toggleDiscipline(d)}
+                  onRemove={() => toggleDiscipline(d)}
+                >
                   {d}
-                  <button type="button" onClick={() => toggleDiscipline(d)} className="hover:text-red-500 transition-colors">
-                    <X size={10} />
-                  </button>
-                </span>
+                </ToggleChip>
               ))}
             </div>
           )}
@@ -211,18 +205,15 @@ export default function JobForm({
             {filteredDisciplines.map((cat) => (
               <div key={cat.label}>
                 <p className="text-[9px] text-ink-soft tracking-widest uppercase font-semibold mb-1.5">{cat.label}</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {cat.items.map((d) => (
-                    <button key={d} type="button" onClick={() => toggleDiscipline(d)}
-                      className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-all
-                        ${disciplines.includes(d)
-                          ? 'bg-sky-mg text-white border-sky-mg'
-                          : 'bg-white border-edge text-ink-muted hover:border-sky-mg'}`}
-                    >
-                      {d}
-                    </button>
-                  ))}
-                </div>
+                <ChipGroup
+                  options={cat.items}
+                  value={disciplines}
+                  onChange={(next) => setValue('disciplines', next, { shouldValidate: true })}
+                  multiple
+                  tone="blue"
+                  size="md"
+                  className="gap-1.5"
+                />
               </div>
             ))}
           </div>

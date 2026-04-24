@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { X } from 'lucide-react';
+import IconButton from './IconButton';
 import useFocusTrap from '../../hooks/useFocusTrap';
 
 // Single reusable Modal shell used by every modal in the app.
@@ -64,13 +65,16 @@ export default function Modal({
               )}
             </div>
             {!hideClose && (
-              <button
+              <IconButton
+                variant="plain"
+                tone="default"
                 onClick={onClose}
-                className="p-1.5 hover:bg-cream rounded-lg transition-colors text-ink-soft flex-shrink-0"
                 aria-label="Close"
+                title="Close"
+                className="flex-shrink-0"
               >
                 <X size={18} />
-              </button>
+              </IconButton>
             )}
           </div>
         )}

@@ -3,7 +3,7 @@ import {
   MapPin, Calendar, Clock, MessageCircle, Bookmark, BookmarkCheck,
   Users, GraduationCap, Check, XCircle, Clock3, Lock, ExternalLink,
 } from 'lucide-react';
-import { Button, Chip } from '../../components/ui';
+import { Button, Chip, IconButton } from '../../components/ui';
 import {
   ROLE_TYPE_LABELS, QUALIFICATION_LABELS, TYPE_STYLES,
 } from '../../constants/jobConstants';
@@ -85,13 +85,15 @@ export default function InstructorJobCard({
                     {QUALIFICATION_LABELS[job.qualification_level] || job.qualification_level}
                   </span>
                 )}
-                <button
+                <IconButton
+                  variant="plain"
+                  tone="coral"
                   onClick={onToggleSave}
-                  className={`p-1.5 rounded-lg transition-all ${isSaved ? 'text-[#CE4F56]' : 'text-[#C4BCB4] hover:text-[#CE4F56]'}`}
                   title={isSaved ? 'Remove from saved' : 'Save listing'}
+                  className={isSaved ? '' : '!text-ink-faint hover:!text-coral'}
                 >
                   {isSaved ? <BookmarkCheck size={16} /> : <Bookmark size={16} />}
-                </button>
+                </IconButton>
               </div>
             </div>
           </div>

@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchInstructors, saveInstructor, unsaveInstructor, fetchSavedInstructors } from '../../store/actions/instructorAction';
 import { STATUS } from '../../constants/apiConstants';
-import { CardSkeleton } from '../../components/feedback';
-import { Avatar, Button, Input, SelectField } from '../../components/ui';
+import { CardSkeleton, ButtonLoader } from '../../components/feedback';
+import { Avatar, Button, Input, SelectField, IconButton } from '../../components/ui';
 import { InstructorProfileModal } from '../../features/modals';
 import { OPEN_TO as ALL_OPEN_TO } from '../../constants/profileConstants';
 
@@ -84,7 +84,11 @@ export default function SearchInstructors() {
             <input type="text" value={query} onChange={e => setQuery(e.target.value)}
               placeholder="Search by name, discipline, location..."
               className="flex-1 bg-transparent border-none outline-none text-sm text-[#3E3D38] placeholder-[#C4BCB4]" />
-            {query && <button onClick={() => setQuery('')} className="text-[#9A9A94] hover:text-[#CE4F56]"><X size={14} /></button>}
+            {query && (
+              <IconButton variant="plain" size="xs" onClick={() => setQuery('')} aria-label="Clear search" className="!text-ink-soft hover:!text-coral">
+                <X size={14} />
+              </IconButton>
+            )}
           </div>
           <Button
             variant={showFilters ? 'primary' : 'secondary'}
@@ -189,12 +193,18 @@ export default function SearchInstructors() {
                         <p className="text-[#9A9A94] text-[10px]">{inst.detail.pronouns}</p>
                       </div>
                     </div>
-                    <button onClick={e => toggleSave(inst.id, e)} disabled={savingId === inst.id}
-                      className={`p-1.5 rounded-lg transition-all ${isSaved ? 'text-[#CE4F56]' : 'text-[#C4BCB4] hover:text-[#CE4F56]'}`}>
+                    <IconButton
+                      variant="plain"
+                      tone="coral"
+                      disabled={savingId === inst.id}
+                      onClick={(e) => toggleSave(inst.id, e)}
+                      title={isSaved ? 'Remove from saved' : 'Save instructor'}
+                      className={isSaved ? '' : '!text-ink-faint hover:!text-coral'}
+                    >
                       {savingId === inst.id
                         ? <ButtonLoader size={16} color="#CE4F56" />
                         : <Heart size={16} fill={isSaved ? 'currentColor' : 'none'} />}
-                    </button>
+                    </IconButton>
                   </div>
                   <div className="flex items-center gap-1 mt-3">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#6BE6A4]" />

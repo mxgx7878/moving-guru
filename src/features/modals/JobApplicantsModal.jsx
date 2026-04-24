@@ -12,7 +12,7 @@ import {
 import { fetchUserReviews, fetchMyReviews } from "../../store/actions/reviewAction";
 import { STATUS } from "../../constants/apiConstants";
 import { ButtonLoader } from "../../components/feedback";
-import { Button } from "../../components/ui";
+import { Button, IconButton } from "../../components/ui";
 import  StarRating  from "../../components/ui/StarRating";
 import ReviewFormModal from "./ReviewFormModal";
 
@@ -161,13 +161,15 @@ export default function JobApplicantsModal({ job, onClose }) {
               For <span className="font-semibold text-[#3E3D38]">{job.title}</span>
             </p>
           </div>
-          <button
+          <IconButton
+            variant="plain"
             onClick={onClose}
-            className="p-1.5 hover:bg-[#FBF8E4] rounded-lg transition-colors text-[#9A9A94] flex-shrink-0"
             aria-label="Close"
+            title="Close"
+            className="flex-shrink-0"
           >
             <X size={18} />
-          </button>
+          </IconButton>
         </div>
 
         {!canHire && (

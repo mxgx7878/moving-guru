@@ -15,6 +15,8 @@ export { default as IconButton } from './IconButton';
 export { default as Avatar } from './Avatar';
 export { default as SocialLinksRow } from './SocialLinksRow';
 export { default as Chip } from './Chip';
+export { default as ToggleChip } from './ToggleChip';
+export { default as ChipGroup } from './ChipGroup';
 export { default as SearchBar } from './SearchBar';
 export { default as FilterSelect } from './FilterSelect';
 export { default as TabBar } from './TabBar';

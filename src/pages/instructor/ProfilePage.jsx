@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { updateProfile } from '../../store/actions/authAction';
 import { DISCIPLINE_CATEGORIES } from '../../data/disciplines';
 import { COUNTRIES, COUNTRIES_AND_REGIONS } from '../../data/countries';
-import { Section, Field, SelectField, Button, Input } from '../../components/ui';
+import { Section, Field, SelectField, Button, Input, IconButton, ToggleChip, ChipGroup } from '../../components/ui';
 import { ReviewList } from '../../features/reviews';
 import { ScallopedFrame } from '../../features/profile';
 import { instructorProfileSchema, flattenYupErrors } from '../../features/forms';
@@ -516,19 +516,16 @@ export default function ProfilePage() {
 
               {/* Open To */}
               <Field label="Open To" hint="What type of arrangement are you looking for?">
-                <div className="flex flex-wrap gap-2 mt-1">
-                  {OPEN_TO.map(opt => (
-                    <button key={opt} type="button" onClick={() => toggle('openTo', opt)}
-                      className={`px-4 py-2 rounded-full text-xs font-semibold border transition-all
-                        ${(form.openTo || []).includes(opt)
-                          ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
-                          : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}>
-                      {opt}
-                    </button>
-                  ))}
-                </div>
+                <ChipGroup
+                  options={OPEN_TO}
+                  value={form.openTo || []}
+                  onChange={(next) => set('openTo', next)}
+                  multiple
+                  tone="blue"
+                  className="mt-1"
+                />
                 {(form.openTo || []).length === 0 && (
-                  <p className="text-[10px] text-[#C4BCB4] mt-1">Select at least one option</p>
+                  <p className="text-[10px] text-ink-faint mt-1">Select at least one option</p>
                 )}
               </Field>
             </div>
@@ -538,18 +535,15 @@ export default function ProfilePage() {
                SECTION 4 — LANGUAGES
              ══════════════════════════════════════ */}
           <Section title="Languages" icon={Globe}>
-            <p className="text-xs text-[#9A9A94] mb-3">Select all languages you speak or are learning</p>
-            <div className="flex flex-wrap gap-2">
-              {LANGUAGES.map(lang => (
-                <button key={lang} type="button" onClick={() => toggle('languages', lang)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
-                    ${(form.languages || []).includes(lang)
-                      ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
-                      : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}>
-                  {lang}
-                </button>
-              ))}
-            </div>
+            <p className="text-xs text-ink-soft mb-3">Select all languages you speak or are learning</p>
+            <ChipGroup
+              options={LANGUAGES}
+              value={form.languages || []}
+              onChange={(next) => set('languages', next)}
+              multiple
+              tone="blue"
+              size="md"
+            />
           </Section>
 
           {/* ══════════════════════════════════════
@@ -558,57 +552,69 @@ export default function ProfilePage() {
           <Section title="Disciplines" icon={Star}>
             {/* Selected tags */}
             {(form.disciplines || []).length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-4 p-3 bg-[#2DA4D6]/10 rounded-xl border border-[#2DA4D6]/20">
-                <p className="w-full text-[10px] text-[#2DA4D6] font-bold uppercase tracking-wider mb-1">
+              <div className="flex flex-wrap gap-2 mb-4 p-3 bg-sky-soft rounded-xl border border-sky-mg/20">
+                <p className="w-full text-[10px] text-sky-mg font-bold uppercase tracking-wider mb-1">
                   Selected ({form.disciplines.length})
                 </p>
-                {(form.disciplines || []).map(d => (
-                  <span key={d} className="flex items-center gap-1 bg-[#2DA4D6] text-white text-xs font-medium px-2.5 py-1 rounded-full">
+                {(form.disciplines || []).map((d) => (
+                  <ToggleChip
+                    key={d}
+                    active
+                    tone="blue"
+                    size="md"
+                    onClick={() => toggle('disciplines', d)}
+                    onRemove={() => toggle('disciplines', d)}
+                  >
                     {d}
-                    <button type="button" onClick={() => toggle('disciplines', d)}>
-                      <X size={9} />
-                    </button>
-                  </span>
+                  </ToggleChip>
                 ))}
               </div>
             )}
 
             {/* Search */}
-            <div className="flex items-center gap-2 bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-3 py-2 mb-4">
-              <Star size={14} className="text-[#9A9A94]" />
-              <input type="text" value={discSearch} onChange={e => setDiscSearch(e.target.value)}
+            <div className="flex items-center gap-2 bg-warm-bg border border-edge rounded-xl px-3 py-2 mb-4">
+              <Star size={14} className="text-ink-soft" />
+              <input type="text" value={discSearch} onChange={(e) => setDiscSearch(e.target.value)}
                 placeholder="Search disciplines..."
-                className="flex-1 bg-transparent border-none outline-none text-sm text-[#3E3D38] placeholder-[#C4BCB4]" />
-              {discSearch && <button onClick={() => setDiscSearch('')}><X size={12} className="text-[#9A9A94]" /></button>}
+                className="flex-1 bg-transparent border-none outline-none text-sm text-ink placeholder-ink-faint" />
+              {discSearch && (
+                <IconButton variant="plain" size="xs" onClick={() => setDiscSearch('')} aria-label="Clear">
+                  <X size={12} className="text-ink-soft" />
+                </IconButton>
+              )}
             </div>
 
             {/* Category list */}
             <div className="space-y-5 max-h-80 overflow-y-auto pr-1">
-              {filteredCats.map(cat => {
-                const allSel = cat.items.every(d => (form.disciplines || []).includes(d));
+              {filteredCats.map((cat) => {
+                const allSel = cat.items.every((d) => (form.disciplines || []).includes(d));
                 return (
                   <div key={cat.id}>
                     <div className="flex items-center justify-between mb-2">
-                      <p className="text-[9px] font-bold text-[#9A9A94] tracking-widest uppercase">
+                      <p className="text-[9px] font-bold text-ink-soft tracking-widest uppercase">
                         {cat.emoji} {cat.label}
                       </p>
-                      <button type="button" onClick={() => toggleSelectAll(cat.items)}
-                        className={`text-[10px] font-semibold px-2.5 py-1 rounded-lg transition-all
-                          ${allSel ? 'bg-[#CCFF00] text-[#3E3D38]' : 'bg-[#FBF8E4] text-[#6B6B66] hover:bg-[#E6FF80]'}`}>
+                      <Button
+                        type="button"
+                        variant={allSel ? 'accent' : 'secondary'}
+                        size="xs"
+                        onClick={() => toggleSelectAll(cat.items)}
+                        className={allSel
+                          ? '!bg-chartreuse !text-ink !border-chartreuse hover:!bg-chartreuse-dark'
+                          : '!bg-cream'}
+                      >
                         {allSel ? 'Deselect All' : 'Select All'}
-                      </button>
+                      </Button>
                     </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {cat.items.map(d => (
-                        <button key={d} type="button" onClick={() => toggle('disciplines', d)}
-                          className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
-                            ${(form.disciplines || []).includes(d)
-                              ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
-                              : 'border-[#E5E0D8] text-[#3E3D38] hover:border-[#2DA4D6] hover:bg-[#FBF8E4]'}`}>
-                          {d}
-                        </button>
-                      ))}
-                    </div>
+                    <ChipGroup
+                      options={cat.items}
+                      value={form.disciplines || []}
+                      onChange={(next) => set('disciplines', next)}
+                      multiple
+                      tone="blue"
+                      size="md"
+                      className="gap-1.5"
+                    />
                   </div>
                 );
               })}

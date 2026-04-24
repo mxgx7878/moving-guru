@@ -1,7 +1,7 @@
 import {
   MapPin, Calendar, Globe, Users, Heart, Eye, MessageCircle,
 } from 'lucide-react';
-import { Avatar, Button, Chip } from '../../components/ui';
+import { Avatar, Button, Chip, IconButton } from '../../components/ui';
 import { ButtonLoader } from '../../components/feedback';
 import { OPEN_TO_TONES } from '../../constants/theme';
 
@@ -45,14 +45,16 @@ export default function SavedInstructorCard({
               </p>
             </div>
           </div>
-          <button
+          <IconButton
+            variant="plain"
+            tone="red"
             onClick={(e) => { e.stopPropagation(); onUnsave?.(); }}
             disabled={unsaving}
-            className="p-1.5 rounded-lg text-[#CE4F56] hover:bg-red-50 transition-all"
             title="Remove from saved"
+            className="!text-coral"
           >
             {unsaving ? <ButtonLoader size={16} color="#CE4F56" /> : <Heart size={16} fill="currentColor" />}
-          </button>
+          </IconButton>
         </div>
         <div className="flex items-center gap-1 mt-3">
           <span className="w-1.5 h-1.5 rounded-full bg-[#6BE6A4]" />

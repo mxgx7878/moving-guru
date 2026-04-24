@@ -1,5 +1,5 @@
-import { MapPin, Lock } from 'lucide-react';
-import { Modal } from '../../components/ui';
+import { MapPin, Lock, X } from 'lucide-react';
+import { Modal, IconButton } from '../../components/ui';
 import { POST_TYPES, POST_AUDIENCE_OPTIONS as AUDIENCE_OPTIONS } from '../../constants/postConstants';
 
 // Read-only preview of a broadcast post — shown from the admin moderation
@@ -45,7 +45,9 @@ export default function PostPreviewModal({ post, onClose }) {
             </span>
           )}
         </div>
-        <button onClick={onClose} className="p-1.5 hover:bg-[#FBF8E4] rounded-lg text-[#9A9A94]">✕</button>
+        <IconButton variant="plain" onClick={onClose} aria-label="Close" title="Close">
+          <X size={16} />
+        </IconButton>
       </div>
 
       <div className="max-h-[70vh] overflow-y-auto">

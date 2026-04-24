@@ -5,7 +5,7 @@ import { ROLE_THEME } from '../../config/portalConfig';
 import { fetchPayments } from '../../store/actions/paymentAction';
 import { STATUS } from '../../constants/apiConstants';
 import { TableSkeleton, CardSkeleton } from '../../components/feedback';
-import { Button } from '../../components/ui';
+import { Button, IconButton } from '../../components/ui';
 
 /**
  * Payments page — shared between instructor and studio portals.
@@ -168,9 +168,9 @@ export default function Payments() {
                     {p.status}
                   </span>
                 </div>
-                <button className="p-1.5 hover:bg-[#FBF8E4] rounded-lg transition-colors text-[#9A9A94] hover:text-[#3E3D38]">
+                <IconButton variant="plain" aria-label="Download receipt" title="Download receipt">
                   <Download size={14} />
-                </button>
+                </IconButton>
               </div>
             </div>
           ))}

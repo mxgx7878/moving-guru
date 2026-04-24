@@ -8,7 +8,7 @@ import {
   Briefcase, Calendar, GraduationCap, Clock, ChevronDown, Search,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Field, Button, Input } from '../../components/ui';
+import { Field, Button, Input, IconButton, ToggleChip, ChipGroup } from '../../components/ui';
 import { StudioPreviewModal } from '../../features/modals';
 import { ReviewList } from '../../features/reviews';
 import { studioProfileSchema, flattenYupErrors } from '../../features/forms';
@@ -272,17 +272,12 @@ export default function StudioProfile() {
             </div>
 
             <Field label="Studio Size">
-              <div className="flex flex-wrap gap-2">
-                {STUDIO_SIZES.map(sz => (
-                  <button key={sz} type="button" onClick={() => update('studioSize', sz)}
-                    className={`px-4 py-2 rounded-full text-xs font-medium border transition-all
-                      ${form.studioSize === sz
-                        ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
-                        : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}>
-                    {sz}
-                  </button>
-                ))}
-              </div>
+              <ChipGroup
+                options={STUDIO_SIZES}
+                value={form.studioSize}
+                onChange={(v) => update('studioSize', v)}
+                tone="blue"
+              />
             </Field>
           </div>
 
@@ -302,17 +297,13 @@ export default function StudioProfile() {
             />
 
             <Field label="Open To">
-              <div className="flex flex-wrap gap-2">
-                {OPEN_TO.map(opt => (
-                  <button key={opt} type="button" onClick={() => toggleItem('openTo', opt)}
-                    className={`px-4 py-2 rounded-full text-xs font-medium border transition-all
-                      ${form.openTo.includes(opt)
-                        ? 'bg-[#2DA4D6] text-white border-[#2DA4D6]'
-                        : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}>
-                    {opt}
-                  </button>
-                ))}
-              </div>
+              <ChipGroup
+                options={OPEN_TO}
+                value={form.openTo}
+                onChange={(next) => update('openTo', next)}
+                multiple
+                tone="blue"
+              />
             </Field>
 
             {/* ── Active hiring details ──
@@ -344,20 +335,12 @@ export default function StudioProfile() {
                 />
 
                 <Field label="Position Type">
-                  <div className="flex flex-wrap gap-2">
-                    {POSITION_TYPES.map(o => (
-                      <button
-                        key={o.id}
-                        type="button"
-                        onClick={() => update('hiringPositionType', o.id)}
-                        className={`px-3.5 py-2 rounded-full text-xs font-semibold border transition-all
-                          ${form.hiringPositionType === o.id
-                            ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
-                            : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}>
-                        {o.label}
-                      </button>
-                    ))}
-                  </div>
+                  <ChipGroup
+                    options={POSITION_TYPES}
+                    value={form.hiringPositionType}
+                    onChange={(v) => update('hiringPositionType', v)}
+                    tone="blue"
+                  />
                 </Field>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -423,53 +406,55 @@ export default function StudioProfile() {
 
             {/* Selected chips */}
             {(form.disciplines || []).length > 0 && (
-              <div className="flex flex-wrap gap-2 p-3 bg-[#2DA4D6]/10 rounded-xl border border-[#2DA4D6]/20">
-                {form.disciplines.map(d => (
-                  <span key={d} className="flex items-center gap-1 bg-[#2DA4D6] text-white text-xs font-medium px-2.5 py-1 rounded-full">
+              <div className="flex flex-wrap gap-2 p-3 bg-sky-soft rounded-xl border border-sky-mg/20">
+                {form.disciplines.map((d) => (
+                  <ToggleChip
+                    key={d}
+                    active
+                    tone="blue"
+                    size="md"
+                    onClick={() => toggleItem('disciplines', d)}
+                    onRemove={() => toggleItem('disciplines', d)}
+                  >
                     {d}
-                    <button type="button" onClick={() => toggleItem('disciplines', d)}>
-                      <X size={10} />
-                    </button>
-                  </span>
+                  </ToggleChip>
                 ))}
               </div>
             )}
 
             {/* Search */}
-            <div className="flex items-center gap-2 bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-3 py-2">
-              <Search size={14} className="text-[#9A9A94]" />
+            <div className="flex items-center gap-2 bg-warm-bg border border-edge rounded-xl px-3 py-2">
+              <Search size={14} className="text-ink-soft" />
               <input
                 type="text"
                 value={disciplineSearch}
-                onChange={e => setDisciplineSearch(e.target.value)}
+                onChange={(e) => setDisciplineSearch(e.target.value)}
                 placeholder="Search disciplines..."
-                className="flex-1 bg-transparent border-none outline-none text-sm text-[#3E3D38] placeholder-[#C4BCB4]"
+                className="flex-1 bg-transparent border-none outline-none text-sm text-ink placeholder-ink-faint"
               />
               {disciplineSearch && (
-                <button onClick={() => setDisciplineSearch('')}>
-                  <X size={12} className="text-[#9A9A94]" />
-                </button>
+                <IconButton variant="plain" size="xs" onClick={() => setDisciplineSearch('')} aria-label="Clear">
+                  <X size={12} className="text-ink-soft" />
+                </IconButton>
               )}
             </div>
 
             {/* Category list */}
             <div className="space-y-5 max-h-96 overflow-y-auto pr-1">
-              {filteredDisciplines.map(cat => (
+              {filteredDisciplines.map((cat) => (
                 <div key={cat.id}>
-                  <p className="text-[9px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">
+                  <p className="text-[9px] font-bold text-ink-soft tracking-widest uppercase mb-2">
                     {cat.emoji} {cat.label}
                   </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {cat.items.map(d => (
-                      <button key={d} type="button" onClick={() => toggleItem('disciplines', d)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
-                          ${form.disciplines.includes(d)
-                            ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
-                            : 'border-[#E5E0D8] text-[#3E3D38] hover:border-[#2DA4D6] hover:bg-[#FBF8E4]'}`}>
-                        {d}
-                      </button>
-                    ))}
-                  </div>
+                  <ChipGroup
+                    options={cat.items}
+                    value={form.disciplines}
+                    onChange={(next) => update('disciplines', next)}
+                    multiple
+                    tone="blue"
+                    size="md"
+                    className="gap-1.5"
+                  />
                 </div>
               ))}
             </div>
@@ -541,27 +526,25 @@ export default function StudioProfile() {
                 Hiring Status
               </p>
               <div className="flex gap-2">
-                <button
-                  type="button"
+                <ToggleChip
+                  active={form.profileStatus === 'active'}
                   onClick={() => update('profileStatus', 'active')}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold border transition-all
-                    ${form.profileStatus === 'active'
-                      ? 'bg-[#6BE6A4]/20 border-[#6BE6A4] text-[#3E3D38]'
-                      : 'border-[#E5E0D8] text-[#9A9A94] hover:border-[#6BE6A4]'}`}
+                  tone="blue"
+                  size="lg"
+                  className="flex-1 justify-center rounded-xl !py-2.5"
                 >
-                  <span className={`w-1.5 h-1.5 rounded-full ${form.profileStatus === 'active' ? 'bg-[#6BE6A4]' : 'bg-[#9A9A94]'}`} />
+                  <span className={`w-1.5 h-1.5 rounded-full ${form.profileStatus === 'active' ? 'bg-mint-soft' : 'bg-ink-soft'}`} />
                   Hiring
-                </button>
-                <button
-                  type="button"
+                </ToggleChip>
+                <ToggleChip
+                  active={form.profileStatus === 'inactive'}
                   onClick={() => update('profileStatus', 'inactive')}
-                  className={`flex-1 py-2.5 rounded-xl text-xs font-semibold border transition-all
-                    ${form.profileStatus === 'inactive'
-                      ? 'bg-[#FBF8E4] border-[#9A9A94] text-[#6B6B66]'
-                      : 'border-[#E5E0D8] text-[#9A9A94] hover:border-[#9A9A94]'}`}
+                  tone="ink"
+                  size="lg"
+                  className="flex-1 justify-center rounded-xl !py-2.5"
                 >
                   Not Hiring
-                </button>
+                </ToggleChip>
               </div>
               <p className="text-[10px] text-[#9A9A94] mt-2 leading-relaxed">
                 {form.profileStatus === 'active'
