@@ -32,6 +32,10 @@ export default function InstructorDetail() {
   const dispatch = useDispatch();
 
   const { selectedInstructor, savedIds, status } = useSelector((s) => s.instructor);
+  const { user } = useSelector((s) => s.auth);
+  const isStudio = user?.role === 'studio';
+  const messagesPath = isStudio ? '/studio/messages' : '/portal/messages';
+  const searchPath = isStudio ? '/studio/search' : '/portal/find-work';
 
   const [savingToggle, setSavingToggle] = useState(false);
   const [lightbox, setLightbox] = useState(null);
@@ -43,6 +47,7 @@ export default function InstructorDetail() {
   const loading = status === STATUS.LOADING && !selectedInstructor;
   const inst = selectedInstructor;
   const isSaved = inst ? savedIds.includes(inst.id) : false;
+  const viewingSelf = !!inst && (inst.id === user?.id || inst.user_id === user?.id);
 
   const handleToggleSave = async () => {
     if (!inst) return;
@@ -58,7 +63,7 @@ export default function InstructorDetail() {
   };
 
   const handleMessage = () => {
-    navigate('/studio/messages');
+    navigate(messagesPath);
   };
 
   if (loading) {
@@ -73,7 +78,7 @@ export default function InstructorDetail() {
     return (
       <div className="max-w-5xl mx-auto text-center py-20">
         <p className="text-[#3E3D38] font-semibold">Instructor not found</p>
-        <Button variant="ghost" size="sm" onClick={() => navigate('/studio/search')}
+        <Button variant="ghost" size="sm" onClick={() => navigate(searchPath)}
           className="!text-sky-mg hover:!underline mt-4">
           Back to search
         </Button>
@@ -84,6 +89,11 @@ export default function InstructorDetail() {
   const detail       = inst.detail || {};
   const disciplines  = detail.disciplines || inst.disciplines || [];
   const openTo       = detail.openTo || inst.openTo || detail.open_to || inst.open_to || [];
+  const openToEnergyExchange = detail.open_to_energy_exchange
+    ?? detail.openToEnergyExchange
+    ?? inst.open_to_energy_exchange
+    ?? inst.openToEnergyExchange
+    ?? false;
   const languages    = detail.languages || inst.languages || [];
   const countryFrom  = detail.countryFrom || inst.country_from;
   const travelingTo  = detail.travelingTo || inst.traveling_to;
@@ -113,19 +123,32 @@ export default function InstructorDetail() {
           Back
         </Button>
         <div className="flex items-center gap-2">
-          <Button
-            variant={isSaved ? 'outlineDanger' : 'secondary'}
-            size="md"
-            icon={Heart}
-            loading={savingToggle}
-            onClick={handleToggleSave}
-            className={isSaved ? 'bg-[#CE4F56]/5' : 'hover:border-[#CE4F56] hover:text-[#CE4F56]'}
-          >
-            {isSaved ? 'Saved' : 'Save'}
-          </Button>
-          <Button variant="primary" size="md" icon={MessageCircle} onClick={handleMessage}>
-            Message
-          </Button>
+          {viewingSelf ? (
+            <>
+              <span className="text-xs font-semibold text-[#9A9A94] px-3 py-1.5 bg-[#FBF8E4] rounded-xl">
+                Preview — this is how others see your profile
+              </span>
+              <Button variant="secondary" size="md" onClick={() => navigate('/portal/profile')}>
+                Edit Profile
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                variant={isSaved ? 'outlineDanger' : 'secondary'}
+                size="md"
+                icon={Heart}
+                loading={savingToggle}
+                onClick={handleToggleSave}
+                className={isSaved ? 'bg-[#CE4F56]/5' : 'hover:border-[#CE4F56] hover:text-[#CE4F56]'}
+              >
+                {isSaved ? 'Saved' : 'Save'}
+              </Button>
+              <Button variant="primary" size="md" icon={MessageCircle} onClick={handleMessage}>
+                Message
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
@@ -297,7 +320,7 @@ export default function InstructorDetail() {
 
         {/* Right sidebar */}
         <div className="space-y-6">
-          {openTo.length > 0 && (
+          {(openTo.length > 0 || openToEnergyExchange) && (
             <Section title="Open To">
               <div className="flex flex-wrap gap-1.5">
                 {openTo.map((o) => (
@@ -309,6 +332,11 @@ export default function InstructorDetail() {
                   </span>
                 ))}
               </div>
+              {openToEnergyExchange && (
+                <p className="mt-3 text-[11px] text-[#6B6B66] leading-snug">
+                  This user is open to energy exchange options.
+                </p>
+              )}
             </Section>
           )}
 

@@ -1,11 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Download, CreditCard, CheckCircle, Calendar, DollarSign, TrendingUp } from 'lucide-react';
+import { Download, CreditCard, CheckCircle, Calendar, DollarSign, TrendingUp, Sparkles } from 'lucide-react';
 import { ROLE_THEME } from '../../config/portalConfig';
 import { fetchPayments } from '../../store/actions/paymentAction';
 import { STATUS } from '../../constants/apiConstants';
 import { TableSkeleton, CardSkeleton } from '../../components/feedback';
 import { Button, IconButton } from '../../components/ui';
+import { ChangePlanModal } from '../../features/modals';
 
 /**
  * Payments page — shared between instructor and studio portals.
@@ -22,6 +23,8 @@ export default function Payments() {
   const role = user?.role || 'instructor';
   const theme = ROLE_THEME[role] || ROLE_THEME.instructor;
   const isStudio = role === 'studio';
+  const [changePlanOpen, setChangePlanOpen] = useState(false);
+  const currentPlan = user?.subscription || user?.plan || 'free';
 
   useEffect(() => {
     dispatch(fetchPayments());
@@ -55,11 +58,34 @@ export default function Payments() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
-      <div>
-        <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Payment History</h1>
-        <p className="text-[#9A9A94] text-sm mt-1">
-          {isStudio ? 'Track what your studio has spent on Moving Guru' : 'Your billing history and invoices'}
-        </p>
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Payment History</h1>
+          <p className="text-[#9A9A94] text-sm mt-1">
+            {isStudio ? 'Track what your studio has spent on Moving Guru' : 'Your billing history and invoices'}
+          </p>
+        </div>
+        <Button variant="primary" size="sm" icon={Sparkles} onClick={() => setChangePlanOpen(true)}>
+          Change Plan
+        </Button>
+      </div>
+
+      {/* Current plan summary */}
+      <div className="bg-white rounded-2xl p-5 border border-[#E5E0D8] flex items-center justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[#f5fca6]/50 flex items-center justify-center">
+            <Sparkles size={16} className="text-[#3E3D38]" />
+          </div>
+          <div>
+            <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-bold">Current Plan</p>
+            <p className="text-sm font-semibold text-[#3E3D38] capitalize">
+              {currentPlan} Plan
+            </p>
+          </div>
+        </div>
+        <Button variant="secondary" size="xs" onClick={() => setChangePlanOpen(true)}>
+          Change Plan
+        </Button>
       </div>
 
       {/* ── Summary cards ───────────────────────────────────── */}
@@ -188,6 +214,12 @@ export default function Payments() {
         Need a receipt or have billing questions? Contact{' '}
         <a href="mailto:admin@movingguru.co" className="text-[#2DA4D6] hover:underline">admin@movingguru.co</a>
       </p>
+
+      <ChangePlanModal
+        open={changePlanOpen}
+        currentPlan={currentPlan}
+        onClose={() => setChangePlanOpen(false)}
+      />
     </div>
   );
 }

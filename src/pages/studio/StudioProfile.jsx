@@ -13,7 +13,7 @@ import { StudioPreviewModal } from '../../features/modals';
 import { ReviewList } from '../../features/reviews';
 import { studioProfileSchema, flattenYupErrors } from '../../features/forms';
 
-const OPEN_TO = ['Direct Hire', 'Swaps', 'Energy Exchange'];
+const OPEN_TO = ['Direct Hire', 'Swaps'];
 const STUDIO_SIZES = ['1–5 instructors', '6–15 instructors', '16–30 instructors', '30+ instructors'];
 
 // ── Position types match the JobListings form so the same vocabulary
@@ -66,6 +66,7 @@ export default function StudioProfile() {
     studioSize: user?.studio_size || user?.studioSize || '',
     bio: user?.bio || '',
     openTo: user?.open_to || user?.openTo || [],
+    openToEnergyExchange: user?.open_to_energy_exchange ?? user?.openToEnergyExchange ?? false,
     disciplines: user?.disciplines || [],
     instagram: user?.instagram || '',
     profileStatus: user?.profile_status || user?.profileStatus || 'active',
@@ -146,6 +147,7 @@ export default function StudioProfile() {
 
     (form.disciplines || []).forEach((d, i) => fd.append(`disciplines[${i}]`, d));
     (form.openTo      || []).forEach((o, i) => fd.append(`openTo[${i}]`, o));
+    fd.append('open_to_energy_exchange', form.openToEnergyExchange ? '1' : '0');
 
     if (form.avatarFile) fd.append('profile_picture', form.avatarFile);
     (form.photoFiles  || []).forEach((f, i) => fd.append(`gallery_photos[${i}]`, f));
@@ -305,6 +307,23 @@ export default function StudioProfile() {
                 tone="blue"
               />
             </Field>
+
+            {/* Energy exchange opt-in — secondary, not a primary offering */}
+            <label className="flex items-start gap-2.5 cursor-pointer select-none p-3 rounded-xl bg-[#FDFCF8] border border-[#E5E0D8] hover:border-[#6BE6A4] transition-colors">
+              <input
+                type="checkbox"
+                checked={!!form.openToEnergyExchange}
+                onChange={(e) => update('openToEnergyExchange', e.target.checked)}
+                className="mt-0.5 w-4 h-4 accent-[#6BE6A4] flex-shrink-0"
+              />
+              <div className="flex-1">
+                <p className="text-xs font-semibold text-[#3E3D38]">Open to energy exchange options</p>
+                <p className="text-[10px] text-[#9A9A94] mt-0.5 leading-snug">
+                  Tick this only if you're open to exchange arrangements when paid options aren't viable.
+                  When on, your profile shows "this studio is open to energy exchange options".
+                </p>
+              </div>
+            </label>
 
             {/* ── Active hiring details ──
                 When studio toggles "Actively Hiring" on, surface a box

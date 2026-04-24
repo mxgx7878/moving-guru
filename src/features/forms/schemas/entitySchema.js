@@ -7,6 +7,14 @@ const email = yup.string().trim().email('Enter a valid email');
 export const jobSchema = yup.object({
   title: yup.string().trim().required('Title is required').max(120),
   type:  yup.string().required('Select a listing type'),
+  // Studios can now select both "Direct Hire" + "Instructor Swap" on the
+  // same listing. `types` is the source of truth; `type` is kept as the
+  // first selected value for backwards compatibility with older APIs.
+  types: yup
+    .array()
+    .of(yup.string())
+    .min(1, 'Select at least one listing type'),
+  open_to_energy_exchange: yup.boolean().default(false),
   role_type: yup.string().nullable(),
   location:  yup.string().trim().nullable().max(120),
   start_date: yup.string().nullable(),
