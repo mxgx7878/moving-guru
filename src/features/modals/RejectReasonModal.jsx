@@ -1,10 +1,25 @@
-import { useState, useEffect } from 'react';
-import { Modal, Input, Button } from '../../components/ui';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
-// Small dialog that asks the admin for an optional reason before rejecting
-// a grow post. Replaces the inline reject dialog that AdminGrowPosts used
-// to declare. Opens whenever `open` is true; submits the reason (or null)
-// through onConfirm.
+import { Modal, Button, RHFInput } from '../../components/ui';
+
+// Small dialog that asks the admin for a reason before rejecting a
+// grow post. This variant tolerates an empty reason (the caller
+// deliberately allowed this) — but when present it still has to be
+// at least 5 characters so "a" doesn't slip through.
+const schema = yup.object({
+  reason: yup
+    .string()
+    .nullable()
+    .test('length-or-empty', 'Reason should be at least 5 characters', (v) => {
+      if (!v || !v.trim()) return true;
+      return v.trim().length >= 5;
+    })
+    .max(500, 'Keep the reason under 500 characters'),
+});
+
 export default function RejectReasonModal({
   open,
   busy = false,
@@ -15,14 +30,19 @@ export default function RejectReasonModal({
   onCancel,
   onConfirm,
 }) {
-  const [reason, setReason] = useState('');
+  const {
+    control, handleSubmit, reset, formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: { reason: '' },
+  });
 
-  // Reset reason when the modal opens, so the previous input doesn't stick.
-  useEffect(() => { if (open) setReason(''); }, [open]);
+  // Reset when the modal re-opens so prior input doesn't stick.
+  useEffect(() => { if (open) reset({ reason: '' }); }, [open, reset]);
 
   if (!open) return null;
 
-  const handleConfirm = () => onConfirm(reason.trim() || null);
+  const submit = ({ reason }) => onConfirm((reason || '').trim() || null);
 
   return (
     <Modal
@@ -36,20 +56,23 @@ export default function RejectReasonModal({
           <Button variant="secondary" size="md" onClick={onCancel} disabled={busy}>
             Cancel
           </Button>
-          <Button variant="danger" size="md" onClick={handleConfirm} loading={busy}>
+          <Button variant="danger" size="md" onClick={handleSubmit(submit)} loading={busy}>
             {confirmLabel}
           </Button>
         </>
       }
     >
-      <Input
-        textarea
-        rows={4}
-        value={reason}
-        onChange={(e) => setReason(e.target.value)}
-        placeholder={placeholder}
-        accent="#7F77DD"
-      />
+      <form onSubmit={handleSubmit(submit)}>
+        <RHFInput
+          control={control}
+          errors={errors}
+          name="reason"
+          textarea
+          rows={4}
+          placeholder={placeholder}
+          accent="#7F77DD"
+        />
+      </form>
     </Modal>
   );
 }

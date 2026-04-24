@@ -1,10 +1,18 @@
-import { useState } from 'react';
-import { Modal, Button, Input } from '../../components/ui';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+
+import { Modal, Button, RHFInput } from '../../components/ui';
+import { reasonSchema } from '../forms';
 
 // Dialog used by AdminUsers to capture a rejection reason when rejecting a
 // pending signup. Pairs with SuspendUserModal — same pattern, different verb.
 export default function RejectUserModal({ onCancel, onConfirm, busy = false }) {
-  const [reason, setReason] = useState('');
+  const { control, handleSubmit, formState: { errors } } = useForm({
+    resolver: yupResolver(reasonSchema),
+    defaultValues: { reason: '' },
+  });
+
+  const submit = ({ reason }) => onConfirm(reason.trim());
 
   return (
     <Modal
@@ -16,24 +24,23 @@ export default function RejectUserModal({ onCancel, onConfirm, busy = false }) {
       footer={
         <>
           <Button variant="secondary" onClick={onCancel}>Cancel</Button>
-          <Button
-            variant="danger"
-            loading={busy}
-            onClick={() => onConfirm(reason.trim() || null)}
-          >
+          <Button variant="danger" loading={busy} onClick={handleSubmit(submit)}>
             Reject Application
           </Button>
         </>
       }
     >
-      <Input
-        textarea
-        value={reason}
-        onChange={(e) => setReason(e.target.value)}
-        rows={4}
-        placeholder="Reason (e.g. incomplete profile, failed verification, duplicate account)..."
-        accent="#7F77DD"
-      />
+      <form onSubmit={handleSubmit(submit)}>
+        <RHFInput
+          control={control}
+          errors={errors}
+          name="reason"
+          textarea
+          rows={4}
+          placeholder="Reason (e.g. incomplete profile, failed verification, duplicate account)..."
+          accent="#7F77DD"
+        />
+      </form>
     </Modal>
   );
 }

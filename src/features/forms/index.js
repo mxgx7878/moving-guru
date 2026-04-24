@@ -6,4 +6,7 @@ export { default as UserForm }       from './UserForm';
 
 // Yup schemas + helpers shared by form consumers.
 export * from './schemas/profileSchema';
+export * from './schemas/authSchema';
+export * from './schemas/modalSchema';
+export * from './schemas/entitySchema';
 

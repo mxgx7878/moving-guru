@@ -1,3 +1,8 @@
+// TODO (yup+RHF migration): this is the final remaining hand-rolled
+// form. It's a multi-step wizard with role-specific branches, file
+// upload, and conditional fields — migrating it needs its own PR
+// with manual UX testing. Until then it uses useState + validators.js.
+// See features/forms/schemas/* for the pattern the rest of the app uses.
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';

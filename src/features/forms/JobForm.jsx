@@ -1,44 +1,48 @@
 import { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { Check, X } from 'lucide-react';
-import { SelectField } from '../../components/ui';
-import { Modal, Button, Input, Toggle } from '../../components/ui';
+
+import { Modal, Button, RHFInput, SelectField, Toggle } from '../../components/ui';
 import {
   JOB_TYPES, DURATION_OPTIONS, ROLE_TYPE_OPTIONS,
   QUALIFICATION_LEVELS, EMPTY_JOB_FORM,
 } from '../../constants/jobConstants';
 import { DISCIPLINE_CATEGORIES } from '../../data/disciplines';
-import { validateJobForm } from '../../utils/validators';
+import { jobSchema } from './schemas/entitySchema';
 
-// Shared Job Listing create/edit form used by studios. Extracted from the
-// JobListings page so other surfaces (e.g. studio onboarding) can reuse it.
+// Shared Job Listing create/edit form used by studios. Uses yup + RHF
+// for validation; controlled via <Controller> for non-text inputs like
+// the discipline chips and type picker.
 export default function JobForm({
   initial = EMPTY_JOB_FORM,
   saving = false,
   onCancel,
   onSubmit,
 }) {
-  const [form, setForm] = useState({ ...EMPTY_JOB_FORM, ...initial });
-  const [errors, setErrors] = useState({});
-  const [disciplineSearch, setDisciplineSearch] = useState('');
   const isEditing = Boolean(initial?.title);
+  const [disciplineSearch, setDisciplineSearch] = useState('');
 
-  const update = (k, v) => {
-    setForm((f) => ({ ...f, [k]: v }));
-    if (errors[k]) setErrors((prev) => ({ ...prev, [k]: '' }));
+  const {
+    control, handleSubmit, watch, setValue, formState: { errors },
+  } = useForm({
+    resolver: yupResolver(jobSchema),
+    defaultValues: { ...EMPTY_JOB_FORM, ...initial },
+  });
+
+  const type = watch('type');
+  const roleType = watch('role_type');
+  const disciplines = watch('disciplines') || [];
+
+  const toggleDiscipline = (d) => {
+    const next = disciplines.includes(d)
+      ? disciplines.filter((x) => x !== d)
+      : [...disciplines, d];
+    setValue('disciplines', next, { shouldValidate: true });
   };
 
-  const toggleDiscipline = (d) => setForm((f) => ({
-    ...f,
-    disciplines: f.disciplines.includes(d)
-      ? f.disciplines.filter((x) => x !== d)
-      : [...f.disciplines, d],
-  }));
-
-  const handleSave = () => {
-    const errs = validateJobForm(form);
-    setErrors(errs);
-    if (Object.keys(errs).length) return;
-    onSubmit({ ...form, vacancies: Number(form.vacancies) });
+  const submit = (values) => {
+    onSubmit({ ...values, vacancies: Number(values.vacancies) });
   };
 
   const filteredDisciplines = DISCIPLINE_CATEGORIES.map((cat) => ({
@@ -56,181 +60,174 @@ export default function JobForm({
       footer={
         <>
           <Button variant="secondary" onClick={onCancel}>Cancel</Button>
-          <Button variant="primary" icon={Check} loading={saving} onClick={handleSave}>
+          <Button variant="primary" icon={Check} loading={saving} onClick={handleSubmit(submit)}>
             {isEditing ? 'Save Changes' : 'Post Listing'}
           </Button>
         </>
       }
     >
-      {/* Listing type */}
-      <div>
-        <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Listing Type</label>
-        <div className="grid grid-cols-3 gap-3">
-          {JOB_TYPES.map((t) => (
-            <button key={t.id} type="button"
-              onClick={() => update('type', t.id)}
-              className={`flex items-center gap-2 px-4 py-3 rounded-xl border-2 text-sm font-semibold transition-all
-                ${form.type === t.id ? 'text-white' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#3E3D38]'}`}
-              style={form.type === t.id ? { borderColor: t.color, backgroundColor: t.color } : undefined}
-            >
-              <t.icon size={14} /> {t.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <Input
-        label="Title"
-        value={form.title}
-        onChange={(e) => update('title', e.target.value)}
-        placeholder={form.type === 'swap'
-          ? 'e.g. Pilates Instructor Swap — Bali ↔ Sydney'
-          : 'e.g. Yoga Instructor Needed — Bali Studio'}
-        accent="#2DA4D6"
-        error={errors.title}
-      />
-
-      <Input
-        textarea
-        label="Role Description"
-        value={form.description}
-        onChange={(e) => update('description', e.target.value)}
-        rows={4}
-        placeholder="Describe the role, what you're looking for, and what the instructor can expect..."
-        accent="#2DA4D6"
-        error={errors.description}
-      />
-
-      <div className="grid grid-cols-3 gap-4">
-        <Input
-          type="number"
-          label="Vacancies"
-          min={1}
-          max={999}
-          value={form.vacancies}
-          onChange={(e) => update('vacancies', e.target.value)}
-          accent="#2DA4D6"
-          error={errors.vacancies}
-          hint="Listing closes automatically once all positions are filled."
-        />
-
-        <div className="col-span-2">
-          <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Position Type</label>
-          <div className="flex flex-wrap gap-2">
-            {ROLE_TYPE_OPTIONS.map((o) => (
-              <button key={o.id} type="button"
-                onClick={() => update('role_type', o.id)}
-                className={`px-3.5 py-2 rounded-full text-xs font-semibold border transition-all
-                  ${form.role_type === o.id
-                    ? 'bg-[#CCFF00] text-[#3E3D38] border-[#CCFF00]'
-                    : 'bg-white border-[#E5E0D8] text-[#6B6B66] hover:border-[#3E3D38]'}`}
-              >
-                {o.label}
-              </button>
-            ))}
+      <form onSubmit={handleSubmit(submit)} className="space-y-5">
+        {/* Listing type */}
+        <div>
+          <label className="block text-[10px] font-bold text-ink-soft tracking-widest uppercase mb-2">Listing Type</label>
+          <div className="grid grid-cols-3 gap-3">
+            {JOB_TYPES.map((t) => {
+              const Icon = t.icon;
+              const active = type === t.id;
+              return (
+                <Button
+                  key={t.id}
+                  type="button"
+                  variant={active ? 'primary' : 'secondary'}
+                  size="md"
+                  fullWidth
+                  icon={Icon}
+                  onClick={() => setValue('type', t.id, { shouldValidate: true })}
+                  style={active ? { borderColor: t.color, backgroundColor: t.color } : undefined}
+                >
+                  {t.label}
+                </Button>
+              );
+            })}
           </div>
+          {errors.type && <p className="text-red-500 text-xs mt-2">{errors.type.message}</p>}
         </div>
-      </div>
 
-      <SelectField
-        label="Qualification Required"
-        value={form.qualification_level}
-        onChange={(v) => update('qualification_level', v)}
-        options={QUALIFICATION_LEVELS.map((q) => ({ value: q.id, label: q.label }))}
-        placeholder="Select qualification"
-        accent="#2DA4D6"
-      />
+        <RHFInput control={control} errors={errors} name="title" label="Title"
+          placeholder={type === 'swap'
+            ? 'e.g. Pilates Instructor Swap — Bali ↔ Sydney'
+            : 'e.g. Yoga Instructor Needed — Bali Studio'}
+          accent="#2DA4D6" />
 
-      <div className="grid grid-cols-2 gap-4">
-        <Input
-          label="Location"
-          value={form.location}
-          onChange={(e) => update('location', e.target.value)}
-          placeholder="e.g. Bali, Indonesia"
-          accent="#2DA4D6"
-        />
-        <Input
-          type="date"
-          label="Start Date"
-          value={form.start_date}
-          onChange={(e) => update('start_date', e.target.value)}
-          accent="#2DA4D6"
-        />
-      </div>
+        <RHFInput control={control} errors={errors} name="description" textarea rows={4}
+          label="Role Description"
+          placeholder="Describe the role, what you're looking for, and what the instructor can expect..."
+          accent="#2DA4D6" />
 
-      <div className="grid grid-cols-2 gap-4">
-        <SelectField
-          label="Duration"
-          value={form.duration}
-          onChange={(v) => update('duration', v)}
-          options={DURATION_OPTIONS}
-          placeholder="Select duration"
-          accent="#2DA4D6"
-        />
-        <Input
-          label="Compensation"
-          value={form.compensation}
-          onChange={(e) => update('compensation', e.target.value)}
-          placeholder="e.g. $800/week + accommodation"
-          accent="#2DA4D6"
-        />
-      </div>
+        <div className="grid grid-cols-3 gap-4">
+          <RHFInput control={control} errors={errors} name="vacancies" type="number" min={1} max={999}
+            label="Vacancies" accent="#2DA4D6"
+            hint="Listing closes automatically once all positions are filled." />
 
-      <Input
-        textarea
-        label="Additional Requirements"
-        value={form.requirements}
-        onChange={(e) => update('requirements', e.target.value)}
-        rows={3}
-        placeholder="Min 2 years experience, certification required, English fluency..."
-        accent="#2DA4D6"
-      />
-
-      <Toggle label="Active/Inactive" checked={form.is_active} onChange={(e) => update('is_active', e.target.checked)} />
-
-      <div>
-        <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">Disciplines Needed</label>
-        <input
-          type="text"
-          value={disciplineSearch}
-          onChange={(e) => setDisciplineSearch(e.target.value)}
-          placeholder="Search disciplines..."
-          className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-2.5 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-[#2DA4D6] transition-all mb-2"
-        />
-
-        {form.disciplines.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mb-2">
-            {form.disciplines.map((d) => (
-              <span key={d} className="flex items-center gap-1 px-2.5 py-1 bg-[#2DA4D6]/10 text-[#2DA4D6] rounded-full text-xs font-medium">
-                {d}
-                <button onClick={() => toggleDiscipline(d)} className="hover:text-red-500 transition-colors">
-                  <X size={10} />
-                </button>
-              </span>
-            ))}
-          </div>
-        )}
-
-        <div className="max-h-40 overflow-y-auto space-y-3 border border-[#E5E0D8] rounded-xl p-3">
-          {filteredDisciplines.map((cat) => (
-            <div key={cat.label}>
-              <p className="text-[9px] text-[#9A9A94] tracking-widest uppercase font-semibold mb-1.5">{cat.label}</p>
-              <div className="flex flex-wrap gap-1.5">
-                {cat.items.map((d) => (
-                  <button key={d} type="button" onClick={() => toggleDiscipline(d)}
-                    className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-all
-                      ${form.disciplines.includes(d)
-                        ? 'bg-[#2DA4D6] text-white border-[#2DA4D6]'
-                        : 'bg-white border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}
+          <div className="col-span-2">
+            <label className="block text-[10px] font-bold text-ink-soft tracking-widest uppercase mb-2">Position Type</label>
+            <div className="flex flex-wrap gap-2">
+              {ROLE_TYPE_OPTIONS.map((o) => {
+                const active = roleType === o.id;
+                return (
+                  <button key={o.id} type="button"
+                    onClick={() => setValue('role_type', o.id, { shouldValidate: true })}
+                    className={`px-3.5 py-2 rounded-full text-xs font-semibold border transition-all
+                      ${active
+                        ? 'bg-chartreuse text-ink border-chartreuse'
+                        : 'bg-white border-edge text-ink-muted hover:border-ink'}`}
                   >
-                    {d}
+                    {o.label}
                   </button>
-                ))}
-              </div>
+                );
+              })}
             </div>
-          ))}
+          </div>
         </div>
-      </div>
+
+        <Controller
+          control={control}
+          name="qualification_level"
+          render={({ field }) => (
+            <SelectField
+              label="Qualification Required"
+              value={field.value}
+              onChange={field.onChange}
+              options={QUALIFICATION_LEVELS.map((q) => ({ value: q.id, label: q.label }))}
+              placeholder="Select qualification"
+              accent="#2DA4D6"
+            />
+          )}
+        />
+
+        <div className="grid grid-cols-2 gap-4">
+          <RHFInput control={control} errors={errors} name="location" label="Location"
+            placeholder="e.g. Bali, Indonesia" accent="#2DA4D6" />
+          <RHFInput control={control} errors={errors} name="start_date" type="date"
+            label="Start Date" accent="#2DA4D6" />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <Controller
+            control={control}
+            name="duration"
+            render={({ field }) => (
+              <SelectField
+                label="Duration"
+                value={field.value}
+                onChange={field.onChange}
+                options={DURATION_OPTIONS}
+                placeholder="Select duration"
+                accent="#2DA4D6"
+              />
+            )}
+          />
+          <RHFInput control={control} errors={errors} name="compensation" label="Compensation"
+            placeholder="e.g. $800/week + accommodation" accent="#2DA4D6" />
+        </div>
+
+        <RHFInput control={control} errors={errors} name="requirements" textarea rows={3}
+          label="Additional Requirements"
+          placeholder="Min 2 years experience, certification required, English fluency..."
+          accent="#2DA4D6" />
+
+        <Controller
+          control={control}
+          name="is_active"
+          render={({ field }) => (
+            <Toggle label="Active/Inactive" checked={!!field.value} onChange={(e) => field.onChange(e.target.checked)} />
+          )}
+        />
+
+        <div>
+          <label className="block text-[10px] font-bold text-ink-soft tracking-widest uppercase mb-2">Disciplines Needed</label>
+          <input
+            type="text"
+            value={disciplineSearch}
+            onChange={(e) => setDisciplineSearch(e.target.value)}
+            placeholder="Search disciplines..."
+            className="w-full bg-warm-bg border border-edge rounded-xl px-4 py-2.5 text-sm text-ink placeholder-ink-faint focus:outline-none focus:border-sky-mg transition-all mb-2"
+          />
+
+          {disciplines.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mb-2">
+              {disciplines.map((d) => (
+                <span key={d} className="flex items-center gap-1 px-2.5 py-1 bg-sky-soft text-sky-mg rounded-full text-xs font-medium">
+                  {d}
+                  <button type="button" onClick={() => toggleDiscipline(d)} className="hover:text-red-500 transition-colors">
+                    <X size={10} />
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+
+          <div className="max-h-40 overflow-y-auto space-y-3 border border-edge rounded-xl p-3">
+            {filteredDisciplines.map((cat) => (
+              <div key={cat.label}>
+                <p className="text-[9px] text-ink-soft tracking-widest uppercase font-semibold mb-1.5">{cat.label}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {cat.items.map((d) => (
+                    <button key={d} type="button" onClick={() => toggleDiscipline(d)}
+                      className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-all
+                        ${disciplines.includes(d)
+                          ? 'bg-sky-mg text-white border-sky-mg'
+                          : 'bg-white border-edge text-ink-muted hover:border-sky-mg'}`}
+                    >
+                      {d}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </form>
     </Modal>
   );
 }

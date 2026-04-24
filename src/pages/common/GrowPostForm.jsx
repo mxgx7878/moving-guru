@@ -1,3 +1,8 @@
+// TODO (yup+RHF migration): this wizard-style form handles five
+// different post types with conditional fields, tags arrays, and file
+// uploads — complex enough that migrating it deserves its own PR with
+// manual exercises of each post type. Uses useState + validators.js
+// for now. See features/forms/schemas/* for the pattern used elsewhere.
 import { useEffect, useState, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';

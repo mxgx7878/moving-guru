@@ -1,11 +1,38 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import { toast } from 'sonner';
 import { Check } from 'lucide-react';
-import { Modal, Button, Input, TabBar, Field } from '../../components/ui';
+
+import { Modal, Button, RHFInput, TabBar, Field } from '../../components/ui';
 import { POST_TYPES, POST_AUDIENCE_OPTIONS as AUDIENCE_OPTIONS } from '../../constants/postConstants';
 
-// Audience tabs need a solid purple active state — add activeText for TabBar
 const AUDIENCE_TABS = AUDIENCE_OPTIONS.map((o) => ({ ...o, color: '#7F77DD' }));
+
+const urlField = yup
+  .string()
+  .nullable()
+  .transform((v) => (v === '' ? null : v))
+  .test('is-http-url', 'Must be a valid URL starting with http(s)://',
+    (v) => !v || /^https?:\/\/.+/i.test(v));
+
+const postSchema = yup.object({
+  type:     yup.string().required('Type is required'),
+  title:    yup.string().trim().required('Title is required').max(200),
+  body:     yup.string().trim().required('Body is required').max(4000),
+  audience: yup.string().required('Audience is required'),
+  cover_url:      urlField,
+  link_url:       urlField,
+  link_label:     yup.string().nullable().max(60),
+  event_date:     yup.string().nullable().when('type', {
+    is:   'event',
+    then: (s) => s.required('Event date is required for event posts'),
+    otherwise: (s) => s.nullable(),
+  }),
+  event_location: yup.string().nullable().max(200),
+  is_pinned:      yup.boolean(),
+});
 
 const EMPTY_FORM = {
   type: 'announcement',
@@ -28,81 +55,56 @@ const postToForm = (p) => ({
   cover_url: p.cover_url || '',
   link_url: p.link_url || '',
   link_label: p.link_label || '',
-  event_date: p.event_date
-    ? new Date(p.event_date).toISOString().slice(0, 16)   // datetime-local
-    : '',
+  event_date: p.event_date ? new Date(p.event_date).toISOString().slice(0, 16) : '',
   event_location: p.event_location || '',
   is_pinned: Boolean(p.is_pinned),
 });
 
-// ── Client-side validation — runs BEFORE dispatch, so the API
-//    never sees an obviously-bad payload.
-const validate = (form) => {
-  const errs = {};
-  if (!form.title.trim())  errs.title = 'Title is required';
-  if (!form.body.trim())   errs.body  = 'Body is required';
-  if (!form.type)          errs.type  = 'Type is required';
-  if (!form.audience)      errs.audience = 'Audience is required';
-
-  if (form.type === 'event' && !form.event_date) {
-    errs.event_date = 'Event date is required for event posts';
-  }
-
-  const urlLike = (v) => !v || /^https?:\/\/.+/i.test(v);
-  if (!urlLike(form.cover_url))  errs.cover_url = 'Must be a valid URL starting with http(s)://';
-  if (!urlLike(form.link_url))   errs.link_url  = 'Must be a valid URL starting with http(s)://';
-
-  return errs;
-};
-
 export default function AdminPostForm({
   post,
   saving = false,
-  fieldErrors = null,            // ← from Redux after server validation
+  fieldErrors = null,
   onCancel,
   onSubmit,
 }) {
   const isEditing = Boolean(post);
-  const [form, setForm] = useState(() => post ? postToForm(post) : EMPTY_FORM);
-  const [errors, setErrors] = useState({});
 
-  // Merge server-side field errors in whenever they arrive from Redux.
-  // We don't overwrite — if the user has started fixing things and local
-  // validation cleared a key, respect that.
+  const {
+    control, handleSubmit, watch, setError, formState: { errors },
+  } = useForm({
+    resolver: yupResolver(postSchema),
+    defaultValues: post ? postToForm(post) : EMPTY_FORM,
+  });
+
+  const type = watch('type');
+
+  // Push server-side field errors (from Laravel) into RHF's state so the
+  // same <Input errors={…}/> binding shows them inline.
   useEffect(() => {
-    if (fieldErrors) setErrors((prev) => ({ ...fieldErrors, ...prev }));
-  }, [fieldErrors]);
+    if (!fieldErrors) return;
+    Object.entries(fieldErrors).forEach(([field, message]) => {
+      setError(field, { type: 'server', message });
+    });
+  }, [fieldErrors, setError]);
 
-  const update = (k, v) => {
-    setForm((f) => ({ ...f, [k]: v }));
-    if (errors[k]) setErrors((prev) => { const n = { ...prev }; delete n[k]; return n; });
+  const submit = (values) => {
+    onSubmit({
+      type:           values.type,
+      title:          values.title.trim(),
+      body:           values.body.trim(),
+      audience:       values.audience,
+      cover_url:      (values.cover_url || '').trim() || null,
+      link_url:       (values.link_url  || '').trim() || null,
+      link_label:     (values.link_label || '').trim() || null,
+      event_date:     values.event_date || null,
+      event_location: (values.event_location || '').trim() || null,
+      is_pinned:      Boolean(values.is_pinned),
+    });
   };
 
-  const handleSubmit = (e) => {
-    e?.preventDefault?.();
-
-    // 1. Client-side gate
-    const clientErrs = validate(form);
-    if (Object.keys(clientErrs).length) {
-      setErrors(clientErrs);
-      toast.error(Object.values(clientErrs)[0]);
-      return;
-    }
-
-    // 2. Build payload — normalise empties to null so backend validator
-    //    doesn't treat blank strings as invalid URLs etc.
-    onSubmit({
-      type:           form.type,
-      title:          form.title.trim(),
-      body:           form.body.trim(),
-      audience:       form.audience,
-      cover_url:      form.cover_url.trim()  || null,
-      link_url:       form.link_url.trim()   || null,
-      link_label:     form.link_label.trim() || null,
-      event_date:     form.event_date        || null,
-      event_location: form.event_location.trim() || null,
-      is_pinned:      Boolean(form.is_pinned),
-    });
+  const onInvalid = (errs) => {
+    const first = Object.values(errs)[0]?.message;
+    if (first) toast.error(first);
   };
 
   return (
@@ -116,108 +118,87 @@ export default function AdminPostForm({
       footer={
         <>
           <Button variant="secondary" onClick={onCancel}>Cancel</Button>
-          <Button variant="primary" icon={Check} loading={saving} onClick={handleSubmit}>
+          <Button variant="primary" icon={Check} loading={saving} onClick={handleSubmit(submit, onInvalid)}>
             {isEditing ? 'Save Changes' : 'Create Post'}
           </Button>
         </>
       }
     >
-      <Field label="Type *" error={errors.type}>
-        <TabBar
-          tabs={POST_TYPES}
-          activeId={form.type}
-          onChange={(id) => update('type', id)}
-          layout="stretch"
-          size="md"
-        />
-      </Field>
+      <form onSubmit={handleSubmit(submit, onInvalid)} className="space-y-5">
+        <Field label="Type *" error={errors.type?.message}>
+          <Controller
+            control={control}
+            name="type"
+            render={({ field }) => (
+              <TabBar
+                tabs={POST_TYPES}
+                activeId={field.value}
+                onChange={field.onChange}
+                layout="stretch"
+                size="md"
+              />
+            )}
+          />
+        </Field>
 
-      <Input
-        label="Title *"
-        value={form.title}
-        onChange={(e) => update('title', e.target.value)}
-        placeholder="e.g. New Job Listings filter is now live"
-        accent="#7F77DD"
-        error={errors.title}
-      />
+        <RHFInput control={control} errors={errors} name="title" label="Title *"
+          placeholder="e.g. New Job Listings filter is now live" accent="#7F77DD" />
 
-      <Input
-        textarea
-        label="Body *"
-        value={form.body}
-        onChange={(e) => update('body', e.target.value)}
-        rows={5}
-        placeholder="Write the announcement, news update or event details here..."
-        accent="#7F77DD"
-        error={errors.body}
-      />
+        <RHFInput control={control} errors={errors} name="body" textarea rows={5}
+          label="Body *" placeholder="Write the announcement, news update or event details here..."
+          accent="#7F77DD" />
 
-      <Field label="Audience *" error={errors.audience}>
-        <TabBar
-          tabs={AUDIENCE_TABS}
-          activeId={form.audience}
-          onChange={(id) => update('audience', id)}
-          layout="stretch"
-          size="md"
-        />
-      </Field>
+        <Field label="Audience *" error={errors.audience?.message}>
+          <Controller
+            control={control}
+            name="audience"
+            render={({ field }) => (
+              <TabBar
+                tabs={AUDIENCE_TABS}
+                activeId={field.value}
+                onChange={field.onChange}
+                layout="stretch"
+                size="md"
+              />
+            )}
+          />
+        </Field>
 
-      {/* Event-specific fields */}
-      {form.type === 'event' && (
+        {type === 'event' && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <RHFInput control={control} errors={errors} name="event_date" type="datetime-local"
+              label="Event date *" accent="#7F77DD" />
+            <RHFInput control={control} errors={errors} name="event_location" label="Event location"
+              placeholder="e.g. Online · Zoom or Bangkok, Thailand" accent="#7F77DD" />
+          </div>
+        )}
+
+        <RHFInput control={control} errors={errors} name="cover_url" label="Cover image URL"
+          placeholder="https://..." accent="#7F77DD" />
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Input
-            type="datetime-local"
-            label="Event date *"
-            value={form.event_date}
-            onChange={(e) => update('event_date', e.target.value)}
-            accent="#7F77DD"
-            error={errors.event_date}
-          />
-          <Input
-            label="Event location"
-            value={form.event_location}
-            onChange={(e) => update('event_location', e.target.value)}
-            placeholder="e.g. Online · Zoom or Bangkok, Thailand"
-            accent="#7F77DD"
-            error={errors.event_location}
-          />
+          <RHFInput control={control} errors={errors} name="link_url" label="Call-to-action URL"
+            placeholder="https://..." accent="#7F77DD" />
+          <RHFInput control={control} errors={errors} name="link_label" label="Button label"
+            placeholder="e.g. Learn more" accent="#7F77DD" />
         </div>
-      )}
 
-      <Input
-        label="Cover image URL"
-        value={form.cover_url}
-        onChange={(e) => update('cover_url', e.target.value)}
-        placeholder="https://..."
-        accent="#7F77DD"
-        error={errors.cover_url}
-      />
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Input
-          label="Call-to-action URL"
-          value={form.link_url}
-          onChange={(e) => update('link_url', e.target.value)}
-          placeholder="https://..."
-          accent="#7F77DD"
-          error={errors.link_url}
+        <Controller
+          control={control}
+          name="is_pinned"
+          render={({ field }) => (
+            <label className="flex items-center gap-2 text-sm text-ink cursor-pointer">
+              <input
+                type="checkbox"
+                checked={!!field.value}
+                onChange={(e) => field.onChange(e.target.checked)}
+                className="w-4 h-4 accent-purple-mg"
+              />
+              Pin this post to the top of feeds
+            </label>
+          )}
         />
-        <Input
-          label="Button label"
-          value={form.link_label}
-          onChange={(e) => update('link_label', e.target.value)}
-          placeholder="e.g. Learn more"
-          accent="#7F77DD"
-          error={errors.link_label}
-        />
-      </div>
-
-      <label className="flex items-center gap-2 text-sm text-[#3E3D38] cursor-pointer">
-        <input type="checkbox" checked={form.is_pinned}
-          onChange={(e) => update('is_pinned', e.target.checked)}
-          className="w-4 h-4 accent-[#7F77DD]" />
-        Pin this post to the top of feeds
-      </label>
+      </form>
     </Modal>
   );
 }

@@ -1,11 +1,14 @@
-import { useState, useMemo } from 'react';
-import { Check, User, Building2, Shield } from 'lucide-react';
-import { Modal, Button, Input, SelectField } from '../../components/ui';
+import { useEffect, useMemo } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { Check, User, Building2 } from 'lucide-react';
+
+import { Modal, Button, RHFInput, SelectField } from '../../components/ui';
 
 const ROLE_OPTIONS = [
-  { id: 'instructor', label: 'Instructor', icon: User,       color: '#CE4F56' },
-  { id: 'studio',     label: 'Studio',     icon: Building2,  color: '#2DA4D6' },
-//   { id: 'admin',      label: 'Admin',      icon: Shield,     color: '#7F77DD' },
+  { id: 'instructor', label: 'Instructor', icon: User,      color: '#CE4F56' },
+  { id: 'studio',     label: 'Studio',     icon: Building2, color: '#2DA4D6' },
 ];
 
 const STATUS_OPTIONS = [
@@ -13,6 +16,33 @@ const STATUS_OPTIONS = [
   { id: 'pending',   label: 'Pending approval' },
   { id: 'suspended', label: 'Suspended' },
 ];
+
+// Schema lives here (not in entitySchema.js) because it conditions on
+// `role` + `isEdit`, which are UserForm-specific.
+const buildSchema = (isEdit) => yup.object({
+  role:        yup.string().required().oneOf(['instructor', 'studio', 'admin']),
+  name:        yup.string().when('role', {
+    is:   (r) => r !== 'studio',
+    then: (s) => s.trim().required('Name is required').max(120),
+    otherwise: (s) => s.nullable(),
+  }),
+  studio_name: yup.string().when('role', {
+    is:   'studio',
+    then: (s) => s.trim().required('Studio name is required').max(120),
+    otherwise: (s) => s.nullable(),
+  }),
+  email:       yup.string().trim().required('Email is required').email('Invalid email address'),
+  password:    isEdit
+    ? yup.string().nullable().test('optional-min',
+        'Password must be at least 6 characters',
+        (v) => !v || v.length >= 6)
+    : yup.string().required('Password is required').min(6, 'Password must be at least 6 characters'),
+  phone:       yup.string().nullable(),
+  location:    yup.string().nullable(),
+  bio:         yup.string().max(1000, 'Keep the bio under 1000 characters').nullable(),
+  status:      yup.string().required(),
+  is_verified: yup.boolean(),
+});
 
 const EMPTY_FORM = {
   role:         'instructor',
@@ -47,53 +77,44 @@ const userToForm = (u) => ({
  */
 export default function UserForm({ user, saving = false, onCancel, onSubmit }) {
   const isEditing = Boolean(user);
-  const [form, setForm] = useState(() => (user ? userToForm(user) : EMPTY_FORM));
-  const [errors, setErrors] = useState({});
 
-  const update = (k, v) => {
-    setForm((f) => ({ ...f, [k]: v }));
-    if (errors[k]) setErrors((prev) => ({ ...prev, [k]: '' }));
-  };
+  const schema = useMemo(() => buildSchema(isEditing), [isEditing]);
 
-  const isStudio = form.role === 'studio';
+  const {
+    control, handleSubmit, watch, setValue, formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: user ? userToForm(user) : EMPTY_FORM,
+  });
+
+  const role = watch('role');
+  const isStudio = role === 'studio';
   const accent = useMemo(
-    () => ROLE_OPTIONS.find((r) => r.id === form.role)?.color || '#7F77DD',
-    [form.role],
+    () => ROLE_OPTIONS.find((r) => r.id === role)?.color || '#7F77DD',
+    [role],
   );
 
-  const validate = () => {
-    const errs = {};
-    if (isStudio) {
-      if (!form.studio_name.trim()) errs.studio_name = 'Studio name is required';
-    } else if (!form.name.trim()) {
-      errs.name = 'Name is required';
-    }
-    if (!form.email.trim()) errs.email = 'Email is required';
-    else if (!/^\S+@\S+\.\S+$/.test(form.email)) errs.email = 'Invalid email address';
-    if (!isEditing && (!form.password || form.password.length < 6)) {
-      errs.password = 'Password must be at least 6 characters';
-    }
-    return errs;
-  };
+  // Clear the opposite name field so validation doesn't trip when
+  // switching role while creating.
+  useEffect(() => {
+    if (isStudio) setValue('name', '');
+    else          setValue('studio_name', '');
+  }, [isStudio, setValue]);
 
-  const handleSubmit = () => {
-    const errs = validate();
-    setErrors(errs);
-    if (Object.keys(errs).length) return;
-
+  const submit = (values) => {
     const payload = {
-      role:        form.role,
-      email:       form.email.trim(),
-      phone:       form.phone.trim() || null,
-      location:    form.location.trim() || null,
-      bio:         form.bio.trim() || null,
-      status:      form.status,
-      is_verified: Boolean(form.is_verified),
+      role:        values.role,
+      email:       values.email.trim(),
+      phone:       (values.phone || '').trim() || null,
+      location:    (values.location || '').trim() || null,
+      bio:         (values.bio || '').trim() || null,
+      status:      values.status,
+      is_verified: Boolean(values.is_verified),
     };
-    if (isStudio) payload.studio_name = form.studio_name.trim();
-    else          payload.name        = form.name.trim();
+    if (values.role === 'studio') payload.studio_name = values.studio_name.trim();
+    else                          payload.name        = values.name.trim();
 
-    if (!isEditing && form.password) payload.password = form.password;
+    if (!isEditing && values.password) payload.password = values.password;
     onSubmit(payload);
   };
 
@@ -110,139 +131,158 @@ export default function UserForm({ user, saving = false, onCancel, onSubmit }) {
       footer={
         <>
           <Button variant="secondary" onClick={onCancel}>Cancel</Button>
-          <Button variant="primary" icon={Check} loading={saving} onClick={handleSubmit}>
+          <Button variant="primary" icon={Check} loading={saving} onClick={handleSubmit(submit)}>
             {isEditing ? 'Save Changes' : 'Create User'}
           </Button>
         </>
       }
     >
-      {/* Role picker — create mode only */}
-      {!isEditing && (
-        <div>
-          <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">
-            Account Type *
-          </label>
-          <div className="grid grid-cols-2 gap-2">
-            {ROLE_OPTIONS.map((r) => {
-              const Icon = r.icon;
-              const active = form.role === r.id;
-              return (
-                <button
-                  key={r.id}
-                  type="button"
-                  onClick={() => update('role', r.id)}
-                  className={`flex flex-col items-center gap-1.5 py-3 rounded-xl border-2 text-xs font-bold transition-all
-                    ${active ? 'text-white' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#3E3D38]'}`}
-                  style={active ? { backgroundColor: r.color, borderColor: r.color } : {}}
-                >
-                  <Icon size={16} />
-                  {r.label}
-                </button>
-              );
-            })}
+      <form onSubmit={handleSubmit(submit)} className="space-y-5">
+        {/* Role picker — create mode only */}
+        {!isEditing && (
+          <div>
+            <label className="block text-[10px] font-bold text-ink-soft tracking-widest uppercase mb-2">
+              Account Type *
+            </label>
+            <Controller
+              control={control}
+              name="role"
+              render={({ field }) => (
+                <div className="grid grid-cols-2 gap-2">
+                  {ROLE_OPTIONS.map((r) => {
+                    const Icon = r.icon;
+                    const active = field.value === r.id;
+                    return (
+                      <Button
+                        key={r.id}
+                        type="button"
+                        variant={active ? 'primary' : 'secondary'}
+                        size="md"
+                        fullWidth
+                        icon={Icon}
+                        onClick={() => field.onChange(r.id)}
+                        style={active ? { backgroundColor: r.color, borderColor: r.color } : undefined}
+                      >
+                        {r.label}
+                      </Button>
+                    );
+                  })}
+                </div>
+              )}
+            />
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Identity */}
-      {isStudio ? (
-        <Input
-          label="Studio Name *"
-          value={form.studio_name}
-          onChange={(e) => update('studio_name', e.target.value)}
-          placeholder="e.g. Shakti Yoga Studio"
-          error={errors.studio_name}
-          accent={accent}
-        />
-      ) : (
-        <Input
-          label="Full Name *"
-          value={form.name}
-          onChange={(e) => update('name', e.target.value)}
-          placeholder="e.g. Maya Patel"
-          error={errors.name}
-          accent={accent}
-        />
-      )}
+        {isStudio ? (
+          <RHFInput
+            control={control}
+            errors={errors}
+            name="studio_name"
+            label="Studio Name *"
+            placeholder="e.g. Shakti Yoga Studio"
+            accent={accent}
+          />
+        ) : (
+          <RHFInput
+            control={control}
+            errors={errors}
+            name="name"
+            label="Full Name *"
+            placeholder="e.g. Maya Patel"
+            accent={accent}
+          />
+        )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Input
-          label="Email *"
-          type="email"
-          value={form.email}
-          onChange={(e) => update('email', e.target.value)}
-          placeholder="user@example.com"
-          error={errors.email}
-          accent={accent}
-        />
-        <Input
-          label="Phone"
-          value={form.phone}
-          onChange={(e) => update('phone', e.target.value)}
-          placeholder="+1 555 123 4567"
-          accent={accent}
-        />
-      </div>
-
-      {/* Password only on create */}
-      {!isEditing && (
-        <Input
-          label="Password *"
-          type="password"
-          value={form.password}
-          onChange={(e) => update('password', e.target.value)}
-          placeholder="At least 6 characters"
-          error={errors.password}
-          hint="Share this with the user — they can change it after first login."
-          accent={accent}
-        />
-      )}
-
-      <Input
-        label="Location"
-        value={form.location}
-        onChange={(e) => update('location', e.target.value)}
-        placeholder="e.g. Bali, Indonesia"
-        accent={accent}
-      />
-
-      <Input
-        textarea
-        label={isStudio ? 'Studio description' : 'Bio'}
-        value={form.bio}
-        onChange={(e) => update('bio', e.target.value)}
-        rows={4}
-        maxLength={1000}
-        placeholder={isStudio
-          ? 'Short description shown on the studio profile...'
-          : 'Short bio shown on the instructor profile...'}
-        accent={accent}
-      />
-
-      {/* Status + verification */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <SelectField
-            label="Account Status"
-            value={form.status}
-            onChange={(v) => update('status', v)}
-            options={STATUS_OPTIONS.map((s) => ({ value: s.id, label: s.label }))}
-            placeholder="Select status"
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <RHFInput
+            control={control}
+            errors={errors}
+            name="email"
+            type="email"
+            label="Email *"
+            placeholder="user@example.com"
+            accent={accent}
+          />
+          <RHFInput
+            control={control}
+            errors={errors}
+            name="phone"
+            label="Phone"
+            placeholder="+1 555 123 4567"
+            accent={accent}
           />
         </div>
 
-        {isStudio && (
-          <label className="flex items-center gap-2 text-sm text-[#3E3D38] cursor-pointer self-end pb-3">
-            <input
-              type="checkbox"
-              checked={form.is_verified}
-              onChange={(e) => update('is_verified', e.target.checked)}
-              className="w-4 h-4 accent-[#2DA4D6]"
-            />
-            Mark studio as verified
-          </label>
+        {!isEditing && (
+          <RHFInput
+            control={control}
+            errors={errors}
+            name="password"
+            type="password"
+            label="Password *"
+            placeholder="At least 6 characters"
+            hint="Share this with the user — they can change it after first login."
+            accent={accent}
+          />
         )}
-      </div>
+
+        <RHFInput
+          control={control}
+          errors={errors}
+          name="location"
+          label="Location"
+          placeholder="e.g. Bali, Indonesia"
+          accent={accent}
+        />
+
+        <RHFInput
+          control={control}
+          errors={errors}
+          name="bio"
+          textarea
+          rows={4}
+          maxLength={1000}
+          label={isStudio ? 'Studio description' : 'Bio'}
+          placeholder={isStudio
+            ? 'Short description shown on the studio profile...'
+            : 'Short bio shown on the instructor profile...'}
+          accent={accent}
+        />
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Controller
+            control={control}
+            name="status"
+            render={({ field }) => (
+              <SelectField
+                label="Account Status"
+                value={field.value}
+                onChange={field.onChange}
+                options={STATUS_OPTIONS.map((s) => ({ value: s.id, label: s.label }))}
+                placeholder="Select status"
+              />
+            )}
+          />
+
+          {isStudio && (
+            <Controller
+              control={control}
+              name="is_verified"
+              render={({ field }) => (
+                <label className="flex items-center gap-2 text-sm text-ink cursor-pointer self-end pb-3">
+                  <input
+                    type="checkbox"
+                    checked={!!field.value}
+                    onChange={(e) => field.onChange(e.target.checked)}
+                    className="w-4 h-4 accent-sky-mg"
+                  />
+                  Mark studio as verified
+                </label>
+              )}
+            />
+          )}
+        </div>
+      </form>
     </Modal>
   );
 }
