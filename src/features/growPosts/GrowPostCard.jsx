@@ -56,7 +56,7 @@ export default function GrowPostCard({
                 <StatusPill status={post.status} config={GROW_STATUS_PUBLIC_CONFIG} size="xs" />
               )}
             </div>
-            <h3 className="font-['Unbounded'] text-sm font-black text-[#3E3D38] leading-tight line-clamp-2">
+            <h3 className="font-unbounded text-sm font-black text-[#3E3D38] leading-tight line-clamp-2">
               {post.title}
             </h3>
             {post.subtitle && (

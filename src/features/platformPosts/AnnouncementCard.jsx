@@ -35,7 +35,7 @@ export default function AnnouncementCard({ post, pinned = false }) {
           </span>
         </div>
 
-        <h2 className="font-['Unbounded'] text-base font-black text-[#3E3D38]">{post.title}</h2>
+        <h2 className="font-unbounded text-base font-black text-[#3E3D38]">{post.title}</h2>
 
         {post.type === 'event' && (post.event_date || post.event_location) && (
           <div className="bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl p-3 flex flex-wrap gap-4 text-xs text-[#3E3D38]">

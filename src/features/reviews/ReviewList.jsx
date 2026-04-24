@@ -4,7 +4,7 @@ import { Trash2, Star } from 'lucide-react';
 import { fetchUserReviews, deleteReview } from '../../store/actions/reviewAction';
 import { STATUS } from '../../constants/apiConstants';
 import { ButtonLoader, CardSkeleton } from '../../components/feedback';
-import { StarRating } from '../../components/ui';
+import { StarRating, IconButton } from '../../components/ui';
 import { ConfirmModal } from '../modals';
 
 // Review list for a given userId. Auto-fetches on mount, shows an
@@ -44,7 +44,7 @@ export default function ReviewList({ userId, direction, compact = false, emptyLa
     <div className="space-y-4">
       <div className="bg-[#FBF8E4]/50 rounded-xl p-4 flex items-center gap-4">
         <div className="text-center">
-          <p className="font-['Unbounded'] text-3xl font-black text-[#3E3D38] leading-none">
+          <p className="font-unbounded text-3xl font-black text-[#3E3D38] leading-none">
             {summary.count > 0 ? summary.average.toFixed(1) : '—'}
           </p>
           <StarRating value={summary.average} size={12} className="mt-1" />
@@ -112,14 +112,16 @@ export default function ReviewList({ userId, direction, compact = false, emptyLa
                         </div>
                       </div>
                       {isMine && (
-                        <button
+                        <IconButton
+                          variant="plain"
+                          tone="red"
                           onClick={() => setDeleteTarget(r.id)}
                           disabled={deletingId === r.id}
-                          className="p-1.5 rounded-lg text-[#9A9A94] hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-60"
                           title="Delete your review"
+                          className="!text-ink-soft hover:!text-red-500"
                         >
                           {deletingId === r.id ? <ButtonLoader size={12} color="#CE4F56" /> : <Trash2 size={12} />}
-                        </button>
+                        </IconButton>
                       )}
                     </div>
                     {r.comment && (

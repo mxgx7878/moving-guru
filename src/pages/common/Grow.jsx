@@ -245,8 +245,8 @@ const typeCounts = GROW_FILTER_TABS.reduce((acc, t) => ({
             <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
               <BookOpen size={18} className="text-white" />
             </div>
-            <div className="min-w-0">
-              <p className="font-['Unbounded'] text-sm font-bold text-white">Running a training or retreat?</p>
+            <div>
+              <p className="font-unbounded text-sm font-bold text-white">Running a training or retreat?</p>
               <p className="text-white/60 text-xs mt-0.5">
                 Post it here and reach thousands of wellness professionals globally.
               </p>

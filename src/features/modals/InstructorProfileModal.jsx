@@ -1,6 +1,6 @@
-import { MapPin, Calendar, MessageCircle, Heart, Instagram, ExternalLink } from 'lucide-react';
+import { MapPin, Calendar, MessageCircle, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { Modal, Button, Avatar } from '../../components/ui';
+import { Modal, Button, Avatar, SocialLinksRow } from '../../components/ui';
 
 // Quick-look instructor preview modal. For the full experience studios are
 // routed to the dedicated detail page; this modal gives a brief glance from
@@ -19,7 +19,7 @@ export default function InstructorProfileModal({ instructor, isSaved, onClose, o
   const openTo = instructorDetail?.openTo || instructorDetail?.open_to || [];
   const availability = instructorDetail?.availability || '';
   const languages = instructorDetail?.languages || [];
-  const instagram = instructorDetail?.instagram || instructorDetail?.social_links?.find(s => s.instagram)?.instagram || '';
+  const profilePicture = instructorDetail?.profile_picture_url || instructorDetail?.profile_picture;
 
   const goFullProfile = () => {
     onClose?.();
@@ -54,21 +54,13 @@ export default function InstructorProfileModal({ instructor, isSaved, onClose, o
       }
     >
       <div className="flex items-start gap-4 mb-5">
-        <Avatar name={instructor.name} src={instructorDetail?.profile_picture} size="xl" tone="coral" />
-        <div className="flex-1 min-w-0">
+        <Avatar name={instructor.name} src={profilePicture} size="xl" tone="coral" />
+        <div className="flex-1 min-w-0 space-y-2">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold bg-[#6BE6A4]/20 text-[#3E3D38]">
             <span className="w-1.5 h-1.5 rounded-full bg-[#6BE6A4]" />
             Actively Seeking
           </span>
-          {instagram && (
-            <a
-              href={instagram}
-              target="_blank" rel="noopener noreferrer"
-              className="ml-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#FBF8E4] text-[#6B6B66] hover:bg-[#E89560]/10"
-            >
-              <Instagram size={10} /> Instagram <ExternalLink size={8} />
-            </a>
-          )}
+          <SocialLinksRow social={instructorDetail?.social_links} />
         </div>
       </div>
 

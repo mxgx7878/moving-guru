@@ -1,3 +1,8 @@
+// TODO (yup+RHF migration): this is the final remaining hand-rolled
+// form. It's a multi-step wizard with role-specific branches, file
+// upload, and conditional fields — migrating it needs its own PR
+// with manual UX testing. Until then it uses useState + validators.js.
+// See features/forms/schemas/* for the pattern the rest of the app uses.
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -197,11 +202,11 @@ export default function Register() {
         <div className="w-full max-w-lg">
           <div className="flex items-center justify-center gap-2 mb-10">
             <Globe size={20} className="text-[#CE4F56]" />
-            <span className="font-['Unbounded'] text-base font-bold text-[#3E3D38] tracking-wider">
+            <span className="font-unbounded text-base font-bold text-[#3E3D38] tracking-wider">
               MOVING <em className="not-italic text-[#CE4F56]">GURU</em>
             </span>
           </div>
-          <h1 className="font-['Unbounded'] text-2xl font-black text-[#3E3D38] text-center mb-2">Join Moving Guru</h1>
+          <h1 className="font-unbounded text-2xl font-black text-[#3E3D38] text-center mb-2">Join Moving Guru</h1>
           <p className="text-[#9A9A94] text-sm text-center mb-10">Are you joining as an instructor or a studio?</p>
           <div className="grid grid-cols-2 gap-4">
             <button onClick={() => pickRole('instructor')}
@@ -209,7 +214,7 @@ export default function Register() {
               <div className="w-12 h-12 bg-[#CE4F56]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#CE4F56]/20 transition-colors">
                 <User size={22} className="text-[#CE4F56]" />
               </div>
-              <p className="font-['Unbounded'] text-sm font-black text-[#3E3D38] mb-1">Instructor</p>
+              <p className="font-unbounded text-sm font-black text-[#3E3D38] mb-1">Instructor</p>
               <p className="text-[#9A9A94] text-xs leading-relaxed">I teach wellness disciplines and want to find work globally.</p>
               <div className="flex items-center gap-1 mt-4 text-[#CE4F56] text-xs font-semibold">Join as instructor <ArrowRight size={12} /></div>
             </button>
@@ -218,7 +223,7 @@ export default function Register() {
               <div className="w-12 h-12 bg-[#2DA4D6]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#2DA4D6]/20 transition-colors">
                 <Building2 size={22} className="text-[#2DA4D6]" />
               </div>
-              <p className="font-['Unbounded'] text-sm font-black text-[#3E3D38] mb-1">Studio</p>
+              <p className="font-unbounded text-sm font-black text-[#3E3D38] mb-1">Studio</p>
               <p className="text-[#9A9A94] text-xs leading-relaxed">I run a wellness studio and want to find travelling instructors.</p>
               <div className="flex items-center gap-1 mt-4 text-[#2DA4D6] text-xs font-semibold">Join as studio <ArrowRight size={12} /></div>
             </button>
@@ -237,7 +242,7 @@ export default function Register() {
       <div className="max-w-2xl mx-auto mb-8 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
           <Globe size={18} style={{ color: accentColor }} />
-          <span className="font-['Unbounded'] text-sm font-bold text-[#3E3D38] tracking-wider">
+          <span className="font-unbounded text-sm font-bold text-[#3E3D38] tracking-wider">
             MOVING <em className="not-italic" style={{ color: accentColor }}>GURU</em>
           </span>
         </Link>
@@ -253,7 +258,7 @@ export default function Register() {
           <div className="px-6 py-5" style={{ backgroundColor: accentColor }}>
             <div className="flex items-center gap-2 mb-5">
               {role === 'studio' ? <Building2 size={16} className="text-white" /> : <User size={16} className="text-white" />}
-              <h1 className="font-['Unbounded'] text-base font-black text-white">
+              <h1 className="font-unbounded text-base font-black text-white">
                 Join as {role === 'studio' ? 'a Studio' : 'an Instructor'}
               </h1>
             </div>
@@ -265,7 +270,7 @@ export default function Register() {
                     <div className="flex flex-col items-center gap-1">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all
                         ${done ? 'bg-[#f5fca6] text-[#3E3D38]' : active ? 'bg-white text-[#3E3D38]' : 'bg-white/15 text-white/40'}`}>
-                        {done ? <Check size={14} /> : <span className="font-['Unbounded'] text-[10px] font-bold">{s.id}</span>}
+                        {done ? <Check size={14} /> : <span className="font-unbounded text-[10px] font-bold">{s.id}</span>}
                       </div>
                       <span className={`text-[9px] tracking-wider uppercase hidden sm:block
                         ${active ? 'text-white' : done ? 'text-[#f5fca6]' : 'text-white/30'}`}>{s.label}</span>
@@ -294,7 +299,7 @@ export default function Register() {
             {step === 1 && (
               <div className="space-y-5">
                 <div>
-                  <h2 className="font-['Unbounded'] text-xl font-black text-[#3E3D38] mb-1">Create your account</h2>
+                  <h2 className="font-unbounded text-xl font-black text-[#3E3D38] mb-1">Create your account</h2>
                   <p className="text-[#9A9A94] text-sm">Your Moving Guru login credentials</p>
                 </div>
                 <Input label="Full Name" name="name" form={form} update={update} errors={errors} placeholder="Your full name" />
@@ -308,7 +313,7 @@ export default function Register() {
             {step === 2 && role === 'instructor' && (
               <div className="space-y-5">
                 <div>
-                  <h2 className="font-['Unbounded'] text-xl font-black text-[#3E3D38] mb-1">Personal details</h2>
+                  <h2 className="font-unbounded text-xl font-black text-[#3E3D38] mb-1">Personal details</h2>
                   <p className="text-[#9A9A94] text-sm">Tell the community about yourself</p>
                 </div>
                 {/* Avatar */}
@@ -352,7 +357,7 @@ export default function Register() {
             {step === 2 && role === 'studio' && (
               <div className="space-y-5">
                 <div>
-                  <h2 className="font-['Unbounded'] text-xl font-black text-[#3E3D38] mb-1">Studio details</h2>
+                  <h2 className="font-unbounded text-xl font-black text-[#3E3D38] mb-1">Studio details</h2>
                   <p className="text-[#9A9A94] text-sm">Tell instructors about your studio</p>
                 </div>
                 <div onClick={() => fileRef.current?.click()}
@@ -400,7 +405,7 @@ export default function Register() {
             {step === 3 && role === 'instructor' && (
               <div className="space-y-5">
                 <div>
-                  <h2 className="font-['Unbounded'] text-xl font-black text-[#3E3D38] mb-1">Location & Travel</h2>
+                  <h2 className="font-unbounded text-xl font-black text-[#3E3D38] mb-1">Location & Travel</h2>
                   <p className="text-[#9A9A94] text-sm">Where are you from? Where are you heading?</p>
                 </div>
 
@@ -471,7 +476,7 @@ export default function Register() {
             {((step === 3 && role === 'studio') || (step === 4 && role === 'instructor')) && (
               <div className="space-y-4">
                 <div>
-                  <h2 className="font-['Unbounded'] text-xl font-black text-[#3E3D38] mb-1">
+                  <h2 className="font-unbounded text-xl font-black text-[#3E3D38] mb-1">
                     {role === 'studio' ? 'Disciplines offered' : 'Your disciplines'}
                   </h2>
                   <p className="text-[#9A9A94] text-sm">{role === 'studio' ? 'What does your studio teach?' : 'What do you teach?'}</p>
@@ -512,7 +517,7 @@ export default function Register() {
             {step === 5 && role === 'instructor' && (
               <div className="space-y-5">
                 <div>
-                  <h2 className="font-['Unbounded'] text-xl font-black text-[#3E3D38] mb-1">Bio & Photos</h2>
+                  <h2 className="font-unbounded text-xl font-black text-[#3E3D38] mb-1">Bio & Photos</h2>
                   <p className="text-[#9A9A94] text-sm">Help studios understand what makes you special</p>
                 </div>
                 <div>
@@ -546,7 +551,7 @@ export default function Register() {
             {step === 4 && role === 'studio' && (
               <div className="space-y-5">
                 <div>
-                  <h2 className="font-['Unbounded'] text-xl font-black text-[#3E3D38] mb-1">About your studio</h2>
+                  <h2 className="font-unbounded text-xl font-black text-[#3E3D38] mb-1">About your studio</h2>
                   <p className="text-[#9A9A94] text-sm">Help instructors understand your studio</p>
                 </div>
                 <div>
@@ -586,7 +591,7 @@ export default function Register() {
             {((step === 6 && role === 'instructor') || (step === 5 && role === 'studio')) && (
               <div className="space-y-5">
                 <div>
-                  <h2 className="font-['Unbounded'] text-xl font-black text-[#3E3D38] mb-1">Choose your plan</h2>
+                  <h2 className="font-unbounded text-xl font-black text-[#3E3D38] mb-1">Choose your plan</h2>
                   <p className="text-[#9A9A94] text-sm">Join the Moving Guru global network</p>
                 </div>
                 <div className="space-y-3">
@@ -604,7 +609,7 @@ export default function Register() {
                         </div>
                         <div>
                           <div className="flex items-baseline gap-1">
-                            <span className="font-['Unbounded'] text-base font-black text-[#3E3D38]">${plan.price}</span>
+                            <span className="font-unbounded text-base font-black text-[#3E3D38]">${plan.price}</span>
                             <span className="text-[#9A9A94] text-xs">{plan.per}</span>
                           </div>
                           <p className="text-[#6B6B66] text-xs mt-0.5">{plan.label} — {plan.desc}</p>

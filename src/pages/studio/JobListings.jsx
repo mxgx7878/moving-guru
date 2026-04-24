@@ -134,9 +134,9 @@ export default function JobListings() {
               ? 'Post your first job listing or swap offer to attract instructors'
               : 'Try switching to a different listing type'}
             action={myJobs.length === 0 && (
-              <button onClick={openCreate} className="text-sm text-[#2DA4D6] hover:underline">
+              <Button variant="ghost" size="sm" onClick={openCreate} className="!text-sky-mg hover:!underline">
                 Create a listing
-              </button>
+              </Button>
             )}
           />
         </div>

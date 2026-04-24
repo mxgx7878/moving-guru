@@ -69,7 +69,7 @@ export default function AdminSettings() {
           <p className="text-[#7F77DD] text-xs font-semibold tracking-widest uppercase mb-1">
             Admin &nbsp;/&nbsp; Settings
           </p>
-          <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">Account &amp; Security</h1>
+          <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Account &amp; Security</h1>
           <p className="text-[#6B6B66] text-xs mt-0.5">
             Manage your personal admin credentials.
           </p>
@@ -80,7 +80,7 @@ export default function AdminSettings() {
         <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
           <div className="px-5 py-3.5 border-b border-[#E5E0D8] flex items-center gap-2.5">
             <Mail size={14} className="text-[#2DA4D6]" />
-            <h3 className="font-['Unbounded'] text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Email</h3>
+            <h3 className="font-unbounded text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Email</h3>
           </div>
           <div className="p-5 space-y-3">
             <Input label="Admin email" value={user?.email || ''} disabled />
@@ -91,7 +91,7 @@ export default function AdminSettings() {
         <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
           <div className="px-5 py-3.5 border-b border-[#E5E0D8] flex items-center gap-2.5">
             <Settings size={14} className="text-[#E89560]" />
-            <h3 className="font-['Unbounded'] text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Password Reset</h3>
+            <h3 className="font-unbounded text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Password Reset</h3>
           </div>
           <div className="p-5 space-y-3">
             <p className="text-sm text-[#6B6B66]">Send a reset link to your email if you've forgotten your password.</p>
@@ -113,7 +113,7 @@ export default function AdminSettings() {
       <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
         <div className="px-5 py-3.5 border-b border-[#E5E0D8] flex items-center gap-2.5">
           <Lock size={14} className="text-[#7F77DD]" />
-          <h3 className="font-['Unbounded'] text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Change Password</h3>
+          <h3 className="font-unbounded text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Change Password</h3>
         </div>
         <div className="p-5 space-y-4">
           {pwError && (

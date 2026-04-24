@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { X } from 'lucide-react';
+import IconButton from './IconButton';
 
 // Detail drawer used by every admin "preview X" modal (UserDetailDrawer,
 // JobDetailDrawer, PostDetailDrawer). Behaves like Modal but exposes
@@ -58,14 +59,16 @@ export default function Drawer({
         {header && (
           <div className={`px-6 py-5 rounded-t-2xl flex items-start justify-between gap-3 ${headerClassName}`}>
             <div className="min-w-0 flex-1">{header}</div>
-            <button
-              type="button"
+            <IconButton
+              variant="plain"
+              tone="default"
               onClick={onClose}
-              className="p-1.5 hover:bg-white/50 rounded-lg text-[#6B6B66] flex-shrink-0"
               aria-label="Close"
+              title="Close"
+              className="flex-shrink-0 hover:!bg-white/50"
             >
               <X size={18} />
-            </button>
+            </IconButton>
           </div>
         )}
 

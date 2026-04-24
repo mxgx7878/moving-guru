@@ -1,12 +1,14 @@
-import { useState, useRef } from 'react';
+import { useCallback, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { toast } from 'sonner';
 import { updateProfile } from '../../store/actions/authAction';
 import { DISCIPLINE_CATEGORIES } from '../../data/disciplines';
 import { COUNTRIES, COUNTRIES_AND_REGIONS } from '../../data/countries';
-import { Section, Field, SelectField, Button } from '../../components/ui';
+import { Section, Field, SelectField, Button, Input, IconButton, ToggleChip, ChipGroup } from '../../components/ui';
 import { ReviewList } from '../../features/reviews';
 import { ScallopedFrame } from '../../features/profile';
+import { instructorProfileSchema, flattenYupErrors } from '../../features/forms';
 import { formatDateRange } from '../../utils/formatters';
 import {
   Save, Upload, X, Check, User, MapPin, Globe, Calendar,
@@ -64,6 +66,7 @@ export default function ProfilePage() {
 
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState({});
   const [discSearch, setDiscSearch] = useState('');
   const [showPreview, setShowPreview] = useState(false);
   const [isFavourited, setIsFavourited] = useState(false);
@@ -91,7 +94,22 @@ export default function ProfilePage() {
   };
 
   // ─── Save ──────────────────────────────────────────────────────
-  const handleSave = async () => {
+  // Wrapped in useCallback + `form` dependency so the closure doesn't
+  // capture stale state on re-renders (flagged by react-hooks/exhaustive-deps).
+  const handleSave = useCallback(async () => {
+    // 1. Client-side validation via yup — surface field-level errors so
+    //    the user sees them inline instead of a generic 422 toast.
+    try {
+      await instructorProfileSchema.validate(form, { abortEarly: false });
+      setErrors({});
+    } catch (err) {
+      const fieldErrors = flattenYupErrors(err);
+      setErrors(fieldErrors);
+      const first = Object.values(fieldErrors)[0];
+      if (first) toast.error(first);
+      return;
+    }
+
     setSaving(true);
 
     const {
@@ -142,7 +160,7 @@ export default function ProfilePage() {
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     }
-  };
+  }, [form, dispatch]);
 
   const handleAvatar = (e) => {
     const file = e.target.files[0]; if (!file) return;
@@ -167,15 +185,12 @@ export default function ProfilePage() {
   const initials = user?.name?.split(' ').map(n => n[0]).join('') || 'MG';
   const availabilityDisplay = formatDateRange(form.availableFrom, form.availableTo);
 
-  // ─── Input style ──────────────────────────────────────────────
-  const inp = "w-full border border-[#E5E0D8] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#CE4F56] bg-white text-[#3E3D38] placeholder-[#C4BCB4]";
-
   return (
     <div className="max-w-6xl mx-auto">
 
       {/* ── Header ── */}
       <div className="mb-6">
-        <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">Edit Profile</h1>
+        <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Edit Profile</h1>
         <p className="text-[#9A9A94] text-sm mt-1">Manage how studios and instructors find you</p>
       </div>
 
@@ -192,7 +207,7 @@ export default function ProfilePage() {
             <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
               <div className="px-6 py-4 border-b border-[#E5E0D8] flex items-center gap-2">
                 <Eye size={15} className="text-[#9A9A94]" />
-                <h3 className="font-['Unbounded'] text-xs font-bold text-[#3E3D38] tracking-wider uppercase">Profile Preview</h3>
+                <h3 className="font-unbounded text-xs font-bold text-[#3E3D38] tracking-wider uppercase">Profile Preview</h3>
                 <span className="text-[10px] text-[#9A9A94] ml-auto">How others see your profile</span>
               </div>
               <div className="p-6">
@@ -213,7 +228,7 @@ export default function ProfilePage() {
                           <div className="w-full h-full bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center">
                             {form.avatarPreview
                               ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
-                              : <span className="font-['Unbounded'] text-xl font-black text-white">{initials}</span>}
+                              : <span className="font-unbounded text-xl font-black text-white">{initials}</span>}
                           </div>
                         </ScallopedFrame>
                       </button>
@@ -221,7 +236,7 @@ export default function ProfilePage() {
                   </div>
 
                   <div className="pt-12 pb-5 px-5 text-center">
-                    <h2 className="font-['Unbounded'] text-base font-black text-[#3E3D38]">{form.name || 'Your Name'}</h2>
+                    <h2 className="font-unbounded text-base font-black text-[#3E3D38]">{form.name || 'Your Name'}</h2>
                     <div className="flex items-center justify-center gap-2 mt-1 text-[#9A9A94] text-xs">
                       {form.age && <span>{form.age}</span>}
                       {form.pronouns && <span>· {form.pronouns}</span>}
@@ -296,7 +311,7 @@ export default function ProfilePage() {
                     <div className="w-full h-full bg-gradient-to-br from-[#d4f53c] to-[#e8834a] flex items-center justify-center relative">
                       {form.avatarPreview
                         ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
-                        : <span className="font-['Unbounded'] text-2xl font-black text-[#3E3D38]">{initials}</span>}
+                        : <span className="font-unbounded text-2xl font-black text-[#3E3D38]">{initials}</span>}
                       <div className="absolute inset-0 bg-[#3E3D38]/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <Upload size={20} className="text-white" />
                       </div>
@@ -309,14 +324,23 @@ export default function ProfilePage() {
 
               <div className="flex-1 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <Field label="Full Name">
-                    <input value={form.name || ''} onChange={e => set('name', e.target.value)}
-                      placeholder="Your full name" className={inp} />
-                  </Field>
-                  <Field label="Age">
-                    <input type="number" min="18" max="80" value={form.age || ''} onChange={e => set('age', e.target.value)}
-                      placeholder="e.g. 30" className={inp} />
-                  </Field>
+                  <Input
+                    label="Full Name"
+                    value={form.name || ''}
+                    onChange={(e) => set('name', e.target.value)}
+                    placeholder="Your full name"
+                    error={errors.name}
+                  />
+                  <Input
+                    label="Age"
+                    type="number"
+                    min="18"
+                    max="80"
+                    value={form.age || ''}
+                    onChange={(e) => set('age', e.target.value)}
+                    placeholder="e.g. 30"
+                    error={errors.age}
+                  />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <Field label="Pronouns">
@@ -327,10 +351,12 @@ export default function ProfilePage() {
                       placeholder="Select pronouns..."
                     />
                   </Field>
-                  <Field label="Current Studio / Employer">
-                    <input value={form.studio || ''} onChange={e => set('studio', e.target.value)}
-                      placeholder="e.g. STRIVE, Marrickville" className={inp} />
-                  </Field>
+                  <Input
+                    label="Current Studio / Employer"
+                    value={form.studio || ''}
+                    onChange={(e) => set('studio', e.target.value)}
+                    placeholder="e.g. STRIVE, Marrickville"
+                  />
                 </div>
               </div>
             </div>
@@ -362,9 +388,12 @@ export default function ProfilePage() {
                     <div key={p.key} className="flex items-center gap-2.5">
                       <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: p.color + '15', color: p.color }}>{p.icon}</div>
-                      <input value={form[p.key] || ''} onChange={e => set(p.key, e.target.value)}
+                      <input
+                        value={form[p.key] || ''}
+                        onChange={(e) => set(p.key, e.target.value)}
                         placeholder={`${p.label} URL`}
-                        className="flex-1 border border-[#E5E0D8] rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#CE4F56] bg-white text-[#3E3D38] placeholder-[#C4BCB4]" />
+                        className="flex-1 border border-edge rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-coral bg-white text-ink placeholder-ink-faint"
+                      />
                     </div>
                   ))}
                 </div>
@@ -376,20 +405,28 @@ export default function ProfilePage() {
                SECTION 2 — BIO
              ══════════════════════════════════════ */}
           <Section title="Bio" icon={Edit3}>
-            <Field label={`About You (${(form.bio || '').length}/500)`}>
-              <textarea value={form.bio || ''} onChange={e => set('bio', e.target.value)}
-                rows={4} maxLength={500}
-                placeholder="Tell studios and instructors about yourself, your experience, and your teaching style..."
-                className={`${inp} resize-none`} />
-            </Field>
-            <div className="mt-4 pt-4 border-t border-[#E5E0D8]">
-              <Field label={`What I'm Looking For (${(form.lookingFor || '').length}/2500)`}
-                hint="Describe your ideal opportunity — paid work, swap, or exchange">
-                <textarea value={form.lookingFor || ''} onChange={e => set('lookingFor', e.target.value)}
-                  rows={5} maxLength={2500}
-                  placeholder="e.g. Looking for a 3-month placement in Europe over summer. Open to studio swaps, direct hire, or energy exchange. Flexible on dates..."
-                  className={`${inp} resize-none`} />
-              </Field>
+            <Input
+              textarea
+              rows={4}
+              maxLength={500}
+              label="About You"
+              value={form.bio || ''}
+              onChange={(e) => set('bio', e.target.value)}
+              placeholder="Tell studios and instructors about yourself, your experience, and your teaching style..."
+              error={errors.bio}
+            />
+            <div className="mt-4 pt-4 border-t border-edge">
+              <Input
+                textarea
+                rows={5}
+                maxLength={2500}
+                label="What I'm Looking For"
+                hint="Describe your ideal opportunity — paid work, swap, or exchange"
+                value={form.lookingFor || ''}
+                onChange={(e) => set('lookingFor', e.target.value)}
+                placeholder="e.g. Looking for a 3-month placement in Europe over summer. Open to studio swaps, direct hire, or energy exchange. Flexible on dates..."
+                error={errors.lookingFor}
+              />
             </div>
           </Section>
 
@@ -400,10 +437,14 @@ export default function ProfilePage() {
             <div className="space-y-4">
 
               {/* Current location */}
-              <Field label="Current Location" hint="City and country where you currently live">
-                <input value={form.location || ''} onChange={e => set('location', e.target.value)}
-                  placeholder="e.g. Sydney, Australia" className={inp} />
-              </Field>
+              <Input
+                label="Current Location"
+                hint="City and country where you currently live"
+                value={form.location || ''}
+                onChange={(e) => set('location', e.target.value)}
+                placeholder="e.g. Sydney, Australia"
+                error={errors.location}
+              />
 
               {/* Country From → Traveling To */}
               <div className="grid grid-cols-2 gap-4">
@@ -423,36 +464,42 @@ export default function ProfilePage() {
                       options={COUNTRIES_AND_REGIONS}
                       placeholder="Select destination..."
                     />
-                    <input value={form.travelingTo || ''} onChange={e => set('travelingTo', e.target.value)}
+                    <Input
+                      value={form.travelingTo || ''}
+                      onChange={(e) => set('travelingTo', e.target.value)}
                       placeholder="Or type multiple: Italy, Bali, Thailand"
-                      className={`${inp} text-xs`} />
+                    />
                   </div>
                 </Field>
               </div>
 
               {/* Availability — date range picker */}
               <div>
-                <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">
+                <label className="block text-[10px] font-bold text-ink-soft tracking-widest uppercase mb-2">
                   Availability Dates
                 </label>
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-xs text-[#9A9A94] mb-1.5">Available From</p>
-                    <input type="date" value={form.availableFrom || ''} onChange={e => set('availableFrom', e.target.value)}
-                      min={new Date().toISOString().split('T')[0]}
-                      className={inp} />
-                  </div>
-                  <div>
-                    <p className="text-xs text-[#9A9A94] mb-1.5">Available To</p>
-                    <input type="date" value={form.availableTo || ''} onChange={e => set('availableTo', e.target.value)}
-                      min={form.availableFrom || new Date().toISOString().split('T')[0]}
-                      className={inp} />
-                  </div>
+                  <Input
+                    type="date"
+                    label="Available From"
+                    value={form.availableFrom || ''}
+                    onChange={(e) => set('availableFrom', e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                    error={errors.availableFrom}
+                  />
+                  <Input
+                    type="date"
+                    label="Available To"
+                    value={form.availableTo || ''}
+                    onChange={(e) => set('availableTo', e.target.value)}
+                    min={form.availableFrom || new Date().toISOString().split('T')[0]}
+                    error={errors.availableTo}
+                  />
                 </div>
                 {availabilityDisplay && (
-                  <div className="mt-2 flex items-center gap-2 px-3 py-1.5 bg-[#2DA4D6]/10 rounded-lg w-fit">
-                    <Calendar size={12} className="text-[#2DA4D6]" />
-                    <span className="text-[#2DA4D6] text-xs font-semibold">{availabilityDisplay}</span>
+                  <div className="mt-2 flex items-center gap-2 px-3 py-1.5 bg-sky-soft rounded-lg w-fit">
+                    <Calendar size={12} className="text-sky-mg" />
+                    <span className="text-sky-mg text-xs font-semibold">{availabilityDisplay}</span>
                   </div>
                 )}
               </div>
@@ -469,19 +516,16 @@ export default function ProfilePage() {
 
               {/* Open To */}
               <Field label="Open To" hint="What type of arrangement are you looking for?">
-                <div className="flex flex-wrap gap-2 mt-1">
-                  {OPEN_TO.map(opt => (
-                    <button key={opt} type="button" onClick={() => toggle('openTo', opt)}
-                      className={`px-4 py-2 rounded-full text-xs font-semibold border transition-all
-                        ${(form.openTo || []).includes(opt)
-                          ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
-                          : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}>
-                      {opt}
-                    </button>
-                  ))}
-                </div>
+                <ChipGroup
+                  options={OPEN_TO}
+                  value={form.openTo || []}
+                  onChange={(next) => set('openTo', next)}
+                  multiple
+                  tone="blue"
+                  className="mt-1"
+                />
                 {(form.openTo || []).length === 0 && (
-                  <p className="text-[10px] text-[#C4BCB4] mt-1">Select at least one option</p>
+                  <p className="text-[10px] text-ink-faint mt-1">Select at least one option</p>
                 )}
               </Field>
             </div>
@@ -491,18 +535,15 @@ export default function ProfilePage() {
                SECTION 4 — LANGUAGES
              ══════════════════════════════════════ */}
           <Section title="Languages" icon={Globe}>
-            <p className="text-xs text-[#9A9A94] mb-3">Select all languages you speak or are learning</p>
-            <div className="flex flex-wrap gap-2">
-              {LANGUAGES.map(lang => (
-                <button key={lang} type="button" onClick={() => toggle('languages', lang)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
-                    ${(form.languages || []).includes(lang)
-                      ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
-                      : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}>
-                  {lang}
-                </button>
-              ))}
-            </div>
+            <p className="text-xs text-ink-soft mb-3">Select all languages you speak or are learning</p>
+            <ChipGroup
+              options={LANGUAGES}
+              value={form.languages || []}
+              onChange={(next) => set('languages', next)}
+              multiple
+              tone="blue"
+              size="md"
+            />
           </Section>
 
           {/* ══════════════════════════════════════
@@ -511,57 +552,69 @@ export default function ProfilePage() {
           <Section title="Disciplines" icon={Star}>
             {/* Selected tags */}
             {(form.disciplines || []).length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-4 p-3 bg-[#2DA4D6]/10 rounded-xl border border-[#2DA4D6]/20">
-                <p className="w-full text-[10px] text-[#2DA4D6] font-bold uppercase tracking-wider mb-1">
+              <div className="flex flex-wrap gap-2 mb-4 p-3 bg-sky-soft rounded-xl border border-sky-mg/20">
+                <p className="w-full text-[10px] text-sky-mg font-bold uppercase tracking-wider mb-1">
                   Selected ({form.disciplines.length})
                 </p>
-                {(form.disciplines || []).map(d => (
-                  <span key={d} className="flex items-center gap-1 bg-[#2DA4D6] text-white text-xs font-medium px-2.5 py-1 rounded-full">
+                {(form.disciplines || []).map((d) => (
+                  <ToggleChip
+                    key={d}
+                    active
+                    tone="blue"
+                    size="md"
+                    onClick={() => toggle('disciplines', d)}
+                    onRemove={() => toggle('disciplines', d)}
+                  >
                     {d}
-                    <button type="button" onClick={() => toggle('disciplines', d)}>
-                      <X size={9} />
-                    </button>
-                  </span>
+                  </ToggleChip>
                 ))}
               </div>
             )}
 
             {/* Search */}
-            <div className="flex items-center gap-2 bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-3 py-2 mb-4">
-              <Star size={14} className="text-[#9A9A94]" />
-              <input type="text" value={discSearch} onChange={e => setDiscSearch(e.target.value)}
+            <div className="flex items-center gap-2 bg-warm-bg border border-edge rounded-xl px-3 py-2 mb-4">
+              <Star size={14} className="text-ink-soft" />
+              <input type="text" value={discSearch} onChange={(e) => setDiscSearch(e.target.value)}
                 placeholder="Search disciplines..."
-                className="flex-1 bg-transparent border-none outline-none text-sm text-[#3E3D38] placeholder-[#C4BCB4]" />
-              {discSearch && <button onClick={() => setDiscSearch('')}><X size={12} className="text-[#9A9A94]" /></button>}
+                className="flex-1 bg-transparent border-none outline-none text-sm text-ink placeholder-ink-faint" />
+              {discSearch && (
+                <IconButton variant="plain" size="xs" onClick={() => setDiscSearch('')} aria-label="Clear">
+                  <X size={12} className="text-ink-soft" />
+                </IconButton>
+              )}
             </div>
 
             {/* Category list */}
             <div className="space-y-5 max-h-80 overflow-y-auto pr-1">
-              {filteredCats.map(cat => {
-                const allSel = cat.items.every(d => (form.disciplines || []).includes(d));
+              {filteredCats.map((cat) => {
+                const allSel = cat.items.every((d) => (form.disciplines || []).includes(d));
                 return (
                   <div key={cat.id}>
                     <div className="flex items-center justify-between mb-2">
-                      <p className="text-[9px] font-bold text-[#9A9A94] tracking-widest uppercase">
+                      <p className="text-[9px] font-bold text-ink-soft tracking-widest uppercase">
                         {cat.emoji} {cat.label}
                       </p>
-                      <button type="button" onClick={() => toggleSelectAll(cat.items)}
-                        className={`text-[10px] font-semibold px-2.5 py-1 rounded-lg transition-all
-                          ${allSel ? 'bg-[#CCFF00] text-[#3E3D38]' : 'bg-[#FBF8E4] text-[#6B6B66] hover:bg-[#E6FF80]'}`}>
+                      <Button
+                        type="button"
+                        variant={allSel ? 'accent' : 'secondary'}
+                        size="xs"
+                        onClick={() => toggleSelectAll(cat.items)}
+                        className={allSel
+                          ? '!bg-chartreuse !text-ink !border-chartreuse hover:!bg-chartreuse-dark'
+                          : '!bg-cream'}
+                      >
                         {allSel ? 'Deselect All' : 'Select All'}
-                      </button>
+                      </Button>
                     </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {cat.items.map(d => (
-                        <button key={d} type="button" onClick={() => toggle('disciplines', d)}
-                          className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
-                            ${(form.disciplines || []).includes(d)
-                              ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
-                              : 'border-[#E5E0D8] text-[#3E3D38] hover:border-[#2DA4D6] hover:bg-[#FBF8E4]'}`}>
-                          {d}
-                        </button>
-                      ))}
-                    </div>
+                    <ChipGroup
+                      options={cat.items}
+                      value={form.disciplines || []}
+                      onChange={(next) => set('disciplines', next)}
+                      multiple
+                      tone="blue"
+                      size="md"
+                      className="gap-1.5"
+                    />
                   </div>
                 );
               })}
@@ -630,14 +683,14 @@ export default function ProfilePage() {
                     <div className="w-full h-full bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center relative">
                       {form.avatarPreview
                         ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
-                        : <span className="font-['Unbounded'] text-3xl font-black text-white">{initials}</span>}
+                        : <span className="font-unbounded text-3xl font-black text-white">{initials}</span>}
                       <div className="absolute inset-0 bg-[#3E3D38]/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <Upload size={22} className="text-white" />
                       </div>
                     </div>
                   </ScallopedFrame>
                 </div>
-                <p className="text-center text-sm font-semibold text-[#3E3D38] font-['Unbounded'] mt-3 truncate max-w-full">
+                <p className="text-center text-sm font-semibold text-[#3E3D38] font-unbounded mt-3 truncate max-w-full">
                   {form.name || 'Your Name'}
                 </p>
                 {form.studio && (
@@ -717,6 +770,16 @@ export default function ProfilePage() {
 
             {/* Action buttons — sticky Save */}
             <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5 space-y-2">
+              {Object.keys(errors).length > 0 && (
+                <div className="mb-2 bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700 space-y-0.5" role="alert">
+                  <p className="font-bold">Please fix the following before saving:</p>
+                  <ul className="list-disc list-inside">
+                    {Object.entries(errors).slice(0, 4).map(([field, msg]) => (
+                      <li key={field}><span className="font-semibold capitalize">{field}:</span> {msg}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <Button
                 variant={saved ? 'success' : 'primary'}
                 size="lg"
@@ -756,10 +819,10 @@ export default function ProfilePage() {
               <div className="w-full h-full bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center">
                 {form.avatarPreview
                   ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
-                  : <span className="font-['Unbounded'] text-5xl font-black text-white">{initials}</span>}
+                  : <span className="font-unbounded text-5xl font-black text-white">{initials}</span>}
               </div>
             </ScallopedFrame>
-            <p className="text-center mt-5 font-['Unbounded'] text-lg font-black text-white">{form.name}</p>
+            <p className="text-center mt-5 font-unbounded text-lg font-black text-white">{form.name}</p>
             {form.studio && <p className="text-center text-white/60 text-sm mt-1">{form.studio}</p>}
           </div>
         </div>

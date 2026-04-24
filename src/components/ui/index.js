@@ -1,6 +1,7 @@
 export { default as Button } from './Button';
 export { default as Modal } from './Modal';
 export { default as Input } from './Input';
+export { default as RHFInput } from './RHFInput';
 export { default as Field } from './Field';
 export { default as Section } from './Section';
 export { default as StatCard } from './StatCard';
@@ -12,7 +13,10 @@ export { default as StarRating } from './StarRating';
 export { default as StatusPill } from './StatusPill';
 export { default as IconButton } from './IconButton';
 export { default as Avatar } from './Avatar';
+export { default as SocialLinksRow } from './SocialLinksRow';
 export { default as Chip } from './Chip';
+export { default as ToggleChip } from './ToggleChip';
+export { default as ChipGroup } from './ChipGroup';
 export { default as SearchBar } from './SearchBar';
 export { default as FilterSelect } from './FilterSelect';
 export { default as TabBar } from './TabBar';

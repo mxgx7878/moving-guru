@@ -7,18 +7,13 @@ import {
   Drawer, Avatar, Chip, StatusPill, StatTile, LabeledBlock, InfoRow, Button,
 } from '../../components/ui';
 import { USER_STATUS_CONFIG } from '../../constants/userConstants';
+import { ROLE_AVATAR_TONE } from '../../constants/theme';
 import { resolveUserStatus } from './userStatus';
 
 const HEADER_BG = {
-  studio:     'bg-[#2DA4D6]/10',
-  admin:      'bg-[#7F77DD]/10',
-  instructor: 'bg-[#CE4F56]/10',
-};
-
-const AVATAR_TONE = {
-  studio:     'blue',
-  admin:      'purple',
-  instructor: 'coral',
+  studio:     'bg-sky-soft',
+  admin:      'bg-purple-mg/10',
+  instructor: 'bg-coral-soft',
 };
 
 // Full detail/moderation drawer for a user. Takes callbacks for each
@@ -55,9 +50,15 @@ export default function UserDetailDrawer({
 
   const header = (
     <div className="flex items-center gap-4">
-      <Avatar name={display} src={user.profile_picture} size="lg" shape="square" tone={AVATAR_TONE[user.role] || 'coral'} />
+      <Avatar
+        name={display}
+        src={user?.detail?.profile_picture_url || user?.detail?.profile_picture || user?.profile_picture_url || user?.profile_picture}
+        size="lg"
+        shape="square"
+        tone={ROLE_AVATAR_TONE[user.role] || 'coral'}
+      />
       <div>
-        <h2 className="font-['Unbounded'] text-base font-black text-[#3E3D38] flex items-center gap-2">
+        <h2 className="font-unbounded text-base font-black text-[#3E3D38] flex items-center gap-2">
           {display}
           {user.is_verified && (
             <Chip tone="emerald" size="xs" icon={ShieldCheck}>VERIFIED</Chip>

@@ -18,7 +18,7 @@ export default function Section({
         <div className={`px-6 py-4 border-b border-[#E5E0D8] flex items-center gap-2 ${headerClassName}`}>
           {Icon && <Icon size={15} style={{ color: iconColor }} />}
           {title && (
-            <h3 className="font-['Unbounded'] text-xs font-bold text-[#3E3D38] tracking-wider uppercase">
+            <h3 className="font-unbounded text-xs font-bold text-[#3E3D38] tracking-wider uppercase">
               {title}
             </h3>
           )}

@@ -1,7 +1,7 @@
 import {
   MapPin, Calendar, Clock, Eye, EyeOff, Edit3, Trash2, Users, UserCheck, Lock,
 } from 'lucide-react';
-import { Button, Chip } from '../../components/ui';
+import { Button, Chip, IconButton } from '../../components/ui';
 import { ButtonLoader } from '../../components/feedback';
 import { JOB_TYPES } from '../../constants/jobConstants';
 
@@ -60,7 +60,7 @@ export default function StudioJobCard({
               </span>
             </div>
 
-            <h3 className="font-['Unbounded'] text-base font-black text-[#3E3D38] mb-1 truncate">
+            <h3 className="font-unbounded text-base font-black text-[#3E3D38] mb-1 truncate">
               {job.title}
             </h3>
             <p className="text-[#6B6B66] text-sm line-clamp-2">{job.description}</p>
@@ -68,29 +68,29 @@ export default function StudioJobCard({
 
           <div className="flex items-center gap-1 flex-shrink-0">
             {!isFull && (
-              <button
+              <IconButton
+                variant="plain"
+                size="md"
+                tone="default"
                 onClick={onToggleActive}
-                className="p-2 hover:bg-[#FBF8E4] rounded-lg transition-colors text-[#6B6B66]"
                 title={isActive ? 'Set inactive' : 'Set active'}
               >
                 {isActive ? <Eye size={14} /> : <EyeOff size={14} />}
-              </button>
+              </IconButton>
             )}
-            <button
-              onClick={onEdit}
-              className="p-2 hover:bg-[#FBF8E4] rounded-lg transition-colors text-[#6B6B66]"
-              title="Edit"
-            >
+            <IconButton variant="plain" size="md" tone="default" onClick={onEdit} title="Edit">
               <Edit3 size={14} />
-            </button>
-            <button
+            </IconButton>
+            <IconButton
+              variant="plain"
+              size="md"
+              tone="red"
               onClick={onDelete}
               disabled={deleting}
-              className="p-2 hover:bg-red-50 rounded-lg transition-colors text-[#CE4F56]"
               title="Delete"
             >
               {deleting ? <ButtonLoader size={14} color="#CE4F56" /> : <Trash2 size={14} />}
-            </button>
+            </IconButton>
           </div>
         </div>
 

@@ -4,14 +4,9 @@ import {
 } from 'lucide-react';
 import { Avatar, StatusPill, IconButton } from '../../components/ui';
 import { USER_STATUS_CONFIG } from '../../constants/userConstants';
+import { ROLE_AVATAR_TONE } from '../../constants/theme';
 import { resolveUserStatus } from './userStatus';
 import RolePill from './RolePill';
-
-const AVATAR_TONE = {
-  studio:     'blue',
-  admin:      'purple',
-  instructor: 'coral',
-};
 
 // Row rendered in the admin users table. All action callbacks are
 // optional — the parent wires each up to its dispatch/handler. The row
@@ -39,7 +34,11 @@ export default function UserRow({
     <tr className="border-t border-[#F0EBE3] hover:bg-[#FDFCF8]">
       <td className="py-3 px-4">
         <div className="flex items-center gap-3">
-          <Avatar name={display} src={user?.profile_picture} tone={AVATAR_TONE[user.role] || 'coral'} />
+          <Avatar
+            name={display}
+            src={user?.detail?.profile_picture_url || user?.detail?.profile_picture || user?.profile_picture_url || user?.profile_picture}
+            tone={ROLE_AVATAR_TONE[user.role] || 'coral'}
+          />
           <div className="min-w-0">
             <p className="font-semibold text-[#3E3D38] text-xs flex items-center gap-1.5">
               {display}

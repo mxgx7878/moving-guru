@@ -3,7 +3,7 @@ import {
   MapPin, Calendar, Clock, MessageCircle, Bookmark, BookmarkCheck,
   Users, GraduationCap, Check, XCircle, Clock3, Lock, ExternalLink,
 } from 'lucide-react';
-import { Button, Chip } from '../../components/ui';
+import { Button, Chip, IconButton } from '../../components/ui';
 import {
   ROLE_TYPE_LABELS, QUALIFICATION_LABELS, TYPE_STYLES,
 } from '../../constants/jobConstants';
@@ -52,7 +52,7 @@ export default function InstructorJobCard({
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <h3 className="font-['Unbounded'] text-sm font-black text-[#3E3D38] leading-snug">
+                <h3 className="font-unbounded text-sm font-black text-[#3E3D38] leading-snug">
                   {job.title}
                 </h3>
                 {job.studio?.id ? (
@@ -85,13 +85,15 @@ export default function InstructorJobCard({
                     {QUALIFICATION_LABELS[job.qualification_level] || job.qualification_level}
                   </span>
                 )}
-                <button
+                <IconButton
+                  variant="plain"
+                  tone="coral"
                   onClick={onToggleSave}
-                  className={`p-1.5 rounded-lg transition-all ${isSaved ? 'text-[#CE4F56]' : 'text-[#C4BCB4] hover:text-[#CE4F56]'}`}
                   title={isSaved ? 'Remove from saved' : 'Save listing'}
+                  className={isSaved ? '' : '!text-ink-faint hover:!text-coral'}
                 >
                   {isSaved ? <BookmarkCheck size={16} /> : <Bookmark size={16} />}
-                </button>
+                </IconButton>
               </div>
             </div>
           </div>

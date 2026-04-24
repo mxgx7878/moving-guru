@@ -1,12 +1,15 @@
-import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { toast } from 'sonner';
 import { Send } from 'lucide-react';
-import { createReview } from '../../store/actions/reviewAction';
-import { Modal, Button, Input, StarRating } from '../../components/ui';
 
-// Reusable review-posting modal. Used by JobApplicantsModal after a hire and
-// any future place where studios/instructors leave feedback.
+import { createReview } from '../../store/actions/reviewAction';
+import { Modal, Button, Avatar, RHFInput, StarRating } from '../../components/ui';
+import { reviewSchema } from '../forms';
+
+// Reusable review-posting modal. Used by JobApplicantsModal after a hire
+// and any future place where studios/instructors leave feedback.
 export default function ReviewFormModal({
   reviewee,
   jobListingId,
@@ -16,23 +19,20 @@ export default function ReviewFormModal({
   const dispatch = useDispatch();
   const submitting = useSelector((s) => s.review.submitting);
 
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState('');
-  const [error, setError] = useState('');
+  const { control, handleSubmit, watch, formState: { errors } } = useForm({
+    resolver: yupResolver(reviewSchema),
+    defaultValues: { rating: 0, comment: '' },
+  });
+
+  const rating = watch('rating');
 
   if (!reviewee) return null;
 
-  const handleSubmit = async () => {
-    if (rating < 1 || rating > 5) {
-      setError('Please pick a rating between 1 and 5 stars.');
-      return;
-    }
-    setError('');
-
+  const submit = async ({ rating, comment }) => {
     const result = await dispatch(createReview({
       revieweeId: reviewee.id,
       rating,
-      comment: comment.trim() || null,
+      comment: (comment || '').trim() || null,
       jobListingId: jobListingId || null,
     }));
 
@@ -44,8 +44,10 @@ export default function ReviewFormModal({
     }
   };
 
-  const initials = (reviewee.name || '?')
-    .split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase();
+  const profilePicture = reviewee.detail?.profile_picture_url
+    || reviewee.detail?.profile_picture
+    || reviewee.profile_picture_url
+    || reviewee.profile_picture;
 
   return (
     <Modal
@@ -63,50 +65,50 @@ export default function ReviewFormModal({
             icon={Send}
             loading={submitting}
             disabled={rating < 1}
-            onClick={handleSubmit}
+            onClick={handleSubmit(submit)}
           >
             Post Review
           </Button>
         </>
       }
     >
-      <div className="space-y-5">
-        <div className="flex items-center gap-3 bg-[#FBF8E4]/40 rounded-xl p-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-            {reviewee.profile_picture || reviewee.detail?.profile_picture ? (
-              <img
-                src={reviewee.profile_picture || reviewee.detail?.profile_picture}
-                alt=""
-                className="w-full h-full object-cover rounded-full"
-              />
-            ) : initials}
-          </div>
+      <form onSubmit={handleSubmit(submit)} className="space-y-5">
+        <div className="flex items-center gap-3 bg-cream/40 rounded-xl p-3">
+          <Avatar name={reviewee.name} src={profilePicture} size="md" tone="coral" />
           <div>
-            <p className="text-sm font-semibold text-[#3E3D38]">{reviewee.name}</p>
-            <p className="text-[10px] text-[#9A9A94] capitalize">{reviewee.role}</p>
+            <p className="text-sm font-semibold text-ink">{reviewee.name}</p>
+            <p className="text-[10px] text-ink-soft capitalize">{reviewee.role}</p>
           </div>
         </div>
 
         <div>
-          <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">
+          <label className="block text-[10px] font-bold text-ink-soft tracking-widest uppercase mb-2">
             Rating
           </label>
-          <StarRating value={rating} interactive onChange={setRating} size={28} />
+          <Controller
+            control={control}
+            name="rating"
+            render={({ field }) => (
+              <StarRating value={field.value} interactive onChange={field.onChange} size={28} />
+            )}
+          />
+          {errors.rating && (
+            <p className="text-xs text-red-500 mt-2">{errors.rating.message}</p>
+          )}
         </div>
 
-        <Input
+        <RHFInput
+          control={control}
+          errors={errors}
+          name="comment"
           textarea
           label="Your feedback (optional)"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
           rows={4}
-          maxLength={2000}
+          maxLength={1000}
           placeholder="Share what the experience was like..."
           accent="#2DA4D6"
         />
-
-        {error && <p className="text-xs text-red-500">{error}</p>}
-      </div>
+      </form>
     </Modal>
   );
 }

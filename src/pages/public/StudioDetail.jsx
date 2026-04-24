@@ -63,12 +63,10 @@ export default function StudioDetail() {
     return (
       <div className="max-w-5xl mx-auto text-center py-20">
         <p className="text-[#3E3D38] font-semibold">{error || 'Studio not found'}</p>
-        <button
-          onClick={() => navigate(-1)}
-          className="mt-4 text-sm text-[#2DA4D6] hover:underline"
-        >
+        <Button variant="ghost" size="sm" onClick={() => navigate(-1)}
+          className="!text-sky-mg hover:!underline mt-4">
           Go back
-        </button>
+        </Button>
       </div>
     );
   }
@@ -92,12 +90,10 @@ export default function StudioDetail() {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-sm text-[#6B6B66] hover:text-[#3E3D38] transition-colors"
-        >
-          <ArrowLeft size={16} /> Back
-        </button>
+        <Button variant="ghost" size="sm" icon={ArrowLeft} onClick={() => navigate(-1)}
+          className="!text-ink-muted hover:!text-ink !bg-transparent !border-transparent">
+          Back
+        </Button>
         <Button variant="primary" icon={MessageCircle} onClick={() => navigate(messagesBase)}>
           Message Studio
         </Button>
@@ -113,10 +109,10 @@ export default function StudioDetail() {
             <div className="w-20 h-20 rounded-full border-4 border-white shadow-md overflow-hidden bg-gradient-to-br from-[#2DA4D6] to-[#2590bd] flex items-center justify-center flex-shrink-0">
               {studio.profile_picture || detail.profile_picture
                 ? <img src={studio.profile_picture || detail.profile_picture} alt={studioName} className="w-full h-full object-cover" />
-                : <span className="font-['Unbounded'] text-xl font-black text-white">{initials}</span>}
+                : <span className="font-unbounded text-xl font-black text-white">{initials}</span>}
             </div>
             <div className="flex-1 min-w-0 pb-1">
-              <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38] truncate">
+              <h1 className="font-unbounded text-xl font-black text-[#3E3D38] truncate">
                 {studioName}
               </h1>
               <div className="flex items-center gap-2 mt-1 text-xs text-[#9A9A94] flex-wrap">
@@ -171,7 +167,7 @@ export default function StudioDetail() {
         <div className="md:col-span-2 space-y-6">
           {studio.bio && (
             <Section>
-              <h3 className="font-['Unbounded'] text-sm font-black text-[#3E3D38] mb-4">About the Studio</h3>
+              <h3 className="font-unbounded text-sm font-black text-[#3E3D38] mb-4">About the Studio</h3>
               <p className="text-[#6B6B66] text-sm leading-relaxed whitespace-pre-line">{studio.bio}</p>
             </Section>
           )}
@@ -180,7 +176,7 @@ export default function StudioDetail() {
             <Section>
               <div className="flex items-center gap-2 mb-3">
                 <Briefcase size={14} className="text-[#3E3D38]" />
-                <h3 className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">Currently Hiring</h3>
+                <h3 className="font-unbounded text-sm font-black text-[#3E3D38]">Currently Hiring</h3>
               </div>
               <p className="text-[#6B6B66] text-sm leading-relaxed whitespace-pre-line">{hiringRoleDesc}</p>
               <div className="flex flex-wrap gap-3 mt-4 pt-3 border-t border-[#E5E0D8]">
@@ -203,7 +199,7 @@ export default function StudioDetail() {
 
           {disciplines.length > 0 && (
             <Section>
-              <h3 className="font-['Unbounded'] text-sm font-black text-[#3E3D38] mb-4">Disciplines Offered</h3>
+              <h3 className="font-unbounded text-sm font-black text-[#3E3D38] mb-4">Disciplines Offered</h3>
               <div className="flex flex-wrap gap-1.5">
                 {disciplines.map(d => (
                   <span key={d} className="px-2.5 py-1 bg-[#2DA4D6]/10 text-[#2DA4D6] text-xs font-medium rounded-full">{d}</span>
@@ -214,7 +210,7 @@ export default function StudioDetail() {
 
           {gallery.length > 0 && (
             <Section>
-              <h3 className="font-['Unbounded'] text-sm font-black text-[#3E3D38] mb-4">Gallery</h3>
+              <h3 className="font-unbounded text-sm font-black text-[#3E3D38] mb-4">Gallery</h3>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {gallery.map((p, i) => (
                   <div key={i} className="aspect-square rounded-xl overflow-hidden bg-[#FBF8E4]">
@@ -226,7 +222,7 @@ export default function StudioDetail() {
           )}
 
           <Section>
-            <h3 className="font-['Unbounded'] text-sm font-black text-[#3E3D38] mb-4">Reviews from Instructors</h3>
+            <h3 className="font-unbounded text-sm font-black text-[#3E3D38] mb-4">Reviews from Instructors</h3>
             <ReviewList
               userId={studio.id}
               direction="instructor_to_studio"
@@ -238,7 +234,7 @@ export default function StudioDetail() {
         <div className="space-y-6">
           {openTo.length > 0 && (
             <Section>
-              <h3 className="font-['Unbounded'] text-sm font-black text-[#3E3D38] mb-4">Open To</h3>
+              <h3 className="font-unbounded text-sm font-black text-[#3E3D38] mb-4">Open To</h3>
               <div className="flex flex-wrap gap-1.5">
                 {openTo.map(o => (
                   <span key={o} className="px-2.5 py-1 bg-[#FBF8E4] text-[#3E3D38] text-xs font-medium rounded-full">{o}</span>
@@ -249,7 +245,7 @@ export default function StudioDetail() {
 
           {amenities.length > 0 && (
             <Section>
-              <h3 className="font-['Unbounded'] text-sm font-black text-[#3E3D38] mb-4">Amenities</h3>
+              <h3 className="font-unbounded text-sm font-black text-[#3E3D38] mb-4">Amenities</h3>
               <div className="flex flex-wrap gap-1.5">
                 {amenities.map(a => (
                   <span key={a} className="px-2.5 py-1 bg-[#FBF8E4] text-[#6B6B66] text-xs font-medium rounded-full">{a}</span>
@@ -260,7 +256,7 @@ export default function StudioDetail() {
 
           {studio.hiring_qualification_level && studio.hiring_qualification_level !== 'none' && (
             <Section>
-              <h3 className="font-['Unbounded'] text-sm font-black text-[#3E3D38] mb-4">Minimum Qualification</h3>
+              <h3 className="font-unbounded text-sm font-black text-[#3E3D38] mb-4">Minimum Qualification</h3>
               <span className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full bg-[#f5fca6] text-[#3E3D38]">
                 <GraduationCap size={11} /> {studio.hiring_qualification_level}
               </span>

@@ -31,7 +31,7 @@ export default function ActivityCard({
             </div>
           )}
           <div>
-            <p className="font-['Unbounded'] text-xs font-bold text-[#3E3D38]">{title}</p>
+            <p className="font-unbounded text-xs font-bold text-[#3E3D38]">{title}</p>
             <p className="text-[10px] text-[#9A9A94]">{subtitle}</p>
           </div>
         </div>

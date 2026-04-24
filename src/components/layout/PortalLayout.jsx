@@ -5,7 +5,7 @@ import Sidebar from './Sidebar';
 import { Menu, Bell } from 'lucide-react';
 import { ROLE_THEME } from '../../config/portalConfig';
 import AccessBanner from './AccessBanner';
-import { Avatar } from '../ui';
+import { Avatar, IconButton } from '../ui';
 
 export default function PortalLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -27,12 +27,15 @@ export default function PortalLayout() {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top bar */}
         <header className="h-14 bg-white border-b border-[#E5E0D8] flex items-center px-4 lg:px-6 gap-4 flex-shrink-0">
-          <button
+          <IconButton
+            variant="plain"
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden p-1.5 rounded-lg hover:bg-[#FBF8E4] transition-colors"
+            aria-label="Open menu"
+            title="Open menu"
+            className="lg:hidden"
           >
-            <Menu size={20} className="text-[#6B6B66]" />
-          </button>
+            <Menu size={20} className="text-ink-muted" />
+          </IconButton>
 
           {/* Role badge */}
           <span
@@ -45,14 +48,23 @@ export default function PortalLayout() {
           <div className="flex-1" />
 
           <div className="flex items-center gap-3">
-            <button className="p-1.5 rounded-lg hover:bg-[#FBF8E4] transition-colors relative">
-              <Bell size={18} className="text-[#6B6B66]" />
-              <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-[#CE4F56] rounded-full" />
-            </button>
-            <Link to={theme.profilePath} className="flex items-center gap-2 text-sm">
+            <IconButton variant="plain" aria-label="Notifications" title="Notifications" className="relative">
+              <Bell size={18} className="text-ink-muted" />
+              <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-coral rounded-full" />
+            </IconButton>
+            <Link
+              to={theme.profilePath}
+              className="flex items-center gap-2 text-sm hover:bg-[#FBF8E4] rounded-lg px-2 py-1 -mx-2 -my-1 transition-colors"
+              title="View your profile"
+            >
               <span className="text-[#9A9A94] hidden sm:inline">Hi,</span>
-              <Avatar name={displayName} src={user?.profile_picture} size="sm" tone={theme.avatarTone} /> 
-              <span className="font-semibold text-[#3E3D38]">{firstName}</span>
+              <Avatar
+                name={displayName}
+                src={user?.profile_picture_url || user?.profile_picture}
+                size="sm"
+                tone={theme.avatarTone}
+              />
+              <span className="font-semibold text-[#3E3D38] hover:text-[#CE4F56]">{firstName}</span>
             </Link>
           </div>
         </header>

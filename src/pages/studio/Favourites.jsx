@@ -44,7 +44,7 @@ export default function Favourites() {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div>
-        <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">Saved Instructors</h1>
+        <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Saved Instructors</h1>
         <p className="text-[#9A9A94] text-sm mt-1">
           {saved.length} instructor{saved.length !== 1 ? 's' : ''} in your favourites
         </p>
@@ -66,7 +66,7 @@ export default function Favourites() {
           <div className="w-14 h-14 bg-[#CE4F56]/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Heart size={24} className="text-[#CE4F56]" />
           </div>
-          <p className="font-['Unbounded'] text-sm font-black text-[#3E3D38] mb-2">
+          <p className="font-unbounded text-sm font-black text-[#3E3D38] mb-2">
             No saved instructors yet
           </p>
           <p className="text-[#9A9A94] text-sm">
@@ -85,9 +85,9 @@ export default function Favourites() {
       {!loading && saved.length > 0 && filtered.length === 0 && (
         <div className="bg-white rounded-2xl border border-[#E5E0D8] p-10 text-center">
           <p className="text-[#9A9A94] text-sm">No results match your search</p>
-          <button onClick={() => setQuery('')} className="mt-3 text-sm text-[#2DA4D6] hover:underline">
+          <Button variant="ghost" size="sm" onClick={() => setQuery('')} className="!text-sky-mg hover:!underline mt-3">
             Clear
-          </button>
+          </Button>
         </div>
       )}
 

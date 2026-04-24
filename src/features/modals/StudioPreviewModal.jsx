@@ -56,14 +56,14 @@ export default function StudioPreviewModal({
           <div className="w-20 h-20 rounded-full border-4 border-white shadow-md overflow-hidden bg-gradient-to-br from-[#2DA4D6] to-[#2590bd] flex items-center justify-center">
             {form.avatarPreview
               ? <img src={form.avatarPreview} alt={form.studioName} className="w-full h-full object-cover" />
-              : <span className="font-['Unbounded'] text-xl font-black text-white">{initials}</span>}
+              : <span className="font-unbounded text-xl font-black text-white">{initials}</span>}
           </div>
         </div>
       </div>
 
       <div className="pt-12 pb-6 px-6">
         <div className="text-center mb-4">
-          <h2 className="font-['Unbounded'] text-lg font-black text-[#3E3D38]">
+          <h2 className="font-unbounded text-lg font-black text-[#3E3D38]">
             {form.studioName || 'Your Studio Name'}
           </h2>
           <div className="flex items-center justify-center gap-2 mt-1 text-[#9A9A94] text-xs">

@@ -5,6 +5,7 @@ import { ROLE_THEME } from '../../config/portalConfig';
 import { fetchPayments } from '../../store/actions/paymentAction';
 import { STATUS } from '../../constants/apiConstants';
 import { TableSkeleton, CardSkeleton } from '../../components/feedback';
+import { Button, IconButton } from '../../components/ui';
 
 /**
  * Payments page — shared between instructor and studio portals.
@@ -43,7 +44,7 @@ export default function Payments() {
     return (
       <div className="max-w-3xl mx-auto space-y-6">
         <div>
-          <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">Payment History</h1>
+          <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Payment History</h1>
           <p className="text-[#9A9A94] text-sm mt-1">Your billing history and invoices</p>
         </div>
         <CardSkeleton count={3} />
@@ -55,7 +56,7 @@ export default function Payments() {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <div>
-        <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">Payment History</h1>
+        <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Payment History</h1>
         <p className="text-[#9A9A94] text-sm mt-1">
           {isStudio ? 'Track what your studio has spent on Moving Guru' : 'Your billing history and invoices'}
         </p>
@@ -72,7 +73,7 @@ export default function Payments() {
               </div>
               <TrendingUp size={14} className="opacity-80" />
             </div>
-            <p className="font-['Unbounded'] text-3xl font-black leading-none">
+            <p className="font-unbounded text-3xl font-black leading-none">
               ${total.toLocaleString(undefined, { maximumFractionDigits: 2 })}
             </p>
             <p className="text-white/80 text-xs font-semibold mt-2 uppercase tracking-wider">Total Spend</p>
@@ -83,7 +84,7 @@ export default function Payments() {
             <div className="w-10 h-10 rounded-xl bg-[#E89560]/10 flex items-center justify-center mb-3">
               <CreditCard size={16} className="text-[#E89560]" />
             </div>
-            <p className="font-['Unbounded'] text-2xl font-black text-[#3E3D38]">{paidOnly.length}</p>
+            <p className="font-unbounded text-2xl font-black text-[#3E3D38]">{paidOnly.length}</p>
             <p className="text-[#9A9A94] text-xs font-semibold mt-1">Payments Made</p>
           </div>
 
@@ -91,7 +92,7 @@ export default function Payments() {
             <div className="w-10 h-10 rounded-xl bg-[#6BE6A4]/20 flex items-center justify-center mb-3">
               <Calendar size={16} className="text-[#3E3D38]" />
             </div>
-            <p className="font-['Unbounded'] text-lg font-black text-[#3E3D38]">
+            <p className="font-unbounded text-lg font-black text-[#3E3D38]">
               ${avgPerMonth.toFixed(2)}
             </p>
             <p className="text-[#9A9A94] text-xs font-semibold mt-1">Avg / Month</p>
@@ -101,17 +102,17 @@ export default function Payments() {
         <div className="grid grid-cols-3 gap-4">
           <div className="bg-white rounded-2xl p-4 border border-[#E5E0D8] text-center">
             <DollarSign size={16} style={{ color: theme.accent }} className="mx-auto mb-2" />
-            <p className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">${total.toFixed(2)}</p>
+            <p className="font-unbounded text-xl font-black text-[#3E3D38]">${total.toFixed(2)}</p>
             <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider mt-1">Total Paid</p>
           </div>
           <div className="bg-white rounded-2xl p-4 border border-[#E5E0D8] text-center">
             <CreditCard size={16} className="text-[#E89560] mx-auto mb-2" />
-            <p className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">{paidOnly.length}</p>
+            <p className="font-unbounded text-xl font-black text-[#3E3D38]">{paidOnly.length}</p>
             <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider mt-1">Payments</p>
           </div>
           <div className="bg-white rounded-2xl p-4 border border-[#E5E0D8] text-center">
             <Calendar size={16} className="text-[#2DA4D6] mx-auto mb-2" />
-            <p className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">
+            <p className="font-unbounded text-sm font-black text-[#3E3D38]">
               {user?.subscriptionRenews || user?.subscription_renews || '—'}
             </p>
             <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider mt-1">Next Renewal</p>
@@ -131,18 +132,16 @@ export default function Payments() {
               <p className="text-xs text-[#9A9A94]">Expires 12/28</p>
             </div>
           </div>
-          <button
-            className="text-xs text-[#6B6B66] border border-[#E5E0D8] px-3 py-1.5 rounded-lg hover:text-[#2DA4D6] hover:border-[#2DA4D6] transition-colors"
-          >
+          <Button variant="secondary" size="xs" className="hover:border-sky-mg hover:text-sky-mg">
             Update
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* ── Transactions ────────────────────────────────────── */}
       <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
         <div className="px-6 py-4 border-b border-[#E5E0D8]">
-          <h3 className="font-['Unbounded'] text-xs font-bold text-[#3E3D38] tracking-wider uppercase">
+          <h3 className="font-unbounded text-xs font-bold text-[#3E3D38] tracking-wider uppercase">
             Transactions
           </h3>
         </div>
@@ -162,16 +161,16 @@ export default function Payments() {
 
               <div className="flex items-center gap-4">
                 <div className="text-right">
-                  <p className="font-['Unbounded'] text-sm font-bold text-[#3E3D38]">
+                  <p className="font-unbounded text-sm font-bold text-[#3E3D38]">
                     ${Number(p.amount || 0).toFixed(2)}
                   </p>
                   <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
                     {p.status}
                   </span>
                 </div>
-                <button className="p-1.5 hover:bg-[#FBF8E4] rounded-lg transition-colors text-[#9A9A94] hover:text-[#3E3D38]">
+                <IconButton variant="plain" aria-label="Download receipt" title="Download receipt">
                   <Download size={14} />
-                </button>
+                </IconButton>
               </div>
             </div>
           ))}

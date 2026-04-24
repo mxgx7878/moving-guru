@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useCallback, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateProfile } from '../../store/actions/authAction';
 import { STATUS } from '../../constants/apiConstants';
@@ -8,9 +8,10 @@ import {
   Briefcase, Calendar, GraduationCap, Clock, ChevronDown, Search,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Field, Button } from '../../components/ui';
+import { Field, Button, Input, IconButton, ToggleChip, ChipGroup } from '../../components/ui';
 import { StudioPreviewModal } from '../../features/modals';
 import { ReviewList } from '../../features/reviews';
+import { studioProfileSchema, flattenYupErrors } from '../../features/forms';
 
 const OPEN_TO = ['Direct Hire', 'Swaps', 'Energy Exchange'];
 const STUDIO_SIZES = ['1–5 instructors', '6–15 instructors', '16–30 instructors', '30+ instructors'];
@@ -82,6 +83,7 @@ export default function StudioProfile() {
     hiringDuration:           user?.hiring_duration            || user?.hiringDuration           || '',
   });
   const [disciplineSearch, setDisciplineSearch] = useState('');
+  const [errors, setErrors] = useState({});
 
   const update = (k, v) => setForm(f => ({ ...f, [k]: v }));
   const toggleItem = (k, v) => setForm(f => ({
@@ -102,7 +104,27 @@ export default function StudioProfile() {
     update('photos', files.map(f => URL.createObjectURL(f)));
   };
 
-  const handleSave = async () => {
+  // useCallback so the memoised closure doesn't capture stale `form`
+  // state if it ever gets passed to a memoised child. Schema validates
+  // shared primitives (studio name, contact name, social URLs) before
+  // we spend a network round-trip.
+  const handleSave = useCallback(async () => {
+    // Schema validation (runs first so we don't build a FormData we'll throw away).
+    try {
+      // Map our form keys to the schema's keys.
+      await studioProfileSchema.validate(
+        { ...form, name: form.contactName, description: form.bio },
+        { abortEarly: false },
+      );
+      setErrors({});
+    } catch (err) {
+      const fieldErrors = flattenYupErrors(err);
+      setErrors(fieldErrors);
+      const first = Object.values(fieldErrors)[0];
+      if (first) toast.error(first);
+      return;
+    }
+
     // When the studio is actively hiring, the role description is required.
     if (form.profileStatus === 'active' && !form.hiringRoleDescription.trim()) {
       toast.error('Please describe the role you’re hiring for, or switch to Not Hiring.');
@@ -145,7 +167,7 @@ export default function StudioProfile() {
     } else {
       toast.error('Failed to save. Please try again.');
     }
-  };
+  }, [form, dispatch]);
 
   const filteredDisciplines = DISCIPLINE_CATEGORIES.map(cat => ({
     ...cat,
@@ -159,7 +181,7 @@ export default function StudioProfile() {
     <div className="max-w-6xl mx-auto">
       {/* ── Header ── */}
       <div className="mb-6">
-        <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">Studio Profile</h1>
+        <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Studio Profile</h1>
         <p className="text-[#9A9A94] text-sm mt-1">How instructors see your studio on Moving Guru</p>
       </div>
 
@@ -183,93 +205,105 @@ export default function StudioProfile() {
 
           {/* Basic info */}
           <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 space-y-5">
-            <h2 className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">Studio Info</h2>
+            <h2 className="font-unbounded text-sm font-black text-[#3E3D38]">Studio Info</h2>
 
-            <Field label="Studio Name">
-              <input value={form.studioName} onChange={e => update('studioName', e.target.value)}
-                className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                placeholder="e.g. Zen Flow Studio" />
-            </Field>
+            <Input
+              label="Studio Name"
+              value={form.studioName}
+              onChange={(e) => update('studioName', e.target.value)}
+              placeholder="e.g. Zen Flow Studio"
+              accent="#2DA4D6"
+              error={errors.studioName}
+            />
 
             <div className="grid grid-cols-2 gap-4">
-              <Field label="Contact Name">
-                <input value={form.contactName} onChange={e => update('contactName', e.target.value)}
-                  className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                  placeholder="e.g. Sarah Mitchell" />
-              </Field>
-              <Field label="Phone">
-                <input value={form.phone} onChange={e => update('phone', e.target.value)}
-                  className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                  placeholder="+1 234 567 8900" />
-              </Field>
+              <Input
+                label="Contact Name"
+                value={form.contactName}
+                onChange={(e) => update('contactName', e.target.value)}
+                placeholder="e.g. Sarah Mitchell"
+                accent="#2DA4D6"
+                error={errors.name}
+              />
+              <Input
+                label="Phone"
+                value={form.phone}
+                onChange={(e) => update('phone', e.target.value)}
+                placeholder="+1 234 567 8900"
+                accent="#2DA4D6"
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <Field label="City / Location">
-                <input value={form.location} onChange={e => update('location', e.target.value)}
-                  className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                  placeholder="e.g. Sydney" />
-              </Field>
-              <Field label="Country">
-                <input value={form.country} onChange={e => update('country', e.target.value)}
-                  className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                  placeholder="e.g. Australia" />
-              </Field>
+              <Input
+                label="City / Location"
+                value={form.location}
+                onChange={(e) => update('location', e.target.value)}
+                placeholder="e.g. Sydney"
+                accent="#2DA4D6"
+              />
+              <Input
+                label="Country"
+                value={form.country}
+                onChange={(e) => update('country', e.target.value)}
+                placeholder="e.g. Australia"
+                accent="#2DA4D6"
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <Field label="Website">
-                <input value={form.website} onChange={e => update('website', e.target.value)}
-                  className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                  placeholder="https://yourstudio.com" />
-              </Field>
-              <Field label="Instagram">
-                <div className="relative">
-                  <Instagram size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9A9A94]" />
-                  <input value={form.instagram} onChange={e => update('instagram', e.target.value)}
-                    className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl pl-9 pr-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                    placeholder="@yourstudio" />
-                </div>
-              </Field>
+              <Input
+                label="Website"
+                value={form.website}
+                onChange={(e) => update('website', e.target.value)}
+                placeholder="https://yourstudio.com"
+                accent="#2DA4D6"
+                error={errors.website}
+              />
+              <Input
+                label="Instagram"
+                value={form.instagram}
+                onChange={(e) => update('instagram', e.target.value)}
+                placeholder="@yourstudio"
+                iconLeft={<Instagram size={14} />}
+                accent="#2DA4D6"
+                error={errors.instagram}
+              />
             </div>
 
             <Field label="Studio Size">
-              <div className="flex flex-wrap gap-2">
-                {STUDIO_SIZES.map(sz => (
-                  <button key={sz} type="button" onClick={() => update('studioSize', sz)}
-                    className={`px-4 py-2 rounded-full text-xs font-medium border transition-all
-                      ${form.studioSize === sz
-                        ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
-                        : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}>
-                    {sz}
-                  </button>
-                ))}
-              </div>
+              <ChipGroup
+                options={STUDIO_SIZES}
+                value={form.studioSize}
+                onChange={(v) => update('studioSize', v)}
+                tone="blue"
+              />
             </Field>
           </div>
 
           {/* About */}
           <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 space-y-5">
-            <h2 className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">About the Studio</h2>
+            <h2 className="font-unbounded text-sm font-black text-[#3E3D38]">About the Studio</h2>
 
-            <Field label="Bio">
-              <textarea value={form.bio} onChange={e => update('bio', e.target.value)} rows={5}
-                className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all resize-none"
-                placeholder="Describe your studio — the vibe, community, what makes you unique..." />
-            </Field>
+            <Input
+              textarea
+              rows={5}
+              label="Bio"
+              value={form.bio}
+              onChange={(e) => update('bio', e.target.value)}
+              placeholder="Describe your studio — the vibe, community, what makes you unique..."
+              accent="#2DA4D6"
+              error={errors.description}
+            />
 
             <Field label="Open To">
-              <div className="flex flex-wrap gap-2">
-                {OPEN_TO.map(opt => (
-                  <button key={opt} type="button" onClick={() => toggleItem('openTo', opt)}
-                    className={`px-4 py-2 rounded-full text-xs font-medium border transition-all
-                      ${form.openTo.includes(opt)
-                        ? 'bg-[#2DA4D6] text-white border-[#2DA4D6]'
-                        : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}>
-                    {opt}
-                  </button>
-                ))}
-              </div>
+              <ChipGroup
+                options={OPEN_TO}
+                value={form.openTo}
+                onChange={(next) => update('openTo', next)}
+                multiple
+                tone="blue"
+              />
             </Field>
 
             {/* ── Active hiring details ──
@@ -283,75 +317,62 @@ export default function StudioProfile() {
                     <Briefcase size={16} className="text-[#3E3D38]" />
                   </div>
                   <div>
-                    <h3 className="font-['Unbounded'] text-xs font-black text-[#3E3D38]">Active Hiring Details</h3>
+                    <h3 className="font-unbounded text-xs font-black text-[#3E3D38]">Active Hiring Details</h3>
                     <p className="text-[10px] text-[#3E3D38]/70">
                       Tell instructors about the role you're hiring for
                     </p>
                   </div>
                 </div>
 
-                <Field label="Role Description *">
-                  <textarea
-                    value={form.hiringRoleDescription}
-                    onChange={e => update('hiringRoleDescription', e.target.value)}
-                    rows={4}
-                    placeholder='Please give us much detail as possible — e.g. "Looking for a Vinyasa Yoga instructor to cover Saturday & Sunday morning classes for the next 4 weekends. Must be confident with mixed-level groups and able to start immediately."'
-                    className="w-full bg-white border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all resize-none"
-                  />
-                </Field>
+                <Input
+                  textarea
+                  rows={4}
+                  label="Role Description *"
+                  value={form.hiringRoleDescription}
+                  onChange={(e) => update('hiringRoleDescription', e.target.value)}
+                  placeholder='Please give us much detail as possible — e.g. "Looking for a Vinyasa Yoga instructor to cover Saturday & Sunday morning classes for the next 4 weekends. Must be confident with mixed-level groups and able to start immediately."'
+                  accent="#2DA4D6"
+                />
 
                 <Field label="Position Type">
-                  <div className="flex flex-wrap gap-2">
-                    {POSITION_TYPES.map(o => (
-                      <button
-                        key={o.id}
-                        type="button"
-                        onClick={() => update('hiringPositionType', o.id)}
-                        className={`px-3.5 py-2 rounded-full text-xs font-semibold border transition-all
-                          ${form.hiringPositionType === o.id
-                            ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
-                            : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}>
-                        {o.label}
-                      </button>
-                    ))}
-                  </div>
+                  <ChipGroup
+                    options={POSITION_TYPES}
+                    value={form.hiringPositionType}
+                    onChange={(v) => update('hiringPositionType', v)}
+                    tone="blue"
+                  />
                 </Field>
 
                 <div className="grid grid-cols-2 gap-4">
                   <Field label="Start Date">
-                    <div className="relative">
-                      <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none" />
-                      <input
-                        type="date"
-                        value={form.hiringStartDate}
-                        onChange={e => update('hiringStartDate', e.target.value)}
-                        min={new Date().toISOString().split('T')[0]}
-                        className="w-full bg-white border border-[#E5E0D8] rounded-xl pl-9 pr-3 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                      />
-                    </div>
+                    <Input
+                      type="date"
+                      value={form.hiringStartDate}
+                      onChange={(e) => update('hiringStartDate', e.target.value)}
+                      min={new Date().toISOString().split('T')[0]}
+                      iconLeft={<Calendar size={14} />}
+                      accent="#2DA4D6"
+                    />
                   </Field>
 
                   <Field label="Duration">
-                    <div className="relative">
-                      <Clock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none" />
-                      <input
-                        value={form.hiringDuration}
-                        onChange={e => update('hiringDuration', e.target.value)}
-                        placeholder="e.g. 4 weekends, 3 months"
-                        className="w-full bg-white border border-[#E5E0D8] rounded-xl pl-9 pr-3 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                      />
-                    </div>
+                    <Input
+                      value={form.hiringDuration}
+                      onChange={(e) => update('hiringDuration', e.target.value)}
+                      placeholder="e.g. 4 weekends, 3 months"
+                      iconLeft={<Clock size={14} />}
+                      accent="#2DA4D6"
+                    />
                   </Field>
                 </div>
 
-                <Field label="Compensation / Offer">
-                  <input
-                    value={form.hiringCompensation}
-                    onChange={e => update('hiringCompensation', e.target.value)}
-                    placeholder="e.g. $80/class, shared accommodation, energy exchange"
-                    className="w-full bg-white border border-[#E5E0D8] rounded-xl px-4 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
-                  />
-                </Field>
+                <Input
+                  label="Compensation / Offer"
+                  value={form.hiringCompensation}
+                  onChange={(e) => update('hiringCompensation', e.target.value)}
+                  placeholder="e.g. $80/class, shared accommodation, energy exchange"
+                  accent="#2DA4D6"
+                />
 
                 <Field label="Minimum Qualification">
                   <div className="relative">
@@ -375,7 +396,7 @@ export default function StudioProfile() {
           {/* Disciplines */}
           <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 space-y-5">
             <div className="flex items-center justify-between flex-wrap gap-3">
-              <h2 className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">Disciplines Offered</h2>
+              <h2 className="font-unbounded text-sm font-black text-[#3E3D38]">Disciplines Offered</h2>
               {(form.disciplines || []).length > 0 && (
                 <span className="text-[10px] font-bold text-[#2DA4D6] bg-[#2DA4D6]/10 px-2.5 py-1 rounded-full">
                   {form.disciplines.length} selected
@@ -385,53 +406,55 @@ export default function StudioProfile() {
 
             {/* Selected chips */}
             {(form.disciplines || []).length > 0 && (
-              <div className="flex flex-wrap gap-2 p-3 bg-[#2DA4D6]/10 rounded-xl border border-[#2DA4D6]/20">
-                {form.disciplines.map(d => (
-                  <span key={d} className="flex items-center gap-1 bg-[#2DA4D6] text-white text-xs font-medium px-2.5 py-1 rounded-full">
+              <div className="flex flex-wrap gap-2 p-3 bg-sky-soft rounded-xl border border-sky-mg/20">
+                {form.disciplines.map((d) => (
+                  <ToggleChip
+                    key={d}
+                    active
+                    tone="blue"
+                    size="md"
+                    onClick={() => toggleItem('disciplines', d)}
+                    onRemove={() => toggleItem('disciplines', d)}
+                  >
                     {d}
-                    <button type="button" onClick={() => toggleItem('disciplines', d)}>
-                      <X size={10} />
-                    </button>
-                  </span>
+                  </ToggleChip>
                 ))}
               </div>
             )}
 
             {/* Search */}
-            <div className="flex items-center gap-2 bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-3 py-2">
-              <Search size={14} className="text-[#9A9A94]" />
+            <div className="flex items-center gap-2 bg-warm-bg border border-edge rounded-xl px-3 py-2">
+              <Search size={14} className="text-ink-soft" />
               <input
                 type="text"
                 value={disciplineSearch}
-                onChange={e => setDisciplineSearch(e.target.value)}
+                onChange={(e) => setDisciplineSearch(e.target.value)}
                 placeholder="Search disciplines..."
-                className="flex-1 bg-transparent border-none outline-none text-sm text-[#3E3D38] placeholder-[#C4BCB4]"
+                className="flex-1 bg-transparent border-none outline-none text-sm text-ink placeholder-ink-faint"
               />
               {disciplineSearch && (
-                <button onClick={() => setDisciplineSearch('')}>
-                  <X size={12} className="text-[#9A9A94]" />
-                </button>
+                <IconButton variant="plain" size="xs" onClick={() => setDisciplineSearch('')} aria-label="Clear">
+                  <X size={12} className="text-ink-soft" />
+                </IconButton>
               )}
             </div>
 
             {/* Category list */}
             <div className="space-y-5 max-h-96 overflow-y-auto pr-1">
-              {filteredDisciplines.map(cat => (
+              {filteredDisciplines.map((cat) => (
                 <div key={cat.id}>
-                  <p className="text-[9px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">
+                  <p className="text-[9px] font-bold text-ink-soft tracking-widest uppercase mb-2">
                     {cat.emoji} {cat.label}
                   </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {cat.items.map(d => (
-                      <button key={d} type="button" onClick={() => toggleItem('disciplines', d)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
-                          ${form.disciplines.includes(d)
-                            ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white'
-                            : 'border-[#E5E0D8] text-[#3E3D38] hover:border-[#2DA4D6] hover:bg-[#FBF8E4]'}`}>
-                        {d}
-                      </button>
-                    ))}
-                  </div>
+                  <ChipGroup
+                    options={cat.items}
+                    value={form.disciplines}
+                    onChange={(next) => update('disciplines', next)}
+                    multiple
+                    tone="blue"
+                    size="md"
+                    className="gap-1.5"
+                  />
                 </div>
               ))}
             </div>
@@ -442,7 +465,7 @@ export default function StudioProfile() {
              ══════════════════════════════════════ */}
           <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">Reviews from Instructors</h2>
+              <h2 className="font-unbounded text-sm font-black text-[#3E3D38]">Reviews from Instructors</h2>
             </div>
             <p className="text-xs text-[#9A9A94]">
               Feedback from instructors you've hired. Instructors can review you after an accepted job application.
@@ -478,7 +501,7 @@ export default function StudioProfile() {
                   </>
                 ) : (
                   <div className="text-center p-4">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2DA4D6] to-[#2590bd] flex items-center justify-center text-white font-['Unbounded'] font-black text-lg mx-auto mb-3">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2DA4D6] to-[#2590bd] flex items-center justify-center text-white font-unbounded font-black text-lg mx-auto mb-3">
                       {initials}
                     </div>
                     <Upload size={18} className="text-[#C4BCB4] mx-auto mb-1" />
@@ -487,7 +510,7 @@ export default function StudioProfile() {
                 )}
               </div>
               <input ref={avatarRef} type="file" accept="image/*" onChange={handleAvatar} className="hidden" />
-              <p className="text-center text-sm font-['Unbounded'] font-black text-[#3E3D38] mt-3 truncate">
+              <p className="text-center text-sm font-unbounded font-black text-[#3E3D38] mt-3 truncate">
                 {form.studioName || 'Your Studio'}
               </p>
               {(form.location || form.country) && (
@@ -503,27 +526,25 @@ export default function StudioProfile() {
                 Hiring Status
               </p>
               <div className="flex gap-2">
-                <button
-                  type="button"
+                <ToggleChip
+                  active={form.profileStatus === 'active'}
                   onClick={() => update('profileStatus', 'active')}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold border transition-all
-                    ${form.profileStatus === 'active'
-                      ? 'bg-[#6BE6A4]/20 border-[#6BE6A4] text-[#3E3D38]'
-                      : 'border-[#E5E0D8] text-[#9A9A94] hover:border-[#6BE6A4]'}`}
+                  tone="blue"
+                  size="lg"
+                  className="flex-1 justify-center rounded-xl !py-2.5"
                 >
-                  <span className={`w-1.5 h-1.5 rounded-full ${form.profileStatus === 'active' ? 'bg-[#6BE6A4]' : 'bg-[#9A9A94]'}`} />
+                  <span className={`w-1.5 h-1.5 rounded-full ${form.profileStatus === 'active' ? 'bg-mint-soft' : 'bg-ink-soft'}`} />
                   Hiring
-                </button>
-                <button
-                  type="button"
+                </ToggleChip>
+                <ToggleChip
+                  active={form.profileStatus === 'inactive'}
                   onClick={() => update('profileStatus', 'inactive')}
-                  className={`flex-1 py-2.5 rounded-xl text-xs font-semibold border transition-all
-                    ${form.profileStatus === 'inactive'
-                      ? 'bg-[#FBF8E4] border-[#9A9A94] text-[#6B6B66]'
-                      : 'border-[#E5E0D8] text-[#9A9A94] hover:border-[#9A9A94]'}`}
+                  tone="ink"
+                  size="lg"
+                  className="flex-1 justify-center rounded-xl !py-2.5"
                 >
                   Not Hiring
-                </button>
+                </ToggleChip>
               </div>
               <p className="text-[10px] text-[#9A9A94] mt-2 leading-relaxed">
                 {form.profileStatus === 'active'
@@ -563,6 +584,16 @@ export default function StudioProfile() {
 
             {/* Action buttons — sticky Save */}
             <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5 space-y-2">
+              {Object.keys(errors).length > 0 && (
+                <div className="mb-2 bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700 space-y-0.5" role="alert">
+                  <p className="font-bold">Please fix the following before saving:</p>
+                  <ul className="list-disc list-inside">
+                    {Object.entries(errors).slice(0, 4).map(([field, msg]) => (
+                      <li key={field}><span className="font-semibold capitalize">{field}:</span> {msg}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <Button
                 variant="primary"
                 size="lg"

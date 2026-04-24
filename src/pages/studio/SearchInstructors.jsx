@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchInstructors, saveInstructor, unsaveInstructor, fetchSavedInstructors } from '../../store/actions/instructorAction';
 import { STATUS } from '../../constants/apiConstants';
-import { CardSkeleton } from '../../components/feedback';
-import { Avatar, Button, SelectField } from '../../components/ui';
+import { CardSkeleton, ButtonLoader } from '../../components/feedback';
+import { Avatar, Button, Input, SelectField, IconButton } from '../../components/ui';
 import { InstructorProfileModal } from '../../features/modals';
 import { OPEN_TO as ALL_OPEN_TO } from '../../constants/profileConstants';
 
@@ -72,7 +72,7 @@ export default function SearchInstructors() {
     <div className="max-w-5xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="font-['Unbounded'] text-xl font-black text-[#3E3D38]">Find Instructors</h1>
+        <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Find Instructors</h1>
         <p className="text-[#9A9A94] text-sm mt-1">Browse {instructors.length} active instructors seeking opportunities</p>
       </div>
 
@@ -84,14 +84,22 @@ export default function SearchInstructors() {
             <input type="text" value={query} onChange={e => setQuery(e.target.value)}
               placeholder="Search by name, discipline, location..."
               className="flex-1 bg-transparent border-none outline-none text-sm text-[#3E3D38] placeholder-[#C4BCB4]" />
-            {query && <button onClick={() => setQuery('')} className="text-[#9A9A94] hover:text-[#CE4F56]"><X size={14} /></button>}
+            {query && (
+              <IconButton variant="plain" size="xs" onClick={() => setQuery('')} aria-label="Clear search" className="!text-ink-soft hover:!text-coral">
+                <X size={14} />
+              </IconButton>
+            )}
           </div>
-          <button onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all
-              ${showFilters ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}>
-            <Filter size={14} /> Filters
-            {hasActiveFilters && <span className="w-2 h-2 rounded-full bg-[#CE4F56]" />}
-          </button>
+          <Button
+            variant={showFilters ? 'primary' : 'secondary'}
+            size="md"
+            icon={Filter}
+            onClick={() => setShowFilters(!showFilters)}
+            className={showFilters ? '' : 'hover:border-sky-mg'}
+          >
+            Filters
+            {hasActiveFilters && <span className="w-2 h-2 rounded-full bg-coral ml-1" />}
+          </Button>
         </div>
 
         {showFilters && (
@@ -114,21 +122,28 @@ export default function SearchInstructors() {
               accent="#2DA4D6"
               size="sm"
             />
-            <div>
-              <label className="block text-[#9A9A94] text-[10px] uppercase tracking-wider font-semibold mb-1.5">Location / Traveling To</label>
-              <input type="text" value={filters.location} onChange={e => setFilters(f => ({ ...f, location: e.target.value }))}
-                placeholder="e.g. Bali, Europe..."
-                className="w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-3 py-2.5 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-[#2DA4D6]" />
-            </div>
+            <Input
+              label="Location / Traveling To"
+              value={filters.location}
+              onChange={(e) => setFilters((f) => ({ ...f, location: e.target.value }))}
+              placeholder="e.g. Bali, Europe..."
+              accent="#2DA4D6"
+            />
           </div>
         )}
 
         {hasActiveFilters && (
           <div className="flex items-center justify-between pt-2 border-t border-[#E5E0D8]">
             <p className="text-[#9A9A94] text-xs">{filtered.length} result{filtered.length !== 1 ? 's' : ''} found</p>
-            <button onClick={clearFilters} className="text-xs text-[#CE4F56] hover:underline flex items-center gap-1">
-              <X size={11} /> Clear all
-            </button>
+            <Button
+              variant="ghost"
+              size="xs"
+              icon={X}
+              onClick={clearFilters}
+              className="!text-coral hover:!underline"
+            >
+              Clear all
+            </Button>
           </div>
         )}
       </div>
@@ -142,7 +157,9 @@ export default function SearchInstructors() {
           <Search size={32} className="text-[#C4BCB4] mx-auto mb-3" />
           <p className="text-[#3E3D38] font-semibold">No instructors found</p>
           <p className="text-[#9A9A94] text-sm mt-1">Try adjusting your filters</p>
-          <button onClick={clearFilters} className="mt-4 text-sm text-[#2DA4D6] hover:underline">Clear filters</button>
+          <Button variant="ghost" size="sm" onClick={clearFilters} className="!text-sky-mg hover:!underline mt-4">
+            Clear filters
+          </Button>
         </div>
       )}
 
@@ -167,21 +184,27 @@ export default function SearchInstructors() {
                     <div className="flex items-center gap-3">
                       <Avatar
                         name={inst.name}
-                        src={inst?.detail?.profile_picture}
+                        src={inst?.detail?.profile_picture_url || inst?.detail?.profile_picture}
                         size="md"
                         tone="coral"
                       />
                       <div>
-                        <p className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">{inst.name}</p>
+                        <p className="font-unbounded text-sm font-black text-[#3E3D38]">{inst.name}</p>
                         <p className="text-[#9A9A94] text-[10px]">{inst.detail.pronouns}</p>
                       </div>
                     </div>
-                    <button onClick={e => toggleSave(inst.id, e)} disabled={savingId === inst.id}
-                      className={`p-1.5 rounded-lg transition-all ${isSaved ? 'text-[#CE4F56]' : 'text-[#C4BCB4] hover:text-[#CE4F56]'}`}>
+                    <IconButton
+                      variant="plain"
+                      tone="coral"
+                      disabled={savingId === inst.id}
+                      onClick={(e) => toggleSave(inst.id, e)}
+                      title={isSaved ? 'Remove from saved' : 'Save instructor'}
+                      className={isSaved ? '' : '!text-ink-faint hover:!text-coral'}
+                    >
                       {savingId === inst.id
                         ? <ButtonLoader size={16} color="#CE4F56" />
                         : <Heart size={16} fill={isSaved ? 'currentColor' : 'none'} />}
-                    </button>
+                    </IconButton>
                   </div>
                   <div className="flex items-center gap-1 mt-3">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#6BE6A4]" />
