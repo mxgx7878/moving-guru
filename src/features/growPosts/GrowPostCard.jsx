@@ -1,34 +1,48 @@
 import {
-  Calendar, MapPin, Users, ExternalLink, Edit3, Trash2,
+  Calendar, MapPin, Users, ExternalLink, Edit3, Trash2, Zap,
 } from 'lucide-react';
-import { Chip, IconButton, StatusPill } from '../../components/ui';
+import { Chip, IconButton, StatusPill, Button } from '../../components/ui';
 import {
   GROW_TYPE_META, GROW_TYPE_BG, GROW_STATUS_PUBLIC_CONFIG,
 } from '../../constants/growConstants';
 
-// Card shown on the public Grow feed. Distinct from GrowPostRow (admin
-// moderation table row) and GrowPostPreviewModal (read-only dialog).
-// Handles status badge (for authors/admins), owner actions, and the
-// external "More Info" link.
+// Card shown on the public Grow feed and the "My Posts" tab. When
+// `ownerActions` is true, Edit + Delete + Boost appear (Boost only when
+// onBoost is passed in).
 export default function GrowPostCard({
   post,
   showStatus = false,
   ownerActions = false,
   onEdit,
   onDelete,
+  onBoost,
 }) {
-  const typeCfg  = GROW_TYPE_META[post.type];
-  const TypeIcon = typeCfg?.icon || Calendar;
-  const postedBy = post.posted_by || post.postedBy || post.user?.name || '—';
+  const typeCfg     = GROW_TYPE_META[post.type];
+  const TypeIcon    = typeCfg?.icon || Calendar;
+  const postedBy    = post.posted_by || post.postedBy || post.user?.name || '—';
   const externalUrl = post.external_url || post.url;
   const hasExternal = externalUrl && externalUrl !== '#';
+  const coverImage  = (post.images && post.images[0]) || post.cover_image || null;
 
   return (
     <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden hover:shadow-md transition-shadow flex flex-col">
+
+      {/* Cover image — new: sits above everything else */}
+      {coverImage && (
+        <div className="w-full h-40 bg-[#F5F0E8] overflow-hidden">
+          <img
+            src={coverImage}
+            alt={post.title}
+            className="w-full h-full object-cover"
+            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+          />
+        </div>
+      )}
+
+      {/* Type colour strip (kept for posts without an image) */}
       <div className="h-1 w-full" style={{ backgroundColor: post.color || typeCfg?.color || '#2DA4D6' }} />
 
       <div className="p-5 flex-1 flex flex-col">
-        {/* Header row */}
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1.5 flex-wrap">
@@ -49,11 +63,6 @@ export default function GrowPostCard({
               <p className="text-[#9A9A94] text-xs mt-0.5">{post.subtitle}</p>
             )}
           </div>
-
-          {post.images?.[0] && (
-            <img src={post.images[0]} alt={post.title}
-              className="w-16 h-16 rounded-xl object-cover flex-shrink-0 border border-[#E5E0D8]" />
-          )}
         </div>
 
         {/* Meta pills */}
@@ -69,7 +78,8 @@ export default function GrowPostCard({
               {post.dates || `${post.date_from} – ${post.date_to || ''}`}
             </span>
           )}
-          {(post.spots_left ?? post.spotsLeft) !== undefined && (
+          {/* Spots only render when the author opted in AND actually set a value. */}
+          {(post.spots_left ?? post.spotsLeft) != null && (post.spots_left ?? post.spotsLeft) !== '' && (
             <span className="flex items-center gap-1 text-xs text-[#6B6B66]">
               <Users size={11} className="text-[#9A9A94]" />
               {post.spots_left ?? post.spotsLeft} spots left
@@ -87,11 +97,11 @@ export default function GrowPostCard({
           </div>
         )}
 
-        {/* Footer: owner + actions */}
-        <div className="flex items-center justify-between pt-3 border-t border-[#F0EBE3]">
-          <div>
+        {/* Footer */}
+        <div className="flex items-center justify-between pt-3 border-t border-[#F0EBE3] gap-3 flex-wrap">
+          <div className="min-w-0">
             <p className="text-[10px] text-[#9A9A94] uppercase tracking-wide">Posted by</p>
-            <p className="text-xs font-semibold text-[#3E3D38]">{postedBy}</p>
+            <p className="text-xs font-semibold text-[#3E3D38] truncate">{postedBy}</p>
             {post.price && (
               <p className="text-xs font-bold mt-0.5" style={{ color: post.color || typeCfg?.color }}>
                 {post.price}
@@ -99,7 +109,18 @@ export default function GrowPostCard({
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap justify-end">
+            {ownerActions && onBoost && (
+              <Button
+                variant="secondary"
+                size="sm"
+                icon={Zap}
+                onClick={(e) => { e.stopPropagation(); onBoost(post); }}
+                className="hover:border-[#E89560] hover:text-[#E89560]"
+              >
+                Boost
+              </Button>
+            )}
             {ownerActions && (
               <>
                 <IconButton title="Edit post" onClick={() => onEdit?.(post)}>

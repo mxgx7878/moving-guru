@@ -11,3 +11,6 @@ export { default as ConfirmModal }           from './ConfirmModal';
 export { default as PostPreviewModal }       from './PostPreviewModal';
 export { default as GrowPostPreviewModal }   from './GrowPostPreviewModal';
 export { default as RejectReasonModal }      from './RejectReasonModal';
+export { default as MissingLinkConfirmModal } from './MissingLinkConfirmModal';
+export { default as GrowPaymentModal }        from './GrowPaymentModal';
+export { default as BoostPaymentModal }       from './BoostPaymentModal';
