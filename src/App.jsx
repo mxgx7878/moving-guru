@@ -124,6 +124,7 @@ export default function App() {
           <Route path="grow/new"     element={<RequireApproved><GrowPostForm /></RequireApproved>} />
           <Route path="grow/edit/:id" element={<RequireApproved><GrowPostForm /></RequireApproved>} />
           <Route path="studios/:id"  element={<RequireApproved><StudioDetail /></RequireApproved>} />
+          <Route path="instructors/:id" element={<RequireApproved><InstructorDetail /></RequireApproved>} />
           <Route path="messages"     element={<RequireApproved><Messages /></RequireApproved>} />
           <Route path="announcements" element={<Announcements />} />
         </Route>

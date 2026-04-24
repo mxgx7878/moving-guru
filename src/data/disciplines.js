@@ -25,6 +25,7 @@ export const DISCIPLINE_CATEGORIES = [
     items: [
       'Brazilian Jiu-Jitsu (BJJ)', 'Boxing', 'Muay Thai', 'Kickboxing',
       'Taekwondo', 'Karate', 'Judo', 'Wrestling', 'Krav Maga', 'Mixed Martial Arts (MMA)',
+      'Fencing',
     ],
   },
   {
@@ -32,7 +33,9 @@ export const DISCIPLINE_CATEGORIES = [
     label: 'Cardio & Functional Training',
     emoji: '🚴',
     items: [
-      'Spinning / Indoor Cycling', 'HIIT', 'Bootcamp', 'Dance Cardio (e.g., Zumba, Jungle Body)',
+      'Spinning / Indoor Cycling', 'HIIT', 'Bootcamp',
+      'Dance Cardio (e.g., Zumba, Jungle Body)', 'Aerobics',
+      'Personal Trainer',
     ],
   },
   {
@@ -60,7 +63,50 @@ export const DISCIPLINE_CATEGORIES = [
       'Ballet Fitness', 'Contemporary Dance', 'Hip-Hop Dance',
       'Latin Dance (Salsa, Bachata)', 'Ballroom Dance',
       'Pole Fitness and Exotic Dance', 'Dance + Strength Fusion',
-      'Dance Movement Therapy', 'Aerial Fitness / Silks', 'Other',
+      'Dance Movement Therapy', 'Aerial Fitness / Silks', 'Gymnastics',
+    ],
+  },
+  {
+    id: 'water',
+    label: 'Water & Outdoor Sports',
+    emoji: '🌊',
+    items: [
+      'Swimming', 'Surfing', 'Sailing', 'Paddle Boarding', 'Rowing',
+      'Snow Sports', 'Horse Riding', 'Climbing / Bouldering',
+    ],
+  },
+  {
+    id: 'team_sports',
+    label: 'Team & Field Sports',
+    emoji: '⚽',
+    items: [
+      'Soccer', 'Basketball', 'Rugby', 'Cricket', 'AFL',
+      'Tennis', 'Golf', 'Archery', 'Coach (other)',
+    ],
+  },
+  {
+    id: 'holistic',
+    label: 'Holistic & Alternative Medicine',
+    emoji: '🌿',
+    items: [
+      'Acupuncture', 'Somatic Therapy', 'Traditional Chinese Medicine',
+      'Naturopath', 'Nutritionist',
+    ],
+  },
+  {
+    id: 'support',
+    label: 'Support & Administration',
+    emoji: '🗂️',
+    items: [
+      'Administration Staff',
+    ],
+  },
+  {
+    id: 'other',
+    label: 'Other',
+    emoji: '✨',
+    items: [
+      'Other',
     ],
   },
 ];

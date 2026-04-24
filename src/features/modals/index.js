@@ -14,3 +14,4 @@ export { default as RejectReasonModal }      from './RejectReasonModal';
 export { default as MissingLinkConfirmModal } from './MissingLinkConfirmModal';
 export { default as GrowPaymentModal }        from './GrowPaymentModal';
 export { default as BoostPaymentModal }       from './BoostPaymentModal';
+export { default as ChangePlanModal }         from './ChangePlanModal';
