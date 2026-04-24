@@ -24,9 +24,9 @@ export default function RejectReasonModal({
   open,
   busy = false,
   title = 'Reject Post',
-  description = 'Give the author a quick reason — this helps them resubmit correctly.',
-  confirmLabel = 'Reject Post',
-  placeholder = 'Optional reason (e.g. missing pricing, unclear location)...',
+  description = "We'll send the author a message in their inbox with this reason.",
+  confirmLabel = 'Reject & notify author',
+  placeholder = 'Short reason (e.g. missing pricing, unclear location)...',
   onCancel,
   onConfirm,
 }) {
