@@ -7,7 +7,7 @@ import {
   Drawer, Chip, StatusPill, StatTile, LabeledBlock, InfoRow, Avatar, Button, EmptyState,
 } from '../../components/ui';
 import {
-  TYPE_STYLES, ROLE_TYPE_LABELS, QUALIFICATION_LABELS, JOB_STATUS_CONFIG,
+  TYPE_STYLES, ROLE_TYPE_LABELS, QUALIFICATION_LABELS, JOB_STATUS_CONFIG, getJobTypes,isOpenToEnergyExchange, getDisplayableJobTypes,
 } from '../../constants/jobConstants';
 import { STATUS } from '../../constants/apiConstants';
 import { resolveJobStatus } from './jobStatus';
@@ -36,49 +36,56 @@ export default function JobDetailDrawer({
     );
   }
 
-  const type     = TYPE_STYLES[job.type] || TYPE_STYLES.hire;
-  const TypeIcon = type.icon;
+ const typesIds    = getDisplayableJobTypes(job);
+  const typesInfo   = typesIds.map((id) => TYPE_STYLES[id]).filter(Boolean);
+  const primary     = typesInfo[0] || TYPE_STYLES.hire;
+  const PrimaryIcon = primary.icon;
+  const eeOpen      = isOpenToEnergyExchange(job);
   const status   = resolveJobStatus(job);
   const isActive = status !== 'inactive';
   const vacancies = job.vacancies || 1;
   const filled    = job.positions_filled || 0;
 
   const header = (
-    <div className="flex items-start gap-4 flex-1 min-w-0">
-      <div
-        className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
-        style={{ backgroundColor: type.color }}
-      >
-        <TypeIcon size={20} className="text-white" />
-      </div>
-      <div className="min-w-0">
-        <div className="flex items-center gap-2 flex-wrap mb-1">
-          <span
-            className="text-[10px] font-bold px-2 py-0.5 rounded-full text-white"
-            style={{ backgroundColor: type.color }}
-          >
-            {type.label}
-          </span>
-          {job.role_type && (
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#3E3D38] text-white">
-              {ROLE_TYPE_LABELS[job.role_type] || job.role_type}
-            </span>
-          )}
-          <StatusPill status={status} config={JOB_STATUS_CONFIG} size="xs" />
-        </div>
-        <h2 className="font-unbounded text-base font-black text-[#3E3D38]">
-          {job.title}
-        </h2>
-        <p className="text-[11px] text-[#6B6B66] mt-0.5">
-          Posted {job.created_at ? new Date(job.created_at).toLocaleDateString() : '—'}
-          {job.studio && (
-            <> by <span className="font-semibold">
-              {job.studio.studio_name || job.studio.name}
-            </span></>
-          )}
-        </p>
-      </div>
+<div className="flex items-start gap-4 flex-1 min-w-0">
+  <div
+    className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
+    style={{ backgroundColor: primary.color }}
+  >
+    <PrimaryIcon size={20} className="text-white" />
+  </div>
+  <div className="min-w-0">
+    <div className="flex items-center gap-2 flex-wrap mb-1">
+      {typesInfo.map((info) => (
+        <span
+          key={info.label}
+          className="text-[10px] font-bold px-2 py-0.5 rounded-full text-white"
+          style={{ backgroundColor: info.color }}
+        >
+          {info.label}
+        </span>
+      ))}
+      {job.role_type && (
+        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#3E3D38] text-white">
+          {ROLE_TYPE_LABELS[job.role_type] || job.role_type}
+        </span>
+      )}
+      {eeOpen && <EnergyExchangeBadge open className="mt-1" />}
+      <StatusPill status={status} config={JOB_STATUS_CONFIG} size="xs" />
     </div>
+    <h2 className="font-unbounded text-base font-black text-[#3E3D38]">
+      {job.title}
+    </h2>
+    <p className="text-[11px] text-[#6B6B66] mt-0.5">
+      Posted {job.created_at ? new Date(job.created_at).toLocaleDateString() : '—'}
+      {job.studio && (
+        <> by <span className="font-semibold">
+          {job.studio.studio_name || job.studio.name}
+        </span></>
+      )}
+    </p>
+  </div>
+</div>
   );
 
   const footer = (
@@ -114,7 +121,7 @@ export default function JobDetailDrawer({
           the Drawer shell uses a white header by default. */}
       <div
         className="-mx-6 -mt-6 mb-6 h-1"
-        style={{ backgroundColor: type.color }}
+        style={{ backgroundColor:primary.color }}
       />
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

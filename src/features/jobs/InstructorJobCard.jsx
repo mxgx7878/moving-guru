@@ -3,9 +3,9 @@ import {
   MapPin, Calendar, Clock, MessageCircle, Bookmark, BookmarkCheck,
   Users, GraduationCap, Check, XCircle, Clock3, Lock, ExternalLink,
 } from 'lucide-react';
-import { Button, Chip, IconButton } from '../../components/ui';
+import { Avatar, Button, Chip, EnergyExchangeBadge, IconButton } from '../../components/ui';
 import {
-  ROLE_TYPE_LABELS, QUALIFICATION_LABELS, TYPE_STYLES,
+  ROLE_TYPE_LABELS, QUALIFICATION_LABELS, TYPE_STYLES,getJobTypes , isOpenToEnergyExchange, getDisplayableJobTypes,
 } from '../../constants/jobConstants';
 import { formatShortDate } from '../../utils/formatters';
 import { getApplyState } from '../../utils/jobHelpers';
@@ -21,11 +21,22 @@ export default function InstructorJobCard({
   onToggleSave,
   onApply,
 }) {
-  const typeInfo = TYPE_STYLES[job.type] || TYPE_STYLES.hire;
-  const TypeIcon = typeInfo.icon;
+ const typesIds    = getDisplayableJobTypes(job);   // ← excludes 'energy_exchange'
+const typesInfo   = typesIds.map((id) => TYPE_STYLES[id]).filter(Boolean);
+const primary     = typesInfo[0] || TYPE_STYLES.hire;
+const PrimaryIcon = primary.icon;
+const eeOpen      = isOpenToEnergyExchange(job);
   const applyState = getApplyState(job);
   const userDisciplines = user?.disciplines || user?.detail?.disciplines || [];
   const isMatch = userDisciplines.some((d) => (job.disciplines || []).includes(d));
+
+  const studio        = job.studio || {};
+const studioName    = studio.studio_name || studio.name || 'Studio';
+const studioPicture = studio.detail?.profile_picture_url
+  || studio.detail?.profile_picture
+  || studio.profile_picture_url
+  || studio.profile_picture
+  || null;
 
   const vacancies = job.vacancies || 1;
   const filled    = job.positions_filled || 0;
@@ -46,9 +57,15 @@ export default function InstructorJobCard({
 
       <div className="p-6">
         <div className="flex items-start gap-4 mb-4">
-          <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${typeInfo.bg}`}>
-            <TypeIcon size={18} style={{ color: typeInfo.color }} />
-          </div>
+        <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${primary.bg}`}>
+          <Avatar
+          name={studioName}
+          src={studioPicture}
+          size="md"
+          tone="blue"
+          className="flex-shrink-0"
+        />
+        </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
@@ -70,10 +87,15 @@ export default function InstructorJobCard({
                 )}
               </div>
               <div className="flex items-center gap-1.5 flex-shrink-0 flex-wrap justify-end">
-                <span className="px-2.5 py-1 rounded-full text-[10px] font-bold text-white"
-                  style={{ backgroundColor: typeInfo.color }}>
-                  {typeInfo.label}
-                </span>
+               {typesInfo.map((info) => (
+                  <span
+                    key={info.label}
+                    className="px-2.5 py-1 rounded-full text-[10px] font-bold text-white"
+                    style={{ backgroundColor: info.color }}
+                  >
+                    {info.label}
+                  </span>
+                ))}
                 {job.role_type && (
                   <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#3E3D38] text-white">
                     {ROLE_TYPE_LABELS[job.role_type] || job.role_type}
@@ -104,6 +126,7 @@ export default function InstructorJobCard({
         </p>
 
         <JobMetaRow job={job} />
+        {eeOpen && <EnergyExchangeBadge open className="mt-2" />}
 
         {job.requirements && (
           <div className="bg-[#FBF8E4] rounded-xl px-4 py-2.5 mb-4">

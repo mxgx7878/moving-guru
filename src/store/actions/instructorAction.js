@@ -5,15 +5,24 @@ import { getErrorMessage } from '../../utils/errorUtils';
 
 export const fetchInstructors = createAsyncThunk(
   'instructor/fetchAll',
-  async (params = {}, { rejectWithValue }) => {
+  async (params = {}, { rejectWithValue ,getState }) => {
     try {
-      const { data } = await axiosInstance.get(API_ENDPOINTS.INSTRUCTORS, { params });
-      return data;
+      const { append = false, ...query } = params;
+      console.log(localStorage.getItem('access_token'))
+      const isAuthed = Boolean(getState()?.auth?.user);
+      const endpoint = isAuthed
+        ? API_ENDPOINTS.ME_INSTRUCTORS
+        : API_ENDPOINTS.INSTRUCTORS;
+
+      const { data } = await axiosInstance.get(endpoint, { params: query });
+      return { ...data, append };
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));
     }
   },
 );
+
+
 
 export const fetchInstructorDetail = createAsyncThunk(
   'instructor/fetchDetail',

@@ -32,6 +32,7 @@ export default function InstructorDetail() {
   const dispatch = useDispatch();
 
   const { selectedInstructor, savedIds, status } = useSelector((s) => s.instructor);
+  const { user: currentUser } = useSelector((s) => s.auth);
 
   const [savingToggle, setSavingToggle] = useState(false);
   const [lightbox, setLightbox] = useState(null);
@@ -119,13 +120,23 @@ export default function InstructorDetail() {
             icon={Heart}
             loading={savingToggle}
             onClick={handleToggleSave}
+            disabled={currentUser.user_id === inst.id}
             className={isSaved ? 'bg-[#CE4F56]/5' : 'hover:border-[#CE4F56] hover:text-[#CE4F56]'}
           >
             {isSaved ? 'Saved' : 'Save'}
           </Button>
-          <Button variant="primary" size="md" icon={MessageCircle} onClick={handleMessage}>
+          <Button disabled={currentUser.user_id === inst.id} variant="primary" size="md" icon={MessageCircle} onClick={handleMessage}>
             Message
           </Button>
+          {currentUser.user_id === inst.id && (
+          <Button
+            variant="primary"
+            size="md"
+            onClick={() => navigate('/portal/profile')}
+          >
+            Edit Profile
+          </Button>
+)}
         </div>
       </div>
 

@@ -39,7 +39,6 @@ export const DURATION_OPTIONS = [
 export const JOB_TYPES = [
   { id: 'hire',            label: 'Direct Hire',     icon: Briefcase, color: '#2DA4D6', bg: 'bg-[#2DA4D6]/10' },
   { id: 'swap',            label: 'Instructor Swap', icon: RefreshCw, color: '#E89560', bg: 'bg-[#E89560]/10' },
-  { id: 'energy_exchange', label: 'Energy Exchange', icon: Zap,       color: '#6BE6A4', bg: 'bg-[#6BE6A4]/20' },
 ];
 
 // Filter tabs shown on the instructor Find Work page (includes "All")
@@ -47,7 +46,6 @@ export const JOB_FILTER_TABS = [
   { id: 'all',             label: 'All Listings',    color: '#CCFF00', bg: 'bg-[#CCFF00]', activeText: '#3E3D38' },
   { id: 'hire',            label: 'Direct Hire',     color: '#2DA4D6', bg: 'bg-[#2DA4D6]', activeText: '#FFFFFF' },
   { id: 'swap',            label: 'Instructor Swap', color: '#E89560', bg: 'bg-[#E89560]', activeText: '#FFFFFF' },
-  { id: 'energy_exchange', label: 'Energy Exchange', color: '#6BE6A4', bg: 'bg-[#6BE6A4]', activeText: '#3E3D38' },
 ];
 
 // Display styling for job cards on the instructor Find Work feed
@@ -67,9 +65,16 @@ export const JOB_STATUS_CONFIG = {
   full:     { label: 'Closed / Full', icon: Lock,         cls: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
 };
 
+export const isOpenToEnergyExchange = (job) =>
+  getJobTypes(job).includes('energy_exchange');
+
+/** Job types as an array WITHOUT energy_exchange — for pill rendering. */
+export const getDisplayableJobTypes = (job) =>
+  getJobTypes(job).filter((t) => t !== 'energy_exchange');
+
 export const EMPTY_JOB_FORM = {
   title:               '',
-  type:                'hire',
+  types:                ['hire'],
   role_type:           'permanent',
   description:         '',
   disciplines:         [],
@@ -81,4 +86,10 @@ export const EMPTY_JOB_FORM = {
   qualification_level: 'none',
   is_active:           true,
   vacancies:           1,
+};
+
+export const getJobTypes = (job) => {
+  if (Array.isArray(job?.types) && job.types.length > 0) return job.types;
+  if (job?.type) return [job.type];
+  return [];
 };

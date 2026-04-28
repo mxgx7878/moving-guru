@@ -115,6 +115,7 @@ export default function App() {
           <Route path="profile"     element={<ProfilePage />} />
           <Route path="subscription" element={<Subscription />} />
           <Route path="payments"    element={<Payments />} />
+          <Route path="instructors/:id" element={<InstructorDetail />} />
 
           {/* Gated — require approval */}
           <Route path="find-work"    element={<RequireApproved><FindWork /></RequireApproved>} />

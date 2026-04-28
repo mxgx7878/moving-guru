@@ -8,7 +8,9 @@ export const LANGUAGES = [
   'Dutch', 'Swedish', 'Norwegian', 'Danish', 'Polish', 'Turkish',
 ];
 
-export const OPEN_TO = ['Direct Hire', 'Swaps', 'Energy Exchange'];
+export const OPEN_TO          = ['Direct Hire', 'Swaps'];
+export const OPEN_TO_FULL     = ['Direct Hire', 'Swaps', 'Energy Exchange'];
+export const ENERGY_EXCHANGE  = 'Energy Exchange';
 
 export const OPEN_TO_COLORS = {
   'Direct Hire':     '#2DA4D6',

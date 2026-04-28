@@ -39,9 +39,9 @@ const STEPS_STUDIO = [
 
 // ─── Constants ──────────────────────────────────────────────────
 const PRONOUNS   = ['He/Him','She/Her','They/Them','He/They','She/They','Prefer not to say'];
-const OPEN_TO    = ['Direct Hire','Swaps','Energy Exchange'];
+const OPEN_TO    = ['Direct Hire','Swaps'];
 const LANGUAGES  = ['English','Spanish','French','Portuguese','Italian','German','Japanese','Mandarin','Arabic','Hindi','Korean','Indonesian','Russian','Polish','Cantonese','Ukrainian','Nigerian','Thai'];
-const STUDIO_OPEN = ['Direct Hire','Swaps','Energy Exchange'];
+const STUDIO_OPEN = ['Direct Hire','Swaps'];
 const STUDIO_SIZES = ['1–5 instructors','6–15 instructors','16–30 instructors','30+ instructors'];
 const PLANS = [
   { id:'monthly',  label:'Monthly',   price:15, per:'/mo',  desc:'Flexible, cancel anytime', highlight:false },
@@ -468,6 +468,23 @@ export default function Register() {
                       </button>
                     ))}
                   </div>
+                  <label className="flex items-start gap-2 mt-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={form.openTo.includes('Energy Exchange')}
+                    onChange={(e) => {
+                      const cur = form.openTo.filter((o) => o !== 'Energy Exchange');
+                      update('openTo', e.target.checked ? [...cur, 'Energy Exchange'] : cur);
+                    }}
+                    className="mt-0.5 w-3.5 h-3.5 rounded border-[#E5E0D8] accent-[#6BE6A4] flex-shrink-0"
+                  />
+                  <span className="text-xs text-[#6B6B66] leading-snug">
+                    Open to energy exchange options
+                    <span className="block text-[10px] text-[#9A9A94] mt-0.5">
+                      Optional — exchange opportunities for when other paths aren't viable.
+                    </span>
+                  </span>
+                </label>
                 </div>
               </div>
             )}

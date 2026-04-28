@@ -5,7 +5,7 @@ import {
   fetchMyJobs, createJob, updateJob, deleteJob,
 } from '../../store/actions/jobAction';
 import { STATUS } from '../../constants/apiConstants';
-import { JOB_TYPES, EMPTY_JOB_FORM } from '../../constants/jobConstants';
+import { JOB_TYPES, EMPTY_JOB_FORM, getJobTypes } from '../../constants/jobConstants';
 import { CardSkeleton } from '../../components/feedback';
 import {
   Button, PageHeader, TabBar, EmptyState, StatTileGroup,
@@ -39,7 +39,7 @@ export default function JobListings() {
   const openEdit = (job) => {
     setEditingJob({
       title:               job.title               || '',
-      type:                job.type                || 'hire',
+      types:               getJobTypes(job).length ? getJobTypes(job) : ['hire'],
       role_type:           job.role_type           || 'permanent',
       description:         job.description         || '',
       disciplines:         job.disciplines         || [],
@@ -79,17 +79,17 @@ export default function JobListings() {
   const handleToggleActive = (job) =>
     dispatch(updateJob({ id: job.id, is_active: !job.is_active }));
 
-  const filteredJobs = filterType === 'all'
-    ? myJobs
-    : myJobs.filter((j) => j.type === filterType);
+    const filteredJobs = filterType === 'all'
+      ? myJobs
+      : myJobs.filter((j) => getJobTypes(j).includes(filterType));
 
-  const counts = {
-    all: myJobs.length,
-    ...JOB_TYPES.reduce((acc, t) => ({
-      ...acc,
-      [t.id]: myJobs.filter((j) => j.type === t.id).length,
-    }), {}),
-  };
+    const counts = {
+      all: myJobs.length,
+      ...JOB_TYPES.reduce((acc, t) => ({
+        ...acc,
+        [t.id]: myJobs.filter((j) => getJobTypes(j).includes(t.id)).length,
+      }), {}),
+    };
 
   const loading = myJobsStatus === STATUS.LOADING && myJobs.length === 0;
 

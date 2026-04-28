@@ -45,6 +45,8 @@ const initialState = {
   adminJobsStatus: STATUS.IDLE,
   adminJobsPagination: null,
   selectedJob: null,
+
+  jobsMeta: { page: 1, per_page: 10, total: 0, last_page: 1 },
 };
 
 // Helpers — unwrap backend envelope { status, data: { jobs } } or legacy
@@ -87,7 +89,21 @@ const jobSlice = createSlice({
       .addCase(fetchJobs.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
         const list = unwrapJobs(payload);
-        state.jobs = Array.isArray(list) ? list : [];
+        const next = Array.isArray(list) ? list : [];
+
+        if (payload?.append) {
+          const seen = new Set(state.jobs.map((j) => j.id));
+          state.jobs = [...state.jobs, ...next.filter((j) => !seen.has(j.id))];
+        } else {
+          state.jobs = next;
+        }
+
+        state.jobsMeta = {
+          page:      payload?.data?.meta?.page      ?? 1,
+          per_page:  payload?.data?.meta?.per_page  ?? 10,
+          total:     payload?.data?.meta?.total     ?? state.jobs.length,
+          last_page: payload?.data?.meta?.last_page ?? 1,
+        };
       })
       .addCase(fetchJobs.rejected, (state, { payload }) => {
         state.status = STATUS.FAILED;

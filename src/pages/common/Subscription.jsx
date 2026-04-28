@@ -1,192 +1,254 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Download, CreditCard, CheckCircle, Calendar, DollarSign, TrendingUp } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
+import { Check, Sparkles, Calendar, ArrowRight } from 'lucide-react';
+
 import { ROLE_THEME } from '../../config/portalConfig';
-import { fetchPayments } from '../../store/actions/paymentAction';
+import {
+  fetchPlans, fetchCurrentSubscription, changePlan,
+} from '../../store/actions/subscriptionAction';
+import {
+  clearSubscriptionMessage, clearSubscriptionError,
+} from '../../store/slices/subscriptionSlice';
 import { STATUS } from '../../constants/apiConstants';
-import { TableSkeleton, CardSkeleton } from '../../components/feedback';
-import { Button, IconButton } from '../../components/ui';
+import { Button } from '../../components/ui';
+import { CardSkeleton } from '../../components/feedback';
+
+// Used as the source of truth when /api/plans returns an empty list
+// (e.g. before the seed runs). Mirrors the shape the live API uses so
+// the rendering below doesn't need to branch on which source is in use.
+const FALLBACK_PLANS = [
+  { id: 'monthly',  name: 'Monthly',   price: 15, period: '/mo',  description: 'Flexible, cancel anytime', highlighted: false },
+  { id: 'biannual', name: '6 Months',  price: 45, period: '/6mo', description: 'Save 50% vs monthly',      highlighted: true  },
+  { id: 'annual',   name: '12 Months', price: 60, period: '/yr',  description: 'Best value — ~$5/mo',      highlighted: false },
+];
+
+const PLAN_ORDER = ['monthly', 'biannual', 'annual'];
 
 /**
- * Payments page — shared between instructor and studio portals.
- *
- * Studio-specific addition: a "Total Spend" card that sums all
- * successful payments (subscription + any one-off charges like
- * featured listings). Falls back to the same total for instructors
- * but uses role-aware copy so "Total Paid" stays accurate for them.
+ * Subscription — shared between instructor and studio portals.
+ * Shows the current plan + a switcher for the available plans. The
+ * Payment History page (/portal/payments | /studio/payments) is its
+ * own route — linked from the header here.
  */
-export default function Payments() {
+export default function Subscription() {
   const dispatch = useDispatch();
   const { user } = useSelector((s) => s.auth);
-  const { payments, status } = useSelector((s) => s.payment);
-  const role = user?.role || 'instructor';
-  const theme = ROLE_THEME[role] || ROLE_THEME.instructor;
-  const isStudio = role === 'studio';
+  const { plans, currentSubscription, status, message, error } = useSelector((s) => s.subscription);
+
+  const role         = user?.role || 'instructor';
+  const theme        = ROLE_THEME[role] || ROLE_THEME.instructor;
+  const paymentsPath = role === 'studio' ? '/studio/payments' : '/portal/payments';
+
+  const [switchingPlanId, setSwitchingPlanId] = useState(null);
 
   useEffect(() => {
-    dispatch(fetchPayments());
+    dispatch(fetchPlans());
+    dispatch(fetchCurrentSubscription());
   }, [dispatch]);
 
-  // Only count paid/successful payments toward the totals — refunded /
-  // failed rows shouldn't pad the spend.
-  const paidOnly = payments.filter(
-    (p) => !p.status || ['paid', 'Paid', 'succeeded', 'completed'].includes(p.status),
-  );
-  const total = paidOnly.reduce((s, p) => s + (Number(p.amount) || 0), 0);
+  // Surface backend success / failure messages from the slice.
+  useEffect(() => {
+    if (message) { toast.success(message); dispatch(clearSubscriptionMessage()); }
+  }, [message, dispatch]);
 
-  // Running avg per month (for studios who like the signal)
-  const months = new Set(
-    paidOnly.map((p) => (p.date || '').slice(0, 7)).filter(Boolean),
-  );
-  const avgPerMonth = months.size > 0 ? total / months.size : 0;
+  useEffect(() => {
+    if (error) {
+      toast.error(typeof error === 'string' ? error : 'Could not update plan');
+      dispatch(clearSubscriptionError());
+    }
+  }, [error, dispatch]);
 
-  if (status === STATUS.LOADING && payments.length === 0) {
+  // Normalise the plans list (API or fallback) into one shape so the
+  // card map below doesn't have to handle a dozen field aliases.
+  const livePlans = (plans?.length ? plans : FALLBACK_PLANS).map((p) => ({
+    id:          p.id ?? p.slug ?? p.code,
+    name:        p.name || p.label || p.id,
+    price:       p.price ?? p.price_monthly ?? p.amount ?? 0,
+    period:      p.period || p.per || (p.interval ? `/${p.interval}` : ''),
+    description: p.description || p.desc || '',
+    features:    p.features || [],
+    highlighted: Boolean(p.highlighted ?? p.highlight ?? p.is_featured),
+  }));
+
+  const sortedPlans = [...livePlans].sort((a, b) => {
+    const ai = PLAN_ORDER.indexOf(String(a.id).toLowerCase());
+    const bi = PLAN_ORDER.indexOf(String(b.id).toLowerCase());
+    if (ai === -1 && bi === -1) return 0;
+    if (ai === -1) return 1;
+    if (bi === -1) return -1;
+    return ai - bi;
+  });
+
+  // Current plan id — try a handful of likely API shapes plus the
+  // flattened user payload (auth slice merges `detail` onto user).
+  const currentPlanId = String(
+    currentSubscription?.plan?.id
+    ?? currentSubscription?.plan_id
+    ?? currentSubscription?.plan
+    ?? user?.subscription?.plan
+    ?? user?.plan
+    ?? '',
+  ).toLowerCase();
+
+  const currentPlan = sortedPlans.find((p) => String(p.id).toLowerCase() === currentPlanId);
+  const renewalDate = currentSubscription?.renewal_date
+    || currentSubscription?.current_period_end
+    || user?.subscriptionRenews
+    || user?.subscription_renews;
+
+  const handleSwitch = async (planId) => {
+    if (String(planId).toLowerCase() === currentPlanId) return;
+    setSwitchingPlanId(planId);
+    await dispatch(changePlan({ plan_id: planId }));
+    await dispatch(fetchCurrentSubscription());
+    setSwitchingPlanId(null);
+  };
+
+  const loading = status === STATUS.LOADING && plans.length === 0 && !currentSubscription;
+
+  if (loading) {
     return (
-      <div className="max-w-3xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-6">
         <div>
-          <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Payment History</h1>
-          <p className="text-[#9A9A94] text-sm mt-1">Your billing history and invoices</p>
+          <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Subscription</h1>
+          <p className="text-[#9A9A94] text-sm mt-1">Manage your Moving Guru plan</p>
         </div>
         <CardSkeleton count={3} />
-        <TableSkeleton rows={4} cols={3} />
       </div>
     );
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      <div>
-        <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Payment History</h1>
-        <p className="text-[#9A9A94] text-sm mt-1">
-          {isStudio ? 'Track what your studio has spent on Moving Guru' : 'Your billing history and invoices'}
-        </p>
+    <div className="max-w-4xl mx-auto space-y-6">
+
+      {/* ── Header ─────────────────────────────────────────── */}
+      <div className="flex items-end justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Subscription</h1>
+          <p className="text-[#9A9A94] text-sm mt-1">Manage your Moving Guru plan</p>
+        </div>
+        <Link
+          to={paymentsPath}
+          className="text-xs font-semibold inline-flex items-center gap-1.5 hover:underline"
+          style={{ color: theme.accent }}
+        >
+          View Payment History <ArrowRight size={12} />
+        </Link>
       </div>
 
-      {/* ── Summary cards ───────────────────────────────────── */}
-      {isStudio ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Studio Total Spend — highlighted hero card */}
-          <div className="md:col-span-1 bg-gradient-to-br from-[#2DA4D6] to-[#2590bd] rounded-2xl p-5 text-white">
-            <div className="flex items-start justify-between mb-3">
-              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
-                <DollarSign size={18} />
-              </div>
-              <TrendingUp size={14} className="opacity-80" />
-            </div>
+      {/* ── Current plan card ──────────────────────────────── */}
+      <div
+        className="rounded-2xl p-6 text-white"
+        style={{ background: `linear-gradient(135deg, ${theme.accent}, ${theme.accent}dd)` }}
+      >
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <p className="text-white/80 text-[10px] font-semibold tracking-widest uppercase mb-2">
+              Current Plan
+            </p>
             <p className="font-unbounded text-3xl font-black leading-none">
-              ${total.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+              {currentPlan?.name || 'No active plan'}
             </p>
-            <p className="text-white/80 text-xs font-semibold mt-2 uppercase tracking-wider">Total Spend</p>
-            <p className="text-white/60 text-[10px] mt-1">All-time across your studio account</p>
+            {currentPlan && (
+              <p className="text-white/80 text-sm mt-2">
+                ${currentPlan.price}{currentPlan.period}
+                {currentPlan.description ? ` · ${currentPlan.description}` : ''}
+              </p>
+            )}
           </div>
-
-          <div className="bg-white rounded-2xl p-5 border border-[#E5E0D8]">
-            <div className="w-10 h-10 rounded-xl bg-[#E89560]/10 flex items-center justify-center mb-3">
-              <CreditCard size={16} className="text-[#E89560]" />
-            </div>
-            <p className="font-unbounded text-2xl font-black text-[#3E3D38]">{paidOnly.length}</p>
-            <p className="text-[#9A9A94] text-xs font-semibold mt-1">Payments Made</p>
-          </div>
-
-          <div className="bg-white rounded-2xl p-5 border border-[#E5E0D8]">
-            <div className="w-10 h-10 rounded-xl bg-[#6BE6A4]/20 flex items-center justify-center mb-3">
-              <Calendar size={16} className="text-[#3E3D38]" />
-            </div>
-            <p className="font-unbounded text-lg font-black text-[#3E3D38]">
-              ${avgPerMonth.toFixed(2)}
-            </p>
-            <p className="text-[#9A9A94] text-xs font-semibold mt-1">Avg / Month</p>
+          <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center">
+            <Sparkles size={20} />
           </div>
         </div>
-      ) : (
-        <div className="grid grid-cols-3 gap-4">
-          <div className="bg-white rounded-2xl p-4 border border-[#E5E0D8] text-center">
-            <DollarSign size={16} style={{ color: theme.accent }} className="mx-auto mb-2" />
-            <p className="font-unbounded text-xl font-black text-[#3E3D38]">${total.toFixed(2)}</p>
-            <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider mt-1">Total Paid</p>
-          </div>
-          <div className="bg-white rounded-2xl p-4 border border-[#E5E0D8] text-center">
-            <CreditCard size={16} className="text-[#E89560] mx-auto mb-2" />
-            <p className="font-unbounded text-xl font-black text-[#3E3D38]">{paidOnly.length}</p>
-            <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider mt-1">Payments</p>
-          </div>
-          <div className="bg-white rounded-2xl p-4 border border-[#E5E0D8] text-center">
-            <Calendar size={16} className="text-[#2DA4D6] mx-auto mb-2" />
-            <p className="font-unbounded text-sm font-black text-[#3E3D38]">
-              {user?.subscriptionRenews || user?.subscription_renews || '—'}
-            </p>
-            <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider mt-1">Next Renewal</p>
-          </div>
-        </div>
-      )}
-
-      {/* ── Payment method ──────────────────────────────────── */}
-      <div className="bg-white rounded-2xl p-5 border border-[#E5E0D8]">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: theme.accent }}>
-              <CreditCard size={16} className="text-white" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-[#3E3D38]">Visa •••• 4242</p>
-              <p className="text-xs text-[#9A9A94]">Expires 12/28</p>
-            </div>
-          </div>
-          <Button variant="secondary" size="xs" className="hover:border-sky-mg hover:text-sky-mg">
-            Update
-          </Button>
-        </div>
-      </div>
-
-      {/* ── Transactions ────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
-        <div className="px-6 py-4 border-b border-[#E5E0D8]">
-          <h3 className="font-unbounded text-xs font-bold text-[#3E3D38] tracking-wider uppercase">
-            Transactions
-          </h3>
-        </div>
-
-        <div className="divide-y divide-[#E5E0D8]/50">
-          {payments.map((p) => (
-            <div key={p.id} className="px-6 py-4 flex items-center justify-between hover:bg-[#FDFCF8] transition-colors">
-              <div className="flex items-center gap-4">
-                <div className="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <CheckCircle size={14} className="text-emerald-500" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-[#3E3D38]">{p.plan} Subscription</p>
-                  <p className="text-xs text-[#9A9A94]">{p.date} · {p.invoice}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <div className="text-right">
-                  <p className="font-unbounded text-sm font-bold text-[#3E3D38]">
-                    ${Number(p.amount || 0).toFixed(2)}
-                  </p>
-                  <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-                    {p.status}
-                  </span>
-                </div>
-                <IconButton variant="plain" aria-label="Download receipt" title="Download receipt">
-                  <Download size={14} />
-                </IconButton>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {payments.length === 0 && (
-          <div className="px-6 py-12 text-center">
-            <CreditCard size={32} className="text-[#E5E0D8] mx-auto mb-3" />
-            <p className="text-[#9A9A94] text-sm">No payments yet</p>
+        {renewalDate && (
+          <div className="mt-5 pt-5 border-t border-white/20 flex items-center gap-2 text-xs text-white/80">
+            <Calendar size={12} /> Next renewal · {renewalDate}
           </div>
         )}
       </div>
 
+      {/* ── Plan switcher ──────────────────────────────────── */}
+      <div>
+        <h2 className="font-unbounded text-xs font-bold text-[#3E3D38] tracking-wider uppercase mb-3">
+          Change Plan
+        </h2>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {sortedPlans.map((p) => {
+            const isCurrent   = String(p.id).toLowerCase() === currentPlanId;
+            const isSwitching = switchingPlanId === p.id;
+            const borderCls   = isCurrent
+              ? 'border-[#3E3D38]'
+              : p.highlighted
+                ? 'border-[#E89560]'
+                : 'border-[#E5E0D8] hover:border-[#3E3D38]/30';
+
+            return (
+              <div
+                key={p.id}
+                className={`bg-white rounded-2xl p-5 border-2 transition-all flex flex-col ${borderCls}`}
+              >
+                {(isCurrent || p.highlighted) && (
+                  <div className="flex justify-end mb-2">
+                    {isCurrent ? (
+                      <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#3E3D38] text-white">
+                        CURRENT
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#E89560] text-white">
+                        RECOMMENDED
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                <p className="font-unbounded text-base font-black text-[#3E3D38]">{p.name}</p>
+                {p.description && (
+                  <p className="text-[#9A9A94] text-xs mt-1">{p.description}</p>
+                )}
+
+                <div className="my-4">
+                  <span className="font-unbounded text-3xl font-black text-[#3E3D38]">
+                    ${p.price}
+                  </span>
+                  <span className="text-[#9A9A94] text-xs ml-1">{p.period}</span>
+                </div>
+
+                {p.features.length > 0 && (
+                  <ul className="space-y-1.5 mb-4">
+                    {p.features.map((f) => (
+                      <li key={f} className="flex items-start gap-2 text-xs text-[#6B6B66]">
+                        <Check size={12} className="text-[#6BE6A4] mt-0.5 flex-shrink-0" /> {f}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                <div className="mt-auto pt-2">
+                  <Button
+                    variant={isCurrent ? 'secondary' : 'primary'}
+                    size="sm"
+                    fullWidth
+                    disabled={isCurrent}
+                    loading={isSwitching}
+                    onClick={() => handleSwitch(p.id)}
+                  >
+                    {isCurrent ? 'Current Plan' : `Switch to ${p.name}`}
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── Footer ─────────────────────────────────────────── */}
       <p className="text-center text-[#9A9A94] text-xs">
-        Need a receipt or have billing questions? Contact{' '}
-        <a href="mailto:admin@movingguru.co" className="text-[#2DA4D6] hover:underline">admin@movingguru.co</a>
+        Questions about your plan? Contact{' '}
+        <a href="mailto:admin@movingguru.co" className="text-[#2DA4D6] hover:underline">
+          admin@movingguru.co
+        </a>
       </p>
     </div>
   );

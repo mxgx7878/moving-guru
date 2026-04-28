@@ -24,7 +24,8 @@ export const DISCIPLINE_CATEGORIES = [
     emoji: '🥋',
     items: [
       'Brazilian Jiu-Jitsu (BJJ)', 'Boxing', 'Muay Thai', 'Kickboxing',
-      'Taekwondo', 'Karate', 'Judo', 'Wrestling', 'Krav Maga', 'Mixed Martial Arts (MMA)',
+      'Taekwondo', 'Karate', 'Judo', 'Wrestling', 'Krav Maga',
+      'Mixed Martial Arts (MMA)',
     ],
   },
   {
@@ -32,7 +33,21 @@ export const DISCIPLINE_CATEGORIES = [
     label: 'Cardio & Functional Training',
     emoji: '🚴',
     items: [
-      'Spinning / Indoor Cycling', 'HIIT', 'Bootcamp', 'Dance Cardio (e.g., Zumba, Jungle Body)',
+      'Spinning / Indoor Cycling', 'HIIT', 'Bootcamp',
+      'Dance Cardio (e.g., Zumba, Jungle Body)',
+      // ── Added per client revision ──
+      'Personal Trainer', 'Aerobics',
+    ],
+  },
+  {
+    id: 'sports',
+    label: 'Sports & Outdoor',
+    emoji: '⛹️',
+    items: [
+      'Swimming', 'Horse Riding', 'Tennis', 'Climbing / Bouldering',
+      'Snow Sports', 'Soccer', 'Surfing', 'Sailing', 'Archery', 'Fencing',
+      'Paddle Boarding', 'Rowing', 'Gymnastics', 'AFL', 'Basketball',
+      'Rugby', 'Cricket', 'Coach (Other)',
     ],
   },
   {
@@ -45,11 +60,21 @@ export const DISCIPLINE_CATEGORIES = [
     ],
   },
   {
+    id: 'holistic',
+    label: 'Holistic & Wellness Therapies',
+    emoji: '🌿',
+    items: [
+      'Acupuncture', 'Somatic Therapy', 'Traditional Chinese Medicine',
+      'Naturopath', 'Nutritionist',
+    ],
+  },
+  {
     id: 'recovery',
     label: 'Recovery & Regeneration',
     emoji: '💆',
     items: [
-      'Massage', 'Bowen Therapy', 'Physio Therapy', 'Myofascial Release', 'Cupping',
+      'Massage', 'Bowen Therapy', 'Physio Therapy',
+      'Myofascial Release', 'Cupping',
     ],
   },
   {
@@ -60,9 +85,17 @@ export const DISCIPLINE_CATEGORIES = [
       'Ballet Fitness', 'Contemporary Dance', 'Hip-Hop Dance',
       'Latin Dance (Salsa, Bachata)', 'Ballroom Dance',
       'Pole Fitness and Exotic Dance', 'Dance + Strength Fusion',
-      'Dance Movement Therapy', 'Aerial Fitness / Silks', 'Other',
+      'Dance Movement Therapy', 'Aerial Fitness / Silks',
+    ],
+  },
+  {
+    id: 'operations',
+    label: 'Studio Operations',
+    emoji: '📋',
+    items: [
+      'Administration Staff', 'Other',
     ],
   },
 ];
 
-export const ALL_DISCIPLINES = DISCIPLINE_CATEGORIES.flatMap(c => c.items);
+export const ALL_DISCIPLINES = DISCIPLINE_CATEGORIES.flatMap((c) => c.items);

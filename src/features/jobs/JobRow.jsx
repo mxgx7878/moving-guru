@@ -2,14 +2,17 @@ import {
   Building2, MapPin, Users, Eye, Ban, CheckCircle2, Trash2,
 } from 'lucide-react';
 import { StatusPill, IconButton } from '../../components/ui';
-import { TYPE_STYLES, ROLE_TYPE_LABELS, JOB_STATUS_CONFIG } from '../../constants/jobConstants';
+import { TYPE_STYLES, ROLE_TYPE_LABELS, JOB_STATUS_CONFIG, getJobTypes, isOpenToEnergyExchange, getDisplayableJobTypes, } from '../../constants/jobConstants';
 import { resolveJobStatus } from './jobStatus';
 
 // One row in the admin job listings table. All mutation callbacks are
 // optional — the parent decides which actions are live for the row.
 export default function JobRow({ job, busy = false, onPreview, onActivate, onDeactivate, onDelete }) {
-  const type      = TYPE_STYLES[job.type] || TYPE_STYLES.hire;
-  const TypeIcon  = type.icon;
+ const typesIds    = getDisplayableJobTypes(job);
+  const typesInfo   = typesIds.map((id) => TYPE_STYLES[id]).filter(Boolean);
+  const primary     = typesInfo[0] || TYPE_STYLES.hire;
+  const PrimaryIcon = primary.icon;
+  const eeOpen      = isOpenToEnergyExchange(job);
   const status    = resolveJobStatus(job);
   const isActive  = status === 'active' || status === 'full';
   const vacancies = job.vacancies || 1;
@@ -23,19 +26,22 @@ export default function JobRow({ job, busy = false, onPreview, onActivate, onDea
         <div className="flex items-start gap-3">
           <div
             className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ backgroundColor: type.color + '15' }}
+            style={{ backgroundColor: primary.color + '15' }}
           >
-            <TypeIcon size={14} style={{ color: type.color }} />
+            <PrimaryIcon size={14} style={{ color: primary.color }} />
           </div>
           <div className="min-w-0">
-            <p className="font-semibold text-[#3E3D38] text-xs line-clamp-1">{job.title}</p>
-            <div className="flex items-center gap-1 mt-0.5">
-              <span
-                className="text-[10px] font-bold px-1.5 py-0.5 rounded-full text-white"
-                style={{ backgroundColor: type.color }}
-              >
-                {type.label}
-              </span>
+            <p className="font-semibold text-[#3E3D38] text-xs line-clamp-1">{job.title } {eeOpen && <span className="text-[9px] text-[#9A9A94] mt-0.5">+ Energy exchange</span>}</p>
+            <div className="flex items-center gap-1 mt-0.5 flex-wrap">
+              {typesInfo.map((info) => (
+                <span
+                  key={info.label}
+                  className="text-[10px] font-bold px-1.5 py-0.5 rounded-full text-white"
+                  style={{ backgroundColor: info.color }}
+                >
+                  {info.label}
+                </span>
+              ))}
               {job.role_type && (
                 <span className="text-[10px] text-[#9A9A94]">
                   · {ROLE_TYPE_LABELS[job.role_type] || job.role_type}

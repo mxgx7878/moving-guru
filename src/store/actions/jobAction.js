@@ -7,8 +7,9 @@ export const fetchJobs = createAsyncThunk(
   'job/fetchAll',
   async (params ={}, { rejectWithValue }) => {
     try {
-      const { data } = await axiosInstance.get(API_ENDPOINTS.JOBS, {params});
-      return data;
+      const { append = false, ...query } = params;
+      const { data } = await axiosInstance.get(API_ENDPOINTS.JOBS, { params: query });
+      return { ...data, append};
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));
     }

@@ -6,7 +6,11 @@ const email = yup.string().trim().email('Enter a valid email');
 // ── Job listing (studio creates / edits) ─────────────────────────
 export const jobSchema = yup.object({
   title: yup.string().trim().required('Title is required').max(120),
-  type:  yup.string().required('Select a listing type'),
+  types:  yup
+  .array()
+  .of(yup.string().oneOf(['hire', 'swap', 'energy_exchange']))
+  .min(1, 'Select at least one listing type')
+  .required('Select at least one listing type'),
   role_type: yup.string().nullable(),
   location:  yup.string().trim().nullable().max(120),
   start_date: yup.string().nullable(),

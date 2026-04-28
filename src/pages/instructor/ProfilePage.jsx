@@ -33,7 +33,7 @@ const SOCIAL_PLATFORMS = [
 
 const PRONOUNS = ['He/Him', 'She/Her', 'They/Them', 'He/They', 'She/They', 'Prefer not to say'];
 const LANGUAGES = ['English','Spanish','French','Portuguese','Italian','German','Japanese','Mandarin','Arabic','Hindi','Korean','Indonesian','Russian','Polish','Cantonese','Ukrainian','Nigerian','Thai'];
-const OPEN_TO = ['Direct Hire', 'Swaps', 'Energy Exchange'];
+const OPEN_TO = ['Direct Hire', 'Swaps'];
 
 // ─── Main component ──────────────────────────────────────────────
 export default function ProfilePage() {
@@ -525,15 +525,34 @@ export default function ProfilePage() {
               <Field label="Open To" hint="What type of arrangement are you looking for?">
                 <ChipGroup
                   options={OPEN_TO}
-                  value={form.openTo || []}
-                  onChange={(next) => set('openTo', next)}
+                  value={(form.openTo || []).filter((o) => o !== 'Energy Exchange')}
+                  onChange={(next) => {
+                    // Preserve the EE flag while the chip group only edits hire/swap
+                    const ee = (form.openTo || []).includes('Energy Exchange');
+                    set('openTo', ee ? [...next, 'Energy Exchange'] : next);
+                  }}
                   multiple
                   tone="blue"
                   className="mt-1"
                 />
-                {(form.openTo || []).length === 0 && (
-                  <p className="text-[10px] text-ink-faint mt-1">Select at least one option</p>
-                )}
+
+                <label className="flex items-start gap-2 mt-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={(form.openTo || []).includes('Energy Exchange')}
+                    onChange={(e) => {
+                      const cur = (form.openTo || []).filter((o) => o !== 'Energy Exchange');
+                      set('openTo', e.target.checked ? [...cur, 'Energy Exchange'] : cur);
+                    }}
+                    className="mt-0.5 w-3.5 h-3.5 rounded border-[#E5E0D8] accent-[#6BE6A4] flex-shrink-0"
+                  />
+                  <span className="text-xs text-[#6B6B66] leading-snug">
+                    Open to energy exchange options
+                    <span className="block text-[10px] text-[#9A9A94] mt-0.5">
+                      Optional — exchange opportunities for when other paths aren't viable.
+                    </span>
+                  </span>
+                </label>
               </Field>
             </div>
           </Section>

@@ -24,13 +24,8 @@ import {
 } from '../../features/modals';
 import { postToGrowForm as postToForm } from '../../utils/postToForm';
 import { validateGrowForm } from '../../utils/validators';
+import { ALL_DISCIPLINES } from '../../data/disciplines';
 
-const DISCIPLINE_LIST = [
-  'Reformer Pilates', 'Mat Pilates', 'Vinyasa Yoga', 'Hatha Yoga', 'Yin Yoga',
-  'Ashtanga Yoga', 'Barre', 'Breathwork / Pranayama', 'Meditation',
-  'Sound Bath / Sound Healing', 'Massage', 'Muay Thai', 'Boxing', 'Kickboxing',
-  'Contemporary Dance', 'Dance Movement Therapy', 'Somatic Movement', 'Tai Chi', 'Qigong',
-];
 
 // Read a File as base64 — backend accepts strings under images[].
 const fileToBase64 = (file) => new Promise((resolve, reject) => {
@@ -451,7 +446,7 @@ const dispatchSave = ({ expiry_date, pricing_tier }) => {
 
         <Field label="Disciplines">
           <div className="flex flex-wrap gap-2">
-            {DISCIPLINE_LIST.map((d) => {
+            {ALL_DISCIPLINES.map((d) => {
               const active = form.disciplines.includes(d);
               return (
                 <button

@@ -35,3 +35,6 @@ export { default as Toolbar } from './Toolbar';
 export { default as DataTable } from './DataTable';
 export { default as StatTileGroup } from './StatTileGroup';
 export { default as DashboardStatCard } from './DashboardStatCard';
+export { default as LazyVisible } from './LazyVisible';
+export { default as EnergyExchangeBadge } from './EnergyExchangeBadge';
+

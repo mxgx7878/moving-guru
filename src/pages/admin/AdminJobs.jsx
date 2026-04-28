@@ -17,7 +17,7 @@ import {
   clearSelectedJob,
 } from '../../store/slices/jobSlice';
 import { STATUS } from '../../constants/apiConstants';
-import { JOB_TYPES } from '../../constants/jobConstants';
+import { JOB_TYPES ,getJobTypes  } from '../../constants/jobConstants';
 
 import {
   PageHeader, Toolbar, TabBar, DataTable, EmptyState,
@@ -93,7 +93,7 @@ export default function AdminJobs() {
   const counts = useMemo(() => {
     const byType = JOB_TYPES.reduce((acc, t) => ({
       ...acc,
-      [t.id]: adminJobs.filter((j) => j.type === t.id).length,
+      [t.id]: adminJobs.filter((j) => getJobTypes(j).includes(t.id)).length,
     }), {});
     return {
       all:      adminJobs.length,
@@ -108,7 +108,7 @@ export default function AdminJobs() {
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
     return adminJobs.filter((j) => {
-      const matchType = typeTab === 'all' || j.type === typeTab;
+      const matchType = typeTab === 'all' ||  getJobTypes(j).includes(typeTab);
       const matchStatus =
         statusTab === 'all' ||
         (statusTab === 'active'   && j.is_active !== false) ||

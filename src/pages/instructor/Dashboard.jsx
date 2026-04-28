@@ -1,70 +1,143 @@
-import { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { fetchMyApplications } from '../../store/actions/jobAction';
-import { BarChart, StatCard, Button, Input } from '../../components/ui';
-import { ChangePasswordCard, PasswordResetCard } from '../../features/account';
+import { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchMyApplications } from "../../store/actions/jobAction";
+import { BarChart, StatCard, Button, Input } from "../../components/ui";
+import { ChangePasswordCard, PasswordResetCard } from "../../features/account";
 import {
-  Eye, MessageCircle, Heart, TrendingUp, Globe,
-  MapPin, Calendar, Star, ArrowUpRight, Zap, Megaphone,
-  Mail, Settings,
-} from 'lucide-react';
+  Eye,
+  MessageCircle,
+  Heart,
+  TrendingUp,
+  Globe,
+  MapPin,
+  Calendar,
+  Star,
+  ArrowUpRight,
+  Zap,
+  Megaphone,
+  Mail,
+  Settings,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { myApplications } = useSelector((s) => s.job);
+  const navigate = useNavigate();
   const profileData = user || {};
 
-  useEffect(() => { dispatch(fetchMyApplications()); }, [dispatch]);
+  useEffect(() => {
+    dispatch(fetchMyApplications());
+  }, [dispatch]);
 
   const viewsArray = profileData.profileViews || [];
-  const totalViews = profileData.profile_views || viewsArray.reduce((s, d) => s + d.views, 0) || 0;
+  const totalViews =
+    profileData.profile_views ||
+    viewsArray.reduce((s, d) => s + d.views, 0) ||
+    0;
   const thisMonth = viewsArray[viewsArray.length - 1]?.views || 0;
   const lastMonth = viewsArray[viewsArray.length - 2]?.views || 0;
-  const growth = lastMonth > 0 ? Math.round(((thisMonth - lastMonth) / lastMonth) * 100) : 0;
-  const pendingApps = myApplications.filter((a) => a.status === 'pending' || a.status === 'viewed').length;
-  const favouritedCount = profileData.saved_by_count ?? profileData.stats?.saved_by_count ?? 0;
+  const growth =
+    lastMonth > 0 ? Math.round(((thisMonth - lastMonth) / lastMonth) * 100) : 0;
+  const pendingApps = myApplications.filter(
+    (a) => a.status === "pending" || a.status === "viewed",
+  ).length;
+  const favouritedCount =
+    profileData.saved_by_count ?? profileData.stats?.saved_by_count ?? 0;
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       {/* Welcome */}
       <div className="bg-gradient-to-br from-[#FDFCF8] to-[#f5fca6]/40 rounded-2xl p-6 flex items-center justify-between overflow-hidden relative border border-[#E5E0D8]">
-        <div className="absolute inset-0 opacity-20"
+        <div
+          className="absolute inset-0 opacity-20"
           style={{
-            backgroundImage: `radial-gradient(circle at 80% 50%, #CE4F56 0%, transparent 60%)`
+            backgroundImage: `radial-gradient(circle at 80% 50%, #CE4F56 0%, transparent 60%)`,
           }}
         />
         <div className="relative z-10">
-          <p className="text-[#CE4F56] text-xs font-semibold tracking-widest uppercase mb-2">Welcome back</p>
+          <p className="text-[#CE4F56] text-xs font-semibold tracking-widest uppercase mb-2">
+            Welcome back
+          </p>
           <h1 className="font-unbounded text-2xl font-black text-[#3E3D38] mb-1">
-            {profileData.name?.split(' ')[0]}
+            {profileData.name?.split(" ")[0]}
           </h1>
           <p className="text-[#6B6B66] text-sm">
-            {(profileData.profileStatus || profileData.profile_status) === 'active'
-              ? 'Your profile is live and attracting studios'
-              : 'Your profile is currently inactive'}
+            {(profileData.profileStatus || profileData.profile_status) ===
+            "active"
+              ? "Your profile is live and attracting studios"
+              : "Your profile is currently inactive"}
           </p>
+          {user.user_id && (
+            <Button
+              variant="primary"
+              size="sm"
+              icon={Eye}
+              onClick={() => navigate(`/portal/instructors/${user.user_id}`)}
+              className="mt-4"
+            >
+              View Profile
+            </Button>
+          )}
         </div>
         <div className="relative z-10 hidden sm:flex flex-col items-end gap-2">
-          <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold
-            ${(profileData.profileStatus || profileData.profile_status) === 'active'
-              ? 'bg-[#6BE6A4]/20 text-[#3E3D38]'
-              : 'bg-[#FBF8E4] text-[#9A9A94]'}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${(profileData.profileStatus || profileData.profile_status) === 'active' ? 'bg-[#6BE6A4]' : 'bg-[#9A9A94]'}`} />
-            {(profileData.profileStatus || profileData.profile_status) === 'active' ? 'Actively Seeking' : 'Not Seeking'}
+          <div
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold
+            ${
+              (profileData.profileStatus || profileData.profile_status) ===
+              "active"
+                ? "bg-[#6BE6A4]/20 text-[#3E3D38]"
+                : "bg-[#FBF8E4] text-[#9A9A94]"
+            }`}
+          >
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${(profileData.profileStatus || profileData.profile_status) === "active" ? "bg-[#6BE6A4]" : "bg-[#9A9A94]"}`}
+            />
+            {(profileData.profileStatus || profileData.profile_status) ===
+            "active"
+              ? "Actively Seeking"
+              : "Not Seeking"}
           </div>
           <p className="text-[#9A9A94] text-xs">
-            {profileData.subscription?.charAt(0).toUpperCase() + profileData.subscription?.slice(1)} Plan
+            {profileData.subscription?.charAt(0).toUpperCase() +
+              profileData.subscription?.slice(1)}{" "}
+            Plan
           </p>
         </div>
       </div>
 
       {/* Stats grid — all values come from the store */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={Eye} label="Profile Views" value={thisMonth} sub="This month" color="coral" trend={growth > 0 ? growth : null} />
-        <StatCard icon={TrendingUp} label="Total Views" value={totalViews} sub="All time" color="default" />
-        <StatCard icon={MessageCircle} label="Active Apps" value={pendingApps} sub={`${myApplications.length} total`} color="orange" />
-        <StatCard icon={Heart} label="Favourited" value={favouritedCount} sub="Times saved by studios" color="default" />
+        <StatCard
+          icon={Eye}
+          label="Profile Views"
+          value={thisMonth}
+          sub="This month"
+          color="coral"
+          trend={growth > 0 ? growth : null}
+        />
+        <StatCard
+          icon={TrendingUp}
+          label="Total Views"
+          value={totalViews}
+          sub="All time"
+          color="default"
+        />
+        <StatCard
+          icon={MessageCircle}
+          label="Active Apps"
+          value={pendingApps}
+          sub={`${myApplications.length} total`}
+          color="orange"
+        />
+        <StatCard
+          icon={Heart}
+          label="Favourited"
+          value={favouritedCount}
+          sub="Times saved by studios"
+          color="default"
+        />
       </div>
 
       {/* Chart + Quick info */}
@@ -73,7 +146,9 @@ export default function Dashboard() {
         <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-[#E5E0D8]">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="font-unbounded text-sm font-bold text-[#3E3D38]">Profile Views</h3>
+              <h3 className="font-unbounded text-sm font-bold text-[#3E3D38]">
+                Profile Views
+              </h3>
               <p className="text-xs text-[#9A9A94] mt-0.5">Monthly breakdown</p>
             </div>
             <div className="flex items-center gap-1.5 bg-[#f5fca6]/50 rounded-lg px-3 py-1.5">
@@ -86,37 +161,67 @@ export default function Dashboard() {
 
         {/* Quick info */}
         <div className="bg-white rounded-2xl p-5 border border-[#E5E0D8] space-y-4">
-          <h3 className="font-unbounded text-sm font-bold text-[#3E3D38]">Profile Snapshot</h3>
+          <h3 className="font-unbounded text-sm font-bold text-[#3E3D38]">
+            Profile Snapshot
+          </h3>
 
           <div className="space-y-3">
             <div className="flex items-start gap-3">
-              <MapPin size={14} className="text-[#9A9A94] mt-0.5 flex-shrink-0" />
+              <MapPin
+                size={14}
+                className="text-[#9A9A94] mt-0.5 flex-shrink-0"
+              />
               <div>
-                <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider">Location</p>
-                <p className="text-xs font-medium text-[#3E3D38]">{profileData.location || '—'}</p>
+                <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider">
+                  Location
+                </p>
+                <p className="text-xs font-medium text-[#3E3D38]">
+                  {profileData.location || "—"}
+                </p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <Globe size={14} className="text-[#9A9A94] mt-0.5 flex-shrink-0" />
+              <Globe
+                size={14}
+                className="text-[#9A9A94] mt-0.5 flex-shrink-0"
+              />
               <div>
-                <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider">Traveling To</p>
-                <p className="text-xs font-medium text-[#3E3D38]">{profileData.travelingTo || '—'}</p>
+                <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider">
+                  Traveling To
+                </p>
+                <p className="text-xs font-medium text-[#3E3D38]">
+                  {profileData.travelingTo || "—"}
+                </p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <Calendar size={14} className="text-[#9A9A94] mt-0.5 flex-shrink-0" />
+              <Calendar
+                size={14}
+                className="text-[#9A9A94] mt-0.5 flex-shrink-0"
+              />
               <div>
-                <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider">Availability</p>
-                <p className="text-xs font-medium text-[#3E3D38]">{profileData.availability || '—'}</p>
+                <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider">
+                  Availability
+                </p>
+                <p className="text-xs font-medium text-[#3E3D38]">
+                  {profileData.availability || "—"}
+                </p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <Star size={14} className="text-[#9A9A94] mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider">Disciplines</p>
+                <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider">
+                  Disciplines
+                </p>
                 <div className="flex flex-wrap gap-1 mt-0.5">
-                  {(profileData.disciplines || []).slice(0, 3).map(d => (
-                    <span key={d} className="text-[10px] bg-[#2DA4D6]/15 text-[#2DA4D6] px-2 py-0.5 rounded-full">{d}</span>
+                  {(profileData.disciplines || []).slice(0, 3).map((d) => (
+                    <span
+                      key={d}
+                      className="text-[10px] bg-[#2DA4D6]/15 text-[#2DA4D6] px-2 py-0.5 rounded-full"
+                    >
+                      {d}
+                    </span>
                   ))}
                   {(profileData.disciplines || []).length > 3 && (
                     <span className="text-[10px] bg-[#FBF8E4] text-[#9A9A94] px-2 py-0.5 rounded-full">
@@ -137,11 +242,18 @@ export default function Dashboard() {
             <Megaphone size={18} className="text-white" />
           </div>
           <div>
-            <p className="font-unbounded text-sm font-bold text-white">Post on GROW</p>
-            <p className="text-white/70 text-xs mt-0.5">Advertise your retreat, event, or training program here</p>
+            <p className="font-unbounded text-sm font-bold text-white">
+              Post on GROW
+            </p>
+            <p className="text-white/70 text-xs mt-0.5">
+              Advertise your retreat, event, or training program here
+            </p>
           </div>
         </div>
-        <a href="/grow" className="bg-white text-[#2DA4D6] font-bold text-xs px-4 py-2 rounded-xl hover:bg-white/90 transition-colors whitespace-nowrap flex items-center gap-1.5">
+        <a
+          href="/grow"
+          className="bg-white text-[#2DA4D6] font-bold text-xs px-4 py-2 rounded-xl hover:bg-white/90 transition-colors whitespace-nowrap flex items-center gap-1.5"
+        >
           Post Now <ArrowUpRight size={12} />
         </a>
       </div>
@@ -153,8 +265,12 @@ export default function Dashboard() {
             <Zap size={18} className="text-white" />
           </div>
           <div>
-            <p className="font-unbounded text-sm font-bold text-white">Boost your profile</p>
-            <p className="text-white/60 text-xs mt-0.5">Get featured at the top of search results for $10/week</p>
+            <p className="font-unbounded text-sm font-bold text-white">
+              Boost your profile
+            </p>
+            <p className="text-white/60 text-xs mt-0.5">
+              Get featured at the top of search results for $10/week
+            </p>
           </div>
         </div>
         <Button
@@ -176,8 +292,12 @@ export default function Dashboard() {
             <Settings size={16} className="text-[#CE4F56]" />
           </div>
           <div>
-            <h2 className="font-unbounded text-base font-black text-[#3E3D38]">Account Settings</h2>
-            <p className="text-[#9A9A94] text-xs mt-0.5">Manage your email, password, and security</p>
+            <h2 className="font-unbounded text-base font-black text-[#3E3D38]">
+              Account Settings
+            </h2>
+            <p className="text-[#9A9A94] text-xs mt-0.5">
+              Manage your email, password, and security
+            </p>
           </div>
         </div>
 
@@ -186,11 +306,18 @@ export default function Dashboard() {
           <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
             <div className="px-5 py-3.5 border-b border-[#E5E0D8] flex items-center gap-2.5">
               <Mail size={14} className="text-[#CE4F56]" />
-              <h3 className="font-unbounded text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Email Address</h3>
+              <h3 className="font-unbounded text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">
+                Email Address
+              </h3>
             </div>
             <div className="p-5">
               <div>
-                <Input type="email" label="Email" value={user?.email || ''} disabled />
+                <Input
+                  type="email"
+                  label="Email"
+                  value={user?.email || ""}
+                  disabled
+                />
               </div>
             </div>
           </div>

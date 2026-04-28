@@ -73,12 +73,19 @@ const instructorSlice = createSlice({
       .addCase(fetchInstructors.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
         const list = unwrapInstructors(payload);
-        state.instructors = list;
+
+        if (payload?.append) {
+          const seen = new Set(state.instructors.map((i) => i.id));
+          state.instructors = [...state.instructors, ...list.filter((i) => !seen.has(i.id))];
+        } else {
+          state.instructors = list;
+        }
+
         const savedFromList = list.filter((i) => i.is_saved).map((i) => i.id);
         if (savedFromList.length) {
-          const merged = new Set([...state.savedIds, ...savedFromList]);
-          state.savedIds = Array.from(merged);
+          state.savedIds = Array.from(new Set([...state.savedIds, ...savedFromList]));
         }
+
         state.pagination = payload?.data?.meta || payload?.data?.pagination || null;
       })
       .addCase(fetchInstructors.rejected, (state, { payload }) => {

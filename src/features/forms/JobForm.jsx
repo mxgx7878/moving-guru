@@ -30,7 +30,7 @@ export default function JobForm({
     defaultValues: { ...EMPTY_JOB_FORM, ...initial },
   });
 
-  const type = watch('type');
+  const types = watch('types') || [];
   const roleType = watch('role_type');
   const disciplines = watch('disciplines') || [];
 
@@ -70,10 +70,13 @@ export default function JobForm({
         {/* Listing type */}
         <div>
           <label className="block text-[10px] font-bold text-ink-soft tracking-widest uppercase mb-2">Listing Type</label>
-          <div className="grid grid-cols-3 gap-3">
+            <p className="text-[10px] text-ink-soft mb-2">
+    Pick one or more — you can offer the same role as both Direct Hire and a Swap.
+  </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {JOB_TYPES.map((t) => {
               const Icon = t.icon;
-              const active = type === t.id;
+              const active = types.includes(t.id);
               return (
                 <Button
                   key={t.id}
@@ -82,7 +85,12 @@ export default function JobForm({
                   size="md"
                   fullWidth
                   icon={Icon}
-                  onClick={() => setValue('type', t.id, { shouldValidate: true })}
+                 onClick={() => {
+                  const next = active
+                    ? types.filter((x) => x !== t.id)
+                    : [...types, t.id];
+                  setValue('types', next, { shouldValidate: true });
+                }}
                   style={active ? { borderColor: t.color, backgroundColor: t.color } : undefined}
                 >
                   {t.label}
@@ -93,8 +101,28 @@ export default function JobForm({
           {errors.type && <p className="text-red-500 text-xs mt-2">{errors.type.message}</p>}
         </div>
 
+        <label className="flex items-start gap-2 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={types.includes('energy_exchange')}
+          onChange={(e) => {
+            const next = e.target.checked
+              ? [...types.filter((t) => t !== 'energy_exchange'), 'energy_exchange']
+              : types.filter((t) => t !== 'energy_exchange');
+            setValue('types', next, { shouldValidate: true });
+          }}
+          className="mt-0.5 w-3.5 h-3.5 rounded border-[#E5E0D8] accent-[#6BE6A4] flex-shrink-0"
+        />
+        <span className="text-xs text-[#6B6B66] leading-snug">
+          Also open to energy exchange options
+          <span className="block text-[10px] text-[#9A9A94] mt-0.5">
+            Optional — exchange opportunities for when other paths aren't viable.
+          </span>
+        </span>
+      </label>
+
         <RHFInput control={control} errors={errors} name="title" label="Title"
-          placeholder={type === 'swap'
+          placeholder={types.includes('swap')
             ? 'e.g. Pilates Instructor Swap — Bali ↔ Sydney'
             : 'e.g. Yoga Instructor Needed — Bali Studio'}
           accent="#2DA4D6" />
