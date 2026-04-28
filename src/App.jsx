@@ -55,6 +55,7 @@ import StudioDetail       from './pages/public/StudioDetail';
 import MyApplications from './pages/instructor/MyApplications';
 import Announcements from './pages/common/Announcements';
 import NotFound from './pages/common/NotFound';
+import AdminCommunications from './pages/admin/AdminCommunications';
 
 function RoleRedirect() {
   const dispatch = useDispatch();
@@ -176,6 +177,7 @@ export default function App() {
           <Route path="reviews" element={<AdminReviews />} />
           <Route path="subscriptions"   element={<AdminSubscriptions />} />
           <Route path="settings"        element={<AdminSettings />} />
+          <Route path="communications" element={<AdminCommunications />} />
         </Route>
 
         {/* ── Root → role home ──────────────────────────────── */}

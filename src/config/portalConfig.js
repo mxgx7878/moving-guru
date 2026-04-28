@@ -3,6 +3,7 @@ import {
   Building2, Search, Users, FileText, Settings, Briefcase,
   Heart, Sprout, MapPin, Bookmark, ClipboardList,
   Megaphone,
+  Mail,
 } from 'lucide-react';
 
 export const ROLE_THEME = {
@@ -66,5 +67,6 @@ export const NAV_CONFIG = {
     { to: '/admin/subscriptions',    icon: Star,            label: 'Subscriptions'   },
     { to: '/admin/settings',         icon: Settings,        label: 'Settings'        },
     { to: '/admin/reviews',          icon: Star,            label: 'Review Moderation' },
+    { to: '/admin/communications', icon: Mail, label: 'Communications' },
   ],
 };
