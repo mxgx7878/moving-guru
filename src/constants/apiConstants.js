@@ -1,6 +1,6 @@
 // Base URL
-export const BASE_URL = "http://localhost:8000/api";
-// export const BASE_URL = 'https://demowebportals.com/moving-guru-backend/public/api';
+// export const BASE_URL = "http://localhost:8000/api";
+export const BASE_URL = 'https://demowebportals.com/moving-guru-backend/public/api';
 
 // API Endpoints
 export const API_ENDPOINTS = {
@@ -23,9 +23,12 @@ export const API_ENDPOINTS = {
   UNSAVE_INSTRUCTOR: "/instructors/unsave", // POST with instructor_id
   SAVED_INSTRUCTORS: "/instructors/saved",
 
+  DASHBOARD_INSTRUCTOR: "/dashboard/instructor",
+  
   // Studios (instructor-side discovery)
   STUDIOS: "/studios",
   STUDIO_DETAIL: "/studios", // append /:id
+  DASHBOARD_STUDIO:     "/dashboard/studio",
 
   // Messages
   CONVERSATIONS: "/conversations",

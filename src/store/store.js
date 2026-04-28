@@ -8,6 +8,7 @@ import jobReducer from "./slices/jobSlice";
 import growReducer from "./slices/growSlice";
 import postReducer from "./slices/postSlice";
 import reviewReducer from "./slices/reviewSlice";
+import dashboardReducer from "./slices/dashboardSlice";
 
 const store = configureStore({
   reducer: {
@@ -20,6 +21,7 @@ const store = configureStore({
     grow: growReducer,
     post: postReducer,
     review: reviewReducer,
+    dashboard: dashboardReducer,
   },
   devTools: import.meta.env.DEV,
 });

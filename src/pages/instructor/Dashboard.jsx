@@ -1,336 +1,193 @@
-import { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { fetchMyApplications } from "../../store/actions/jobAction";
-import { BarChart, StatCard, Button, Input } from "../../components/ui";
-import { ChangePasswordCard, PasswordResetCard } from "../../features/account";
+import { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import {
-  Eye,
-  MessageCircle,
-  Heart,
-  TrendingUp,
-  Globe,
-  MapPin,
-  Calendar,
-  Star,
-  ArrowUpRight,
-  Zap,
-  Megaphone,
-  Mail,
-  Settings,
-} from "lucide-react";
-import { useNavigate } from "react-router-dom";
+  Eye, MessageCircle, Heart, TrendingUp, Star, ArrowRight,
+} from 'lucide-react';
+
+import { fetchInstructorDashboard } from '../../store/actions/dashboardAction';
+import { STATUS } from '../../constants/apiConstants';
+import {
+  PageHeader, Avatar, Chip, Button,
+} from '../../components/ui';
+import {
+  MonthlyViewsChart, ApplicationStatusChart,
+} from '../../features/dashboard';
+import { CardSkeleton } from '../../components/feedback';
+import { formatRelative } from '../../utils/formatters';
 
 export default function Dashboard() {
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
-  const { myApplications } = useSelector((s) => s.job);
   const navigate = useNavigate();
-  const profileData = user || {};
+  const { user } = useSelector((s) => s.auth);
+  const { instructor: data, status } = useSelector((s) => s.dashboard);
 
   useEffect(() => {
-    dispatch(fetchMyApplications());
+    dispatch(fetchInstructorDashboard());
   }, [dispatch]);
 
-  const viewsArray = profileData.profileViews || [];
-  const totalViews =
-    profileData.profile_views ||
-    viewsArray.reduce((s, d) => s + d.views, 0) ||
-    0;
-  const thisMonth = viewsArray[viewsArray.length - 1]?.views || 0;
-  const lastMonth = viewsArray[viewsArray.length - 2]?.views || 0;
-  const growth =
-    lastMonth > 0 ? Math.round(((thisMonth - lastMonth) / lastMonth) * 100) : 0;
-  const pendingApps = myApplications.filter(
-    (a) => a.status === "pending" || a.status === "viewed",
-  ).length;
-  const favouritedCount =
-    profileData.saved_by_count ?? profileData.stats?.saved_by_count ?? 0;
+  const loading = status === STATUS.LOADING && !data;
+  const kpis = data?.kpis || {};
+  const profileId = user?.id || user?.user_id;
+  const seeking = (user?.profileStatus || user?.profile_status) === 'active';
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
-      {/* Welcome */}
-      <div className="bg-gradient-to-br from-[#FDFCF8] to-[#f5fca6]/40 rounded-2xl p-6 flex items-center justify-between overflow-hidden relative border border-[#E5E0D8]">
-        <div
-          className="absolute inset-0 opacity-20"
-          style={{
-            backgroundImage: `radial-gradient(circle at 80% 50%, #CE4F56 0%, transparent 60%)`,
-          }}
-        />
-        <div className="relative z-10">
-          <p className="text-[#CE4F56] text-xs font-semibold tracking-widest uppercase mb-2">
-            Welcome back
-          </p>
-          <h1 className="font-unbounded text-2xl font-black text-[#3E3D38] mb-1">
-            {profileData.name?.split(" ")[0]}
-          </h1>
-          <p className="text-[#6B6B66] text-sm">
-            {(profileData.profileStatus || profileData.profile_status) ===
-            "active"
-              ? "Your profile is live and attracting studios"
-              : "Your profile is currently inactive"}
-          </p>
-          {user.user_id && (
-            <Button
-              variant="primary"
-              size="sm"
-              icon={Eye}
-              onClick={() => navigate(`/portal/instructors/${user.user_id}`)}
-              className="mt-4"
-            >
-              View Profile
-            </Button>
-          )}
-        </div>
-        <div className="relative z-10 hidden sm:flex flex-col items-end gap-2">
-          <div
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold
-            ${
-              (profileData.profileStatus || profileData.profile_status) ===
-              "active"
-                ? "bg-[#6BE6A4]/20 text-[#3E3D38]"
-                : "bg-[#FBF8E4] text-[#9A9A94]"
-            }`}
-          >
-            <span
-              className={`w-1.5 h-1.5 rounded-full ${(profileData.profileStatus || profileData.profile_status) === "active" ? "bg-[#6BE6A4]" : "bg-[#9A9A94]"}`}
-            />
-            {(profileData.profileStatus || profileData.profile_status) ===
-            "active"
-              ? "Actively Seeking"
-              : "Not Seeking"}
-          </div>
-          {/* <p className="text-[#9A9A94] text-xs">
-            {profileData.subscription?.charAt(0).toUpperCase() +
-              profileData.subscription?.slice(1)}{" "}
-            Plan
-          </p> */}
-        </div>
-      </div>
 
-      {/* Stats grid — all values come from the store */}
+      {/* Welcome header — keeps original gradient */}
+      <PageHeader
+        variant="gradient"
+        gradientFrom="#FDFCF8"
+        gradientTo="#f5fca6"
+        gradientAccent="#CE4F56"
+        eyebrow="Welcome back"
+        eyebrowColor="#CE4F56"
+        title={user?.name?.split(' ')[0] || 'Instructor'}
+        description={seeking
+          ? 'Your profile is live and attracting studios'
+          : 'Your profile is currently inactive'}
+        actions={(
+          <div className="flex flex-col gap-2 items-end">
+            <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold
+              ${seeking ? 'bg-[#6BE6A4]/20 text-[#3E3D38]' : 'bg-[#FBF8E4] text-[#9A9A94]'}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${seeking ? 'bg-[#6BE6A4]' : 'bg-[#9A9A94]'}`} />
+              {seeking ? 'Actively Seeking' : 'Not Seeking'}
+            </div>
+            {profileId && (
+              <Button variant="primary" size="sm" icon={Eye}
+                onClick={() => navigate(`/portal/instructors/${profileId}`)}>
+                View Profile
+              </Button>
+            )}
+          </div>
+        )}
+      />
+
+      {/* KPI grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          icon={Eye}
-          label="Profile Views"
-          value={thisMonth}
-          sub="This month"
-          color="coral"
-          trend={growth > 0 ? growth : null}
-        />
-        <StatCard
-          icon={TrendingUp}
-          label="Total Views"
-          value={totalViews}
-          sub="All time"
-          color="default"
-        />
-        <StatCard
-          icon={MessageCircle}
-          label="Active Apps"
-          value={pendingApps}
-          sub={`${myApplications.length} total`}
-          color="orange"
-        />
-        <StatCard
-          icon={Heart}
-          label="Favourited"
-          value={favouritedCount}
-          sub="Times saved by studios"
-          color="default"
-        />
+        <KpiTile icon={Eye}           label="Profile Views" value={kpis.profile_views_this_month ?? 0}
+          sub={`${kpis.profile_views_total ?? 0} all time`} color="#CE4F56" loading={loading} />
+        <KpiTile icon={MessageCircle} label="Active Apps"   value={kpis.applications_active ?? 0}
+          sub={`${kpis.applications_total ?? 0} total`}     color="#E89560" loading={loading} />
+        <KpiTile icon={Heart}         label="Favourited"    value={kpis.favourited_by_count ?? 0}
+          sub="By studios"                                  color="#7F77DD" loading={loading} />
+        <KpiTile icon={Star}          label="Rating"
+          value={kpis.rating_avg ? `${kpis.rating_avg}★` : '—'}
+          sub={`${kpis.rating_count ?? 0} reviews`}         color="#F59E0B" loading={loading} />
       </div>
 
-      {/* Chart + Quick info */}
+      {/* Charts row */}
       <div className="grid lg:grid-cols-3 gap-4">
-        {/* Chart */}
-        <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-[#E5E0D8]">
-          <div className="flex items-center justify-between mb-6">
+        <div className="lg:col-span-2 bg-white rounded-2xl p-5 border border-[#E5E0D8]">
+          <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="font-unbounded text-sm font-bold text-[#3E3D38]">
-                Profile Views
-              </h3>
-              <p className="text-xs text-[#9A9A94] mt-0.5">Monthly breakdown</p>
+              <h3 className="font-unbounded text-sm font-bold text-[#3E3D38]">Profile Views</h3>
+              <p className="text-[10px] text-[#9A9A94]">Last 6 months</p>
             </div>
-            <div className="flex items-center gap-1.5 bg-[#f5fca6]/50 rounded-lg px-3 py-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#CE4F56]" />
-              <span className="text-xs text-[#6B6B66]">Views</span>
-            </div>
+            <Chip size="xs" tone="coral">{kpis.profile_views_total ?? 0} total</Chip>
           </div>
-          <BarChart data={profileData.profileViews || []} />
+          <MonthlyViewsChart data={data?.profile_views_by_month} loading={loading} accent="#CE4F56" />
         </div>
 
-        {/* Quick info */}
-        <div className="bg-white rounded-2xl p-5 border border-[#E5E0D8] space-y-4">
-          <h3 className="font-unbounded text-sm font-bold text-[#3E3D38]">
-            Profile Snapshot
-          </h3>
-
-          <div className="space-y-3">
-            <div className="flex items-start gap-3">
-              <MapPin
-                size={14}
-                className="text-[#9A9A94] mt-0.5 flex-shrink-0"
-              />
-              <div>
-                <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider">
-                  Location
-                </p>
-                <p className="text-xs font-medium text-[#3E3D38]">
-                  {profileData.location || "—"}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <Globe
-                size={14}
-                className="text-[#9A9A94] mt-0.5 flex-shrink-0"
-              />
-              <div>
-                <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider">
-                  Traveling To
-                </p>
-                <p className="text-xs font-medium text-[#3E3D38]">
-                  {profileData.travelingTo || "—"}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <Calendar
-                size={14}
-                className="text-[#9A9A94] mt-0.5 flex-shrink-0"
-              />
-              <div>
-                <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider">
-                  Availability
-                </p>
-                <p className="text-xs font-medium text-[#3E3D38]">
-                  {profileData.availability || "—"}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <Star size={14} className="text-[#9A9A94] mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider">
-                  Disciplines
-                </p>
-                <div className="flex flex-wrap gap-1 mt-0.5">
-                  {(profileData.disciplines || []).slice(0, 3).map((d) => (
-                    <span
-                      key={d}
-                      className="text-[10px] bg-[#2DA4D6]/15 text-[#2DA4D6] px-2 py-0.5 rounded-full"
-                    >
-                      {d}
-                    </span>
-                  ))}
-                  {(profileData.disciplines || []).length > 3 && (
-                    <span className="text-[10px] bg-[#FBF8E4] text-[#9A9A94] px-2 py-0.5 rounded-full">
-                      +{profileData.disciplines.length - 3}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
+        <div className="bg-white rounded-2xl p-5 border border-[#E5E0D8]">
+          <div className="mb-2">
+            <h3 className="font-unbounded text-sm font-bold text-[#3E3D38]">Application Status</h3>
+            <p className="text-[10px] text-[#9A9A94]">Across all your applications</p>
           </div>
+          <ApplicationStatusChart data={data?.application_status} loading={loading} />
         </div>
       </div>
 
-      {/* Post on GROW banner */}
-      <div className="bg-gradient-to-r from-[#2DA4D6] to-[#2DA4D6]/80 rounded-2xl p-5 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-            <Megaphone size={18} className="text-white" />
-          </div>
-          <div>
-            <p className="font-unbounded text-sm font-bold text-white">
-              Post on GROW
-            </p>
-            <p className="text-white/70 text-xs mt-0.5">
-              Advertise your retreat, event, or training program here
-            </p>
-          </div>
-        </div>
-        <a
-          href="/grow"
-          className="bg-white text-[#2DA4D6] font-bold text-xs px-4 py-2 rounded-xl hover:bg-white/90 transition-colors whitespace-nowrap flex items-center gap-1.5"
-        >
-          Post Now <ArrowUpRight size={12} />
-        </a>
-      </div>
-
-      {/* Boost banner */}
-      <div className="bg-[#E89560] rounded-2xl p-5 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-            <Zap size={18} className="text-white" />
-          </div>
-          <div>
-            <p className="font-unbounded text-sm font-bold text-white">
-              Boost your profile
-            </p>
-            <p className="text-white/60 text-xs mt-0.5">
-              Get featured at the top of search results for $10/week
-            </p>
-          </div>
-        </div>
-        <Button
-          variant="secondary"
-          size="sm"
-          iconRight={ArrowUpRight}
-          className="bg-white text-orange-mg border-white hover:bg-white/90 whitespace-nowrap"
-        >
-          Boost
-        </Button>
-      </div>
-
-      {/* ═══════════════════════════════════════
-           ACCOUNT SETTINGS SECTION
-         ═══════════════════════════════════════ */}
-      <div className="pt-2">
-        <div className="flex items-center gap-3 mb-5">
-          <div className="w-9 h-9 bg-[#CE4F56]/10 rounded-xl flex items-center justify-center">
-            <Settings size={16} className="text-[#CE4F56]" />
-          </div>
-          <div>
-            <h2 className="font-unbounded text-base font-black text-[#3E3D38]">
-              Account Settings
-            </h2>
-            <p className="text-[#9A9A94] text-xs mt-0.5">
-              Manage your email, password, and security
-            </p>
-          </div>
-        </div>
-
-        <div className="grid lg:grid-cols-2 gap-4">
-          {/* Email */}
-          <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
-            <div className="px-5 py-3.5 border-b border-[#E5E0D8] flex items-center gap-2.5">
-              <Mail size={14} className="text-[#CE4F56]" />
-              <h3 className="font-unbounded text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">
-                Email Address
-              </h3>
-            </div>
-            <div className="p-5">
-              <div>
-                <Input
-                  type="email"
-                  label="Email"
-                  value={user?.email || ""}
-                  disabled
-                />
+      {/* Recent activity */}
+      <div className="grid lg:grid-cols-2 gap-4">
+        <ActivityList
+          title="Recent Applications"
+          items={data?.recent_applications}
+          loading={loading}
+          empty="You haven't applied to anything yet"
+          ctaTo="/portal/applications"
+          renderItem={(a) => (
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-semibold text-[#3E3D38] truncate">{a.job_title}</p>
+                <p className="text-[10px] text-[#9A9A94]">{a.studio || '—'}</p>
               </div>
+              <Chip size="xs" tone={
+                a.status === 'accepted' ? 'green' :
+                a.status === 'rejected' ? 'red' :
+                a.status === 'viewed'   ? 'purple' : 'amber'
+              }>{a.status}</Chip>
             </div>
-          </div>
+          )}
+        />
 
-          {/* Password reset (self-serve) */}
-          <PasswordResetCard />
-        </div>
+        <ActivityList
+          title="Recent Profile Visitors"
+          items={data?.recent_viewers}
+          loading={loading}
+          empty="No recent profile views"
+          renderItem={(v) => (
+            <div className="flex items-center gap-3">
+              <Avatar name={v.viewer_name} size="sm"
+                tone={v.viewer_role === 'studio' ? 'blue' : 'coral'} />
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-semibold text-[#3E3D38] truncate">{v.viewer_name || 'Someone'}</p>
+                <p className="text-[10px] text-[#9A9A94] capitalize">{v.viewer_role || '—'}</p>
+              </div>
+              <span className="text-[10px] text-[#9A9A94] whitespace-nowrap">
+                {formatRelative(v.created_at)}
+              </span>
+            </div>
+          )}
+        />
+      </div>
+    </div>
+  );
+}
 
-        {/* Change Password — full width */}
-        <div className="mt-4">
-          <ChangePasswordCard />
+// ── Inline tile primitives ────────────────────────────────────
+// Kept inline (not subcomponents in their own files) because they're
+// used only on this page and have no reusability beyond it.
+function KpiTile({ icon: Icon, label, value, sub, color, loading }) {
+  if (loading) return <CardSkeleton count={1} height={120} />;
+  return (
+    <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
+      <div className="flex items-start justify-between mb-3">
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+          style={{ backgroundColor: `${color}15` }}>
+          <Icon size={18} style={{ color }} />
         </div>
       </div>
+      <p className="font-unbounded text-2xl font-black text-[#3E3D38]">{value}</p>
+      <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-semibold mt-1">{label}</p>
+      <p className="text-[10px] text-[#9A9A94] mt-0.5">{sub}</p>
+    </div>
+  );
+}
+
+function ActivityList({ title, items, loading, empty, ctaTo, renderItem }) {
+  const navigate = useNavigate();
+  return (
+    <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-unbounded text-sm font-bold text-[#3E3D38]">{title}</h3>
+        {ctaTo && (
+          <Button variant="ghost" size="xs" iconRight={ArrowRight}
+            onClick={() => navigate(ctaTo)}
+            className="!text-coral hover:!underline">
+            View all
+          </Button>
+        )}
+      </div>
+      {loading ? (
+        <CardSkeleton count={3} />
+      ) : !items?.length ? (
+        <p className="text-xs text-[#9A9A94] py-6 text-center">{empty}</p>
+      ) : (
+        <div className="space-y-3">
+          {items.map((it) => <div key={it.id}>{renderItem(it)}</div>)}
+        </div>
+      )}
     </div>
   );
 }
