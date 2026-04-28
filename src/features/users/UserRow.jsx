@@ -49,6 +49,11 @@ export default function UserRow({
             <p className="text-[10px] text-[#9A9A94] flex items-center gap-1">
               <Mail size={9} /> {user.email}
             </p>
+            <p className="text-[10px] text-[#9A9A94] mt-0.5">
+              {user.last_login_at
+                ? `Last seen ${new Date(user.last_login_at).toLocaleDateString()}`
+                : 'Never logged in'}
+            </p>
           </div>
         </div>
       </td>
@@ -56,6 +61,8 @@ export default function UserRow({
       <td className="py-3 px-4">
         <RolePill role={user.role} />
       </td>
+
+      
 
       <td className="py-3 px-4">
         {user.location ? (
@@ -70,6 +77,7 @@ export default function UserRow({
           <Calendar size={11} className="text-[#9A9A94]" />
           {user.created_at ? new Date(user.created_at).toLocaleDateString() : '—'}
         </span>
+
       </td>
 
       <td className="py-3 px-4">

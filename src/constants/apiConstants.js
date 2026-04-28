@@ -1,6 +1,6 @@
 // Base URL
-export const BASE_URL = "http://localhost:8000/api";
-// export const BASE_URL = 'https://demowebportals.com/moving-guru-backend/public/api';
+// export const BASE_URL = "http://localhost:8000/api";
+export const BASE_URL = 'https://demowebportals.com/moving-guru-backend/public/api';
 
 // API Endpoints
 export const API_ENDPOINTS = {
@@ -103,6 +103,11 @@ export const API_ENDPOINTS = {
   ADMIN_JOB_DEACTIVATE: "/admin/jobs",     // PATCH /:id/deactivate
   ADMIN_JOB_ACTIVATE: "/admin/jobs",       // PATCH /:id/activate
   ADMIN_JOB_DELETE: "/admin/jobs",   
+
+  ADMIN_REVIEWS:        "/admin/reviews",
+  ADMIN_REVIEW_DELETE:  "/reviews", // DELETE /:id
+  ADMIN_USER_PLAN: "/admin/users",
+  ADMIN_USERS_STALE_SWEEP: "/admin/users/run-stale-sweep",
 
   // ── Admin: Subscriptions ─────────────────────────────────
   ADMIN_SUBSCRIPTIONS: "/admin/subscriptions",

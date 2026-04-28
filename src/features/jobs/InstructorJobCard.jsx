@@ -1,14 +1,36 @@
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import {
-  MapPin, Calendar, Clock, MessageCircle, Bookmark, BookmarkCheck,
-  Users, GraduationCap, Check, XCircle, Clock3, Lock, ExternalLink,
-} from 'lucide-react';
-import { Avatar, Button, Chip, EnergyExchangeBadge, IconButton } from '../../components/ui';
+  MapPin,
+  Calendar,
+  Clock,
+  MessageCircle,
+  Bookmark,
+  BookmarkCheck,
+  Users,
+  GraduationCap,
+  Check,
+  XCircle,
+  Clock3,
+  Lock,
+  ExternalLink,
+} from "lucide-react";
 import {
-  ROLE_TYPE_LABELS, QUALIFICATION_LABELS, TYPE_STYLES,getJobTypes , isOpenToEnergyExchange, getDisplayableJobTypes,
-} from '../../constants/jobConstants';
-import { formatShortDate } from '../../utils/formatters';
-import { getApplyState } from '../../utils/jobHelpers';
+  Avatar,
+  Button,
+  Chip,
+  EnergyExchangeBadge,
+  IconButton,
+} from "../../components/ui";
+import {
+  ROLE_TYPE_LABELS,
+  QUALIFICATION_LABELS,
+  TYPE_STYLES,
+  getJobTypes,
+  isOpenToEnergyExchange,
+  getDisplayableJobTypes,
+} from "../../constants/jobConstants";
+import { formatShortDate } from "../../utils/formatters";
+import { getApplyState } from "../../utils/jobHelpers";
 
 // Job card rendered on the instructor-side feeds (Find Work + Saved Jobs).
 // Renders the job description, metadata, discipline tags, and the apply
@@ -21,31 +43,35 @@ export default function InstructorJobCard({
   onToggleSave,
   onApply,
 }) {
- const typesIds    = getDisplayableJobTypes(job);   // ← excludes 'energy_exchange'
-const typesInfo   = typesIds.map((id) => TYPE_STYLES[id]).filter(Boolean);
-const primary     = typesInfo[0] || TYPE_STYLES.hire;
-const PrimaryIcon = primary.icon;
-const eeOpen      = isOpenToEnergyExchange(job);
+  const typesIds = getDisplayableJobTypes(job); // ← excludes 'energy_exchange'
+  const typesInfo = typesIds.map((id) => TYPE_STYLES[id]).filter(Boolean);
+  const primary = typesInfo[0] || TYPE_STYLES.hire;
+  const PrimaryIcon = primary.icon;
+  const eeOpen = isOpenToEnergyExchange(job);
   const applyState = getApplyState(job);
   const userDisciplines = user?.disciplines || user?.detail?.disciplines || [];
-  const isMatch = userDisciplines.some((d) => (job.disciplines || []).includes(d));
+  const isMatch = userDisciplines.some((d) =>
+    (job.disciplines || []).includes(d),
+  );
 
-  const studio        = job.studio || {};
-const studioName    = studio.studio_name || studio.name || 'Studio';
-const studioPicture = studio.detail?.profile_picture_url
-  || studio.detail?.profile_picture
-  || studio.profile_picture_url
-  || studio.profile_picture
-  || null;
+  const studio = job.studio || {};
+  const studioName = studio.studio_name || studio.name || "Studio";
+  const studioPicture =
+    studio.detail?.profile_picture_url ||
+    studio.detail?.profile_picture ||
+    studio.profile_picture_url ||
+    studio.profile_picture ||
+    null;
 
   const vacancies = job.vacancies || 1;
-  const filled    = job.positions_filled || 0;
-  const isFull    = applyState === 'full';
+  const filled = job.positions_filled || 0;
+  const isFull = applyState === "full";
 
   return (
-    <div className={`bg-white rounded-2xl border overflow-hidden transition-all
-      ${isFull ? 'border-[#E5E0D8] opacity-85' : 'border-[#E5E0D8] hover:border-[#CE4F56]/30 hover:shadow-sm'}`}>
-
+    <div
+      className={`bg-white rounded-2xl border overflow-hidden transition-all
+      ${isFull ? "border-[#E5E0D8] opacity-85" : "border-[#E5E0D8] hover:border-[#CE4F56]/30 hover:shadow-sm"}`}
+    >
       {isFull && (
         <div className="bg-[#FBF8E4] border-b border-[#E5E0D8] px-6 py-2 flex items-center gap-2 text-xs text-[#6B6B66]">
           <Lock size={12} />
@@ -56,16 +82,28 @@ const studioPicture = studio.detail?.profile_picture_url
       )}
 
       <div className="p-6">
+        {job.cover_image && (
+          <div className="w-full h-40 -mx-5 -mt-5 mb-4 overflow-hidden rounded-t-2xl">
+            <img
+              src={job.cover_image}
+              alt={job.title}
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
+          </div>
+        )}
         <div className="flex items-start gap-4 mb-4">
-        <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${primary.bg}`}>
-          <Avatar
-          name={studioName}
-          src={studioPicture}
-          size="md"
-          tone="blue"
-          className="flex-shrink-0"
-        />
-        </div>
+          <div
+            className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${primary.bg}`}
+          >
+            <Avatar
+              name={studioName}
+              src={studioPicture}
+              size="md"
+              tone="blue"
+              className="flex-shrink-0"
+            />
+          </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
@@ -77,17 +115,22 @@ const studioPicture = studio.detail?.profile_picture_url
                     to={`/portal/studios/${job.studio.id}`}
                     className="inline-flex items-center gap-1 text-[#9A9A94] text-xs mt-0.5 hover:text-[#2DA4D6] hover:underline"
                   >
-                    {job.studio?.studio_name || job.studio?.name || job.studio?.detail?.studioName || 'View studio'}
+                    {job.studio?.studio_name ||
+                      job.studio?.name ||
+                      job.studio?.detail?.studioName ||
+                      "View studio"}
                     <ExternalLink size={10} />
                   </Link>
                 ) : (
                   <p className="text-[#9A9A94] text-xs mt-0.5">
-                    {job.studio?.name || job.studio?.detail?.studioName || 'Posted by a studio on Moving Guru'}
+                    {job.studio?.name ||
+                      job.studio?.detail?.studioName ||
+                      "Posted by a studio on Moving Guru"}
                   </p>
                 )}
               </div>
               <div className="flex items-center gap-1.5 flex-shrink-0 flex-wrap justify-end">
-               {typesInfo.map((info) => (
+                {typesInfo.map((info) => (
                   <span
                     key={info.label}
                     className="px-2.5 py-1 rounded-full text-[10px] font-bold text-white"
@@ -101,20 +144,26 @@ const studioPicture = studio.detail?.profile_picture_url
                     {ROLE_TYPE_LABELS[job.role_type] || job.role_type}
                   </span>
                 )}
-                {job.qualification_level && job.qualification_level !== 'none' && (
-                  <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#f5fca6] text-[#3E3D38]">
-                    <GraduationCap size={10} />
-                    {QUALIFICATION_LABELS[job.qualification_level] || job.qualification_level}
-                  </span>
-                )}
+                {job.qualification_level &&
+                  job.qualification_level !== "none" && (
+                    <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#f5fca6] text-[#3E3D38]">
+                      <GraduationCap size={10} />
+                      {QUALIFICATION_LABELS[job.qualification_level] ||
+                        job.qualification_level}
+                    </span>
+                  )}
                 <IconButton
                   variant="plain"
                   tone="coral"
                   onClick={onToggleSave}
-                  title={isSaved ? 'Remove from saved' : 'Save listing'}
-                  className={isSaved ? '' : '!text-ink-faint hover:!text-coral'}
+                  title={isSaved ? "Remove from saved" : "Save listing"}
+                  className={isSaved ? "" : "!text-ink-faint hover:!text-coral"}
                 >
-                  {isSaved ? <BookmarkCheck size={16} /> : <Bookmark size={16} />}
+                  {isSaved ? (
+                    <BookmarkCheck size={16} />
+                  ) : (
+                    <Bookmark size={16} />
+                  )}
                 </IconButton>
               </div>
             </div>
@@ -130,14 +179,22 @@ const studioPicture = studio.detail?.profile_picture_url
 
         {job.requirements && (
           <div className="bg-[#FBF8E4] rounded-xl px-4 py-2.5 mb-4">
-            <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-bold mb-1">Requirements</p>
-            <p className="text-[#6B6B66] text-xs leading-relaxed">{job.requirements}</p>
+            <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-bold mb-1">
+              Requirements
+            </p>
+            <p className="text-[#6B6B66] text-xs leading-relaxed">
+              {job.requirements}
+            </p>
           </div>
         )}
 
         {(job.disciplines || []).length > 0 && (
           <div className="flex flex-wrap gap-1.5 mb-4">
-            {job.disciplines.map((d) => <Chip key={d} size="xs" tone="blue">{d}</Chip>)}
+            {job.disciplines.map((d) => (
+              <Chip key={d} size="xs" tone="blue">
+                {d}
+              </Chip>
+            ))}
           </div>
         )}
 
@@ -154,13 +211,17 @@ const studioPicture = studio.detail?.profile_picture_url
           )}
           <div className="flex-1" />
           <Button
-            variant={isSaved ? 'outlineDanger' : 'secondary'}
+            variant={isSaved ? "outlineDanger" : "secondary"}
             size="sm"
             icon={isSaved ? BookmarkCheck : Bookmark}
             onClick={onToggleSave}
-            className={isSaved ? 'bg-[#CE4F56]/5' : 'hover:border-[#CE4F56] hover:text-[#CE4F56]'}
+            className={
+              isSaved
+                ? "bg-[#CE4F56]/5"
+                : "hover:border-[#CE4F56] hover:text-[#CE4F56]"
+            }
           >
-            {isSaved ? 'Saved' : 'Save'}
+            {isSaved ? "Saved" : "Save"}
           </Button>
           <ApplyButton
             state={applyState}
@@ -184,7 +245,8 @@ function JobMetaRow({ job }) {
       )}
       {job.start_date && (
         <div className="flex items-center gap-1.5 text-xs text-[#6B6B66]">
-          <Calendar size={12} className="text-[#9A9A94]" /> From {job.start_date}
+          <Calendar size={12} className="text-[#9A9A94]" /> From{" "}
+          {job.start_date}
         </div>
       )}
       {job.duration && (
@@ -219,7 +281,7 @@ function ApplyButton({ state, application, isApplying, onApply }) {
     );
   }
 
-  if (state === 'full') {
+  if (state === "full") {
     return (
       <Button variant="mutedSoft" size="md" state="static" icon={Lock}>
         Position Closed
@@ -227,7 +289,7 @@ function ApplyButton({ state, application, isApplying, onApply }) {
     );
   }
 
-  if (state === 'accepted') {
+  if (state === "accepted") {
     return (
       <Button variant="success" size="md" state="static" icon={Check}>
         Accepted
@@ -235,8 +297,8 @@ function ApplyButton({ state, application, isApplying, onApply }) {
     );
   }
 
-  if (state === 'pending' || state === 'viewed') {
-    const label = state === 'viewed' ? 'Studio has viewed' : 'Applied';
+  if (state === "pending" || state === "viewed") {
+    const label = state === "viewed" ? "Studio has viewed" : "Applied";
     return (
       <Button variant="infoSoft" size="md" state="static" icon={Check}>
         {label}
@@ -244,8 +306,8 @@ function ApplyButton({ state, application, isApplying, onApply }) {
     );
   }
 
-  if (state === 'rejected_locked') {
-    const dateStr = formatShortDate(application?.can_reapply_at) || 'later';
+  if (state === "rejected_locked") {
+    const dateStr = formatShortDate(application?.can_reapply_at) || "later";
     return (
       <div className="flex flex-col items-end gap-0.5">
         <Button variant="dangerSoft" size="md" state="static" icon={XCircle}>
@@ -258,7 +320,7 @@ function ApplyButton({ state, application, isApplying, onApply }) {
     );
   }
 
-  const label = state === 'rejected_open' ? 'Re-apply' : 'Express Interest';
+  const label = state === "rejected_open" ? "Re-apply" : "Express Interest";
   return (
     <Button variant="danger" size="md" icon={MessageCircle} onClick={onApply}>
       {label}

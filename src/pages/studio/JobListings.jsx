@@ -50,23 +50,31 @@ export default function JobListings() {
       requirements:        job.requirements        || '',
       qualification_level: job.qualification_level || 'none',
       is_active:           job.is_active !== false,
+      cover_image:        job.cover_image        || null,
       vacancies:           job.vacancies           || 1,
       _id:                 job.id,
     });
     setShowForm(true);
   };
 
-  const handleSubmit = async (payload) => {
-    setSaving(true);
-    if (editingJob?._id) {
-      await dispatch(updateJob({ id: editingJob._id, ...payload }));
+const handleSubmit = async (payload) => {
+  setSaving(true);
+  const isMultipart = payload instanceof FormData;
+
+  if (editingJob?._id) {
+    if (isMultipart) {
+      await dispatch(updateJob({ id: editingJob._id, formData: payload }));
     } else {
-      await dispatch(createJob(payload));
+      await dispatch(updateJob({ id: editingJob._id, ...payload }));
     }
-    setSaving(false);
-    setShowForm(false);
-    setEditingJob(null);
-  };
+  } else {
+    // create accepts FormData or plain object directly
+    await dispatch(createJob(payload));
+  }
+  setSaving(false);
+  setShowForm(false);
+  setEditingJob(null);
+};
 
   const handleConfirmDelete = async () => {
     if (!deletingTarget) return;

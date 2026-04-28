@@ -60,6 +60,18 @@ export default function StudioJobCard({
       )}
 
       <div className="p-5">
+
+        {(job.cover_image) && (
+          <div className="w-full h-32 -mx-5 -mt-5 mb-4 overflow-hidden rounded-t-2xl">
+            <img
+              src={job.cover_image}
+              alt={job.title}
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
+          </div>
+        )}
+
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap mb-2">

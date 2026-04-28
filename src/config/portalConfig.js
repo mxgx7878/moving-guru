@@ -65,5 +65,6 @@ export const NAV_CONFIG = {
     { to: '/admin/announcements',    icon: Megaphone,       label: 'Announcements'   },
     { to: '/admin/subscriptions',    icon: Star,            label: 'Subscriptions'   },
     { to: '/admin/settings',         icon: Settings,        label: 'Settings'        },
+    { to: '/admin/reviews',          icon: Star,            label: 'Review Moderation' },
   ],
 };

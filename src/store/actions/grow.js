@@ -2,13 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../config/axiosInstance';
 import { API_ENDPOINTS } from '../../constants/apiConstants';
 import { getErrorMessage } from '../../utils/errorUtils';
-
-// Same helper used by authAction.updateProfile — sets multipart headers
-// only when we're actually sending files.
-const fileConfig = (payload) =>
-  payload instanceof FormData
-    ? { headers: { 'Content-Type': 'multipart/form-data' } }
-    : {};
+import { fileConfig, MULTIPART, withMethodOverride } from '../../utils/uploadUtils';
 
 // ── Public: fetch all approved posts (with optional filters) ──
 export const fetchGrowPosts = createAsyncThunk(
@@ -54,11 +48,10 @@ export const createGrowPost = createAsyncThunk(
   'grow/create',
   async (payload, { rejectWithValue }) => {
     try {
-      const config = fileConfig(payload);
       const { data } = await axiosInstance.post(
         API_ENDPOINTS.GROW_POSTS,
         payload,
-        config,
+        fileConfig(payload),
       );
       return data;
     } catch (error) {
@@ -73,23 +66,15 @@ export const updateGrowPost = createAsyncThunk(
   'grow/update',
   async (arg, { rejectWithValue }) => {
     try {
-      // Two call shapes supported:
-      //   1. dispatch(updateGrowPost({ id, formData: FormData }))     — multipart
-      //   2. dispatch(updateGrowPost({ id, ...jsonFields }))          — JSON fallback
       const id = arg.id;
-      const isMultipart = arg.formData instanceof FormData;
-
-      if (isMultipart) {
-        const fd = arg.formData;
-        fd.append('_method', 'PUT');
+      if (arg.formData instanceof FormData) {
         const { data } = await axiosInstance.post(
           `${API_ENDPOINTS.GROW_POST_UPDATE}/${id}`,
-          fd,
-          { headers: { 'Content-Type': 'multipart/form-data' } },
+          withMethodOverride(arg.formData, 'PUT'),
+          MULTIPART,
         );
         return data;
       }
-
       const { id: _ignore, ...payload } = arg;
       const { data } = await axiosInstance.put(
         `${API_ENDPOINTS.GROW_POST_UPDATE}/${id}`,

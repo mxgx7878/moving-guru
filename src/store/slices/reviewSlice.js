@@ -6,6 +6,7 @@ import {
   deleteReview,
   fetchMyReviews,
   fetchEligibleReviews,
+  fetchAdminReviews, adminDeleteReview
 } from '../actions/reviewAction';
 
 /**
@@ -36,6 +37,11 @@ const initialState = {
 
   error: null,
   message: null,
+
+  adminReviews:        [],
+  adminReviewsStatus:  STATUS.IDLE,
+  adminReviewsMeta:    { page: 1, per_page: 15, total: 0, last_page: 1 },
+  adminDeletingId:     null,
 };
 
 const unwrapList = (payload, key) => {
@@ -171,7 +177,33 @@ const reviewSlice = createSlice({
       .addCase(fetchEligibleReviews.rejected, (state, { payload }) => {
         state.eligibleStatus = STATUS.FAILED;
         state.error = payload;
-      });
+      })
+
+      // ── Admin reviews ─────────────────────────────────────
+      .addCase(fetchAdminReviews.pending, (state) => {
+        state.adminReviewsStatus = STATUS.LOADING;
+      })
+      .addCase(fetchAdminReviews.fulfilled, (state, { payload }) => {
+        state.adminReviewsStatus = STATUS.SUCCEEDED;
+        state.adminReviews = unwrapList(payload, 'reviews');
+        state.adminReviewsMeta = payload?.meta || state.adminReviewsMeta;
+      })
+      .addCase(fetchAdminReviews.rejected, (state, { payload }) => {
+        state.adminReviewsStatus = STATUS.FAILED;
+        state.error = payload;
+      })
+      .addCase(adminDeleteReview.pending, (state, { meta }) => {
+        state.adminDeletingId = meta.arg.id;
+      })
+      .addCase(adminDeleteReview.fulfilled, (state, { payload: id }) => {
+        state.adminDeletingId = null;
+        state.adminReviews = state.adminReviews.filter((r) => r.id !== id);
+        state.message = 'Review removed';
+      })
+      .addCase(adminDeleteReview.rejected, (state, { payload }) => {
+        state.adminDeletingId = null;
+        state.error = payload;
+      })
   },
 });
 

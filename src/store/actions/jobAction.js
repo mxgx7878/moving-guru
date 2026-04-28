@@ -2,6 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../config/axiosInstance';
 import { API_ENDPOINTS } from '../../constants/apiConstants';
 import { getErrorMessage } from '../../utils/errorUtils';
+import { fileConfig, MULTIPART, withMethodOverride } from '../../utils/uploadUtils';
 
 export const fetchJobs = createAsyncThunk(
   'job/fetchAll',
@@ -30,9 +31,13 @@ export const fetchMyJobs = createAsyncThunk(
 
 export const createJob = createAsyncThunk(
   'job/create',
-  async (jobData, { rejectWithValue }) => {
+  async (payload, { rejectWithValue }) => {
     try {
-      const { data } = await axiosInstance.post(API_ENDPOINTS.JOBS, jobData);
+      const { data } = await axiosInstance.post(
+        API_ENDPOINTS.JOBS,
+        payload,
+        fileConfig(payload),
+      );
       return data;
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));
@@ -42,9 +47,23 @@ export const createJob = createAsyncThunk(
 
 export const updateJob = createAsyncThunk(
   'job/update',
-  async ({ id, ...jobData }, { rejectWithValue }) => {
+  async (arg, { rejectWithValue }) => {
     try {
-      const { data } = await axiosInstance.patch(`${API_ENDPOINTS.JOB_DETAIL}/${id}`, jobData);
+      const id = arg.id;
+      if (arg.formData instanceof FormData) {
+        const { data } = await axiosInstance.post(
+          `${API_ENDPOINTS.JOB_DETAIL}/${id}`,
+          withMethodOverride(arg.formData, 'PATCH'),
+          MULTIPART,
+        );
+        return data;
+      }
+
+      const { id: _ignore, ...jsonPayload } = arg;
+      const { data } = await axiosInstance.patch(
+        `${API_ENDPOINTS.JOB_DETAIL}/${id}`,
+        jsonPayload,
+      );
       return data;
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));

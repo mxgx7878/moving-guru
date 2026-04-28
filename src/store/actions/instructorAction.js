@@ -212,3 +212,30 @@ export const rejectAdminUser = createAsyncThunk(
     }
   },
 );
+
+export const updateAdminUserPlan = createAsyncThunk(
+  'instructor/adminUpdatePlan',
+  async ({ id, plan }, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.patch(
+        `${API_ENDPOINTS.ADMIN_USER_PLAN}/${id}/plan`,
+        { plan },
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+);
+
+export const runStaleSweep = createAsyncThunk(
+  'instructor/adminRunStaleSweep',
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.post(API_ENDPOINTS.ADMIN_USERS_STALE_SWEEP);
+      return data;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+);

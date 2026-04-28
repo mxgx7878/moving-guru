@@ -44,6 +44,7 @@ import AdminJobs          from './pages/admin/AdminJobs';
 import AdminSubscriptions from './pages/admin/AdminSubscriptions';
 import AdminSettings      from './pages/admin/AdminSettings';
 import InstructorDetail   from './pages/studio/InstructorDetail';
+import AdminReviews from './pages/admin/AdminReviews';
 // StudioDetail lives in `pages/public/` because the view itself is
 // read-only and has no role-specific affordances — it's the same card
 // surface whether a signed-in instructor, a studio, or a logged-out
@@ -172,6 +173,7 @@ export default function App() {
           <Route path="posts"           element={<AdminPosts />} />
           <Route path="grow"            element={<AdminGrowPosts />} />
           <Route path="grow/edit/:id"   element={<GrowPostForm />} />
+          <Route path="reviews" element={<AdminReviews />} />
           <Route path="subscriptions"   element={<AdminSubscriptions />} />
           <Route path="settings"        element={<AdminSettings />} />
         </Route>

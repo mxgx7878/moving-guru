@@ -2,12 +2,8 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../../config/axiosInstance";
 import { API_ENDPOINTS } from "../../constants/apiConstants";
 import { getErrorMessage } from "../../utils/errorUtils.js";
+import { fileConfig, MULTIPART, withMethodOverride } from '../../utils/uploadUtils';
 
-// Helper — detect FormData and set proper headers
-const fileConfig = (payload) =>
-  payload instanceof FormData
-    ? { headers: { 'Content-Type': 'multipart/form-data' } }
-    : {};
 
 export const registerUser = createAsyncThunk(
   'auth/register',
@@ -79,11 +75,12 @@ export const updateProfile = createAsyncThunk(
   'auth/updateProfile',
   async (profileData, { rejectWithValue }) => {
     try {
-      const config = fileConfig(profileData);
-      // Laravel doesn't support PATCH with FormData — use POST + _method override
       if (profileData instanceof FormData) {
-        profileData.append('_method', 'PATCH');
-        const { data } = await axiosInstance.post(API_ENDPOINTS.PROFILE, profileData, config);
+        const { data } = await axiosInstance.post(
+          API_ENDPOINTS.PROFILE,
+          withMethodOverride(profileData, 'PATCH'),
+          MULTIPART,
+        );
         return data;
       }
       const { data } = await axiosInstance.patch(API_ENDPOINTS.PROFILE, profileData);

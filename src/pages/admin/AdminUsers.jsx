@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { toast } from 'sonner';
-import { Users, Building2, Plus } from 'lucide-react';
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { toast } from "sonner";
+import { Users, Building2, Plus } from "lucide-react";
 
 import {
   fetchAdminUsers,
@@ -15,65 +15,81 @@ import {
   activateAdminUser,
   verifyAdminUser,
   deleteAdminUser,
-} from '../../store/actions/instructorAction';
+  runStaleSweep,
+} from "../../store/actions/instructorAction";
 import {
   clearInstructorError,
   clearInstructorMessage,
   clearUserDetail,
-} from '../../store/slices/instructorSlice';
-import { STATUS } from '../../constants/apiConstants';
+} from "../../store/slices/instructorSlice";
+import { STATUS } from "../../constants/apiConstants";
 
 import {
-  Button, PageHeader, Toolbar, TabBar, DataTable, EmptyState,
-} from '../../components/ui';
-import { UserRow, UserDetailDrawer } from '../../features/users';
+  Button,
+  PageHeader,
+  Toolbar,
+  TabBar,
+  DataTable,
+  EmptyState,
+} from "../../components/ui";
+import { UserRow, UserDetailDrawer } from "../../features/users";
 import {
-  SuspendUserModal, RejectUserModal, ConfirmModal,
-} from '../../features/modals';
-import { UserForm } from '../../features/forms';
+  SuspendUserModal,
+  RejectUserModal,
+  ConfirmModal,
+} from "../../features/modals";
+import { UserForm } from "../../features/forms";
 
 const ROLE_TABS = [
-  { id: 'all',        label: 'All Users',   icon: Users,     color: '#7F77DD' },
-  { id: 'instructor', label: 'Instructors', icon: Users,     color: '#CE4F56' },
-  { id: 'studio',     label: 'Studios',     icon: Building2, color: '#2DA4D6' },
+  { id: "all", label: "All Users", icon: Users, color: "#7F77DD" },
+  { id: "instructor", label: "Instructors", icon: Users, color: "#CE4F56" },
+  { id: "studio", label: "Studios", icon: Building2, color: "#2DA4D6" },
 ];
 
 const STATUS_FILTERS = [
-  { id: 'all',       label: 'All'       },
-  { id: 'active',    label: 'Active'    },
-  { id: 'pending',   label: 'Pending'   },
-  { id: 'suspended', label: 'Suspended' },
-  { id: 'rejected',  label: 'Rejected'  },
+  { id: "all", label: "All" },
+  { id: "active", label: "Active" },
+  { id: "pending", label: "Pending" },
+  { id: "suspended", label: "Suspended" },
+  { id: "rejected", label: "Rejected" },
+];
+
+const ACTIVITY_FILTERS = [
+  { id: "", label: "Any activity" },
+  { id: "recent", label: "Logged in past week" },
+  { id: "stale_30d", label: "Inactive 30+ days (auto-deactivate eligible)" },
+  { id: "stale_3m", label: "Inactive 3+ months" },
 ];
 
 const USER_COLUMNS = [
-  { key: 'user',     label: 'User' },
-  { key: 'role',     label: 'Role' },
-  { key: 'location', label: 'Location' },
-  { key: 'joined',   label: 'Joined' },
-  { key: 'status',   label: 'Status' },
-  { key: 'actions',  label: 'Actions', align: 'right' },
+  { key: "user", label: "User" },
+  { key: "role", label: "Role" },
+  { key: "location", label: "Location" },
+  { key: "joined", label: "Joined" },
+  { key: "status", label: "Status" },
+  { key: "actions", label: "Actions", align: "right" },
 ];
 
 export default function AdminUsers() {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const {
-    users, usersStatus, userDetail, userMutating, message, error,
-  } = useSelector((s) => s.instructor);
+  const { users, usersStatus, userDetail, userMutating, message, error } =
+    useSelector((s) => s.instructor);
 
-  const initialRole = searchParams.get('role') || 'all';
+  const initialRole = searchParams.get("role") || "all";
 
-  const [roleTab,        setRoleTab]        = useState(initialRole);
-  const [statusFilter,   setStatusFilter]   = useState('all');
-  const [query,          setQuery]          = useState('');
-  const [previewId,      setPreviewId]      = useState(null);
-  const [suspendingId,   setSuspendingId]   = useState(null);
-  const [rejectingId,    setRejectingId]    = useState(null);
+  const [roleTab, setRoleTab] = useState(initialRole);
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [query, setQuery] = useState("");
+  const [previewId, setPreviewId] = useState(null);
+  const [suspendingId, setSuspendingId] = useState(null);
+  const [rejectingId, setRejectingId] = useState(null);
   const [deletingTarget, setDeletingTarget] = useState(null);
-  const [formOpen,       setFormOpen]       = useState(false);
-  const [editingUser,    setEditingUser]    = useState(null);
+  const [formOpen, setFormOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [activityFilter, setActivityFilter] = useState("");
+  const [sweeping, setSweeping] = useState(false);
 
   // Sync ?role=… to the active tab. Deliberately reads `searchParams`
   // through `setSearchParams`' functional form so we don't have to
@@ -85,8 +101,8 @@ export default function AdminUsers() {
     setSearchParams(
       (prev) => {
         const next = new URLSearchParams(prev);
-        if (roleTab === 'all') next.delete('role');
-        else                   next.set('role', roleTab);
+        if (roleTab === "all") next.delete("role");
+        else next.set("role", roleTab);
         return next;
       },
       { replace: true },
@@ -95,22 +111,29 @@ export default function AdminUsers() {
 
   useEffect(() => {
     const params = {};
-    if (roleTab      !== 'all') params.role   = roleTab;
-    if (statusFilter !== 'all') params.status = statusFilter;
-    if (query.trim())           params.q      = query.trim();
+    if (roleTab !== "all") params.role = roleTab;
+    if (statusFilter !== "all") params.status = statusFilter;
+    if (query.trim()) params.q = query.trim();
+    if (activityFilter) params.activity = activityFilter;
     dispatch(fetchAdminUsers(params));
-  }, [dispatch, roleTab, statusFilter, query]);
+  }, [dispatch, roleTab, statusFilter, query, activityFilter]);
 
   useEffect(() => {
     if (previewId) dispatch(fetchAdminUserDetail(previewId));
-    else           dispatch(clearUserDetail());
+    else dispatch(clearUserDetail());
   }, [previewId, dispatch]);
 
   useEffect(() => {
-    if (message) { toast.success(message); dispatch(clearInstructorMessage()); }
+    if (message) {
+      toast.success(message);
+      dispatch(clearInstructorMessage());
+    }
   }, [message, dispatch]);
   useEffect(() => {
-    if (error)   { toast.error(error);     dispatch(clearInstructorError()); }
+    if (error) {
+      toast.error(error);
+      dispatch(clearInstructorError());
+    }
   }, [error, dispatch]);
 
   useEffect(() => {
@@ -120,22 +143,41 @@ export default function AdminUsers() {
     }
   }, [userMutating]);
 
-  const counts = useMemo(() => ({
-    all:        users.length,
-    instructor: users.filter((u) => u.role === 'instructor').length,
-    studio:     users.filter((u) => u.role === 'studio').length,
-  }), [users]);
+  const counts = useMemo(
+    () => ({
+      all: users.length,
+      instructor: users.filter((u) => u.role === "instructor").length,
+      studio: users.filter((u) => u.role === "studio").length,
+    }),
+    [users],
+  );
 
-  const openCreate = () => { setEditingUser(null); setFormOpen(true); };
-  const openEdit   = (u) => { setEditingUser(u);   setFormOpen(true); };
+  const handleRunSweep = async () => {
+    setSweeping(true);
+    await dispatch(runStaleSweep());
+    toast.success("Stale-user sweep complete");
+    await dispatch(fetchAdminUsers({ ...buildParams() }));
+    setSweeping(false);
+  };
+
+  const openCreate = () => {
+    setEditingUser(null);
+    setFormOpen(true);
+  };
+  const openEdit = (u) => {
+    setEditingUser(u);
+    setFormOpen(true);
+  };
 
   const handleSubmitForm = async (payload) => {
-    if (editingUser) await dispatch(updateAdminUser({ id: editingUser.id, ...payload }));
-    else             await dispatch(createAdminUser(payload));
+    if (editingUser)
+      await dispatch(updateAdminUser({ id: editingUser.id, ...payload }));
+    else await dispatch(createAdminUser(payload));
   };
 
   const handleApprove = (u) => dispatch(approveAdminUser(u.id));
-  const handleVerify  = (u) => dispatch(verifyAdminUser({ id: u.id, is_verified: !u.is_verified }));
+  const handleVerify = (u) =>
+    dispatch(verifyAdminUser({ id: u.id, is_verified: !u.is_verified }));
 
   const handleReject = async (reason) => {
     if (!rejectingId) return;
@@ -153,7 +195,7 @@ export default function AdminUsers() {
 
   const handleActivate = async (u) => {
     await dispatch(activateAdminUser(u.id));
-    toast.success('User activated.');
+    toast.success("User activated.");
   };
 
   const handleConfirmDelete = async () => {
@@ -167,11 +209,10 @@ export default function AdminUsers() {
   console.log(userDetail, "userDetail");
 
   const isLoading = usersStatus === STATUS.LOADING && users.length === 0;
-  const busy      = userMutating === STATUS.LOADING;
+  const busy = userMutating === STATUS.LOADING;
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-
       <PageHeader
         icon={Users}
         iconBg="#7F77DD1A"
@@ -180,16 +221,16 @@ export default function AdminUsers() {
         eyebrowColor="#7F77DD"
         title="Instructors & Studios"
         description="Approve signups, verify studios, suspend or remove accounts."
-        actions={(
+        actions={
           <Button
             variant="primary"
             icon={Plus}
             onClick={openCreate}
-            style={{ backgroundColor: '#7F77DD', borderColor: '#7F77DD' }}
+            style={{ backgroundColor: "#7F77DD", borderColor: "#7F77DD" }}
           >
             New User
           </Button>
-        )}
+        }
       />
 
       <TabBar
@@ -203,21 +244,48 @@ export default function AdminUsers() {
         search={{
           value: query,
           onChange: setQuery,
-          placeholder: 'Search by name, email, studio name...',
+          placeholder: "Search by name, email, studio name...",
         }}
-        filters={[{
-          id: 'status',
-          value: statusFilter,
-          onChange: setStatusFilter,
-          options: STATUS_FILTERS,
-        }]}
-      />
+        filters={[
+          {
+            id: "status",
+            value: statusFilter,
+            onChange: setStatusFilter,
+            options: STATUS_FILTERS,
+          },
+          {
+            id: "activity",
+            value: activityFilter,
+            onChange: setActivityFilter,
+            options: ACTIVITY_FILTERS,
+          },
+        ]}
+      >
+        {activityFilter === "stale_30d" && (
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={Zap}
+            onClick={handleRunSweep}
+            loading={sweeping}
+            className="ml-auto hover:border-[#7F77DD] hover:text-[#7F77DD]"
+          >
+            Run sweep now
+          </Button>
+        )}
+      </Toolbar>
 
       <DataTable
         columns={USER_COLUMNS}
         rows={users}
         loading={isLoading}
-        emptyState={<EmptyState icon={Users} title="No users found" message="Try adjusting your search or filters." />}
+        emptyState={
+          <EmptyState
+            icon={Users}
+            title="No users found"
+            message="Try adjusting your search or filters."
+          />
+        }
         renderRow={(u) => (
           <UserRow
             key={u.id}
@@ -254,7 +322,10 @@ export default function AdminUsers() {
         <UserForm
           user={editingUser}
           saving={busy}
-          onCancel={() => { setFormOpen(false); setEditingUser(null); }}
+          onCancel={() => {
+            setFormOpen(false);
+            setEditingUser(null);
+          }}
           onSubmit={handleSubmitForm}
         />
       )}

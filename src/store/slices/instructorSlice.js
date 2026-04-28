@@ -1,5 +1,5 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { STATUS } from '../../constants/apiConstants';
+import { createSlice } from "@reduxjs/toolkit";
+import { STATUS } from "../../constants/apiConstants";
 import {
   fetchInstructors,
   fetchInstructorDetail,
@@ -16,7 +16,8 @@ import {
   activateAdminUser,
   verifyAdminUser,
   deleteAdminUser,
-} from '../actions/instructorAction';
+  updateAdminUserPlan,
+} from "../actions/instructorAction";
 
 const initialState = {
   instructors: [],
@@ -56,13 +57,21 @@ const unwrapInstructors = (payload) => {
 };
 
 const instructorSlice = createSlice({
-  name: 'instructor',
+  name: "instructor",
   initialState,
   reducers: {
-    clearInstructorError(state)    { state.error = null; },
-    clearSelectedInstructor(state) { state.selectedInstructor = null; },
-    clearUserDetail(state)         { state.userDetail = null; },
-    clearInstructorMessage(state)  { state.message = null; },
+    clearInstructorError(state) {
+      state.error = null;
+    },
+    clearSelectedInstructor(state) {
+      state.selectedInstructor = null;
+    },
+    clearUserDetail(state) {
+      state.userDetail = null;
+    },
+    clearInstructorMessage(state) {
+      state.message = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -76,24 +85,32 @@ const instructorSlice = createSlice({
 
         if (payload?.append) {
           const seen = new Set(state.instructors.map((i) => i.id));
-          state.instructors = [...state.instructors, ...list.filter((i) => !seen.has(i.id))];
+          state.instructors = [
+            ...state.instructors,
+            ...list.filter((i) => !seen.has(i.id)),
+          ];
         } else {
           state.instructors = list;
         }
 
         const savedFromList = list.filter((i) => i.is_saved).map((i) => i.id);
         if (savedFromList.length) {
-          state.savedIds = Array.from(new Set([...state.savedIds, ...savedFromList]));
+          state.savedIds = Array.from(
+            new Set([...state.savedIds, ...savedFromList]),
+          );
         }
 
-        state.pagination = payload?.data?.meta || payload?.data?.pagination || null;
+        state.pagination =
+          payload?.data?.meta || payload?.data?.pagination || null;
       })
       .addCase(fetchInstructors.rejected, (state, { payload }) => {
         state.status = STATUS.FAILED;
         state.error = payload;
       })
 
-      .addCase(fetchInstructorDetail.pending, (state) => { state.status = STATUS.LOADING; })
+      .addCase(fetchInstructorDetail.pending, (state) => {
+        state.status = STATUS.LOADING;
+      })
       .addCase(fetchInstructorDetail.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
         console.log(payload, "payload in slice");
@@ -134,7 +151,9 @@ const instructorSlice = createSlice({
         state.error = payload;
       })
 
-      .addCase(fetchAdminUserDetail.pending, (state) => { state.userMutating = STATUS.LOADING; })
+      .addCase(fetchAdminUserDetail.pending, (state) => {
+        state.userMutating = STATUS.LOADING;
+      })
       .addCase(fetchAdminUserDetail.fulfilled, (state, { payload }) => {
         state.userMutating = STATUS.SUCCEEDED;
         console.log(payload, "payload in user detail slice");
@@ -148,23 +167,27 @@ const instructorSlice = createSlice({
         state.error = payload;
       })
 
-      .addCase(createAdminUser.pending, (state) => { state.userMutating = STATUS.LOADING; })
+      .addCase(createAdminUser.pending, (state) => {
+        state.userMutating = STATUS.LOADING;
+      })
       .addCase(createAdminUser.fulfilled, (state, { payload }) => {
         state.userMutating = STATUS.SUCCEEDED;
         const created = payload?.data;
         if (created?.id) state.users.unshift(created);
-        state.message = payload?.message || 'User created.';
+        state.message = payload?.message || "User created.";
       })
       .addCase(createAdminUser.rejected, (state, { payload }) => {
         state.userMutating = STATUS.FAILED;
         state.error = payload;
       })
 
-      .addCase(updateAdminUser.pending, (state) => { state.userMutating = STATUS.LOADING; })
+      .addCase(updateAdminUser.pending, (state) => {
+        state.userMutating = STATUS.LOADING;
+      })
       .addCase(updateAdminUser.fulfilled, (state, { payload }) => {
         state.userMutating = STATUS.SUCCEEDED;
         replaceUser(state, payload?.data);
-        state.message = payload?.message || 'User updated.';
+        state.message = payload?.message || "User updated.";
       })
       .addCase(updateAdminUser.rejected, (state, { payload }) => {
         state.userMutating = STATUS.FAILED;
@@ -173,40 +196,72 @@ const instructorSlice = createSlice({
 
       .addCase(approveAdminUser.fulfilled, (state, { payload }) => {
         replaceUser(state, payload?.data);
-        state.message = payload?.message || 'User approved.';
+        state.message = payload?.message || "User approved.";
       })
-      .addCase(approveAdminUser.rejected, (state, { payload }) => { state.error = payload; })
+      .addCase(approveAdminUser.rejected, (state, { payload }) => {
+        state.error = payload;
+      })
 
       .addCase(rejectAdminUser.fulfilled, (state, { payload }) => {
         replaceUser(state, payload?.data);
-        state.message = payload?.message || 'User rejected.';
+        state.message = payload?.message || "User rejected.";
       })
-      .addCase(rejectAdminUser.rejected, (state, { payload }) => { state.error = payload; })
+      .addCase(rejectAdminUser.rejected, (state, { payload }) => {
+        state.error = payload;
+      })
 
       .addCase(suspendAdminUser.fulfilled, (state, { payload }) => {
         replaceUser(state, payload?.data);
-        state.message = payload?.message || 'User suspended.';
+        state.message = payload?.message || "User suspended.";
       })
-      .addCase(suspendAdminUser.rejected, (state, { payload }) => { state.error = payload; })
+      .addCase(suspendAdminUser.rejected, (state, { payload }) => {
+        state.error = payload;
+      })
 
       .addCase(activateAdminUser.fulfilled, (state, { payload }) => {
         replaceUser(state, payload?.data);
-        state.message = payload?.message || 'User activated.';
+        state.message = payload?.message || "User activated.";
       })
-      .addCase(activateAdminUser.rejected, (state, { payload }) => { state.error = payload; })
+      .addCase(activateAdminUser.rejected, (state, { payload }) => {
+        state.error = payload;
+      })
 
       .addCase(verifyAdminUser.fulfilled, (state, { payload }) => {
         replaceUser(state, payload?.data);
-        state.message = payload?.message || 'Verification updated.';
+        state.message = payload?.message || "Verification updated.";
       })
-      .addCase(verifyAdminUser.rejected, (state, { payload }) => { state.error = payload; })
+      .addCase(verifyAdminUser.rejected, (state, { payload }) => {
+        state.error = payload;
+      })
 
       .addCase(deleteAdminUser.fulfilled, (state, { payload: id }) => {
         state.users = state.users.filter((u) => u.id !== id);
         if (state.userDetail?.id === id) state.userDetail = null;
-        state.message = 'User deleted.';
+        state.message = "User deleted.";
       })
-      .addCase(deleteAdminUser.rejected, (state, { payload }) => { state.error = payload; });
+      .addCase(deleteAdminUser.rejected, (state, { payload }) => {
+        state.error = payload;
+      })
+      .addCase(updateAdminUserPlan.pending, (state) => {
+        state.userMutating = STATUS.LOADING;
+      })
+      .addCase(updateAdminUserPlan.fulfilled, (state, { payload }) => {
+        state.userMutating = STATUS.SUCCEEDED;
+        const updated = payload?.data?.user;
+        if (updated) {
+          state.users = state.users.map((u) =>
+            u.id === updated.id ? { ...u, ...updated } : u,
+          );
+          if (state.userDetail?.id === updated.id) {
+            state.userDetail = { ...state.userDetail, ...updated };
+          }
+          state.message = payload?.message || "Plan updated";
+        }
+      })
+      .addCase(updateAdminUserPlan.rejected, (state, { payload }) => {
+        state.userMutating = STATUS.FAILED;
+        state.error = payload;
+      });
   },
 });
 

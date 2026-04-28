@@ -99,11 +99,11 @@ export default function Dashboard() {
               ? "Actively Seeking"
               : "Not Seeking"}
           </div>
-          <p className="text-[#9A9A94] text-xs">
+          {/* <p className="text-[#9A9A94] text-xs">
             {profileData.subscription?.charAt(0).toUpperCase() +
               profileData.subscription?.slice(1)}{" "}
             Plan
-          </p>
+          </p> */}
         </div>
       </div>
 

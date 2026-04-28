@@ -78,3 +78,31 @@ export const fetchEligibleReviews = createAsyncThunk(
     }
   },
 );
+
+
+export const fetchAdminReviews = createAsyncThunk(
+  'review/adminFetchAll',
+  async (params = {}, { rejectWithValue }) => {
+    try {
+      const { append = false, ...query } = params;
+      const { data } = await axiosInstance.get(API_ENDPOINTS.ADMIN_REVIEWS, { params: query });
+      return { ...data, append };
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+);
+
+export const adminDeleteReview = createAsyncThunk(
+  'review/adminDelete',
+  async ({ id, reason }, { rejectWithValue }) => {
+    try {
+      await axiosInstance.delete(`${API_ENDPOINTS.ADMIN_REVIEW_DELETE}/${id}`, {
+        data: { reason },
+      });
+      return id;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+);
