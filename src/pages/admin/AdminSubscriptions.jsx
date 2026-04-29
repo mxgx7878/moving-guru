@@ -1,101 +1,152 @@
+// src/pages/admin/AdminPlans.jsx
+//
+// CHANGES from the previous version:
+// 1. Imports come from `subscriptionAction` and `subscriptionSlice` (no separate adminPlan files)
+// 2. useSelector reads from `s.subscription` instead of `s.adminPlan`
+// 3. Field names: `adminPlans`, `adminPlansStatus`, `adminPlanMutating` (admin keys are namespaced)
+
 import { useEffect, useMemo, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { toast } from 'sonner';
 import {
-  CreditCard, DollarSign, CheckCircle2, Clock, AlertCircle,
+  Star, Plus, Edit2, Trash2, CheckCircle2, XCircle, Users,
 } from 'lucide-react';
 
-import axiosInstance from '../../config/axiosInstance';
-import { API_ENDPOINTS } from '../../constants/apiConstants';
 import {
-  StatCard, PageHeader, Toolbar, DataTable, EmptyState,
+  fetchAdminPlans,
+  createAdminPlan,
+  updateAdminPlan,
+  deleteAdminPlan,
+} from '../../store/actions/subscriptionAction';
+import {
+  clearSubscriptionError,
+  clearSubscriptionMessage,
+} from '../../store/slices/subscriptionSlice';
+import { STATUS } from '../../constants/apiConstants';
+import {
+  Button, PageHeader, Toolbar, DataTable, EmptyState, IconButton, StatCard,
 } from '../../components/ui';
-import { SubscriptionRow } from '../../features/subscriptions';
+import { ConfirmModal } from '../../features/modals';
+import { PlanForm } from '../../features/forms';
 
 const STATUS_OPTIONS = [
-  { id: 'all',       label: 'All statuses' },
-  { id: 'active',    label: 'Active'       },
-  { id: 'trialing',  label: 'Trialing'     },
-  { id: 'past_due',  label: 'Past Due'     },
-  { id: 'cancelled', label: 'Cancelled'    },
+  { id: 'all',      label: 'All plans' },
+  { id: 'active',   label: 'Active' },
+  { id: 'inactive', label: 'Archived' },
 ];
 
-const SUB_COLUMNS = [
-  { key: 'user',    label: 'User' },
-  { key: 'plan',    label: 'Plan' },
-  { key: 'status',  label: 'Status' },
-  { key: 'renewal', label: 'Next renewal' },
-  { key: 'price',   label: 'Price', align: 'right' },
+const PLAN_COLUMNS = [
+  { key: 'name',        label: 'Plan' },
+  { key: 'price',       label: 'Price' },
+  { key: 'billing',     label: 'Billing' },
+  { key: 'subscribers', label: 'Subscribers', align: 'right' },
+  { key: 'status',      label: 'Status' },
+  { key: 'actions',     label: 'Actions', align: 'right' },
 ];
 
-export default function AdminSubscriptions() {
-  const [subs, setSubs]         = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState(null);
-  const [query, setQuery]       = useState('');
+export default function AdminPlans() {
+  const dispatch = useDispatch();
+  const {
+    adminPlans,
+    adminPlansStatus,
+    adminPlanMutating,
+    message,
+    error,
+  } = useSelector((s) => s.subscription);
+
   const [statusFilter, setStatusFilter] = useState('all');
+  const [query, setQuery]               = useState('');
+  const [formOpen, setFormOpen]         = useState(false);
+  const [editing, setEditing]           = useState(null);
+  const [deletingTarget, setDeletingTarget] = useState(null);
+
+  useEffect(() => { dispatch(fetchAdminPlans()); }, [dispatch]);
 
   useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    axiosInstance.get(API_ENDPOINTS.ADMIN_SUBSCRIPTIONS)
-      .then(({ data }) => {
-        if (cancelled) return;
-        setSubs(data?.data?.subscriptions || data?.data || []);
-      })
-      .catch((e) => {
-        if (cancelled) return;
-        setError(e?.response?.data?.message || 'Failed to load subscriptions.');
-      })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
-  }, []);
+    if (message) { toast.success(message); dispatch(clearSubscriptionMessage()); }
+  }, [message, dispatch]);
 
-  const stats = useMemo(() => {
-    const active    = subs.filter((s) => s.status === 'active').length;
-    const trialing  = subs.filter((s) => s.status === 'trialing').length;
-    const cancelled = subs.filter((s) => s.status === 'cancelled' || s.status === 'canceled').length;
-    const mrr = subs
-      .filter((s) => s.status === 'active')
-      .reduce((sum, s) => sum + (s.plan?.price_monthly || s.plan_price || 0), 0);
-    return { active, trialing, cancelled, mrr };
-  }, [subs]);
+  useEffect(() => {
+    if (error) {
+      toast.error(typeof error === 'string' ? error : 'Something went wrong');
+      dispatch(clearSubscriptionError());
+    }
+  }, [error, dispatch]);
+
+  const stats = useMemo(() => ({
+    total:       adminPlans.length,
+    active:      adminPlans.filter((p) => p.isActive).length,
+    archived:    adminPlans.filter((p) => !p.isActive).length,
+    subscribers: adminPlans.reduce((sum, p) => sum + (p.subscribersCount || 0), 0),
+  }), [adminPlans]);
 
   const filtered = useMemo(() => {
-    const q = query.toLowerCase();
-    return subs.filter((s) => {
-      const matchStatus = statusFilter === 'all' || s.status === statusFilter;
-      const matchQ = !q ||
-        s.user?.name?.toLowerCase().includes(q) ||
-        s.user?.email?.toLowerCase().includes(q) ||
-        s.plan?.name?.toLowerCase().includes(q);
+    const q = query.trim().toLowerCase();
+    return adminPlans.filter((p) => {
+      const matchStatus = statusFilter === 'all'
+        || (statusFilter === 'active'   && p.isActive)
+        || (statusFilter === 'inactive' && !p.isActive);
+      const matchQ = !q
+        || p.id?.toLowerCase().includes(q)
+        || p.name?.toLowerCase().includes(q)
+        || p.description?.toLowerCase().includes(q);
       return matchStatus && matchQ;
     });
-  }, [subs, statusFilter, query]);
+  }, [adminPlans, statusFilter, query]);
+
+  const openCreate = () => { setEditing(null); setFormOpen(true); };
+  const openEdit   = (plan) => { setEditing(plan); setFormOpen(true); };
+
+  const handleSubmit = async (payload) => {
+    const action = editing
+      ? updateAdminPlan({ id: editing.id, ...payload })
+      : createAdminPlan(payload);
+
+    const result = await dispatch(action);
+    const matcher = editing ? updateAdminPlan : createAdminPlan;
+    if (matcher.fulfilled.match(result)) {
+      setFormOpen(false);
+      setEditing(null);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingTarget) return;
+    const target = deletingTarget;
+    setDeletingTarget(null);
+    await dispatch(deleteAdminPlan(target.id));
+  };
+
+  const isLoading = adminPlansStatus === STATUS.LOADING && adminPlans.length === 0;
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
 
       <PageHeader
-        icon={CreditCard}
-        iconBg="#10B9811A"
-        iconColor="#10B981"
-        eyebrow="Admin / Subscriptions"
-        eyebrowColor="#10B981"
-        title="Subscription Overview"
-        description="Plan distribution and subscriber activity across the platform."
+        icon={Star}
+        iconBg="#7F77DD1A"
+        iconColor="#7F77DD"
+        eyebrow="Admin / Subscription Plans"
+        eyebrowColor="#7F77DD"
+        title="Plan Catalog"
+        description="Plans you create here appear in the user portal and are synced as Stripe Products & Prices."
+        actions={(
+          <Button variant="primary" icon={Plus} onClick={openCreate}>New Plan</Button>
+        )}
       />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={CheckCircle2} label="Active"    value={stats.active}    color="default" />
-        <StatCard icon={Clock}        label="Trialing"  value={stats.trialing}  color="orange" />
-        <StatCard icon={AlertCircle}  label="Cancelled" value={stats.cancelled} color="coral" />
-        <StatCard icon={DollarSign}   label="MRR"       value={`$${stats.mrr.toLocaleString()}`} sub="Monthly recurring" />
+        <StatCard icon={Star}         label="Total plans"  value={stats.total} />
+        <StatCard icon={CheckCircle2} label="Active"       value={stats.active}      color="default" />
+        <StatCard icon={XCircle}      label="Archived"     value={stats.archived}    color="coral" />
+        <StatCard icon={Users}        label="Subscribers"  value={stats.subscribers} sub="On any plan" />
       </div>
 
       <Toolbar
         search={{
           value: query,
           onChange: setQuery,
-          placeholder: 'Search by user, email or plan...',
+          placeholder: 'Search by ID, name or description...',
         }}
         filters={[{
           id: 'status',
@@ -105,23 +156,96 @@ export default function AdminSubscriptions() {
         }]}
       />
 
-      {error ? (
-        <div className="bg-white rounded-2xl border border-[#E5E0D8] p-10 text-center">
-          <p className="text-[#3E3D38] font-semibold">{error}</p>
-        </div>
-      ) : (
-        <DataTable
-          columns={SUB_COLUMNS}
-          rows={filtered}
-          loading={loading}
-          emptyState={(
-            <EmptyState
-              icon={CreditCard}
-              title="No subscriptions match"
-              message="Try adjusting your filters."
-            />
-          )}
-          renderRow={(sub) => <SubscriptionRow key={sub.id} sub={sub} />}
+      <DataTable
+        columns={PLAN_COLUMNS}
+        rows={filtered}
+        loading={isLoading}
+        emptyState={<EmptyState icon={Star} title="No plans match" message="Try adjusting your filters or create a new plan." />}
+        renderRow={(p) => (
+          <tr key={p.id} className="hover:bg-[#FDFCF8] transition-colors">
+            <td className="px-4 py-3">
+              <div className="flex items-center gap-2">
+                <div>
+                  <p className="text-sm font-semibold text-[#3E3D38]">{p.name}</p>
+                  <p className="text-xs text-[#9A9A94] font-mono">{p.id}</p>
+                </div>
+                {p.isFeatured && (
+                  <span className="text-[10px] font-bold uppercase tracking-wider bg-[#f5fca6] text-[#3E3D38] px-2 py-0.5 rounded-full">
+                    Featured
+                  </span>
+                )}
+              </div>
+            </td>
+            <td className="px-4 py-3">
+              <span className="font-unbounded text-sm font-bold text-[#3E3D38]">
+                ${Number(p.price).toFixed(2)}
+              </span>
+              <span className="text-xs text-[#9A9A94] ml-1">{p.currency}</span>
+            </td>
+            <td className="px-4 py-3 text-sm text-[#3E3D38]">
+              {p.intervalCount > 1 ? `Every ${p.intervalCount} ${p.interval}s` : `Per ${p.interval}`}
+            </td>
+            <td className="px-4 py-3 text-right text-sm font-semibold text-[#3E3D38]">
+              {p.subscribersCount || 0}
+            </td>
+            <td className="px-4 py-3">
+              {p.isActive ? (
+                <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                  Active
+                </span>
+              ) : (
+                <span className="text-xs font-semibold text-[#9A9A94] bg-[#F5F2EC] px-2 py-1 rounded-full">
+                  Archived
+                </span>
+              )}
+            </td>
+            <td className="px-4 py-3">
+              <div className="flex items-center justify-end gap-1">
+                <IconButton
+                  variant="plain"
+                  aria-label="Edit plan"
+                  title="Edit plan"
+                  onClick={() => openEdit(p)}
+                  disabled={adminPlanMutating}
+                >
+                  <Edit2 size={14} />
+                </IconButton>
+                <IconButton
+                  variant="plain"
+                  aria-label="Delete plan"
+                  title="Delete plan"
+                  onClick={() => setDeletingTarget(p)}
+                  disabled={adminPlanMutating}
+                >
+                  <Trash2 size={14} className="text-rose-500" />
+                </IconButton>
+              </div>
+            </td>
+          </tr>
+        )}
+      />
+
+      {formOpen && (
+        <PlanForm
+          plan={editing}
+          saving={adminPlanMutating}
+          onCancel={() => { setFormOpen(false); setEditing(null); }}
+          onSubmit={handleSubmit}
+        />
+      )}
+
+      {deletingTarget && (
+        <ConfirmModal
+          title={(deletingTarget.subscribersCount || 0) > 0 ? 'Archive plan?' : 'Delete plan?'}
+          message={
+            (deletingTarget.subscribersCount || 0) > 0
+              ? `"${deletingTarget.name}" has ${deletingTarget.subscribersCount} active subscriber(s). It will be archived (hidden from new users) but existing subscribers stay on it until they cancel.`
+              : `Permanently delete "${deletingTarget.name}"? This will archive it in Stripe.`
+          }
+          confirmLabel={(deletingTarget.subscribersCount || 0) > 0 ? 'Archive' : 'Delete'}
+          loading={adminPlanMutating}
+          onCancel={() => setDeletingTarget(null)}
+          onConfirm={handleConfirmDelete}
         />
       )}
     </div>

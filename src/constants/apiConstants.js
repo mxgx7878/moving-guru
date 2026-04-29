@@ -1,6 +1,6 @@
 // Base URL
-// export const BASE_URL = "http://localhost:8000/api";
-export const BASE_URL = 'https://demowebportals.com/moving-guru-backend/public/api';
+export const BASE_URL = "http://localhost:8000/api";
+// export const BASE_URL = 'https://demowebportals.com/moving-guru-backend/public/api';
 
 // API Endpoints
 export const API_ENDPOINTS = {
@@ -115,8 +115,19 @@ export const API_ENDPOINTS = {
   ADMIN_EMAIL_BROADCAST: "/admin/emails/broadcast",
   ADMIN_EMAIL_AUDIENCE_COUNTS: "/admin/emails/audience-counts",
 
-  // ── Admin: Subscriptions ─────────────────────────────────
-  ADMIN_SUBSCRIPTIONS: "/admin/subscriptions",
+  PLANS:                  '/plans',
+  CURRENT_SUBSCRIPTION:   '/subscription',
+  SETUP_INTENT:           '/subscription/setup-intent',
+  ATTACH_PAYMENT_METHOD:  '/subscription/payment-method',
+  CHANGE_PLAN:            '/subscription/change',
+  CANCEL_SUBSCRIPTION:    '/subscription/cancel',
+  RESUME_SUBSCRIPTION:    '/subscription/resume',
+  ADMIN_PLANS:        '/admin/plans',
+  ADMIN_PLAN_DETAIL:  '/admin/plans',
+
+  // Payments
+  PAYMENTS:               '/payments',
+  DOWNLOAD_INVOICE:       '/payments', // append /:id/invoice
 
   POSTS: "/posts", // GET list
   POST_DETAIL: "/posts",
