@@ -10,6 +10,9 @@ import {
   createAdminPlan,
   updateAdminPlan,
   deleteAdminPlan,
+  fetchAllFeatures,
+  fetchPlanFeatures,
+  updatePlanFeatures,
 } from '../actions/subscriptionAction';
 
 const initialState = {
@@ -19,11 +22,17 @@ const initialState = {
   status: STATUS.IDLE,
   error: null,
   message: null,
+  adminSyncing:        false,
 
   // ── Admin state (kept under distinct keys to avoid clashing) ──
   adminPlans: [],
   adminPlansStatus: STATUS.IDLE,
   adminPlanMutating: false,
+
+
+  allFeatures:         [],            // master list (loaded once)
+  planFeatureIdsMap:   {},            // { planId: [featureId, ...] }
+  planFeaturesMutating: false,
 };
 
 const subscriptionSlice = createSlice({
@@ -131,6 +140,30 @@ const subscriptionSlice = createSlice({
         } else {
           state.adminPlans = state.adminPlans.filter((p) => p.id !== payload.id);
         }
+      });
+
+       builder.addCase(fetchAllFeatures.fulfilled, (s, { payload }) => {
+      s.allFeatures = payload || [];
+    });
+ 
+    builder.addCase(fetchPlanFeatures.fulfilled, (s, { payload }) => {
+      s.planFeatureIdsMap[payload.planId] = payload.featureIds;
+    });
+ 
+    builder
+      .addCase(updatePlanFeatures.pending,   (s) => { s.planFeaturesMutating = true; s.error = null; })
+      .addCase(updatePlanFeatures.fulfilled, (s, { payload }) => {
+        s.planFeaturesMutating = false;
+        s.message = payload.message || 'Features updated';
+        s.planFeatureIdsMap[payload.planId] = payload.featureIds;
+        // Update adminPlans cache too so the table can reflect changes
+        s.adminPlans = s.adminPlans.map((p) =>
+          p.id === payload.planId ? { ...p, featureKeys: payload.featureKeys } : p
+        );
+      })
+      .addCase(updatePlanFeatures.rejected, (s, { payload }) => {
+        s.planFeaturesMutating = false;
+        s.error = payload;
       });
   },
 });

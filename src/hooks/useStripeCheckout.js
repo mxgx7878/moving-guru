@@ -1,22 +1,28 @@
+// src/hooks/useStripeCheckout.js
+//
+// CHANGES:
+// - confirmAndAttach renamed to confirmCard since we don't attach anymore
+// - No longer dispatches attachPaymentMethod — caller passes paymentMethodId
+//   directly to changePlan() in a single atomic call
+// - Cleaner DRY flow: SetupIntent confirms → return paymentMethodId → done
+
 import { useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useStripe, useElements } from '@stripe/react-stripe-js';
 import { toast } from 'sonner';
 
-import { createSetupIntent, attachPaymentMethod } from '../store/actions/subscriptionAction';
+import { createSetupIntent } from '../store/actions/subscriptionAction';
 
 /**
- * Single-purpose hook that wraps SetupIntent creation + card confirmation.
- * Caller passes onCardSaved(paymentMethodId) to perform the next action
- * (subscribe, swap plan, retry payment, etc).
+ * Confirms the SetupIntent and returns the resulting paymentMethodId.
+ * Caller is responsible for what to do next (subscribe with it, etc).
  */
 export function useStripeCheckout() {
-  const dispatch  = useDispatch();
-  const stripe    = useStripe();
-  const elements  = useElements();
+  const stripe   = useStripe();
+  const elements = useElements();
   const [busy, setBusy] = useState(false);
 
-  const confirmAndAttach = useCallback(async ({ onCardSaved } = {}) => {
+  const confirmCard = useCallback(async () => {
     if (!stripe || !elements) {
       toast.error('Payment form not ready, please retry.');
       return { ok: false };
@@ -40,20 +46,13 @@ export function useStripeCheckout() {
         return { ok: false };
       }
 
-      const attachResult = await dispatch(attachPaymentMethod(paymentMethodId));
-      if (attachPaymentMethod.rejected.match(attachResult)) {
-        toast.error('Could not save card. Please try again.');
-        return { ok: false };
-      }
-
-      if (onCardSaved) await onCardSaved(paymentMethodId);
       return { ok: true, paymentMethodId };
     } finally {
       setBusy(false);
     }
-  }, [stripe, elements, dispatch]);
+  }, [stripe, elements]);
 
-  return { confirmAndAttach, busy };
+  return { confirmCard, busy };
 }
 
 /** Helper for parents that need a clientSecret before mounting <Elements>. */

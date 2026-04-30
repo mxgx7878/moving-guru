@@ -24,11 +24,11 @@ export const API_ENDPOINTS = {
   SAVED_INSTRUCTORS: "/instructors/saved",
 
   DASHBOARD_INSTRUCTOR: "/dashboard/instructor",
-  
+
   // Studios (instructor-side discovery)
   STUDIOS: "/studios",
   STUDIO_DETAIL: "/studios", // append /:id
-  DASHBOARD_STUDIO:     "/dashboard/studio",
+  DASHBOARD_STUDIO: "/dashboard/studio",
 
   // Messages
   CONVERSATIONS: "/conversations",
@@ -115,22 +115,25 @@ export const API_ENDPOINTS = {
   ADMIN_EMAIL_BROADCAST: "/admin/emails/broadcast",
   ADMIN_EMAIL_AUDIENCE_COUNTS: "/admin/emails/audience-counts",
 
-  PLANS:                  '/plans',
-  CURRENT_SUBSCRIPTION:   '/subscription',
-  SETUP_INTENT:           '/subscription/setup-intent',
-  ATTACH_PAYMENT_METHOD:  '/subscription/payment-method',
-  CHANGE_PLAN:            '/subscription/change',
-  CANCEL_SUBSCRIPTION:    '/subscription/cancel',
-  RESUME_SUBSCRIPTION:    '/subscription/resume',
-  ADMIN_PLANS:        '/admin/plans',
-  ADMIN_PLAN_DETAIL:  '/admin/plans',
+  PLANS: "/plans",
+  CURRENT_SUBSCRIPTION: "/subscription",
+  SETUP_INTENT: "/subscription/setup-intent",
+  ATTACH_PAYMENT_METHOD: "/subscription/payment-method",
+  CHANGE_PLAN: "/subscription/change",
+  CANCEL_SUBSCRIPTION: "/subscription/cancel",
+  RESUME_SUBSCRIPTION: "/subscription/resume",
+  ADMIN_PLANS: "/admin/plans",
+  ADMIN_PLAN_DETAIL: "/admin/plans",
 
   // Payments
-  PAYMENTS:               '/payments',
-  DOWNLOAD_INVOICE:       '/payments', // append /:id/invoice
+  PAYMENTS: "/payments",
+  DOWNLOAD_INVOICE: "/payments", // append /:id/invoice
 
   POSTS: "/posts", // GET list
   POST_DETAIL: "/posts",
+
+  ADMIN_FEATURES: "/admin/features",
+  ADMIN_PLANS_SYNC: "/admin/plans/sync-from-stripe",
 };
 
 // Roles

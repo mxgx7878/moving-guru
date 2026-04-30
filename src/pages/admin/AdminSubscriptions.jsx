@@ -1,15 +1,15 @@
-// src/pages/admin/AdminPlans.jsx
+// src/pages/admin/AdminSubscriptions.jsx
 //
-// CHANGES from the previous version:
-// 1. Imports come from `subscriptionAction` and `subscriptionSlice` (no separate adminPlan files)
-// 2. useSelector reads from `s.subscription` instead of `s.adminPlan`
-// 3. Field names: `adminPlans`, `adminPlansStatus`, `adminPlanMutating` (admin keys are namespaced)
+// CHANGES:
+// - Status pill is now CLICKABLE — one click toggles Active ↔ Archived
+// - Sliders icon → opens PlanFeaturesModal
+// - "Sync from Stripe" button in header
 
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'sonner';
 import {
-  Star, Plus, Edit2, Trash2, CheckCircle2, XCircle, Users,
+  Star, Plus, Edit2, Trash2, CheckCircle2, XCircle, Users, RefreshCw, Sliders,
 } from 'lucide-react';
 
 import {
@@ -17,6 +17,7 @@ import {
   createAdminPlan,
   updateAdminPlan,
   deleteAdminPlan,
+  syncAdminPlansFromStripe,
 } from '../../store/actions/subscriptionAction';
 import {
   clearSubscriptionError,
@@ -28,6 +29,7 @@ import {
 } from '../../components/ui';
 import { ConfirmModal } from '../../features/modals';
 import { PlanForm } from '../../features/forms';
+import PlanFeaturesModal from '../../features/billing/PlanFeatureModal';
 
 const STATUS_OPTIONS = [
   { id: 'all',      label: 'All plans' },
@@ -44,21 +46,23 @@ const PLAN_COLUMNS = [
   { key: 'actions',     label: 'Actions', align: 'right' },
 ];
 
-export default function AdminPlans() {
+export default function AdminSubscriptions() {
   const dispatch = useDispatch();
   const {
     adminPlans,
     adminPlansStatus,
     adminPlanMutating,
+    adminSyncing,
     message,
     error,
   } = useSelector((s) => s.subscription);
 
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [query, setQuery]               = useState('');
-  const [formOpen, setFormOpen]         = useState(false);
-  const [editing, setEditing]           = useState(null);
-  const [deletingTarget, setDeletingTarget] = useState(null);
+  const [statusFilter,    setStatusFilter]    = useState('all');
+  const [query,           setQuery]           = useState('');
+  const [formOpen,        setFormOpen]        = useState(false);
+  const [editing,         setEditing]         = useState(null);
+  const [deletingTarget,  setDeletingTarget]  = useState(null);
+  const [featuresTarget,  setFeaturesTarget]  = useState(null);
 
   useEffect(() => { dispatch(fetchAdminPlans()); }, [dispatch]);
 
@@ -84,7 +88,7 @@ export default function AdminPlans() {
     const q = query.trim().toLowerCase();
     return adminPlans.filter((p) => {
       const matchStatus = statusFilter === 'all'
-        || (statusFilter === 'active'   && p.isActive)
+        || (statusFilter === 'active'   &&  p.isActive)
         || (statusFilter === 'inactive' && !p.isActive);
       const matchQ = !q
         || p.id?.toLowerCase().includes(q)
@@ -98,16 +102,12 @@ export default function AdminPlans() {
   const openEdit   = (plan) => { setEditing(plan); setFormOpen(true); };
 
   const handleSubmit = async (payload) => {
-    const action = editing
+    const action  = editing
       ? updateAdminPlan({ id: editing.id, ...payload })
       : createAdminPlan(payload);
-
-    const result = await dispatch(action);
+    const result  = await dispatch(action);
     const matcher = editing ? updateAdminPlan : createAdminPlan;
-    if (matcher.fulfilled.match(result)) {
-      setFormOpen(false);
-      setEditing(null);
-    }
+    if (matcher.fulfilled.match(result)) { setFormOpen(false); setEditing(null); }
   };
 
   const handleConfirmDelete = async () => {
@@ -115,6 +115,19 @@ export default function AdminPlans() {
     const target = deletingTarget;
     setDeletingTarget(null);
     await dispatch(deleteAdminPlan(target.id));
+  };
+
+  /**
+   * One-click status toggle from the table.
+   * Sends only `isActive` so the partial update doesn't disturb anything else
+   * (price, interval etc stay untouched in Stripe).
+   */
+  const handleToggleStatus = async (plan) => {
+    if (adminPlanMutating) return;
+    await dispatch(updateAdminPlan({
+      id:       plan.id,
+      isActive: !plan.isActive,
+    }));
   };
 
   const isLoading = adminPlansStatus === STATUS.LOADING && adminPlans.length === 0;
@@ -129,9 +142,21 @@ export default function AdminPlans() {
         eyebrow="Admin / Subscription Plans"
         eyebrowColor="#7F77DD"
         title="Plan Catalog"
-        description="Plans you create here appear in the user portal and are synced as Stripe Products & Prices."
+        description="Plans you create here appear in the user portal and are synced as Stripe Products & Prices. Click the status pill to activate or archive a plan."
         actions={(
-          <Button variant="primary" icon={Plus} onClick={openCreate}>New Plan</Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              icon={RefreshCw}
+              loading={adminSyncing}
+              onClick={() => dispatch(syncAdminPlansFromStripe())}
+            >
+              Sync from Stripe
+            </Button>
+            <Button variant="primary" icon={Plus} onClick={openCreate}>
+              New Plan
+            </Button>
+          </div>
         )}
       />
 
@@ -189,18 +214,32 @@ export default function AdminPlans() {
               {p.subscribersCount || 0}
             </td>
             <td className="px-4 py-3">
-              {p.isActive ? (
-                <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
-                  Active
-                </span>
-              ) : (
-                <span className="text-xs font-semibold text-[#9A9A94] bg-[#F5F2EC] px-2 py-1 rounded-full">
-                  Archived
-                </span>
-              )}
+              {/* Clickable status pill — one click toggles Active ↔ Archived */}
+              <button
+                type="button"
+                onClick={() => handleToggleStatus(p)}
+                disabled={adminPlanMutating}
+                title={p.isActive ? 'Click to archive this plan' : 'Click to activate this plan'}
+                className={`text-xs font-semibold px-2 py-1 rounded-full transition-all hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed ${
+                  p.isActive
+                    ? 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100'
+                    : 'text-[#9A9A94] bg-[#F5F2EC] hover:bg-[#E5E0D8]'
+                }`}
+              >
+                {p.isActive ? '● Active' : '○ Archived'}
+              </button>
             </td>
             <td className="px-4 py-3">
               <div className="flex items-center justify-end gap-1">
+                <IconButton
+                  variant="plain"
+                  aria-label="Manage features"
+                  title="Manage features"
+                  onClick={() => setFeaturesTarget(p)}
+                  disabled={adminPlanMutating}
+                >
+                  <Sliders size={14} className="text-[#7F77DD]" />
+                </IconButton>
                 <IconButton
                   variant="plain"
                   aria-label="Edit plan"
@@ -231,6 +270,13 @@ export default function AdminPlans() {
           saving={adminPlanMutating}
           onCancel={() => { setFormOpen(false); setEditing(null); }}
           onSubmit={handleSubmit}
+        />
+      )}
+
+      {featuresTarget && (
+        <PlanFeaturesModal
+          plan={featuresTarget}
+          onClose={() => setFeaturesTarget(null)}
         />
       )}
 

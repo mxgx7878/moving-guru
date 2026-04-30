@@ -34,6 +34,7 @@ export const fetchCurrentSubscription = createAsyncThunk(
 export const changePlan = createAsyncThunk(
   'subscription/changePlan',
   async (payload, { rejectWithValue }) => {
+    // payload = { planId } OR { planId, paymentMethodId }
     try {
       const { data } = await axiosInstance.post(API_ENDPOINTS.CHANGE_PLAN, payload);
       return data;
@@ -146,5 +147,62 @@ export const deleteAdminPlan = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));
     }
+  },
+);
+
+export const syncAdminPlansFromStripe = createAsyncThunk(
+  'subscription/syncAdminPlans',
+  async (_, { rejectWithValue, dispatch }) => {
+    try {
+      const { data } = await axiosInstance.post(API_ENDPOINTS.ADMIN_PLANS_SYNC);
+      dispatch(fetchAdminPlans());
+      return data;
+    } catch (e) { return rejectWithValue(getErrorMessage(e)); }
+  },
+);
+
+
+/** Fetch ALL features (for admin matrix UI). Single source of truth: DB. */
+export const fetchAllFeatures = createAsyncThunk(
+  'subscription/fetchAllFeatures',
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.get(API_ENDPOINTS.ADMIN_FEATURES);
+      return data.data?.features || [];
+    } catch (e) { return rejectWithValue(getErrorMessage(e)); }
+  },
+);
+ 
+/** Fetch enabled feature IDs for a specific plan. */
+export const fetchPlanFeatures = createAsyncThunk(
+  'subscription/fetchPlanFeatures',
+  async (planId, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.get(`${API_ENDPOINTS.ADMIN_PLAN_DETAIL}/${planId}/features`);
+      return {
+        planId,
+        featureIds:  data.data?.featureIds  || [],
+        featureKeys: data.data?.featureKeys || [],
+      };
+    } catch (e) { return rejectWithValue(getErrorMessage(e)); }
+  },
+);
+ 
+/** Update enabled features for a plan. Body: { featureIds: [1, 3, 5] } */
+export const updatePlanFeatures = createAsyncThunk(
+  'subscription/updatePlanFeatures',
+  async ({ planId, featureIds }, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.patch(
+        `${API_ENDPOINTS.ADMIN_PLAN_DETAIL}/${planId}/features`,
+        { featureIds },
+      );
+      return {
+        planId,
+        featureIds:  data.data?.featureIds  || featureIds,
+        featureKeys: data.data?.featureKeys || [],
+        message:     data.message,
+      };
+    } catch (e) { return rejectWithValue(getErrorMessage(e)); }
   },
 );
