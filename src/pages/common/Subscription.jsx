@@ -1,17 +1,18 @@
 // src/pages/common/Subscription.jsx
 //
 // CHANGES:
-// 1. Added `subscribing` state — full-page skeleton during purchase flow
-// 2. After successful changePlan, dispatches `getMe` to refresh user
-//    (so default_payment_method_id is fresh in Redux)
-// 3. Calls fetchCurrentSubscription which populates allowedFeatures
-//    in Redux — gate updates without manual refresh
+// 1. Renewal date formatted (no more raw UTC ISO string)
+// 2. cancelAtPeriodEnd UI: shows "Your subscription will cancel on DATE"
+//    + Resume button (instead of just Resume button alone)
+// 3. Cancel/resume buttons disabled during status === LOADING
 
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Check, Sparkles, Calendar, ArrowRight, Star, CreditCard } from 'lucide-react';
+import {
+  Check, Sparkles, Calendar, ArrowRight, Star, CreditCard, AlertTriangle,
+} from 'lucide-react';
 
 import { ROLE_THEME } from '../../config/portalConfig';
 import {
@@ -32,8 +33,24 @@ import { CardSkeleton } from '../../components/feedback';
 import CheckoutModal from '../../features/billing/CheckoutModal';
 import { useFetchSetupIntent } from '../../hooks/useStripeCheckout';
 
-// ─── Skeleton view extracted as a function so it can render both
-// during initial load AND during a purchase-in-progress
+// ─── Date formatting helper ───────────────────────────────────────
+// Backend stores dates as UTC strings. Convert to user's locale + readable format.
+// Returns null if the value can't be parsed so callers can fall back.
+const formatDate = (iso) => {
+  if (!iso) return null;
+  try {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return null;
+    return d.toLocaleDateString(undefined, {
+      day:   '2-digit',
+      month: 'short',
+      year:  'numeric',
+    });
+  } catch {
+    return null;
+  }
+};
+
 function SubscriptionSkeleton({ message = 'Manage your Moving Guru plan' }) {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -58,8 +75,6 @@ export default function Subscription() {
 
   const [switchingPlanId, setSwitchingPlanId] = useState(null);
   const [pendingPlanId,   setPendingPlanId]   = useState(null);
-  // True from the moment user submits their card until refetch completes.
-  // Replaces the entire page with a skeleton so the user can't double-act.
   const [subscribing,     setSubscribing]     = useState(false);
 
   const {
@@ -113,24 +128,19 @@ export default function Subscription() {
     (p) => String(p.id).toLowerCase() === currentPlanId,
   );
 
-  const renewalDate =
-    currentSubscription?.renewal_date
+  // Renewal date (formatted) — try multiple field names from the API
+  const renewalDateRaw =
+    currentSubscription?.currentPeriodEnd
     || currentSubscription?.current_period_end
-    || currentSubscription?.currentPeriodEnd
-    || user?.subscriptionRenews
-    || user?.subscription_renews;
+    || currentSubscription?.renewal_date;
+  const renewalDate = formatDate(renewalDateRaw);
+
+  const cancelsAtPeriodEnd = Boolean(currentSubscription?.cancelAtPeriodEnd);
 
   const hasPaymentMethod = Boolean(
     user?.defaultPaymentMethodId || user?.default_payment_method_id,
   );
 
-  /**
-   * Refreshes everything that the just-purchased subscription affects:
-   * - currentSubscription + allowedFeatures (subscription slice)
-   * - user.default_payment_method_id (auth slice via getMe)
-   * After this resolves, RequireFeature will see the new allowedFeatures
-   * and the page renders the new plan instantly.
-   */
   const refreshAfterPurchase = async () => {
     await Promise.all([
       dispatch(fetchCurrentSubscription()),
@@ -186,10 +196,10 @@ export default function Subscription() {
   const initialLoading =
     status === STATUS.LOADING && plans.length === 0 && !currentSubscription;
 
-  // Show full skeleton during initial load OR active subscription purchase.
-  // This prevents user from clicking other plans / cancel while waiting.
   if (initialLoading) return <SubscriptionSkeleton />;
   if (subscribing)    return <SubscriptionSkeleton message="Activating your subscription…" />;
+
+  const mutating = status === STATUS.LOADING;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -208,6 +218,7 @@ export default function Subscription() {
         </Link>
       </div>
 
+      {/* ── Current plan card ─────────────────────────────────── */}
       <div
         className="rounded-2xl p-6 text-white"
         style={{ background: `linear-gradient(135deg, ${theme.accent}, ${theme.accent}dd)` }}
@@ -232,27 +243,53 @@ export default function Subscription() {
           </div>
         </div>
 
-        {renewalDate && (
-          <div className="mt-5 pt-5 border-t border-white/20 flex items-center gap-2 text-xs text-white/80">
-            <Calendar size={12} /> Next renewal · {renewalDate}
+        {/* ── Renewal info / cancel notice ── */}
+        {renewalDate && currentPlan && (
+          <div className="mt-5 pt-5 border-t border-white/20">
+            {cancelsAtPeriodEnd ? (
+              <div className="flex items-start gap-2 text-xs text-white">
+                <AlertTriangle size={14} className="flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold">Your subscription will cancel on {renewalDate}</p>
+                  <p className="text-white/70 text-[11px] mt-0.5">
+                    You'll keep access until then. Resume any time before that.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 text-xs text-white/80">
+                <Calendar size={12} /> Next renewal · {renewalDate}
+              </div>
+            )}
           </div>
         )}
 
-        {currentSubscription?.cancelAtPeriodEnd ? (
-          <Button className="mt-4" onClick={() => dispatch(resumeSubscription())}>
-            Resume subscription
-          </Button>
-        ) : currentPlan && (
-          <Button
-            variant="secondary"
-            className="mt-4"
-            onClick={() => dispatch(cancelSubscription())}
-          >
-            Cancel at period end
-          </Button>
+        {/* ── Action button (Resume vs Cancel) ── */}
+        {currentPlan && (
+          cancelsAtPeriodEnd ? (
+            <Button
+              className="mt-4"
+              loading={mutating}
+              disabled={mutating}
+              onClick={() => dispatch(resumeSubscription())}
+            >
+              Resume subscription
+            </Button>
+          ) : (
+            <Button
+              variant="secondary"
+              className="mt-4"
+              loading={mutating}
+              disabled={mutating}
+              onClick={() => dispatch(cancelSubscription())}
+            >
+              Cancel at period end
+            </Button>
+          )
         )}
       </div>
 
+      {/* ── Plan switcher ─────────────────────────────────────── */}
       <div>
         <h2 className="font-unbounded text-xs font-bold text-[#3E3D38] tracking-wider uppercase mb-3">
           {currentPlan ? 'Change Plan' : 'Choose a Plan'}
@@ -273,7 +310,7 @@ export default function Subscription() {
             {sortedPlans.map((p) => {
               const isCurrent   = String(p.id).toLowerCase() === currentPlanId;
               const isSwitching = switchingPlanId === p.id;
-              const isAnyBusy   = switchingPlanId !== null;
+              const isAnyBusy   = switchingPlanId !== null || mutating;
               const borderCls   = isCurrent
                 ? 'border-[#3E3D38]'
                 : p.highlighted
