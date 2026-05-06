@@ -55,7 +55,7 @@ export default function Dashboard() {
             </div>
             {profileId && (
               <Button variant="primary" size="sm" icon={Eye}
-                onClick={() => navigate(`/portal/instructors/${profileId}`)}>
+                onClick={() => navigate(`/portal/profile`)}>
                 View Profile
               </Button>
             )}
