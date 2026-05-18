@@ -54,6 +54,7 @@ import AdminCommunications from './pages/admin/AdminCommunications';
 // StudioDetail lives in `pages/public/` because the view itself is
 // read-only and has no role-specific affordances.
 import StudioDetail from './pages/public/StudioDetail';
+import NewsBotDashboard from './pages/public/newsBot';
 
 // ─── Feature key constants ────────────────────────────────────────
 // Must match the `key` column in the `features` DB table.
@@ -117,6 +118,7 @@ export default function App() {
         <Route path="/register"        element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password"  element={<ResetPassword />} />
+        <Route path="/news-bot"  element={<NewsBotDashboard />} />
 
         {/* ═══════════════════════════════════════════════════════════
             Instructor portal
