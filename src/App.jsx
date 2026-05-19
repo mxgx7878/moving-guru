@@ -50,6 +50,7 @@ import AdminSubscriptions  from './pages/admin/AdminSubscriptions';
 import AdminSettings       from './pages/admin/AdminSettings';
 import AdminReviews        from './pages/admin/AdminReviews';
 import AdminCommunications from './pages/admin/AdminCommunications';
+import './styles/dashboard-bg.css';
 
 // StudioDetail lives in `pages/public/` because the view itself is
 // read-only and has no role-specific affordances.

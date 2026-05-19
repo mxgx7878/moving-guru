@@ -6,11 +6,21 @@ import {
   Mail,
 } from 'lucide-react';
 
+// ── Per-role theme tokens ────────────────────────────────────────
+// `accent` is the dominant brand colour for the portal — used by the
+// Sidebar active-state, PageHeader gradient banner, SubscriptionGate
+// lock icon, FeatureGate upgrade CTA, etc.
+//
+// Instructor portal moved from coral (#CE4F56) to mint green (#9DD964)
+// to match the public site's refreshed brand. The Login page's left
+// hero panel still renders in coral on purpose — see Login.jsx.
+//
+// Studio (sky blue) and Admin (purple) are unchanged.
 export const ROLE_THEME = {
   instructor: {
-    accent: '#CE4F56',
-    accentLight: '#CE4F56/10',
-    avatarGradient: 'from-[#CE4F56] to-[#E89560]',
+    accent: '#9DD964',
+    accentLight: '#9DD964/10',
+    avatarGradient: 'from-[#9DD964] to-[#E89560]',
     label: 'Member Portal',
     defaultPath: '/portal/dashboard',
     profilePath: '/portal/profile'
@@ -59,14 +69,14 @@ export const NAV_CONFIG = {
     { to: '/studio/payments',       icon: CreditCard,      label: 'Payment History'    },
   ],
   admin: [
-    { to: '/admin/dashboard',        icon: LayoutDashboard, label: 'Dashboard'       },
-    { to: '/admin/users',            icon: Users,           label: 'User Management' },
-    { to: '/admin/jobs',             icon: Briefcase,       label: 'Job Listings'    },
-    { to: '/admin/grow',             icon: Sprout,          label: 'Grow Posts'      },
-    { to: '/admin/announcements',    icon: Megaphone,       label: 'Announcements'   },
-    { to: '/admin/subscriptions',    icon: Star,            label: 'Subscriptions'   },
-    { to: '/admin/settings',         icon: Settings,        label: 'Settings'        },
+    { to: '/admin/dashboard',        icon: LayoutDashboard, label: 'Dashboard'         },
+    { to: '/admin/users',            icon: Users,           label: 'User Management'   },
+    { to: '/admin/jobs',             icon: Briefcase,       label: 'Job Listings'      },
+    { to: '/admin/grow',             icon: Sprout,          label: 'Grow Posts'        },
+    { to: '/admin/announcements',    icon: Megaphone,       label: 'Announcements'     },
+    { to: '/admin/subscriptions',    icon: Star,            label: 'Subscriptions'     },
+    { to: '/admin/settings',         icon: Settings,        label: 'Settings'          },
     { to: '/admin/reviews',          icon: Star,            label: 'Review Moderation' },
-    { to: '/admin/communications', icon: Mail, label: 'Communications' },
+    { to: '/admin/communications',   icon: Mail,            label: 'Communications'    },
   ],
 };

@@ -39,9 +39,14 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-warm-bg flex font-dm">
-      {/* Left panel */}
+      {/* ── Left brand panel ──────────────────────────────────────────
+          Gradient is INTENTIONALLY hardcoded to coral/orange hex values
+          (not the `coral` / `orange-mg` tailwind tokens). The portal
+          brand colour has shifted to mint green, but this hero panel is
+          the public face of the product and stays on the original
+          coral palette regardless of token changes. */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden flex-col justify-between p-12">
-        <div className="absolute inset-0 bg-gradient-to-br from-coral via-coral/90 to-orange-mg" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#CE4F56] via-[#CE4F56]/90 to-[#E89560]" />
         <div className="absolute inset-0 opacity-20"
           style={{
             backgroundImage: `radial-gradient(circle at 20% 80%, #f5fca6 0%, transparent 50%),
@@ -54,9 +59,6 @@ export default function Login() {
         <div className="relative z-10">
           <div className="flex items-center justify-center gap-2 ">
             <img src={logo} alt="Moving Guru Logo" height={300} width={300} className='brightness-0 invert' />
-            {/* <span className="font-unbounded text-lg font-bold text-white/70 tracking-wider">
-              MOVING GURU
-            </span> */}
           </div>
         </div>
 
@@ -89,7 +91,7 @@ export default function Login() {
         </div>
       </div>
 
-      {/* Right panel */}
+      {/* ── Right form panel ──────────────────────────────────────── */}
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-sm">
           <div className="lg:hidden flex items-center gap-2 mb-8">
@@ -130,7 +132,7 @@ export default function Login() {
 
             <Button
               type="submit"
-              variant="danger"
+              // variant="danger"
               size="lg"
               fullWidth
               loading={loading}

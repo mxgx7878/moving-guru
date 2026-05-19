@@ -1,0 +1,54 @@
+/* ═══════════════════════════════════════════════
+   MOVING GURU — Dashboard Background
+   ───────────────────────────────────────────────
+   Soft gradient that complements the new mint green
+   buttons. The base is the existing warm cream
+   (#FDFCF8) with a very pale mint tint settling into
+   the bottom-right corner — gives the page visual
+   depth without competing with the bright CTA buttons.
+
+   Apply on the outermost wrapper of every portal page
+   (PortalLayout's main element). Two equivalent ways:
+
+     1. Tailwind class:   <div className="bg-gradient-dashboard min-h-screen">
+        (Works after the updated tailwind.config.js is in
+        place — uses the bg-gradient-dashboard utility.)
+
+     2. Plain CSS class:  <div className="dashboard-bg">
+        (Works without Tailwind — import this file in
+        src/index.css.)
+   ═══════════════════════════════════════════════ */
+
+.dashboard-bg {
+  background: linear-gradient(
+    135deg,
+    #FDFCF8 0%,
+    #FDFCF8 60%,
+    #F0F9E5 100%
+  );
+  min-height: 100vh;
+}
+
+/* Subtler variant for sub-pages that don't need the
+   gradient (e.g. settings, profile edit). Just neutral
+   cream — same as the existing warm-bg class. */
+.dashboard-bg-neutral {
+  background: #FDFCF8;
+  min-height: 100vh;
+}
+
+/* Section accent — for hero cards or "welcome" banners
+   inside the dashboard. Mint green panel that matches
+   the button colour but with a gentle gradient so it
+   doesn't feel like a flat solid block. */
+.mint-banner {
+  background: linear-gradient(135deg, #9DD964 0%, #87C04E 100%);
+  color: #3E3D38;
+}
+
+/* Mint-tinted card — for stat tiles or "highlight" cards
+   that should stand out without going full saturated green. */
+.mint-tile {
+  background: rgba(157, 217, 100, 0.08);
+  border: 1px solid rgba(157, 217, 100, 0.25);
+}

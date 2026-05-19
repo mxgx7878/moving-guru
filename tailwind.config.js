@@ -16,15 +16,20 @@ export default {
       },
       colors: {
         // ── Brand accents ────────────────────────────────────────────
+        //
+        // NOTE on naming: `coral` keeps its name for backwards-compat
+        // (`bg-coral`, `text-coral` are used throughout the codebase),
+        // but its hex value is now mint green. Rename to `primary` in
+        // a future refactor when you have time to find/replace.
         lime: {
-          DEFAULT: '#f5fca6',
-          dark:    '#ce4f56',
-          soft:    'rgba(206, 79, 86, 0.08)',
+          DEFAULT: '#f5fca6',   // pale cream-yellow accent (unchanged — used as soft accent backgrounds)
+          dark:    '#87C04E',   // was #ce4f56 (red) — now darker mint, matches the new primary
+          soft:    'rgba(157, 217, 100, 0.12)',  // was red rgba — now soft mint tint
         },
         coral: {
-          DEFAULT: '#CE4F56',
-          hover:   '#b8454c',
-          soft:    'rgba(206, 79, 86, 0.10)',
+          DEFAULT: '#9DD964',   // ← was #CE4F56 — primary brand button colour (mint green)
+          hover:   '#87C04E',   // ← was #b8454c — darker mint for hover state
+          soft:    'rgba(157, 217, 100, 0.12)',  // ← was red rgba
         },
         orange: {
           mg:   '#E89560',
@@ -76,6 +81,13 @@ export default {
         tile: {
           neutral: '#F5F0E8',   // avatar image fallback tile
         },
+      },
+
+      // ── Gradient backgrounds for portal pages ────────────────────
+      // Use as `bg-gradient-dashboard` on PortalLayout's main wrapper.
+      backgroundImage: {
+        'gradient-dashboard': 'linear-gradient(135deg, #FDFCF8 0%, #FDFCF8 60%, #F0F9E5 100%)',
+        'gradient-mint':      'linear-gradient(135deg, #9DD964 0%, #87C04E 100%)',
       },
     },
   },

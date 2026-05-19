@@ -21,7 +21,7 @@ export default function PortalLayout() {
   const firstName = displayName.split(' ')[0];
 
   return (
-    <div className="flex h-screen bg-[#FBF8E4] font-['DM_Sans'] overflow-hidden">
+    <div className="flex h-screen dashboard-bg font-['DM_Sans'] overflow-hidden">
       <Sidebar mobileOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
