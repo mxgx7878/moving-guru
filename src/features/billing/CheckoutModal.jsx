@@ -3,23 +3,23 @@
 // CHANGE: onSuccess receives the paymentMethodId so the caller can
 // pass it straight to changePlan in a single atomic backend call.
 
-import { useState } from 'react';
-import { Elements, PaymentElement } from '@stripe/react-stripe-js';
-import { CreditCard, Lock, Loader2 } from 'lucide-react';
+import { useState } from "react";
+import { Elements, PaymentElement } from "@stripe/react-stripe-js";
+import { CreditCard, Lock, Loader2 } from "lucide-react";
 
-import { Modal, Button } from '../../components/ui';
-import { loadStripeOnce } from '../../services/stripe';
-import { useStripeCheckout } from '../../hooks/useStripeCheckout';
-import { ROLE_THEME } from '../../config/portalConfig';
+import { Modal, Button } from "../../components/ui";
+import { loadStripeOnce } from "../../services/stripe";
+import { useStripeCheckout } from "../../hooks/useStripeCheckout";
+import { ROLE_THEME } from "../../config/portalConfig";
 
 export default function CheckoutModal({
   open,
   clientSecret,
-  title    = 'Add payment method',
-  ctaLabel = 'Save & Continue',
+  title = "Add payment method",
+  ctaLabel = "Save & Continue",
   onClose,
   onSuccess,
-  role     = 'instructor',
+  role = "instructor",
 }) {
   if (!open || !clientSecret) return null;
 
@@ -31,11 +31,11 @@ export default function CheckoutModal({
       options={{
         clientSecret,
         appearance: {
-          theme: 'stripe',
+          theme: "stripe",
           variables: {
             colorPrimary: theme.accent,
-            fontFamily:   'Inter, system-ui, sans-serif',
-            borderRadius: '12px',
+            fontFamily: "Inter, system-ui, sans-serif",
+            borderRadius: "12px",
           },
         },
       }}
@@ -67,9 +67,11 @@ function CheckoutInner({ title, ctaLabel, accent, onClose, onSuccess }) {
       title={title}
       onClose={busy ? undefined : onClose}
       dismissOnBackdrop={!busy}
-      footer={(
+      footer={
         <>
-          <Button variant="secondary" onClick={onClose} disabled={busy}>Cancel</Button>
+          <Button variant="secondary" onClick={onClose} disabled={busy}>
+            Cancel
+          </Button>
           <Button
             variant="primary"
             icon={CreditCard}
@@ -81,7 +83,7 @@ function CheckoutInner({ title, ctaLabel, accent, onClose, onSuccess }) {
             {ctaLabel}
           </Button>
         </>
-      )}
+      }
     >
       <div className="space-y-4">
         {!elementReady && (
@@ -91,9 +93,26 @@ function CheckoutInner({ title, ctaLabel, accent, onClose, onSuccess }) {
           </div>
         )}
 
-        <div className={elementReady ? '' : 'hidden'}>
+        <div className={elementReady ? "" : "hidden"}>
           <PaymentElement
-            options={{ layout: 'tabs' }}
+            options={{
+              layout: "tabs",
+              fields: {
+                billingDetails: {
+                  name: "never",
+                  email: "never",
+                  phone: "never",
+                  address: {
+                    country: "never",
+                    postalCode: "never",
+                    line1: "never",
+                    line2: "never",
+                    city: "never",
+                    state: "never",
+                  },
+                },
+              },
+            }}
             onReady={() => setElementReady(true)}
           />
         </div>
@@ -101,7 +120,10 @@ function CheckoutInner({ title, ctaLabel, accent, onClose, onSuccess }) {
         {elementReady && (
           <div className="flex items-center gap-2 text-xs text-[#9A9A94]">
             <Lock size={12} />
-            <span>Processed securely by Stripe. Your card details never touch our servers.</span>
+            <span>
+              Processed securely by Stripe. Your card details never touch our
+              servers.
+            </span>
           </div>
         )}
       </div>
