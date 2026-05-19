@@ -52,11 +52,11 @@ export default function Login() {
         <div className="absolute -top-10 -right-10 w-60 h-60 rounded-full border-2 border-white/10" />
 
         <div className="relative z-10">
-          <div className="flex items-center gap-2 mb-2">
-            <img src={logo} alt="Moving Guru Logo" height={80} width={80} />
-            <span className="font-unbounded text-lg font-bold text-white/70 tracking-wider">
+          <div className="flex items-center justify-center gap-2 ">
+            <img src={logo} alt="Moving Guru Logo" height={300} width={300} className='brightness-0 invert' />
+            {/* <span className="font-unbounded text-lg font-bold text-white/70 tracking-wider">
               MOVING GURU
-            </span>
+            </span> */}
           </div>
         </div>
 
