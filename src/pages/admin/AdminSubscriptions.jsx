@@ -1,15 +1,13 @@
 // src/pages/admin/AdminSubscriptions.jsx
 //
-// CHANGES:
-// - Status pill is now CLICKABLE — one click toggles Active ↔ Archived
-// - Sliders icon → opens PlanFeaturesModal
-// - "Sync from Stripe" button in header
+// CHANGE: Added "Trial" column showing trialPeriodDays per plan.
+// Shows "—" when 0, else "X days" with a Gift icon for visual reference.
 
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'sonner';
 import {
-  Star, Plus, Edit2, Trash2, CheckCircle2, XCircle, Users, RefreshCw, Sliders,
+  Star, Plus, Edit2, Trash2, CheckCircle2, XCircle, Users, RefreshCw, Sliders, Gift,
 } from 'lucide-react';
 
 import {
@@ -41,6 +39,7 @@ const PLAN_COLUMNS = [
   { key: 'name',        label: 'Plan' },
   { key: 'price',       label: 'Price' },
   { key: 'billing',     label: 'Billing' },
+  { key: 'trial',       label: 'Trial' },
   { key: 'subscribers', label: 'Subscribers', align: 'right' },
   { key: 'status',      label: 'Status' },
   { key: 'actions',     label: 'Actions', align: 'right' },
@@ -117,11 +116,6 @@ export default function AdminSubscriptions() {
     await dispatch(deleteAdminPlan(target.id));
   };
 
-  /**
-   * One-click status toggle from the table.
-   * Sends only `isActive` so the partial update doesn't disturb anything else
-   * (price, interval etc stay untouched in Stripe).
-   */
   const handleToggleStatus = async (plan) => {
     if (adminPlanMutating) return;
     await dispatch(updateAdminPlan({
@@ -186,82 +180,95 @@ export default function AdminSubscriptions() {
         rows={filtered}
         loading={isLoading}
         emptyState={<EmptyState icon={Star} title="No plans match" message="Try adjusting your filters or create a new plan." />}
-        renderRow={(p) => (
-          <tr key={p.id} className="hover:bg-[#FDFCF8] transition-colors">
-            <td className="px-4 py-3">
-              <div className="flex items-center gap-2">
-                <div>
-                  <p className="text-sm font-semibold text-[#3E3D38]">{p.name}</p>
-                  <p className="text-xs text-[#9A9A94] font-mono">{p.id}</p>
+        renderRow={(p) => {
+          const trialDays = Number(p.trialPeriodDays) || 0;
+
+          return (
+            <tr key={p.id} className="hover:bg-[#FDFCF8] transition-colors">
+              <td className="px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <div>
+                    <p className="text-sm font-semibold text-[#3E3D38]">{p.name}</p>
+                    <p className="text-xs text-[#9A9A94] font-mono">{p.id}</p>
+                  </div>
+                  {p.isFeatured && (
+                    <span className="text-[10px] font-bold uppercase tracking-wider bg-[#f5fca6] text-[#3E3D38] px-2 py-0.5 rounded-full">
+                      Featured
+                    </span>
+                  )}
                 </div>
-                {p.isFeatured && (
-                  <span className="text-[10px] font-bold uppercase tracking-wider bg-[#f5fca6] text-[#3E3D38] px-2 py-0.5 rounded-full">
-                    Featured
+              </td>
+              <td className="px-4 py-3">
+                <span className="font-unbounded text-sm font-bold text-[#3E3D38]">
+                  ${Number(p.price).toFixed(2)}
+                </span>
+                <span className="text-xs text-[#9A9A94] ml-1">{p.currency}</span>
+              </td>
+              <td className="px-4 py-3 text-sm text-[#3E3D38]">
+                {p.intervalCount > 1 ? `Every ${p.intervalCount} ${p.interval}s` : `Per ${p.interval}`}
+              </td>
+              <td className="px-4 py-3">
+                {trialDays > 0 ? (
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                    <Gift size={11} />
+                    {trialDays} {trialDays === 1 ? 'day' : 'days'}
                   </span>
+                ) : (
+                  <span className="text-xs text-[#9A9A94]">—</span>
                 )}
-              </div>
-            </td>
-            <td className="px-4 py-3">
-              <span className="font-unbounded text-sm font-bold text-[#3E3D38]">
-                ${Number(p.price).toFixed(2)}
-              </span>
-              <span className="text-xs text-[#9A9A94] ml-1">{p.currency}</span>
-            </td>
-            <td className="px-4 py-3 text-sm text-[#3E3D38]">
-              {p.intervalCount > 1 ? `Every ${p.intervalCount} ${p.interval}s` : `Per ${p.interval}`}
-            </td>
-            <td className="px-4 py-3 text-right text-sm font-semibold text-[#3E3D38]">
-              {p.subscribersCount || 0}
-            </td>
-            <td className="px-4 py-3">
-              {/* Clickable status pill — one click toggles Active ↔ Archived */}
-              <button
-                type="button"
-                onClick={() => handleToggleStatus(p)}
-                disabled={adminPlanMutating}
-                title={p.isActive ? 'Click to archive this plan' : 'Click to activate this plan'}
-                className={`text-xs font-semibold px-2 py-1 rounded-full transition-all hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed ${
-                  p.isActive
-                    ? 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100'
-                    : 'text-[#9A9A94] bg-[#F5F2EC] hover:bg-[#E5E0D8]'
-                }`}
-              >
-                {p.isActive ? '● Active' : '○ Archived'}
-              </button>
-            </td>
-            <td className="px-4 py-3">
-              <div className="flex items-center justify-end gap-1">
-                <IconButton
-                  variant="plain"
-                  aria-label="Manage features"
-                  title="Manage features"
-                  onClick={() => setFeaturesTarget(p)}
+              </td>
+              <td className="px-4 py-3 text-right text-sm font-semibold text-[#3E3D38]">
+                {p.subscribersCount || 0}
+              </td>
+              <td className="px-4 py-3">
+                <button
+                  type="button"
+                  onClick={() => handleToggleStatus(p)}
                   disabled={adminPlanMutating}
+                  title={p.isActive ? 'Click to archive this plan' : 'Click to activate this plan'}
+                  className={`text-xs font-semibold px-2 py-1 rounded-full transition-all hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed ${
+                    p.isActive
+                      ? 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100'
+                      : 'text-[#9A9A94] bg-[#F5F2EC] hover:bg-[#E5E0D8]'
+                  }`}
                 >
-                  <Sliders size={14} className="text-[#7F77DD]" />
-                </IconButton>
-                <IconButton
-                  variant="plain"
-                  aria-label="Edit plan"
-                  title="Edit plan"
-                  onClick={() => openEdit(p)}
-                  disabled={adminPlanMutating}
-                >
-                  <Edit2 size={14} />
-                </IconButton>
-                <IconButton
-                  variant="plain"
-                  aria-label="Delete plan"
-                  title="Delete plan"
-                  onClick={() => setDeletingTarget(p)}
-                  disabled={adminPlanMutating}
-                >
-                  <Trash2 size={14} className="text-rose-500" />
-                </IconButton>
-              </div>
-            </td>
-          </tr>
-        )}
+                  {p.isActive ? '● Active' : '○ Archived'}
+                </button>
+              </td>
+              <td className="px-4 py-3">
+                <div className="flex items-center justify-end gap-1">
+                  <IconButton
+                    variant="plain"
+                    aria-label="Manage features"
+                    title="Manage features"
+                    onClick={() => setFeaturesTarget(p)}
+                    disabled={adminPlanMutating}
+                  >
+                    <Sliders size={14} className="text-[#7F77DD]" />
+                  </IconButton>
+                  <IconButton
+                    variant="plain"
+                    aria-label="Edit plan"
+                    title="Edit plan"
+                    onClick={() => openEdit(p)}
+                    disabled={adminPlanMutating}
+                  >
+                    <Edit2 size={14} />
+                  </IconButton>
+                  <IconButton
+                    variant="plain"
+                    aria-label="Delete plan"
+                    title="Delete plan"
+                    onClick={() => setDeletingTarget(p)}
+                    disabled={adminPlanMutating}
+                  >
+                    <Trash2 size={14} className="text-rose-500" />
+                  </IconButton>
+                </div>
+              </td>
+            </tr>
+          );
+        }}
       />
 
       {formOpen && (

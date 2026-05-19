@@ -1,7 +1,8 @@
 // src/features/forms/PlanForm.jsx
 //
-// CHANGE: Active toggle restored at the bottom — admin can flip plan
-// between Active and Archived from the edit form.
+// CHANGE: Added "Trial period (days)" input — admin can set per-plan
+// trial length. 0 = no trial. Value is stored on the plan row; trial
+// is applied at subscription creation time in StripeService.
 
 import { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -43,33 +44,40 @@ const buildSchema = (isEdit) => yup.object({
     : yup.string().required('ID is required')
         .matches(/^[a-z0-9][a-z0-9_-]*$/, 'Lowercase letters, numbers, hyphens or underscores only')
         .max(32, 'Max 32 characters'),
-  name:         yup.string().trim().required('Name is required').max(64),
-  description:  yup.string().nullable().max(255),
-  price:        yup.number().typeError('Must be a number').required('Price is required').min(0),
-  currency:     yup.string().required('Currency is required').length(3),
-  billingCycle: yup.string().required().oneOf(BILLING_CYCLES.map((c) => c.value)),
-  features:     yup.array().of(yup.string().max(140)),
-  isActive:     yup.boolean(),
-  sortOrder:    yup.number().typeError('Must be a number').integer().min(0).max(9999),
+  name:            yup.string().trim().required('Name is required').max(64),
+  description:     yup.string().nullable().max(255),
+  price:           yup.number().typeError('Must be a number').required('Price is required').min(0),
+  currency:        yup.string().required('Currency is required').length(3),
+  billingCycle:    yup.string().required().oneOf(BILLING_CYCLES.map((c) => c.value)),
+  trialPeriodDays: yup.number()
+    .typeError('Must be a number')
+    .integer('Whole days only')
+    .min(0, 'Cannot be negative')
+    .max(365, 'Maximum 365 days'),
+  features:        yup.array().of(yup.string().max(140)),
+  isActive:        yup.boolean(),
+  sortOrder:       yup.number().typeError('Must be a number').integer().min(0).max(9999),
 });
 
 const EMPTY_FORM = {
   id: '', name: '', description: '',
   price: 0, currency: 'USD',
   billingCycle: 'month-1',
+  trialPeriodDays: 0,
   features: [], isActive: true, sortOrder: 0,
 };
 
 const planToForm = (p) => ({
-  id:           p.id,
-  name:         p.name || '',
-  description:  p.description || '',
-  price:        Number(p.price) || 0,
-  currency:     p.currency || 'USD',
-  billingCycle: cycleFromPlan(p),
-  features:     Array.isArray(p.features) ? p.features : [],
-  isActive:     p.isActive !== undefined ? Boolean(p.isActive) : true,
-  sortOrder:    Number(p.sortOrder) || 0,
+  id:              p.id,
+  name:            p.name || '',
+  description:     p.description || '',
+  price:           Number(p.price) || 0,
+  currency:        p.currency || 'USD',
+  billingCycle:    cycleFromPlan(p),
+  trialPeriodDays: Number(p.trialPeriodDays) || 0,
+  features:        Array.isArray(p.features) ? p.features : [],
+  isActive:        p.isActive !== undefined ? Boolean(p.isActive) : true,
+  sortOrder:       Number(p.sortOrder) || 0,
 });
 
 export default function PlanForm({ plan, saving = false, onCancel, onSubmit }) {
@@ -85,6 +93,7 @@ export default function PlanForm({ plan, saving = false, onCancel, onSubmit }) {
   });
 
   const features = watch('features') || [];
+  const trialDays = Number(watch('trialPeriodDays')) || 0;
 
   const addFeature   = () => setValue('features', [...features, ''], { shouldValidate: true });
   const updateFeature = (i, val) => {
@@ -99,12 +108,13 @@ export default function PlanForm({ plan, saving = false, onCancel, onSubmit }) {
 
     const payload = {
       ...values,
-      description:   values.description?.trim() || null,
-      interval:      cycle.interval,
-      intervalCount: cycle.intervalCount,
-      period:        cycle.period,
-      features:      (values.features || []).map((f) => f.trim()).filter(Boolean),
-      isFeatured:    plan?.isFeatured ?? false,
+      description:     values.description?.trim() || null,
+      interval:        cycle.interval,
+      intervalCount:   cycle.intervalCount,
+      period:          cycle.period,
+      trialPeriodDays: Number(values.trialPeriodDays) || 0,
+      features:        (values.features || []).map((f) => f.trim()).filter(Boolean),
+      isFeatured:      plan?.isFeatured ?? false,
     };
 
     delete payload.billingCycle;
@@ -183,6 +193,32 @@ export default function PlanForm({ plan, saving = false, onCancel, onSubmit }) {
               />
             )}
           />
+        </div>
+
+        {/* Trial — set once at plan level, applied per-subscription */}
+        <div className="grid sm:grid-cols-3 gap-4">
+          <div className="sm:col-span-1">
+            <RHFInput
+              control={control} errors={errors}
+              name="trialPeriodDays" label="Trial period (days)"
+              type="number" min={0} max={365} step={1}
+              help="0 = no trial"
+            />
+          </div>
+          <div className="sm:col-span-2 flex items-start pt-6">
+            <p className="text-[11px] text-[#6B6B66] leading-relaxed">
+              {trialDays > 0 ? (
+                <>
+                  Subscribers will get a <strong className="text-[#3E3D38]">{trialDays}-day free trial</strong>{' '}
+                  before being charged. Each user gets only <strong>one trial across the platform</strong> —
+                  if they've trialed before (on any plan), they'll be charged immediately. Card is still
+                  collected up front, charged at trial end.
+                </>
+              ) : (
+                <>No free trial — subscribers are charged immediately on signup.</>
+              )}
+            </p>
+          </div>
         </div>
 
         {/* Features list */}
