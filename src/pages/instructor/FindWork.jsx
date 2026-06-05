@@ -160,6 +160,11 @@ export default function FindWork() {
     <div className="-m-4 lg:-m-6 p-4 lg:p-6 min-h-full bg-[#B4FF5A]">
     <div className="max-w-5xl mx-auto space-y-4 sm:space-y-5">
 
+      {/* ── Hero tagline ───────────────────────────────────── */}
+      <h2 className="font-unbounded text-2xl sm:text-3xl lg:text-4xl font-black text-[#1A1A1A] leading-tight">
+        Find work wherever you wander
+      </h2>
+
       {/* ── Header ─────────────────────────────────────────── */}
       <div>
         <p className="text-[#1A1A1A] text-[10px] sm:text-xs font-semibold tracking-widest uppercase mb-1.5">
