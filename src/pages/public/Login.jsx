@@ -152,7 +152,7 @@ export default function Login() {
           <div className="border-t border-edge mt-6 pt-6 space-y-3">
             <p className="text-center text-ink-soft text-sm">New to Moving Guru?</p>
             <Link to="/register">
-              <Button variant="outlineDanger" size="md" fullWidth className="border-2">
+              <Button  variant="outlineDanger" size="md" fullWidth className="border-2 mb-2 border-sky-mg text-sky-mg hover:bg-sky-mg hover:text-white ">
                 Join as Instructor
               </Button>
             </Link>
