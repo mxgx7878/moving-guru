@@ -36,11 +36,11 @@ export default function StudioDashboard() {
 
       <PageHeader
         variant="gradient"
-        gradientFrom="#FDFCF8"
-        gradientTo="#2DA4D610"
-        gradientAccent="#2DA4D6"
+        gradientFrom="#FFFFFF"
+        gradientTo="#4E7A1B10"
+        gradientAccent="#4E7A1B"
         eyebrow="Studio Dashboard"
-        eyebrowColor="#2DA4D6"
+        eyebrowColor="#4E7A1B"
         title={studioName}
         description="Find your next great instructor from the Moving Guru network"
         actions={(
@@ -54,13 +54,13 @@ export default function StudioDashboard() {
       {/* KPI grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiTile icon={Briefcase}     label="Active Listings" value={kpis.active_listings ?? 0}
-          sub={`${kpis.total_listings ?? 0} total`}           color="#2DA4D6" loading={loading} />
+          sub={`${kpis.total_listings ?? 0} total`}           color="#4E7A1B" loading={loading} />
         <KpiTile icon={MessageCircle} label="Applicants"      value={kpis.applicants_total ?? 0}
-          sub={`${kpis.applicants_this_week ?? 0} this week`} color="#E89560" loading={loading} />
+          sub={`${kpis.applicants_this_week ?? 0} this week`} color="#9BE63D" loading={loading} />
         <KpiTile icon={Heart}         label="Saved"           value={kpis.saved_instructors ?? 0}
-          sub="Instructors in favourites"                     color="#7F77DD" loading={loading} />
+          sub="Instructors in favourites"                     color="#4E7A1B" loading={loading} />
         <KpiTile icon={Users}         label="Network"         value={kpis.instructors_on_platform ?? 0}
-          sub="Active instructors"                            color="#10B981" loading={loading} />
+          sub="Active instructors"                            color="#4E7A1B" loading={loading} />
       </div>
 
       {/* Charts row */}
@@ -88,9 +88,9 @@ export default function StudioDashboard() {
       {/* Quick actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[
-          { to: '/studio/jobs',     icon: Briefcase, color: '#2DA4D6', title: 'Manage Listings',  desc: 'Post and edit your job openings' },
-          { to: '/studio/search',   icon: Search,    color: '#CE4F56', title: 'Find Instructors',  desc: 'Browse our active community' },
-          { to: '/studio/profile',  icon: Building2, color: '#E89560', title: 'Studio Profile',    desc: 'Update your studio details' },
+          { to: '/studio/jobs',     icon: Briefcase, color: '#4E7A1B', title: 'Manage Listings',  desc: 'Post and edit your job openings' },
+          { to: '/studio/search',   icon: Search,    color: '#4E7A1B', title: 'Find Instructors',  desc: 'Browse our active community' },
+          { to: '/studio/profile',  icon: Building2, color: '#9BE63D', title: 'Studio Profile',    desc: 'Update your studio details' },
         ].map((q) => (
           <button key={q.to} onClick={() => navigate(q.to)}
             className="bg-white rounded-2xl p-5 border border-[#E5E0D8] text-left transition-all

@@ -11,7 +11,7 @@ export default function SelectField({
   placeholder = 'Select...',
   label,
   error,
-  accent = '#CE4F56',
+  accent = '#4E7A1B',
   size = 'md',
   disabled = false,
   className = '',

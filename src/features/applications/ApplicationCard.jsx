@@ -10,8 +10,8 @@ import { formatShortDate } from '../../utils/formatters';
 const STATUS_META = {
   accepted: { label: 'Accepted',          bg: 'bg-emerald-50',   text: 'text-emerald-600', icon: CheckCircle2 },
   rejected: { label: 'Not selected',      bg: 'bg-red-50',       text: 'text-red-500',     icon: XCircle      },
-  viewed:   { label: 'Studio has viewed', bg: 'bg-[#FBF8E4]',    text: 'text-[#6B6B66]',   icon: Clock        },
-  pending:  { label: 'Pending',           bg: 'bg-[#2DA4D6]/10', text: 'text-[#2DA4D6]',   icon: Clock3       },
+  viewed:   { label: 'Studio has viewed', bg: 'bg-[#FAFEE0]',    text: 'text-[#6B6B66]',   icon: Clock        },
+  pending:  { label: 'Pending',           bg: 'bg-[#4E7A1B]/10', text: 'text-[#4E7A1B]',   icon: Clock3       },
 };
 
 export default function ApplicationCard({
@@ -32,7 +32,7 @@ export default function ApplicationCard({
   const canReapplyAt = formatShortDate(app.can_reapply_at);
 
   return (
-    <div className="bg-white rounded-2xl border border-[#E5E0D8] p-4 hover:border-[#CE4F56]/30 transition-colors">
+    <div className="bg-white rounded-2xl border border-[#E5E0D8] p-4 hover:border-[#4E7A1B]/30 transition-colors">
       <div className="flex items-start gap-3">
         <Avatar
           name={studioName}
@@ -82,7 +82,7 @@ export default function ApplicationCard({
               <summary className="text-[11px] text-[#9A9A94] cursor-pointer hover:text-[#6B6B66]">
                 View your message
               </summary>
-              <p className="mt-1 text-[#6B6B66] text-xs leading-relaxed whitespace-pre-line bg-[#FBF8E4] rounded-xl px-3 py-2">
+              <p className="mt-1 text-[#6B6B66] text-xs leading-relaxed whitespace-pre-line bg-[#FAFEE0] rounded-xl px-3 py-2">
                 {app.message}
               </p>
             </details>

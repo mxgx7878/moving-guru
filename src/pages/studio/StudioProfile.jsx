@@ -212,7 +212,7 @@ export default function StudioProfile() {
               value={form.studioName}
               onChange={(e) => update('studioName', e.target.value)}
               placeholder="e.g. Zen Flow Studio"
-              accent="#2DA4D6"
+              accent="#4E7A1B"
               error={errors.studioName}
             />
 
@@ -222,7 +222,7 @@ export default function StudioProfile() {
                 value={form.contactName}
                 onChange={(e) => update('contactName', e.target.value)}
                 placeholder="e.g. Sarah Mitchell"
-                accent="#2DA4D6"
+                accent="#4E7A1B"
                 error={errors.name}
               />
               <Input
@@ -230,7 +230,7 @@ export default function StudioProfile() {
                 value={form.phone}
                 onChange={(e) => update('phone', e.target.value)}
                 placeholder="+1 234 567 8900"
-                accent="#2DA4D6"
+                accent="#4E7A1B"
               />
             </div>
 
@@ -240,14 +240,14 @@ export default function StudioProfile() {
                 value={form.location}
                 onChange={(e) => update('location', e.target.value)}
                 placeholder="e.g. Sydney"
-                accent="#2DA4D6"
+                accent="#4E7A1B"
               />
               <Input
                 label="Country"
                 value={form.country}
                 onChange={(e) => update('country', e.target.value)}
                 placeholder="e.g. Australia"
-                accent="#2DA4D6"
+                accent="#4E7A1B"
               />
             </div>
 
@@ -257,7 +257,7 @@ export default function StudioProfile() {
                 value={form.website}
                 onChange={(e) => update('website', e.target.value)}
                 placeholder="https://yourstudio.com"
-                accent="#2DA4D6"
+                accent="#4E7A1B"
                 error={errors.website}
               />
               <Input
@@ -266,7 +266,7 @@ export default function StudioProfile() {
                 onChange={(e) => update('instagram', e.target.value)}
                 placeholder="@yourstudio"
                 iconLeft={<Instagram size={14} />}
-                accent="#2DA4D6"
+                accent="#4E7A1B"
                 error={errors.instagram}
               />
             </div>
@@ -292,7 +292,7 @@ export default function StudioProfile() {
               value={form.bio}
               onChange={(e) => update('bio', e.target.value)}
               placeholder="Describe your studio — the vibe, community, what makes you unique..."
-              accent="#2DA4D6"
+              accent="#4E7A1B"
               error={errors.description}
             />
 
@@ -315,7 +315,7 @@ export default function StudioProfile() {
                   const cur = (form.openTo || []).filter((o) => o !== 'Energy Exchange');
                   update('openTo', e.target.checked ? [...cur, 'Energy Exchange'] : cur);
                 }}
-                className="mt-0.5 w-3.5 h-3.5 rounded border-[#E5E0D8] accent-[#6BE6A4] flex-shrink-0"
+                className="mt-0.5 w-3.5 h-3.5 rounded border-[#E5E0D8] accent-[#B4FF5A] flex-shrink-0"
               />
               <span className="text-xs text-[#6B6B66] leading-snug">
                 Open to energy exchange options
@@ -331,9 +331,9 @@ export default function StudioProfile() {
                 where they describe the role in detail (start date, position
                 type, qualification, etc). Hidden when "Not Hiring". */}
             {form.profileStatus === 'active' && (
-              <div className="rounded-2xl border border-[#6BE6A4] bg-[#6BE6A4]/10 p-5 space-y-4">
+              <div className="rounded-2xl border border-[#B4FF5A] bg-[#B4FF5A]/10 p-5 space-y-4">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-[#6BE6A4]/30 flex items-center justify-center">
+                  <div className="w-9 h-9 rounded-xl bg-[#B4FF5A]/30 flex items-center justify-center">
                     <Briefcase size={16} className="text-[#3E3D38]" />
                   </div>
                   <div>
@@ -351,7 +351,7 @@ export default function StudioProfile() {
                   value={form.hiringRoleDescription}
                   onChange={(e) => update('hiringRoleDescription', e.target.value)}
                   placeholder='Please give us much detail as possible — e.g. "Looking for a Vinyasa Yoga instructor to cover Saturday & Sunday morning classes for the next 4 weekends. Must be confident with mixed-level groups and able to start immediately."'
-                  accent="#2DA4D6"
+                  accent="#4E7A1B"
                 />
 
                 <Field label="Position Type">
@@ -371,7 +371,7 @@ export default function StudioProfile() {
                       onChange={(e) => update('hiringStartDate', e.target.value)}
                       min={new Date().toISOString().split('T')[0]}
                       iconLeft={<Calendar size={14} />}
-                      accent="#2DA4D6"
+                      accent="#4E7A1B"
                     />
                   </Field>
 
@@ -381,7 +381,7 @@ export default function StudioProfile() {
                       onChange={(e) => update('hiringDuration', e.target.value)}
                       placeholder="e.g. 4 weekends, 3 months"
                       iconLeft={<Clock size={14} />}
-                      accent="#2DA4D6"
+                      accent="#4E7A1B"
                     />
                   </Field>
                 </div>
@@ -391,7 +391,7 @@ export default function StudioProfile() {
                   value={form.hiringCompensation}
                   onChange={(e) => update('hiringCompensation', e.target.value)}
                   placeholder="e.g. $80/class, shared accommodation, energy exchange"
-                  accent="#2DA4D6"
+                  accent="#4E7A1B"
                 />
 
                 <Field label="Minimum Qualification">
@@ -400,7 +400,7 @@ export default function StudioProfile() {
                     <select
                       value={form.hiringQualificationLevel}
                       onChange={e => update('hiringQualificationLevel', e.target.value)}
-                      className="w-full appearance-none bg-white border border-[#E5E0D8] rounded-xl pl-9 pr-9 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#2DA4D6] transition-all"
+                      className="w-full appearance-none bg-white border border-[#E5E0D8] rounded-xl pl-9 pr-9 py-3 text-[#3E3D38] text-sm focus:outline-none focus:border-[#4E7A1B] transition-all"
                     >
                       {QUALIFICATION_LEVELS.map(q => (
                         <option key={q.id} value={q.id}>{q.label}</option>
@@ -418,7 +418,7 @@ export default function StudioProfile() {
             <div className="flex items-center justify-between flex-wrap gap-3">
               <h2 className="font-unbounded text-sm font-black text-[#3E3D38]">Disciplines Offered</h2>
               {(form.disciplines || []).length > 0 && (
-                <span className="text-[10px] font-bold text-[#2DA4D6] bg-[#2DA4D6]/10 px-2.5 py-1 rounded-full">
+                <span className="text-[10px] font-bold text-[#4E7A1B] bg-[#4E7A1B]/10 px-2.5 py-1 rounded-full">
                   {form.disciplines.length} selected
                 </span>
               )}
@@ -510,7 +510,7 @@ export default function StudioProfile() {
               </p>
               <div
                 onClick={() => avatarRef.current?.click()}
-                className="w-full aspect-square border-2 border-dashed border-[#E5E0D8] rounded-xl overflow-hidden cursor-pointer hover:border-[#2DA4D6] transition-all flex items-center justify-center bg-[#FDFCF8] relative group"
+                className="w-full aspect-square border-2 border-dashed border-[#E5E0D8] rounded-xl overflow-hidden cursor-pointer hover:border-[#4E7A1B] transition-all flex items-center justify-center bg-[#FFFFFF] relative group"
               >
                 {form.avatarPreview ? (
                   <>
@@ -521,7 +521,7 @@ export default function StudioProfile() {
                   </>
                 ) : (
                   <div className="text-center p-4">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2DA4D6] to-[#2590bd] flex items-center justify-center text-white font-unbounded font-black text-lg mx-auto mb-3">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#4E7A1B] to-[#3F6216] flex items-center justify-center text-white font-unbounded font-black text-lg mx-auto mb-3">
                       {initials}
                     </div>
                     <Upload size={18} className="text-[#C4BCB4] mx-auto mb-1" />
@@ -583,7 +583,7 @@ export default function StudioProfile() {
                   <div
                     key={i}
                     onClick={() => photosRef.current?.click()}
-                    className="aspect-square border-2 border-dashed border-[#E5E0D8] rounded-xl overflow-hidden cursor-pointer hover:border-[#2DA4D6] transition-all flex items-center justify-center bg-[#FDFCF8] relative group"
+                    className="aspect-square border-2 border-dashed border-[#E5E0D8] rounded-xl overflow-hidden cursor-pointer hover:border-[#4E7A1B] transition-all flex items-center justify-center bg-[#FFFFFF] relative group"
                   >
                     {form.photos[i] ? (
                       <>
@@ -630,7 +630,7 @@ export default function StudioProfile() {
                 icon={Eye}
                 fullWidth
                 onClick={() => setPreview(true)}
-                className="hover:border-[#2DA4D6] hover:text-[#2DA4D6]"
+                className="hover:border-[#4E7A1B] hover:text-[#4E7A1B]"
               >
                 Preview
               </Button>

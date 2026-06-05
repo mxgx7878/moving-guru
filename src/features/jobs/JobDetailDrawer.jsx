@@ -31,7 +31,7 @@ export default function JobDetailDrawer({
         open
         onClose={onClose}
         loading
-        loadingSpinner={<Loader2 size={26} className="animate-spin text-[#E89560]" />}
+        loadingSpinner={<Loader2 size={26} className="animate-spin text-[#9BE63D]" />}
       />
     );
   }
@@ -92,7 +92,7 @@ export default function JobDetailDrawer({
     <>
       {isActive ? (
         <Button variant="secondary" size="sm" icon={Ban} onClick={onDeactivate} disabled={busy}
-          className="hover:border-[#EF4444] hover:text-[#EF4444]">
+          className="hover:border-[#1A1A1A] hover:text-[#1A1A1A]">
           Deactivate
         </Button>
       ) : (
@@ -163,7 +163,7 @@ export default function JobDetailDrawer({
       )}
 
       {job.studio && (
-        <div className="bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl p-4 flex items-center justify-between gap-3">
+        <div className="bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl p-4 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <Avatar
               name={job.studio.studio_name || job.studio.name}
@@ -185,7 +185,7 @@ export default function JobDetailDrawer({
           </div>
           <Link
             to="/admin/users?role=studio"
-            className="text-[11px] font-bold text-[#2DA4D6] hover:underline flex items-center gap-1 flex-shrink-0"
+            className="text-[11px] font-bold text-[#4E7A1B] hover:underline flex items-center gap-1 flex-shrink-0"
           >
             View in users <ExternalLink size={10} />
           </Link>
@@ -195,7 +195,7 @@ export default function JobDetailDrawer({
       <LabeledBlock label={`Applicants (${applicants.length})`}>
         {applicantsStatus === STATUS.LOADING ? (
           <div className="py-6 flex items-center justify-center">
-            <Loader2 size={18} className="animate-spin text-[#E89560]" />
+            <Loader2 size={18} className="animate-spin text-[#9BE63D]" />
           </div>
         ) : applicants.length === 0 ? (
           <p className="text-xs text-[#9A9A94] py-3">No applications yet.</p>

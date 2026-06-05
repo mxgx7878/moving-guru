@@ -31,7 +31,7 @@ export default function UserRow({
   const isRejected = status === 'rejected';
 
   return (
-    <tr className="border-t border-[#F0EBE3] hover:bg-[#FDFCF8]">
+    <tr className="border-t border-[#F0EBE3] hover:bg-[#FFFFFF]">
       <td className="py-3 px-4">
         <div className="flex items-center gap-3">
           <Avatar

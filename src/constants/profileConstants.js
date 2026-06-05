@@ -13,9 +13,9 @@ export const OPEN_TO_FULL     = ['Direct Hire', 'Swaps', 'Energy Exchange'];
 export const ENERGY_EXCHANGE  = 'Energy Exchange';
 
 export const OPEN_TO_COLORS = {
-  'Direct Hire':     '#2DA4D6',
-  'Swaps':           '#E89560',
-  'Energy Exchange': '#6BE6A4',
+  'Direct Hire':     '#4E7A1B',
+  'Swaps':           '#9BE63D',
+  'Energy Exchange': '#B4FF5A',
 };
 
 export const STUDIO_SIZES = [
@@ -36,10 +36,10 @@ export const POSITION_TYPES = [
 ];
 
 export const SOCIAL_PLATFORMS = [
-  { key: 'instagram', label: 'Instagram', icon: Instagram, color: '#E1306C' },
-  { key: 'facebook',  label: 'Facebook',  icon: Facebook,  color: '#1877F2' },
-  { key: 'twitter',   label: 'Twitter',   icon: Twitter,   color: '#1DA1F2' },
+  { key: 'instagram', label: 'Instagram', icon: Instagram, color: '#1A1A1A' },
+  { key: 'facebook',  label: 'Facebook',  icon: Facebook,  color: '#1A1A1A' },
+  { key: 'twitter',   label: 'Twitter',   icon: Twitter,   color: '#1A1A1A' },
   { key: 'tiktok',    label: 'TikTok',    icon: Music,     color: '#000000' },
-  { key: 'youtube',   label: 'YouTube',   icon: Youtube,   color: '#FF0000' },
-  { key: 'linkedin',  label: 'LinkedIn',  icon: Linkedin,  color: '#0077B5' },
+  { key: 'youtube',   label: 'YouTube',   icon: Youtube,   color: '#1A1A1A' },
+  { key: 'linkedin',  label: 'LinkedIn',  icon: Linkedin,  color: '#1A1A1A' },
 ];

@@ -106,7 +106,7 @@ export default function ReviewFormModal({
           rows={4}
           maxLength={1000}
           placeholder="Share what the experience was like..."
-          accent="#2DA4D6"
+          accent="#4E7A1B"
         />
       </form>
     </Modal>

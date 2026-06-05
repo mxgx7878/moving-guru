@@ -7,8 +7,8 @@ import { Check, User, Building2 } from "lucide-react";
 import { Modal, Button, RHFInput, SelectField } from "../../components/ui";
 
 const ROLE_OPTIONS = [
-  { id: "instructor", label: "Instructor", icon: User, color: "#CE4F56" },
-  { id: "studio", label: "Studio", icon: Building2, color: "#2DA4D6" },
+  { id: "instructor", label: "Instructor", icon: User, color: "#4E7A1B" },
+  { id: "studio", label: "Studio", icon: Building2, color: "#4E7A1B" },
 ];
 
 const STATUS_OPTIONS = [
@@ -119,7 +119,7 @@ export default function UserForm({ user, saving = false, onCancel, onSubmit }) {
   const role = watch("role");
   const isStudio = role === "studio";
   const accent = useMemo(
-    () => ROLE_OPTIONS.find((r) => r.id === role)?.color || "#7F77DD",
+    () => ROLE_OPTIONS.find((r) => r.id === role)?.color || "#4E7A1B",
     [role],
   );
 

@@ -40,7 +40,7 @@ export default function PostCard({
             <TypeIcon size={9} /> {typeMeta.label.toUpperCase()}
           </span>
           {post.is_pinned && (
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#f5fca6] text-[#3E3D38]">
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#F5FDA6] text-[#3E3D38]">
               📌 PINNED
             </span>
           )}

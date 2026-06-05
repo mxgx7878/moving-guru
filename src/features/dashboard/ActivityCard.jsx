@@ -57,7 +57,7 @@ export default function ActivityCard({
           </div>
         ) : (
           items.slice(0, limit).map((item, i) => (
-            <div key={item.id || i} className="px-5 py-3 hover:bg-[#FDFCF8]">
+            <div key={item.id || i} className="px-5 py-3 hover:bg-[#FFFFFF]">
               {renderItem(item)}
             </div>
           ))

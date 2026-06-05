@@ -6,7 +6,7 @@
 export default function Section({
   title,
   icon: Icon,
-  iconColor = '#CE4F56',
+  iconColor = '#4E7A1B',
   padding = true,
   className = '',
   headerClassName = '',

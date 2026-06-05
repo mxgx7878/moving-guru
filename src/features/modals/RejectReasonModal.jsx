@@ -84,14 +84,14 @@ export default function RejectReasonModal({
           textarea
           rows={3}
           placeholder={placeholder}
-          accent="#7F77DD"
+          accent="#4E7A1B"
         />
 
         <div className="mt-4">
           <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase flex items-center gap-1.5 mb-2">
             <Mail size={11} /> Message preview
           </p>
-          <div className="bg-[#FBF8E4]/40 border border-[#E5E0D8] rounded-xl p-3 text-xs text-[#3E3D38] whitespace-pre-line leading-relaxed">
+          <div className="bg-[#FAFEE0]/40 border border-[#E5E0D8] rounded-xl p-3 text-xs text-[#3E3D38] whitespace-pre-line leading-relaxed">
             {preview}
           </div>
           <p className="text-[10px] text-[#9A9A94] mt-2">

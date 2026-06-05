@@ -35,7 +35,7 @@ export default function Sidebar({ mobileOpen, onClose }) {
       )}
 
       <aside className={`
-        fixed top-0 left-0 h-full w-64 bg-[#FDFCF8] z-40 flex flex-col
+        fixed top-0 left-0 h-full w-64 bg-[#FFFFFF] z-40 flex flex-col
         border-r border-[#E5E0D8]
         transform transition-transform duration-300 ease-in-out
         ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
@@ -55,7 +55,7 @@ export default function Sidebar({ mobileOpen, onClose }) {
 
         {/* User / Studio card */}
         <Link to={theme.profilePath} className="px-4 py-4 border-b border-[#E5E0D8]">
-          <div className="flex items-center gap-3 bg-[#f5fca6]/25 rounded-xl p-3">
+          <div className="flex items-center gap-3 bg-[#F5FDA6]/25 rounded-xl p-3">
             <Avatar
               name={displayName}
               src={user?.profile_picture_url || user?.profile_picture}
@@ -65,7 +65,7 @@ export default function Sidebar({ mobileOpen, onClose }) {
             <div className="min-w-0">
               <p className="text-[#3E3D38] text-xs font-semibold truncate">{displayName}</p>
               <div className="flex items-center gap-1 mt-0.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#6BE6A4]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#B4FF5A]" />
                 <p className="text-[#9A9A94] text-[10px] capitalize">{role}</p>
               </div>
             </div>
@@ -83,7 +83,7 @@ export default function Sidebar({ mobileOpen, onClose }) {
                 `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group
                 ${isActive
                   ? 'bg-[#3E3D38] text-white'
-                  : 'text-[#6B6B66] hover:bg-[#FBF8E4] hover:text-[#3E3D38]'}`
+                  : 'text-[#6B6B66] hover:bg-[#FAFEE0] hover:text-[#3E3D38]'}`
               }
             >
               {({ isActive }) => (

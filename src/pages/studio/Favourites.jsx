@@ -63,8 +63,8 @@ export default function Favourites() {
 
       {!loading && saved.length === 0 && (
         <div className="bg-white rounded-2xl border border-[#E5E0D8] p-16 text-center">
-          <div className="w-14 h-14 bg-[#CE4F56]/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Heart size={24} className="text-[#CE4F56]" />
+          <div className="w-14 h-14 bg-[#4E7A1B]/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Heart size={24} className="text-[#4E7A1B]" />
           </div>
           <p className="font-unbounded text-sm font-black text-[#3E3D38] mb-2">
             No saved instructors yet

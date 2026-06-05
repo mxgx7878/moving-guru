@@ -37,11 +37,11 @@ export default function Dashboard() {
       {/* Welcome header — keeps original gradient */}
       <PageHeader
         variant="gradient"
-        gradientFrom="#FDFCF8"
-        gradientTo="#f5fca6"
-        gradientAccent="#CE4F56"
+        gradientFrom="#FFFFFF"
+        gradientTo="#F5FDA6"
+        gradientAccent="#4E7A1B"
         eyebrow="Welcome back"
-        eyebrowColor="#CE4F56"
+        eyebrowColor="#4E7A1B"
         title={user?.name?.split(' ')[0] || 'Instructor'}
         description={seeking
           ? 'Your profile is live and attracting studios'
@@ -49,8 +49,8 @@ export default function Dashboard() {
         actions={(
           <div className="flex flex-col gap-2 items-end">
             <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold
-              ${seeking ? 'bg-[#6BE6A4]/20 text-[#3E3D38]' : 'bg-[#FBF8E4] text-[#9A9A94]'}`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${seeking ? 'bg-[#6BE6A4]' : 'bg-[#9A9A94]'}`} />
+              ${seeking ? 'bg-[#B4FF5A]/20 text-[#3E3D38]' : 'bg-[#FAFEE0] text-[#9A9A94]'}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${seeking ? 'bg-[#B4FF5A]' : 'bg-[#9A9A94]'}`} />
               {seeking ? 'Actively Seeking' : 'Not Seeking'}
             </div>
             {profileId && (
@@ -66,14 +66,14 @@ export default function Dashboard() {
       {/* KPI grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiTile icon={Eye}           label="Profile Views" value={kpis.profile_views_this_month ?? 0}
-          sub={`${kpis.profile_views_total ?? 0} all time`} color="#CE4F56" loading={loading} />
+          sub={`${kpis.profile_views_total ?? 0} all time`} color="#4E7A1B" loading={loading} />
         <KpiTile icon={MessageCircle} label="Active Apps"   value={kpis.applications_active ?? 0}
-          sub={`${kpis.applications_total ?? 0} total`}     color="#E89560" loading={loading} />
+          sub={`${kpis.applications_total ?? 0} total`}     color="#9BE63D" loading={loading} />
         <KpiTile icon={Heart}         label="Favourited"    value={kpis.favourited_by_count ?? 0}
-          sub="By studios"                                  color="#7F77DD" loading={loading} />
+          sub="By studios"                                  color="#4E7A1B" loading={loading} />
         <KpiTile icon={Star}          label="Rating"
           value={kpis.rating_avg ? `${kpis.rating_avg}★` : '—'}
-          sub={`${kpis.rating_count ?? 0} reviews`}         color="#F59E0B" loading={loading} />
+          sub={`${kpis.rating_count ?? 0} reviews`}         color="#C9A227" loading={loading} />
       </div>
 
       {/* Charts row */}
@@ -86,7 +86,7 @@ export default function Dashboard() {
             </div>
             <Chip size="xs" tone="coral">{kpis.profile_views_total ?? 0} total</Chip>
           </div>
-          <MonthlyViewsChart data={data?.profile_views_by_month} loading={loading} accent="#CE4F56" />
+          <MonthlyViewsChart data={data?.profile_views_by_month} loading={loading} accent="#4E7A1B" />
         </div>
 
         <div className="bg-white rounded-2xl p-5 border border-[#E5E0D8]">

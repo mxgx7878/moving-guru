@@ -365,7 +365,7 @@ export default function Subscription() {
               const borderCls   = isCurrent
                 ? 'border-[#3E3D38]'
                 : p.highlighted
-                  ? 'border-[#E89560]'
+                  ? 'border-[#9BE63D]'
                   : 'border-[#E5E0D8] hover:border-[#3E3D38]/30';
 
               return (
@@ -382,7 +382,7 @@ export default function Subscription() {
                         </span>
                       )}
                       {p.highlighted && !isCurrent && (
-                        <span className="text-[9px] font-bold uppercase tracking-wider bg-[#E89560]/10 text-[#E89560] px-2 py-0.5 rounded-full">
+                        <span className="text-[9px] font-bold uppercase tracking-wider bg-[#9BE63D]/10 text-[#9BE63D] px-2 py-0.5 rounded-full">
                           Popular
                         </span>
                       )}
@@ -471,7 +471,7 @@ export default function Subscription() {
 
       <p className="text-center text-[#9A9A94] text-xs">
         Questions about your plan?{' '}
-        <a href="mailto:admin@movingguru.co" className="text-[#2DA4D6] hover:underline">
+        <a href="mailto:admin@movingguru.co" className="text-[#4E7A1B] hover:underline">
           admin@movingguru.co
         </a>
       </p>

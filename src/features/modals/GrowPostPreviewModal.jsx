@@ -24,7 +24,7 @@ export default function GrowPostPreviewModal({ post, onClose }) {
       </span>
       <StatusPill status={post.status} config={GROW_STATUS_CONFIG} size="xs" />
       {post.is_featured && (
-        <Chip size="xs" className="bg-[#f5fca6] text-[#3E3D38]">⚡ FEATURED</Chip>
+        <Chip size="xs" className="bg-[#F5FDA6] text-[#3E3D38]">⚡ FEATURED</Chip>
       )}
     </div>
   );
@@ -108,7 +108,7 @@ export default function GrowPostPreviewModal({ post, onClose }) {
               href={externalUrl}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1 text-[#7F77DD] font-semibold hover:underline"
+              className="inline-flex items-center gap-1 text-[#4E7A1B] font-semibold hover:underline"
             >
               {externalUrl} <ExternalLink size={11} />
             </a>

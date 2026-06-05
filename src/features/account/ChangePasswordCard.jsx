@@ -69,7 +69,7 @@ export default function ChangePasswordCard() {
             label="Current Password"
             type="password"
             placeholder="Current"
-            accent="#2DA4D6"
+            accent="#4E7A1B"
           />
           <RHFInput
             control={control}
@@ -78,7 +78,7 @@ export default function ChangePasswordCard() {
             label="New Password"
             type="password"
             placeholder="Min. 6 characters"
-            accent="#2DA4D6"
+            accent="#4E7A1B"
           />
           <RHFInput
             control={control}
@@ -87,7 +87,7 @@ export default function ChangePasswordCard() {
             label="Confirm Password"
             type="password"
             placeholder="Repeat new password"
-            accent="#2DA4D6"
+            accent="#4E7A1B"
           />
         </div>
 

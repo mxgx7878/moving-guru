@@ -3,7 +3,7 @@
 // renders as a bordered card with a big value and a caption.
 //
 // Each tile: { label, value, color?, onClick?, active? }
-//   - color:  Tailwind class for the value ("text-[#2DA4D6]")
+//   - color:  Tailwind class for the value ("text-[#4E7A1B]")
 //   - onClick: makes the tile interactive (toggle active filter, etc.)
 //   - active:  currently-selected state
 //

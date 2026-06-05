@@ -11,32 +11,32 @@ import {
 // Sidebar active-state, PageHeader gradient banner, SubscriptionGate
 // lock icon, FeatureGate upgrade CTA, etc.
 //
-// Instructor portal moved from coral (#CE4F56) to mint green (#9DD964)
+// Instructor portal moved from coral (#4E7A1B) to mint green (#B4FF5A)
 // to match the public site's refreshed brand. The Login page's left
 // hero panel still renders in coral on purpose — see Login.jsx.
 //
 // Studio (sky blue) and Admin (purple) are unchanged.
 export const ROLE_THEME = {
   instructor: {
-    accent: '#9DD964',
-    accentLight: '#9DD964/10',
-    avatarGradient: 'from-[#9DD964] to-[#E89560]',
+    accent: '#B4FF5A',
+    accentLight: '#B4FF5A/10',
+    avatarGradient: 'from-[#B4FF5A] to-[#9BE63D]',
     label: 'Member Portal',
     defaultPath: '/portal/dashboard',
     profilePath: '/portal/profile'
   },
   studio: {
-    accent: '#2DA4D6',
-    accentLight: '#2DA4D6/10',
-    avatarGradient: 'from-[#2DA4D6] to-[#2590bd]',
+    accent: '#4E7A1B',
+    accentLight: '#4E7A1B/10',
+    avatarGradient: 'from-[#4E7A1B] to-[#3F6216]',
     label: 'Studio Portal',
     defaultPath: '/studio/dashboard',
     profilePath: '/studio/profile'
   },
   admin: {
-    accent: '#7F77DD',
-    accentLight: '#7F77DD/10',
-    avatarGradient: 'from-[#7F77DD] to-[#534AB7]',
+    accent: '#4E7A1B',
+    accentLight: '#4E7A1B/10',
+    avatarGradient: 'from-[#4E7A1B] to-[#3F6216]',
     label: 'Admin Portal',
     defaultPath: '/admin/dashboard',
     profilePath: '/admin/settings'

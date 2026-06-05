@@ -18,8 +18,8 @@ import ReviewFormModal from "./ReviewFormModal";
 
 // Tone + label for each status the studio can land an applicant in.
 const STATUS_STYLES = {
-  pending:  { label: "New",      bg: "bg-[#2DA4D6]/10", text: "text-[#2DA4D6]" },
-  viewed:   { label: "Viewed",   bg: "bg-[#FBF8E4]",    text: "text-[#6B6B66]" },
+  pending:  { label: "New",      bg: "bg-[#4E7A1B]/10", text: "text-[#4E7A1B]" },
+  viewed:   { label: "Viewed",   bg: "bg-[#FAFEE0]",    text: "text-[#6B6B66]" },
   accepted: { label: "Hired",    bg: "bg-emerald-50",   text: "text-emerald-600" },
   rejected: { label: "Declined", bg: "bg-red-50",       text: "text-red-500" },
 };
@@ -143,15 +143,15 @@ export default function JobApplicantsModal({ job, onClose }) {
         <div className="px-6 py-4 border-b border-[#E5E0D8] flex items-start justify-between gap-4">
           <div className="min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <div className="w-8 h-8 rounded-lg bg-[#2DA4D6]/10 flex items-center justify-center">
-                <Users size={14} className="text-[#2DA4D6]" />
+              <div className="w-8 h-8 rounded-lg bg-[#4E7A1B]/10 flex items-center justify-center">
+                <Users size={14} className="text-[#4E7A1B]" />
               </div>
               <h2 className="font-unbounded text-base font-black text-[#3E3D38] truncate">
                 Applicants
               </h2>
               <span
                 className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold
-                  ${canHire ? 'bg-[#2DA4D6]/10 text-[#2DA4D6]' : 'bg-emerald-50 text-emerald-600'}`}
+                  ${canHire ? 'bg-[#4E7A1B]/10 text-[#4E7A1B]' : 'bg-emerald-50 text-emerald-600'}`}
               >
                 <UserCheck size={10} />
                 {filled} of {vacancies} filled
@@ -182,7 +182,7 @@ export default function JobApplicantsModal({ job, onClose }) {
         <div className="p-6 max-h-[70vh] overflow-y-auto">
           {loading && applicants.length === 0 && (
             <div className="flex items-center justify-center py-12">
-              <Loader2 size={24} className="animate-spin text-[#2DA4D6]" />
+              <Loader2 size={24} className="animate-spin text-[#4E7A1B]" />
             </div>
           )}
 
@@ -213,10 +213,10 @@ export default function JobApplicantsModal({ job, onClose }) {
                 return (
                   <div
                     key={app.id}
-                    className="bg-white rounded-2xl border border-[#E5E0D8] p-4 hover:border-[#2DA4D6]/40 transition-colors"
+                    className="bg-white rounded-2xl border border-[#E5E0D8] p-4 hover:border-[#4E7A1B]/40 transition-colors"
                   >
                     <div className="flex items-start gap-3">
-                      <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center text-white text-xs font-bold font-unbounded overflow-hidden flex-shrink-0">
+                      <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#4E7A1B] to-[#9BE63D] flex items-center justify-center text-white text-xs font-bold font-unbounded overflow-hidden flex-shrink-0">
                         {detail.profile_picture_url || detail.profile_picture ? (
                           <img
                             src={detail.profile_picture_url || detail.profile_picture}
@@ -235,8 +235,8 @@ export default function JobApplicantsModal({ job, onClose }) {
                             {style.label}
                           </span>
                           {reviewSummary && reviewSummary.count > 0 && (
-                            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#FBF8E4] text-[#3E3D38]">
-                              <Star size={10} className="text-[#E89560]" fill="#E89560" />
+                            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#FAFEE0] text-[#3E3D38]">
+                              <Star size={10} className="text-[#9BE63D]" fill="#9BE63D" />
                               {reviewSummary.average.toFixed(1)}
                               <span className="text-[#9A9A94]">({reviewSummary.count})</span>
                             </span>
@@ -261,7 +261,7 @@ export default function JobApplicantsModal({ job, onClose }) {
                         </div>
 
                         {app.message && (
-                          <p className="mt-2 text-[#6B6B66] text-xs leading-relaxed whitespace-pre-line bg-[#FBF8E4] rounded-xl px-3 py-2">
+                          <p className="mt-2 text-[#6B6B66] text-xs leading-relaxed whitespace-pre-line bg-[#FAFEE0] rounded-xl px-3 py-2">
                             {app.message}
                           </p>
                         )}
@@ -271,7 +271,7 @@ export default function JobApplicantsModal({ job, onClose }) {
                             {disciplines.slice(0, 5).map((d) => (
                               <span
                                 key={d}
-                                className="px-2 py-0.5 bg-[#2DA4D6]/10 text-[#2DA4D6] text-[10px] font-medium rounded-full"
+                                className="px-2 py-0.5 bg-[#4E7A1B]/10 text-[#4E7A1B] text-[10px] font-medium rounded-full"
                               >
                                 {d}
                               </span>
@@ -290,12 +290,12 @@ export default function JobApplicantsModal({ job, onClose }) {
                     <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[#E5E0D8] flex-wrap">
                       <Button variant="secondary" size="xs" icon={ExternalLink}
                         onClick={() => handleViewProfile(inst.id)}
-                        className="hover:border-[#2DA4D6] hover:text-[#2DA4D6]">
+                        className="hover:border-[#4E7A1B] hover:text-[#4E7A1B]">
                         View Profile
                       </Button>
                       <Button variant="secondary" size="xs" icon={MessageCircle}
                         onClick={handleMessage}
-                        className="hover:border-[#2DA4D6] hover:text-[#2DA4D6]">
+                        className="hover:border-[#4E7A1B] hover:text-[#4E7A1B]">
                         Message
                       </Button>
 

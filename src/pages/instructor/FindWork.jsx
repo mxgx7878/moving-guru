@@ -156,11 +156,13 @@ export default function FindWork() {
 
   // ── UI ───────────────────────────────────────────────────────
   return (
+    // Find Work uses a full-bleed GREEN page background (white boxes inside).
+    <div className="-m-4 lg:-m-6 p-4 lg:p-6 min-h-full bg-[#B4FF5A]">
     <div className="max-w-5xl mx-auto space-y-4 sm:space-y-5">
 
       {/* ── Header ─────────────────────────────────────────── */}
       <div>
-        <p className="text-[#CE4F56] text-[10px] sm:text-xs font-semibold tracking-widest uppercase mb-1.5">
+        <p className="text-[#1A1A1A] text-[10px] sm:text-xs font-semibold tracking-widest uppercase mb-1.5">
           Find Work
         </p>
         <h1 className="font-unbounded text-lg sm:text-xl font-black text-[#3E3D38]">
@@ -181,7 +183,7 @@ export default function FindWork() {
             onClick={() => setView('jobs')}
             className={`flex-1 sm:flex-none px-4 sm:px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2
               ${view === 'jobs'
-                ? 'bg-[#CE4F56] text-white shadow-sm'
+                ? 'bg-[#B4FF5A] text-[#1A1A1A] shadow-sm'
                 : 'text-[#6B6B66] hover:text-[#3E3D38]'}`}
           >
             <Briefcase size={14} /> Browse Jobs
@@ -191,7 +193,7 @@ export default function FindWork() {
             onClick={() => setView('swaps')}
             className={`flex-1 sm:flex-none px-4 sm:px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2
               ${view === 'swaps'
-                ? 'bg-[#E89560] text-white shadow-sm'
+                ? 'bg-[#F5FDA6] text-[#1A1A1A] shadow-sm'
                 : 'text-[#6B6B66] hover:text-[#3E3D38]'}`}
           >
             <RefreshCw size={14} /> Swap with Peers
@@ -202,7 +204,7 @@ export default function FindWork() {
       {/* ── Search + filter toggle ─────────────────────────── */}
       <div className="bg-white rounded-2xl border border-[#E5E0D8] p-3 sm:p-4 space-y-3">
         <div className="flex items-center gap-2">
-          <div className="flex-1 flex items-center gap-2 bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-3 py-2.5 min-w-0">
+          <div className="flex-1 flex items-center gap-2 bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl px-3 py-2.5 min-w-0">
             <Search size={16} className="text-[#9A9A94] flex-shrink-0" />
             <input
               type="text"
@@ -219,7 +221,7 @@ export default function FindWork() {
           </div>
 
           <Button
-            variant={showFilters ? 'primary' : 'secondary'}
+            variant={showFilters ? 'accent' : 'secondary'}
             size="md"
             icon={SlidersHorizontal}
             onClick={() => setShowFilters((v) => !v)}
@@ -227,7 +229,7 @@ export default function FindWork() {
           >
             <span className="hidden sm:inline">Filters</span>
             {!showFilters && hasFilters && (
-              <span className="w-1.5 h-1.5 bg-[#CE4F56] rounded-full ml-1.5" />
+              <span className="w-1.5 h-1.5 bg-[#4E7A1B] rounded-full ml-1.5" />
             )}
           </Button>
         </div>
@@ -263,7 +265,7 @@ export default function FindWork() {
             <button
               type="button"
               onClick={clearFilters}
-              className="text-[10px] text-[#CE4F56] font-bold hover:underline ml-auto"
+              className="text-[10px] text-[#4E7A1B] font-bold hover:underline ml-auto"
             >
               Clear all
             </button>
@@ -343,7 +345,7 @@ export default function FindWork() {
             message="Try adjusting your search or filters"
             action={hasFilters ? (
               <Button variant="ghost" size="sm" onClick={clearFilters}
-                className="!text-[#CE4F56] hover:!underline">
+                className="!text-[#4E7A1B] hover:!underline">
                 Clear filters
               </Button>
             ) : null}
@@ -383,7 +385,7 @@ export default function FindWork() {
                 size="md"
                 loading={loadingMore}
                 onClick={loadMore}
-                className="hover:border-[#CE4F56] hover:text-[#CE4F56]"
+                className="hover:border-[#4E7A1B] hover:text-[#4E7A1B]"
               >
                 {viewIsSwaps ? 'Load more instructors' : 'Load more jobs'}
               </Button>
@@ -400,6 +402,7 @@ export default function FindWork() {
           onSubmit={submitApply}
         />
       )}
+    </div>
     </div>
   );
 }

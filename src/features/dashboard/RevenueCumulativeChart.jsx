@@ -31,8 +31,8 @@ export default function RevenueCumulativeChart({ data = [], loading = false }) {
           <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="cumGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%"   stopColor="#7F77DD" stopOpacity="0.35" />
-                <stop offset="100%" stopColor="#7F77DD" stopOpacity="0" />
+                <stop offset="0%"   stopColor="#4E7A1B" stopOpacity="0.35" />
+                <stop offset="100%" stopColor="#4E7A1B" stopOpacity="0" />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#F0EBE3" vertical={false} />
@@ -58,17 +58,17 @@ export default function RevenueCumulativeChart({ data = [], loading = false }) {
                 padding: '6px 10px',
               }}
               labelStyle={{ color: '#fff', fontWeight: 600 }}
-              itemStyle={{ color: '#7F77DD' }}
+              itemStyle={{ color: '#4E7A1B' }}
               formatter={(value) => [`$${Number(value).toLocaleString()}`, 'Lifetime']}
             />
             <Area
               type="monotone"
               dataKey="cumulative"
-              stroke="#7F77DD"
+              stroke="#4E7A1B"
               strokeWidth={2.5}
               fill="url(#cumGradient)"
-              dot={{ fill: '#fff', stroke: '#7F77DD', strokeWidth: 2, r: 3 }}
-              activeDot={{ r: 6, fill: '#7F77DD', stroke: '#fff', strokeWidth: 2 }}
+              dot={{ fill: '#fff', stroke: '#4E7A1B', strokeWidth: 2, r: 3 }}
+              activeDot={{ r: 6, fill: '#4E7A1B', stroke: '#fff', strokeWidth: 2 }}
             />
           </AreaChart>
         </ResponsiveContainer>
@@ -76,7 +76,7 @@ export default function RevenueCumulativeChart({ data = [], loading = false }) {
 
       <div className="text-center pt-1">
         <span className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-semibold">Lifetime · </span>
-        <span className="font-unbounded text-sm font-black text-[#7F77DD]">
+        <span className="font-unbounded text-sm font-black text-[#4E7A1B]">
           ${Number(lifetime).toLocaleString()}
         </span>
       </div>

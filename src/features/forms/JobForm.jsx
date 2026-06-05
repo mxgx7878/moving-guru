@@ -126,7 +126,7 @@ export default function JobForm({
 
           <FileDropzone
             onFiles={(file) => cover.onChange({ target: { files: [file] } })}
-            accent="#2DA4D6"
+            accent="#4E7A1B"
             height="h-40"
             label="Click to upload a cover image"
             icon={ImageIcon}
@@ -215,7 +215,7 @@ export default function JobForm({
                 : types.filter((t) => t !== "energy_exchange");
               setValue("types", next, { shouldValidate: true });
             }}
-            className="mt-0.5 w-3.5 h-3.5 rounded border-[#E5E0D8] accent-[#6BE6A4] flex-shrink-0"
+            className="mt-0.5 w-3.5 h-3.5 rounded border-[#E5E0D8] accent-[#B4FF5A] flex-shrink-0"
           />
           <span className="text-xs text-[#6B6B66] leading-snug">
             Also open to energy exchange options
@@ -236,7 +236,7 @@ export default function JobForm({
               ? "e.g. Pilates Instructor Swap — Bali ↔ Sydney"
               : "e.g. Yoga Instructor Needed — Bali Studio"
           }
-          accent="#2DA4D6"
+          accent="#4E7A1B"
         />
 
         <RHFInput
@@ -247,7 +247,7 @@ export default function JobForm({
           rows={4}
           label="Role Description"
           placeholder="Describe the role, what you're looking for, and what the instructor can expect..."
-          accent="#2DA4D6"
+          accent="#4E7A1B"
         />
 
         <div className="grid grid-cols-3 gap-4">
@@ -259,7 +259,7 @@ export default function JobForm({
             min={1}
             max={999}
             label="Vacancies"
-            accent="#2DA4D6"
+            accent="#4E7A1B"
             hint="Listing closes automatically once all positions are filled."
           />
 
@@ -291,7 +291,7 @@ export default function JobForm({
                 label: q.label,
               }))}
               placeholder="Select qualification"
-              accent="#2DA4D6"
+              accent="#4E7A1B"
             />
           )}
         />
@@ -303,7 +303,7 @@ export default function JobForm({
             name="location"
             label="Location"
             placeholder="e.g. Bali, Indonesia"
-            accent="#2DA4D6"
+            accent="#4E7A1B"
           />
           <RHFInput
             control={control}
@@ -311,7 +311,7 @@ export default function JobForm({
             name="start_date"
             type="date"
             label="Start Date"
-            accent="#2DA4D6"
+            accent="#4E7A1B"
           />
         </div>
 
@@ -326,7 +326,7 @@ export default function JobForm({
                 onChange={field.onChange}
                 options={DURATION_OPTIONS}
                 placeholder="Select duration"
-                accent="#2DA4D6"
+                accent="#4E7A1B"
               />
             )}
           />
@@ -336,7 +336,7 @@ export default function JobForm({
             name="compensation"
             label="Compensation"
             placeholder="e.g. $800/week + accommodation"
-            accent="#2DA4D6"
+            accent="#4E7A1B"
           />
         </div>
 
@@ -348,7 +348,7 @@ export default function JobForm({
           rows={3}
           label="Additional Requirements"
           placeholder="Min 2 years experience, certification required, English fluency..."
-          accent="#2DA4D6"
+          accent="#4E7A1B"
         />
 
         <Controller

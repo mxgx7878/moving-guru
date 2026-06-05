@@ -16,9 +16,9 @@ import { RemoveReviewModal } from '../../features/modals';
 const PER_PAGE = 15;
 
 const DIRECTION_TABS = [
-  { id: 'all',                   label: 'All Reviews',         color: '#7F77DD' },
-  { id: 'studio_to_instructor',  label: 'Studio → Instructor', color: '#2DA4D6' },
-  { id: 'instructor_to_studio',  label: 'Instructor → Studio', color: '#CE4F56' },
+  { id: 'all',                   label: 'All Reviews',         color: '#4E7A1B' },
+  { id: 'studio_to_instructor',  label: 'Studio → Instructor', color: '#4E7A1B' },
+  { id: 'instructor_to_studio',  label: 'Instructor → Studio', color: '#4E7A1B' },
 ];
 
 const RATING_FILTERS = [
@@ -109,10 +109,10 @@ export default function AdminReviews() {
     <div className="max-w-6xl mx-auto space-y-6">
       <PageHeader
         icon={Star}
-        iconBg="#7F77DD1A"
-        iconColor="#7F77DD"
+        iconBg="#4E7A1B1A"
+        iconColor="#4E7A1B"
         eyebrow="Admin / Reviews"
-        eyebrowColor="#7F77DD"
+        eyebrowColor="#4E7A1B"
         title="Review Moderation"
         description="Remove reviews that violate community guidelines. Use the rating filter to surface low-star reviews quickly."
       />
@@ -183,7 +183,7 @@ export default function AdminReviews() {
             size="md"
             loading={loadingMore}
             onClick={loadMore}
-            className="hover:border-[#7F77DD] hover:text-[#7F77DD]"
+            className="hover:border-[#4E7A1B] hover:text-[#4E7A1B]"
           >
             Load more reviews
           </Button>

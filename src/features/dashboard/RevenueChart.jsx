@@ -51,13 +51,13 @@ export default function RevenueChart({ data = [], loading = false }) {
               padding: '6px 10px',
             }}
             labelStyle={{ color: '#fff', fontWeight: 600 }}
-            itemStyle={{ color: '#10B981' }}
+            itemStyle={{ color: '#4E7A1B' }}
             formatter={(value) => [`$${Number(value).toLocaleString()}`, 'Revenue']}
-            cursor={{ fill: '#10B98115' }}
+            cursor={{ fill: '#4E7A1B15' }}
           />
           <Bar dataKey="revenue" radius={[6, 6, 0, 0]}>
             {data.map((_, i) => (
-              <Cell key={i} fill={i === lastIdx ? '#10B981' : '#10B98155'} />
+              <Cell key={i} fill={i === lastIdx ? '#4E7A1B' : '#4E7A1B55'} />
             ))}
           </Bar>
         </BarChart>

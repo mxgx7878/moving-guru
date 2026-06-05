@@ -8,9 +8,9 @@ import {
 // Shared by the admin announcements page, the create form, and the
 // public/preview modal.
 export const POST_TYPES = [
-  { id: 'announcement', label: 'Announcement', icon: Megaphone, color: '#7F77DD' },
-  { id: 'event',        label: 'Event',        icon: Calendar,  color: '#E89560' },
-  { id: 'news',         label: 'News',         icon: Bell,      color: '#2DA4D6' },
+  { id: 'announcement', label: 'Announcement', icon: Megaphone, color: '#4E7A1B' },
+  { id: 'event',        label: 'Event',        icon: Calendar,  color: '#9BE63D' },
+  { id: 'news',         label: 'News',         icon: Bell,      color: '#4E7A1B' },
 ];
 
 // Tab definitions — prepends an "All" tab to POST_TYPES.

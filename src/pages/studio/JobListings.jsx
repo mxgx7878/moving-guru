@@ -15,7 +15,7 @@ import { JobForm } from '../../features/forms';
 import { StudioJobCard } from '../../features/jobs';
 
 const FILTER_TABS = [
-  { id: 'all', label: 'All', color: '#CCFF00' },
+  { id: 'all', label: 'All', color: '#B4FF5A' },
   ...JOB_TYPES.map((t) => ({ id: t.id, label: t.label, icon: t.icon, color: t.color })),
 ];
 
@@ -118,9 +118,9 @@ const handleSubmit = async (payload) => {
         columns={4}
         tiles={[
           { label: 'Total',      value: myJobs.length },
-          { label: 'Active',     value: myJobs.filter((j) => j.is_active !== false).length, color: 'text-[#2DA4D6]' },
+          { label: 'Active',     value: myJobs.filter((j) => j.is_active !== false).length, color: 'text-[#4E7A1B]' },
           { label: 'Hired',      value: myJobs.reduce((s, j) => s + (j.positions_filled || 0), 0), color: 'text-emerald-600' },
-          { label: 'Applicants', value: myJobs.reduce((sum, j) => sum + (j.applicants_count || 0), 0), color: 'text-[#E89560]' },
+          { label: 'Applicants', value: myJobs.reduce((sum, j) => sum + (j.applicants_count || 0), 0), color: 'text-[#9BE63D]' },
         ]}
       />
 

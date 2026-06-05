@@ -45,7 +45,7 @@ export default function RemoveReviewModal({ review, busy = false, onCancel, onCo
         </>
       }
     >
-      <div className="bg-[#FDFCF8] rounded-xl border border-[#E5E0D8] p-4 mb-4 space-y-2">
+      <div className="bg-[#FFFFFF] rounded-xl border border-[#E5E0D8] p-4 mb-4 space-y-2">
         <div className="flex items-center gap-2 text-[10px] text-[#9A9A94] uppercase tracking-wider font-semibold">
           <span>{reviewer.name}</span>
           <Chip size="xs" tone={reviewer.role === 'studio' ? 'blue' : 'coral'}>
@@ -72,7 +72,7 @@ export default function RemoveReviewModal({ review, busy = false, onCancel, onCo
           textarea
           rows={3}
           placeholder="e.g. Hate speech, defamation, spam, off-topic content..."
-          accent="#7F77DD"
+          accent="#4E7A1B"
         />
       </form>
     </Modal>

@@ -27,9 +27,9 @@ export default function SavedInstructorCard({
   return (
     <div
       onClick={onView}
-      className="bg-white rounded-2xl border border-[#CE4F56]/20 overflow-hidden hover:border-[#CE4F56]/50 hover:shadow-sm transition-all cursor-pointer"
+      className="bg-white rounded-2xl border border-[#4E7A1B]/20 overflow-hidden hover:border-[#4E7A1B]/50 hover:shadow-sm transition-all cursor-pointer"
     >
-      <div className="bg-gradient-to-br from-[#FDFCF8] to-[#CE4F56]/5 px-5 pt-5 pb-4">
+      <div className="bg-gradient-to-br from-[#FFFFFF] to-[#4E7A1B]/5 px-5 pt-5 pb-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <Avatar
@@ -53,11 +53,11 @@ export default function SavedInstructorCard({
             title="Remove from saved"
             className="!text-coral"
           >
-            {unsaving ? <ButtonLoader size={16} color="#CE4F56" /> : <Heart size={16} fill="currentColor" />}
+            {unsaving ? <ButtonLoader size={16} color="#4E7A1B" /> : <Heart size={16} fill="currentColor" />}
           </IconButton>
         </div>
         <div className="flex items-center gap-1 mt-3">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#6BE6A4]" />
+          <span className="w-1.5 h-1.5 rounded-full bg-[#B4FF5A]" />
           <span className="text-[#6B6B66] text-[10px] font-semibold">Actively Seeking</span>
         </div>
       </div>

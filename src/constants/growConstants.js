@@ -5,9 +5,9 @@ import {
 
 // ── Grow post types ───────────────────────────────────────────────
 export const GROW_TYPES = [
-  { id: 'training', label: 'Teacher Training', icon: BookOpen, color: '#2DA4D6' },
-  { id: 'retreat',  label: 'Retreats',         icon: Palmtree, color: '#6BE6A4' },
-  { id: 'event',    label: 'Events',           icon: Calendar, color: '#E89560' },
+  { id: 'training', label: 'Teacher Training', icon: BookOpen, color: '#4E7A1B' },
+  { id: 'retreat',  label: 'Retreats',         icon: Palmtree, color: '#B4FF5A' },
+  { id: 'event',    label: 'Events',           icon: Calendar, color: '#9BE63D' },
 ];
 
 export const GROW_TYPE_META = GROW_TYPES.reduce(
@@ -20,13 +20,13 @@ export const GROW_TYPE_META = GROW_TYPES.reduce(
 export const GROW_FILTER_TABS = [
   { id: 'all', label: 'All Posts' },
   ...GROW_TYPES,
-  { id: 'my',  label: 'My Posts', icon: User, color: '#7F77DD' },
+  { id: 'my',  label: 'My Posts', icon: User, color: '#4E7A1B' },
 ];
 
 export const GROW_TYPE_BG = {
-  training: 'bg-[#2DA4D6]/10 text-[#2DA4D6]',
-  retreat:  'bg-[#6BE6A4]/30 text-[#3E3D38]',
-  event:    'bg-[#E89560]/15 text-[#E89560]',
+  training: 'bg-[#4E7A1B]/10 text-[#4E7A1B]',
+  retreat:  'bg-[#B4FF5A]/30 text-[#3E3D38]',
+  event:    'bg-[#9BE63D]/15 text-[#9BE63D]',
 };
 
 // ── Moderation status ─────────────────────────────────────────────
@@ -43,10 +43,10 @@ export const GROW_STATUS_PUBLIC_CONFIG = {
 };
 
 export const GROW_STATUS_TABS = [
-  { id: 'pending',  label: 'Pending',  icon: Clock,        color: '#F59E0B' },
-  { id: 'approved', label: 'Approved', icon: CheckCircle2, color: '#10B981' },
-  { id: 'rejected', label: 'Rejected', icon: AlertCircle,  color: '#EF4444' },
-  { id: 'all',      label: 'All',      icon: Sprout,       color: '#7F77DD' },
+  { id: 'pending',  label: 'Pending',  icon: Clock,        color: '#C9A227' },
+  { id: 'approved', label: 'Approved', icon: CheckCircle2, color: '#4E7A1B' },
+  { id: 'rejected', label: 'Rejected', icon: AlertCircle,  color: '#1A1A1A' },
+  { id: 'all',      label: 'All',      icon: Sprout,       color: '#4E7A1B' },
 ];
 
 export const GROW_TYPE_OPTIONS = [

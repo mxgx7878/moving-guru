@@ -8,7 +8,7 @@ import { Check } from 'lucide-react';
 import { Modal, Button, RHFInput, TabBar, Field } from '../../components/ui';
 import { POST_TYPES, POST_AUDIENCE_OPTIONS as AUDIENCE_OPTIONS } from '../../constants/postConstants';
 
-const AUDIENCE_TABS = AUDIENCE_OPTIONS.map((o) => ({ ...o, color: '#7F77DD' }));
+const AUDIENCE_TABS = AUDIENCE_OPTIONS.map((o) => ({ ...o, color: '#4E7A1B' }));
 
 const urlField = yup
   .string()
@@ -142,11 +142,11 @@ export default function AdminPostForm({
         </Field>
 
         <RHFInput control={control} errors={errors} name="title" label="Title *"
-          placeholder="e.g. New Job Listings filter is now live" accent="#7F77DD" />
+          placeholder="e.g. New Job Listings filter is now live" accent="#4E7A1B" />
 
         <RHFInput control={control} errors={errors} name="body" textarea rows={5}
           label="Body *" placeholder="Write the announcement, news update or event details here..."
-          accent="#7F77DD" />
+          accent="#4E7A1B" />
 
         <Field label="Audience *" error={errors.audience?.message}>
           <Controller
@@ -167,20 +167,20 @@ export default function AdminPostForm({
         {type === 'event' && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <RHFInput control={control} errors={errors} name="event_date" type="datetime-local"
-              label="Event date *" accent="#7F77DD" />
+              label="Event date *" accent="#4E7A1B" />
             <RHFInput control={control} errors={errors} name="event_location" label="Event location"
-              placeholder="e.g. Online · Zoom or Bangkok, Thailand" accent="#7F77DD" />
+              placeholder="e.g. Online · Zoom or Bangkok, Thailand" accent="#4E7A1B" />
           </div>
         )}
 
         <RHFInput control={control} errors={errors} name="cover_url" label="Cover image URL"
-          placeholder="https://..." accent="#7F77DD" />
+          placeholder="https://..." accent="#4E7A1B" />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <RHFInput control={control} errors={errors} name="link_url" label="Call-to-action URL"
-            placeholder="https://..." accent="#7F77DD" />
+            placeholder="https://..." accent="#4E7A1B" />
           <RHFInput control={control} errors={errors} name="link_label" label="Button label"
-            placeholder="e.g. Learn more" accent="#7F77DD" />
+            placeholder="e.g. Learn more" accent="#4E7A1B" />
         </div>
 
         <Controller

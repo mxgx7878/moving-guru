@@ -5,9 +5,9 @@ import {
 import { Modal, Button } from '../../components/ui';
 
 const OPEN_TO_COLORS = {
-  'Direct Hire':     { bg: 'bg-[#2DA4D6]/10', text: 'text-[#2DA4D6]' },
-  'Swaps':           { bg: 'bg-[#E89560]/15', text: 'text-[#E89560]' },
-  'Energy Exchange': { bg: 'bg-[#6BE6A4]/20', text: 'text-[#3E3D38]' },
+  'Direct Hire':     { bg: 'bg-[#4E7A1B]/10', text: 'text-[#4E7A1B]' },
+  'Swaps':           { bg: 'bg-[#9BE63D]/15', text: 'text-[#9BE63D]' },
+  'Energy Exchange': { bg: 'bg-[#B4FF5A]/20', text: 'text-[#3E3D38]' },
 };
 
 // Preview modal shown from the Studio Profile editor — renders exactly what
@@ -40,7 +40,7 @@ export default function StudioPreviewModal({
       <div className="relative">
         <div
           className="h-32 rounded-t-2xl"
-          style={{ background: 'linear-gradient(135deg, #2DA4D6 0%, #6BE6A4 60%, #f5fca6 100%)' }}
+          style={{ background: 'linear-gradient(135deg, #4E7A1B 0%, #B4FF5A 60%, #F5FDA6 100%)' }}
         />
         <button
           onClick={onClose}
@@ -53,7 +53,7 @@ export default function StudioPreviewModal({
           Preview
         </span>
         <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 z-10">
-          <div className="w-20 h-20 rounded-full border-4 border-white shadow-md overflow-hidden bg-gradient-to-br from-[#2DA4D6] to-[#2590bd] flex items-center justify-center">
+          <div className="w-20 h-20 rounded-full border-4 border-white shadow-md overflow-hidden bg-gradient-to-br from-[#4E7A1B] to-[#3F6216] flex items-center justify-center">
             {form.avatarPreview
               ? <img src={form.avatarPreview} alt={form.studioName} className="w-full h-full object-cover" />
               : <span className="font-unbounded text-xl font-black text-white">{initials}</span>}
@@ -73,15 +73,15 @@ export default function StudioPreviewModal({
 
           <div className="flex items-center justify-center gap-2 mt-3 flex-wrap">
             <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold
-              ${isHiring ? 'bg-[#6BE6A4]/20 text-[#3E3D38]' : 'bg-[#FBF8E4] text-[#6B6B66]'}`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${isHiring ? 'bg-[#6BE6A4]' : 'bg-[#9A9A94]'}`} />
+              ${isHiring ? 'bg-[#B4FF5A]/20 text-[#3E3D38]' : 'bg-[#FAFEE0] text-[#6B6B66]'}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${isHiring ? 'bg-[#B4FF5A]' : 'bg-[#9A9A94]'}`} />
               {isHiring ? 'Actively Hiring' : 'Not Hiring'}
             </span>
             {form.instagram && (
               <a
                 href={form.instagram.startsWith('http') ? form.instagram : `https://instagram.com/${form.instagram.replace('@', '')}`}
                 target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-semibold bg-[#E1306C]/10 text-[#E1306C] hover:bg-[#E1306C]/20"
+                className="flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-semibold bg-[#1A1A1A]/10 text-[#1A1A1A] hover:bg-[#1A1A1A]/20"
               >
                 <Instagram size={11} /> {form.instagram}
               </a>
@@ -90,7 +90,7 @@ export default function StudioPreviewModal({
               <a
                 href={form.website.startsWith('http') ? form.website : `https://${form.website}`}
                 target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-semibold bg-[#2DA4D6]/10 text-[#2DA4D6] hover:bg-[#2DA4D6]/20"
+                className="flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-semibold bg-[#4E7A1B]/10 text-[#4E7A1B] hover:bg-[#4E7A1B]/20"
               >
                 <Globe size={11} /> Website <ExternalLink size={9} />
               </a>
@@ -109,11 +109,11 @@ export default function StudioPreviewModal({
             <InfoTile label="Phone" icon={<Phone size={10} />} value={form.phone} />
           )}
           {form.openTo?.length > 0 && (
-            <div className="bg-[#FBF8E4]/60 rounded-xl p-3">
+            <div className="bg-[#FAFEE0]/60 rounded-xl p-3">
               <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold mb-1">Open To</p>
               <div className="flex flex-wrap gap-1 mt-0.5">
                 {form.openTo.map(o => {
-                  const c = OPEN_TO_COLORS[o] || { bg: 'bg-[#FBF8E4]', text: 'text-[#6B6B66]' };
+                  const c = OPEN_TO_COLORS[o] || { bg: 'bg-[#FAFEE0]', text: 'text-[#6B6B66]' };
                   return (
                     <span key={o} className={`px-1.5 py-0.5 rounded-full text-[9px] font-medium ${c.bg} ${c.text}`}>{o}</span>
                   );
@@ -124,7 +124,7 @@ export default function StudioPreviewModal({
         </div>
 
         {isHiring && form.hiringRoleDescription && (
-          <div className="mb-4 bg-[#6BE6A4]/10 border border-[#6BE6A4]/40 rounded-xl p-4">
+          <div className="mb-4 bg-[#B4FF5A]/10 border border-[#B4FF5A]/40 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
               <Briefcase size={13} className="text-[#3E3D38]" />
               <p className="text-[10px] text-[#3E3D38] uppercase tracking-wider font-bold">Currently Hiring</p>
@@ -136,7 +136,7 @@ export default function StudioPreviewModal({
                 </span>
               )}
               {form.hiringQualificationLevel && form.hiringQualificationLevel !== 'none' && (
-                <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#f5fca6] text-[#3E3D38]">
+                <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#F5FDA6] text-[#3E3D38]">
                   <GraduationCap size={10} />
                   {qualificationLabels[form.hiringQualificationLevel] || form.hiringQualificationLevel}
                 </span>
@@ -145,7 +145,7 @@ export default function StudioPreviewModal({
             <p className="text-[#3E3D38] text-xs leading-relaxed whitespace-pre-line">
               {form.hiringRoleDescription}
             </p>
-            <div className="flex flex-wrap gap-3 mt-3 pt-3 border-t border-[#6BE6A4]/30">
+            <div className="flex flex-wrap gap-3 mt-3 pt-3 border-t border-[#B4FF5A]/30">
               {form.hiringStartDate && (
                 <span className="flex items-center gap-1 text-[10px] text-[#3E3D38] font-medium">
                   <Calendar size={10} /> Starts {form.hiringStartDate}
@@ -170,7 +170,7 @@ export default function StudioPreviewModal({
             <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-bold mb-2">Disciplines Offered</p>
             <div className="flex flex-wrap gap-1.5">
               {form.disciplines.map(d => (
-                <span key={d} className="px-2.5 py-1 bg-[#2DA4D6]/10 text-[#2DA4D6] text-[10px] font-medium rounded-full">{d}</span>
+                <span key={d} className="px-2.5 py-1 bg-[#4E7A1B]/10 text-[#4E7A1B] text-[10px] font-medium rounded-full">{d}</span>
               ))}
             </div>
           </div>
@@ -188,7 +188,7 @@ export default function StudioPreviewModal({
             <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-bold mb-2">Gallery</p>
             <div className="grid grid-cols-4 gap-2">
               {photos.map((p, i) => (
-                <div key={i} className="aspect-square rounded-xl overflow-hidden bg-[#FBF8E4]">
+                <div key={i} className="aspect-square rounded-xl overflow-hidden bg-[#FAFEE0]">
                   <img src={p} alt="" className="w-full h-full object-cover" />
                 </div>
               ))}
@@ -209,7 +209,7 @@ export default function StudioPreviewModal({
 
 function InfoTile({ label, value, icon }) {
   return (
-    <div className="bg-[#FBF8E4]/60 rounded-xl p-3">
+    <div className="bg-[#FAFEE0]/60 rounded-xl p-3">
       <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold mb-1">{label}</p>
       <p className="text-[#3E3D38] text-xs font-medium flex items-center gap-1">
         {icon && <span className="text-[#9A9A94]">{icon}</span>} {value}

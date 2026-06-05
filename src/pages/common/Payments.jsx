@@ -94,7 +94,7 @@ export default function Payments() {
           </p>
         </div>
         <div className="bg-white rounded-2xl p-4 border border-[#E5E0D8] text-center">
-          <CreditCard size={16} className="text-[#E89560] mx-auto mb-2" />
+          <CreditCard size={16} className="text-[#9BE63D] mx-auto mb-2" />
           <p className="font-unbounded text-xl font-black text-[#3E3D38]">
             {payments.length}
           </p>
@@ -103,7 +103,7 @@ export default function Payments() {
           </p>
         </div>
         <div className="bg-white rounded-2xl p-4 border border-[#E5E0D8] text-center">
-          <Calendar size={16} className="text-[#2DA4D6] mx-auto mb-2" />
+          <Calendar size={16} className="text-[#4E7A1B] mx-auto mb-2" />
           <p className="font-unbounded text-sm font-black text-[#3E3D38]">
             {user?.subscriptionRenews || user?.subscription_renews || "—"}
           </p>
@@ -128,7 +128,7 @@ export default function Payments() {
             return (
               <div
                 key={p.id}
-                className="px-6 py-4 flex items-center justify-between hover:bg-[#FDFCF8] transition-colors"
+                className="px-6 py-4 flex items-center justify-between hover:bg-[#FFFFFF] transition-colors"
               >
                 <div className="flex items-center gap-4">
                   <div

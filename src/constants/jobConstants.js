@@ -37,22 +37,22 @@ export const DURATION_OPTIONS = [
 
 // Listing types used in the studio create form (no "All" option)
 export const JOB_TYPES = [
-  { id: 'hire',            label: 'Direct Hire',     icon: Briefcase, color: '#2DA4D6', bg: 'bg-[#2DA4D6]/10' },
-  { id: 'swap',            label: 'Instructor Swap', icon: RefreshCw, color: '#E89560', bg: 'bg-[#E89560]/10' },
+  { id: 'hire',            label: 'Direct Hire',     icon: Briefcase, color: '#4E7A1B', bg: 'bg-[#4E7A1B]/10' },
+  { id: 'swap',            label: 'Instructor Swap', icon: RefreshCw, color: '#9BE63D', bg: 'bg-[#9BE63D]/10' },
 ];
 
 // Filter tabs shown on the instructor Find Work page (includes "All")
 export const JOB_FILTER_TABS = [
-  { id: 'all',             label: 'All Listings',    color: '#CCFF00', bg: 'bg-[#CCFF00]', activeText: '#3E3D38' },
-  { id: 'hire',            label: 'Direct Hire',     color: '#2DA4D6', bg: 'bg-[#2DA4D6]', activeText: '#FFFFFF' },
-  { id: 'swap',            label: 'Instructor Swap', color: '#E89560', bg: 'bg-[#E89560]', activeText: '#FFFFFF' },
+  { id: 'all',             label: 'All Listings',    color: '#B4FF5A', bg: 'bg-[#B4FF5A]', activeText: '#3E3D38' },
+  { id: 'hire',            label: 'Direct Hire',     color: '#4E7A1B', bg: 'bg-[#4E7A1B]', activeText: '#FFFFFF' },
+  { id: 'swap',            label: 'Instructor Swap', color: '#9BE63D', bg: 'bg-[#9BE63D]', activeText: '#FFFFFF' },
 ];
 
 // Display styling for job cards on the instructor Find Work feed
 export const TYPE_STYLES = {
-  hire:            { icon: Briefcase, color: '#2DA4D6', bg: 'bg-[#2DA4D6]/10', text: 'text-[#2DA4D6]', label: 'Direct Hire'     },
-  swap:            { icon: RefreshCw, color: '#E89560', bg: 'bg-[#E89560]/15', text: 'text-[#E89560]', label: 'Instructor Swap' },
-  energy_exchange: { icon: Zap,       color: '#6BE6A4', bg: 'bg-[#6BE6A4]/20', text: 'text-[#3E3D38]', label: 'Energy Exchange' },
+  hire:            { icon: Briefcase, color: '#4E7A1B', bg: 'bg-[#4E7A1B]/10', text: 'text-[#4E7A1B]', label: 'Direct Hire'     },
+  swap:            { icon: RefreshCw, color: '#9BE63D', bg: 'bg-[#9BE63D]/15', text: 'text-[#9BE63D]', label: 'Instructor Swap' },
+  energy_exchange: { icon: Zap,       color: '#B4FF5A', bg: 'bg-[#B4FF5A]/20', text: 'text-[#3E3D38]', label: 'Energy Exchange' },
 };
 
 // Status vocabulary shown on the admin job table and drawer. Jobs don't

@@ -96,10 +96,10 @@ export default function AdminPosts() {
 
       <PageHeader
         icon={FileText}
-        iconBg="#F59E0B1A"
-        iconColor="#F59E0B"
+        iconBg="#C9A2271A"
+        iconColor="#C9A227"
         eyebrow="Admin / Announcements"
-        eyebrowColor="#F59E0B"
+        eyebrowColor="#C9A227"
         title="Platform Announcements"
         description="Broadcast announcements, news and events to instructors and studios."
         actions={(
@@ -132,7 +132,7 @@ export default function AdminPosts() {
 
       {isLoading ? (
         <div className="bg-white rounded-2xl border border-[#E5E0D8] flex items-center justify-center py-16">
-          <div className="w-6 h-6 border-2 border-[#F59E0B] border-t-transparent rounded-full animate-spin" />
+          <div className="w-6 h-6 border-2 border-[#C9A227] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : posts.length === 0 ? (
         <div className="bg-white rounded-2xl border border-[#E5E0D8]">

@@ -19,7 +19,7 @@ export default function EnergyExchangeBadge({ open, className = '' }) {
     <span
       className={`inline-flex items-center gap-1 text-[10px] text-[#6B6B66] ${className}`}
     >
-      <Zap size={10} className="text-[#6BE6A4]" />
+      <Zap size={10} className="text-[#B4FF5A]" />
       Open to energy exchange options
     </span>
   );
