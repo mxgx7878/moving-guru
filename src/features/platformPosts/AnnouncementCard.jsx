@@ -13,7 +13,7 @@ export default function AnnouncementCard({ post, pinned = false }) {
   return (
     <article className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
       {post.cover_url && (
-        <div className="h-40 bg-[#FDFCF8] overflow-hidden">
+        <div className="h-40 bg-[#FFFFFF] overflow-hidden">
           <img src={post.cover_url} alt="" className="w-full h-full object-cover" />
         </div>
       )}
@@ -26,7 +26,7 @@ export default function AnnouncementCard({ post, pinned = false }) {
             <TypeIcon size={10} /> {meta.label}
           </span>
           {pinned && (
-            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FBF8E4] text-[#6B6B66]">
+            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FAFEE0] text-[#6B6B66]">
               <Pin size={10} /> Pinned
             </span>
           )}
@@ -38,10 +38,10 @@ export default function AnnouncementCard({ post, pinned = false }) {
         <h2 className="font-unbounded text-base font-black text-[#3E3D38]">{post.title}</h2>
 
         {post.type === 'event' && (post.event_date || post.event_location) && (
-          <div className="bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl p-3 flex flex-wrap gap-4 text-xs text-[#3E3D38]">
+          <div className="bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl p-3 flex flex-wrap gap-4 text-xs text-[#3E3D38]">
             {post.event_date && (
               <span className="flex items-center gap-1.5">
-                <Calendar size={12} className="text-[#E89560]" />
+                <Calendar size={12} className="text-[#9BE63D]" />
                 {new Date(post.event_date).toLocaleString([], {
                   dateStyle: 'medium', timeStyle: 'short',
                 })}
@@ -49,7 +49,7 @@ export default function AnnouncementCard({ post, pinned = false }) {
             )}
             {post.event_location && (
               <span className="flex items-center gap-1.5">
-                <MapPin size={12} className="text-[#E89560]" /> {post.event_location}
+                <MapPin size={12} className="text-[#9BE63D]" /> {post.event_location}
               </span>
             )}
           </div>

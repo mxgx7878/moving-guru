@@ -38,7 +38,7 @@ export default function TabBar({
   const verticalPad = size === 'md' ? 'py-2.5' : 'py-2';
 
   const resting = inactiveBg || (isPill
-    ? 'bg-[#FBF8E4] text-[#6B6B66] hover:bg-[#E6FF80]'
+    ? 'bg-[#FAFEE0] text-[#6B6B66] hover:bg-[#DBFFA9]'
     : 'bg-white border border-[#E5E0D8] text-[#6B6B66] hover:border-[#3E3D38]');
 
   const base = isPill
@@ -65,7 +65,7 @@ export default function TabBar({
           : undefined;
 
         const activeCls = active
-          ? (isPill ? 'shadow-sm' : 'text-white bg-[#2da4d6] border-transparent')
+          ? (isPill ? 'shadow-sm' : 'text-white bg-[#4E7A1B] border-transparent')
           : resting;
 
         return (

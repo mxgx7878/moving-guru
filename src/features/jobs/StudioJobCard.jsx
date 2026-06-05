@@ -88,13 +88,13 @@ export default function StudioJobCard({
                 );
               })}
               {!isActive && !isFull && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FBF8E4] text-[#9A9A94]">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FAFEE0] text-[#9A9A94]">
                   Inactive
                 </span>
               )}
               <span
                 className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold
-                  ${isFull ? "bg-emerald-50 text-emerald-600" : "bg-[#2DA4D6]/10 text-[#2DA4D6]"}`}
+                  ${isFull ? "bg-emerald-50 text-emerald-600" : "bg-[#4E7A1B]/10 text-[#4E7A1B]"}`}
               >
                 <UserCheck size={10} /> {filled} of {vacancies} filled
               </span>
@@ -141,7 +141,7 @@ export default function StudioJobCard({
               title="Delete"
             >
               {deleting ? (
-                <ButtonLoader size={14} color="#CE4F56" />
+                <ButtonLoader size={14} color="#4E7A1B" />
               ) : (
                 <Trash2 size={14} />
               )}

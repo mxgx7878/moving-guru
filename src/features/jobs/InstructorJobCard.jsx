@@ -70,10 +70,10 @@ export default function InstructorJobCard({
   return (
     <div
       className={`bg-white rounded-2xl border overflow-hidden transition-all
-      ${isFull ? "border-[#E5E0D8] opacity-85" : "border-[#E5E0D8] hover:border-[#CE4F56]/30 hover:shadow-sm"}`}
+      ${isFull ? "border-[#E5E0D8] opacity-85" : "border-[#E5E0D8] hover:border-[#4E7A1B]/30 hover:shadow-sm"}`}
     >
       {isFull && (
-        <div className="bg-[#FBF8E4] border-b border-[#E5E0D8] px-6 py-2 flex items-center gap-2 text-xs text-[#6B6B66]">
+        <div className="bg-[#FAFEE0] border-b border-[#E5E0D8] px-6 py-2 flex items-center gap-2 text-xs text-[#6B6B66]">
           <Lock size={12} />
           <span className="font-semibold">
             Position filled — this listing is no longer accepting applications.
@@ -113,7 +113,7 @@ export default function InstructorJobCard({
                 {job.studio?.id ? (
                   <Link
                     to={`/portal/studios/${job.studio.id}`}
-                    className="inline-flex items-center gap-1 text-[#9A9A94] text-xs mt-0.5 hover:text-[#2DA4D6] hover:underline"
+                    className="inline-flex items-center gap-1 text-[#9A9A94] text-xs mt-0.5 hover:text-[#4E7A1B] hover:underline"
                   >
                     {job.studio?.studio_name ||
                       job.studio?.name ||
@@ -146,7 +146,7 @@ export default function InstructorJobCard({
                 )}
                 {job.qualification_level &&
                   job.qualification_level !== "none" && (
-                    <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#f5fca6] text-[#3E3D38]">
+                    <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#F5FDA6] text-[#3E3D38]">
                       <GraduationCap size={10} />
                       {QUALIFICATION_LABELS[job.qualification_level] ||
                         job.qualification_level}
@@ -178,7 +178,7 @@ export default function InstructorJobCard({
         {eeOpen && <EnergyExchangeBadge open className="mt-2" />}
 
         {job.requirements && (
-          <div className="bg-[#FBF8E4] rounded-xl px-4 py-2.5 mb-4">
+          <div className="bg-[#FAFEE0] rounded-xl px-4 py-2.5 mb-4">
             <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-bold mb-1">
               Requirements
             </p>
@@ -205,7 +205,7 @@ export default function InstructorJobCard({
             </div>
           )}
           {vacancies > 1 && !isFull && (
-            <div className="flex items-center gap-1.5 text-xs bg-[#2DA4D6]/10 text-[#2DA4D6] px-3 py-1.5 rounded-full">
+            <div className="flex items-center gap-1.5 text-xs bg-[#4E7A1B]/10 text-[#4E7A1B] px-3 py-1.5 rounded-full">
               <Users size={12} /> {filled} of {vacancies} filled
             </div>
           )}
@@ -217,8 +217,8 @@ export default function InstructorJobCard({
             onClick={onToggleSave}
             className={
               isSaved
-                ? "bg-[#CE4F56]/5"
-                : "hover:border-[#CE4F56] hover:text-[#CE4F56]"
+                ? "bg-[#4E7A1B]/5"
+                : "hover:border-[#4E7A1B] hover:text-[#4E7A1B]"
             }
           >
             {isSaved ? "Saved" : "Save"}

@@ -36,7 +36,7 @@ export default function UserDetailDrawer({
         open
         onClose={onClose}
         loading
-        loadingSpinner={<Loader2 size={26} className="animate-spin text-[#7F77DD]" />}
+        loadingSpinner={<Loader2 size={26} className="animate-spin text-[#4E7A1B]" />}
       />
     );
   }
@@ -107,7 +107,7 @@ export default function UserDetailDrawer({
       {!isPending && (
         isActive ? (
           <Button variant="secondary" size="sm" icon={Ban} onClick={onSuspend} disabled={busy}
-            className="hover:border-[#EF4444] hover:text-[#EF4444]">
+            className="hover:border-[#1A1A1A] hover:text-[#1A1A1A]">
             Suspend
           </Button>
         ) : !isRejected && (

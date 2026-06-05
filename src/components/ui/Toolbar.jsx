@@ -97,7 +97,7 @@ export default function Toolbar({
             <button
               type="button"
               onClick={onClear}
-              className="text-xs text-[#CE4F56] hover:underline flex items-center gap-1"
+              className="text-xs text-[#4E7A1B] hover:underline flex items-center gap-1"
             >
               <X size={11} /> Clear all
             </button>

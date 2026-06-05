@@ -54,7 +54,7 @@ export default function StudioDetail() {
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto flex items-center justify-center py-20">
-        <Loader2 size={28} className="animate-spin text-[#2DA4D6]" />
+        <Loader2 size={28} className="animate-spin text-[#4E7A1B]" />
       </div>
     );
   }
@@ -102,11 +102,11 @@ export default function StudioDetail() {
       <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
         <div
           className="h-32"
-          style={{ background: 'linear-gradient(135deg, #2DA4D6 0%, #6BE6A4 60%, #f5fca6 100%)' }}
+          style={{ background: 'linear-gradient(135deg, #4E7A1B 0%, #B4FF5A 60%, #F5FDA6 100%)' }}
         />
         <div className="px-6 pb-6 relative">
           <div className="flex items-end gap-4 -mt-10 mb-4">
-            <div className="w-20 h-20 rounded-full border-4 border-white shadow-md overflow-hidden bg-gradient-to-br from-[#2DA4D6] to-[#2590bd] flex items-center justify-center flex-shrink-0">
+            <div className="w-20 h-20 rounded-full border-4 border-white shadow-md overflow-hidden bg-gradient-to-br from-[#4E7A1B] to-[#3F6216] flex items-center justify-center flex-shrink-0">
               {studio.profile_picture || detail.profile_picture
                 ? <img src={studio.profile_picture || detail.profile_picture} alt={studioName} className="w-full h-full object-cover" />
                 : <span className="font-unbounded text-xl font-black text-white">{initials}</span>}
@@ -123,15 +123,15 @@ export default function StudioDetail() {
               </div>
               <div className="flex items-center gap-2 mt-2 flex-wrap">
                 <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold
-                  ${isHiring ? 'bg-[#6BE6A4]/20 text-[#3E3D38]' : 'bg-[#FBF8E4] text-[#6B6B66]'}`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${isHiring ? 'bg-[#6BE6A4]' : 'bg-[#9A9A94]'}`} />
+                  ${isHiring ? 'bg-[#B4FF5A]/20 text-[#3E3D38]' : 'bg-[#FAFEE0] text-[#6B6B66]'}`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${isHiring ? 'bg-[#B4FF5A]' : 'bg-[#9A9A94]'}`} />
                   {isHiring ? 'Actively Hiring' : 'Not Hiring'}
                 </span>
                 {studio.instagram && (
                   <a
                     href={studio.instagram.startsWith('http') ? studio.instagram : `https://instagram.com/${studio.instagram.replace('@', '')}`}
                     target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-semibold bg-[#E1306C]/10 text-[#E1306C] hover:bg-[#E1306C]/20"
+                    className="flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-semibold bg-[#1A1A1A]/10 text-[#1A1A1A] hover:bg-[#1A1A1A]/20"
                   >
                     <Instagram size={10} /> Instagram
                   </a>
@@ -140,7 +140,7 @@ export default function StudioDetail() {
                   <a
                     href={studio.website.startsWith('http') ? studio.website : `https://${studio.website}`}
                     target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-semibold bg-[#2DA4D6]/10 text-[#2DA4D6] hover:bg-[#2DA4D6]/20"
+                    className="flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-semibold bg-[#4E7A1B]/10 text-[#4E7A1B] hover:bg-[#4E7A1B]/20"
                   >
                     <Globe size={10} /> Website <ExternalLink size={8} />
                   </a>
@@ -202,7 +202,7 @@ export default function StudioDetail() {
               <h3 className="font-unbounded text-sm font-black text-[#3E3D38] mb-4">Disciplines Offered</h3>
               <div className="flex flex-wrap gap-1.5">
                 {disciplines.map(d => (
-                  <span key={d} className="px-2.5 py-1 bg-[#2DA4D6]/10 text-[#2DA4D6] text-xs font-medium rounded-full">{d}</span>
+                  <span key={d} className="px-2.5 py-1 bg-[#4E7A1B]/10 text-[#4E7A1B] text-xs font-medium rounded-full">{d}</span>
                 ))}
               </div>
             </Section>
@@ -213,7 +213,7 @@ export default function StudioDetail() {
               <h3 className="font-unbounded text-sm font-black text-[#3E3D38] mb-4">Gallery</h3>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {gallery.map((p, i) => (
-                  <div key={i} className="aspect-square rounded-xl overflow-hidden bg-[#FBF8E4]">
+                  <div key={i} className="aspect-square rounded-xl overflow-hidden bg-[#FAFEE0]">
                     <img src={p} alt="" className="w-full h-full object-cover" />
                   </div>
                 ))}
@@ -237,7 +237,7 @@ export default function StudioDetail() {
               <h3 className="font-unbounded text-sm font-black text-[#3E3D38] mb-4">Open To</h3>
               <div className="flex flex-wrap gap-1.5">
                 {openTo.map(o => (
-                  <span key={o} className="px-2.5 py-1 bg-[#FBF8E4] text-[#3E3D38] text-xs font-medium rounded-full">{o}</span>
+                  <span key={o} className="px-2.5 py-1 bg-[#FAFEE0] text-[#3E3D38] text-xs font-medium rounded-full">{o}</span>
                 ))}
               </div>
             </Section>
@@ -248,7 +248,7 @@ export default function StudioDetail() {
               <h3 className="font-unbounded text-sm font-black text-[#3E3D38] mb-4">Amenities</h3>
               <div className="flex flex-wrap gap-1.5">
                 {amenities.map(a => (
-                  <span key={a} className="px-2.5 py-1 bg-[#FBF8E4] text-[#6B6B66] text-xs font-medium rounded-full">{a}</span>
+                  <span key={a} className="px-2.5 py-1 bg-[#FAFEE0] text-[#6B6B66] text-xs font-medium rounded-full">{a}</span>
                 ))}
               </div>
             </Section>
@@ -257,7 +257,7 @@ export default function StudioDetail() {
           {studio.hiring_qualification_level && studio.hiring_qualification_level !== 'none' && (
             <Section>
               <h3 className="font-unbounded text-sm font-black text-[#3E3D38] mb-4">Minimum Qualification</h3>
-              <span className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full bg-[#f5fca6] text-[#3E3D38]">
+              <span className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full bg-[#F5FDA6] text-[#3E3D38]">
                 <GraduationCap size={11} /> {studio.hiring_qualification_level}
               </span>
             </Section>

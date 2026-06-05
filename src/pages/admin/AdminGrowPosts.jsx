@@ -146,10 +146,10 @@ export default function AdminGrowPosts() {
 
       <PageHeader
         icon={Sprout}
-        iconBg="#7F77DD1A"
-        iconColor="#7F77DD"
+        iconBg="#4E7A1B1A"
+        iconColor="#4E7A1B"
         eyebrow="Admin / Grow Posts"
-        eyebrowColor="#7F77DD"
+        eyebrowColor="#4E7A1B"
         title="Moderation & Management"
         description="Approve, reject, boost, or remove retreats, trainings and events."
         actions={<StatTileGroup tiles={headerTiles} columns={3} className="min-w-[280px]" />}

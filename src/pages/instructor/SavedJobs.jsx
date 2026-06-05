@@ -50,10 +50,10 @@ export default function SavedJobs() {
 
       <PageHeader
         variant="gradient"
-        gradientFrom="#FDFCF8"
-        gradientTo="#CE4F5610"
+        gradientFrom="#FFFFFF"
+        gradientTo="#4E7A1B10"
         eyebrow="Saved Jobs"
-        eyebrowColor="#CE4F56"
+        eyebrowColor="#4E7A1B"
         title="Your Shortlist"
         description={`${saved.length} saved listing${saved.length !== 1 ? 's' : ''} — apply when you're ready`}
       />

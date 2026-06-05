@@ -3,7 +3,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-export default function MonthlyViewsChart({ data = [], loading = false, accent = '#CE4F56' }) {
+export default function MonthlyViewsChart({ data = [], loading = false, accent = '#4E7A1B' }) {
   if (loading) return <div className="h-48 bg-[#F0EBE3] animate-pulse rounded-lg" />;
   if (!data?.length) {
     return (

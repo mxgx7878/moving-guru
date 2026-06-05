@@ -24,7 +24,7 @@ export default function AdminReviewRow({ review, busy = false, onDelete }) {
     : '—';
 
   return (
-    <tr className="border-t border-[#F0EBE3] hover:bg-[#FDFCF8]">
+    <tr className="border-t border-[#F0EBE3] hover:bg-[#FFFFFF]">
       {/* Reviewer */}
       <td className="py-3 px-4 min-w-[200px]">
         <div className="flex items-center gap-2.5">

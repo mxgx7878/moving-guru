@@ -18,7 +18,7 @@ export default function AccessBanner() {
   // Config per state — color, icon, message, optional CTA
   const cfg = {
     incomplete: {
-      bg:     'bg-[#E89560]',
+      bg:     'bg-[#9BE63D]',
       text:   'text-white',
       icon:   AlertCircle,
       label:  'Complete your profile',
@@ -26,7 +26,7 @@ export default function AccessBanner() {
       cta:    { to: profilePath, label: 'Go to profile' },
     },
     pending: {
-      bg:     'bg-[#7F77DD]',
+      bg:     'bg-[#4E7A1B]',
       text:   'text-white',
       icon:   Sparkles,
       label:  'Awaiting admin approval',

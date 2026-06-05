@@ -21,7 +21,7 @@ export default function JobRow({ job, busy = false, onPreview, onActivate, onDea
   const studioName = job.studio?.studio_name || job.studio?.name || 'Unknown';
 
   return (
-    <tr className="border-t border-[#F0EBE3] hover:bg-[#FDFCF8]">
+    <tr className="border-t border-[#F0EBE3] hover:bg-[#FFFFFF]">
       <td className="py-3 px-4 min-w-[220px]">
         <div className="flex items-start gap-3">
           <div

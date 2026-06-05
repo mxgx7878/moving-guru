@@ -53,7 +53,7 @@ export default function DataTable({
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-[#FDFCF8] text-left">
+            <thead className="bg-[#FFFFFF] text-left">
               <tr className="text-[10px] text-[#9A9A94] uppercase tracking-wider">
                 {columns.map((c) => (
                   <th
@@ -75,7 +75,7 @@ export default function DataTable({
                       key={rowKey(row)}
                       onClick={onRowClick ? () => onRowClick(row) : undefined}
                       className={`border-t border-[#F0EBE3] ${
-                        onRowClick ? 'hover:bg-[#FDFCF8] cursor-pointer' : 'hover:bg-[#FDFCF8]'
+                        onRowClick ? 'hover:bg-[#FFFFFF] cursor-pointer' : 'hover:bg-[#FFFFFF]'
                       }`}
                     >
                       {columns.map((c) => (

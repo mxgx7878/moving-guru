@@ -131,10 +131,10 @@ export default function AdminSubscriptions() {
 
       <PageHeader
         icon={Star}
-        iconBg="#7F77DD1A"
-        iconColor="#7F77DD"
+        iconBg="#4E7A1B1A"
+        iconColor="#4E7A1B"
         eyebrow="Admin / Subscription Plans"
-        eyebrowColor="#7F77DD"
+        eyebrowColor="#4E7A1B"
         title="Plan Catalog"
         description="Plans you create here appear in the user portal and are synced as Stripe Products & Prices. Click the status pill to activate or archive a plan."
         actions={(
@@ -184,7 +184,7 @@ export default function AdminSubscriptions() {
           const trialDays = Number(p.trialPeriodDays) || 0;
 
           return (
-            <tr key={p.id} className="hover:bg-[#FDFCF8] transition-colors">
+            <tr key={p.id} className="hover:bg-[#FFFFFF] transition-colors">
               <td className="px-4 py-3">
                 <div className="flex items-center gap-2">
                   <div>
@@ -192,7 +192,7 @@ export default function AdminSubscriptions() {
                     <p className="text-xs text-[#9A9A94] font-mono">{p.id}</p>
                   </div>
                   {p.isFeatured && (
-                    <span className="text-[10px] font-bold uppercase tracking-wider bg-[#f5fca6] text-[#3E3D38] px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] font-bold uppercase tracking-wider bg-[#F5FDA6] text-[#3E3D38] px-2 py-0.5 rounded-full">
                       Featured
                     </span>
                   )}
@@ -244,7 +244,7 @@ export default function AdminSubscriptions() {
                     onClick={() => setFeaturesTarget(p)}
                     disabled={adminPlanMutating}
                   >
-                    <Sliders size={14} className="text-[#7F77DD]" />
+                    <Sliders size={14} className="text-[#4E7A1B]" />
                   </IconButton>
                   <IconButton
                     variant="plain"

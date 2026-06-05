@@ -10,7 +10,7 @@ export default function FilterSelect({
   className = '',
 }) {
   return (
-    <div className={`flex items-center gap-2 bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-3 py-2 ${className}`}>
+    <div className={`flex items-center gap-2 bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl px-3 py-2 ${className}`}>
       <Icon size={14} className="text-[#9A9A94]" />
       <select
         value={value}

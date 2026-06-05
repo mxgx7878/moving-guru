@@ -41,12 +41,12 @@ const ICONS = {
 };
 
 const COLORS = {
-  instagram: '#E1306C',
-  facebook:  '#1877F2',
+  instagram: '#1A1A1A',
+  facebook:  '#1A1A1A',
   twitter:   '#000000',
   tiktok:    '#010101',
-  youtube:   '#FF0000',
-  linkedin:  '#0A66C2',
+  youtube:   '#1A1A1A',
+  linkedin:  '#1A1A1A',
 };
 
 // Renders a tidy row of social icon chips for whatever platforms are set.

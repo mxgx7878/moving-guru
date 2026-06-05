@@ -46,11 +46,11 @@ export default function Login() {
           the public face of the product and stays on the original
           coral palette regardless of token changes. */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden flex-col justify-between p-12">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#CE4F56] via-[#CE4F56]/90 to-[#E89560]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#4E7A1B] via-[#4E7A1B]/90 to-[#9BE63D]" />
         <div className="absolute inset-0 opacity-20"
           style={{
-            backgroundImage: `radial-gradient(circle at 20% 80%, #f5fca6 0%, transparent 50%),
-                              radial-gradient(circle at 80% 20%, #2DA4D6 0%, transparent 50%)`,
+            backgroundImage: `radial-gradient(circle at 20% 80%, #F5FDA6 0%, transparent 50%),
+                              radial-gradient(circle at 80% 20%, #4E7A1B 0%, transparent 50%)`,
           }}
         />
         <div className="absolute -bottom-20 -left-20 w-80 h-80 rounded-full border-2 border-white/10" />

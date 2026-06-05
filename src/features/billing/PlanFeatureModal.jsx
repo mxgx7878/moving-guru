@@ -135,13 +135,13 @@ export default function PlanFeaturesModal({ plan, onClose }) {
                       onClick={() => toggle(feat.id)}
                       className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left ${
                         enabled
-                          ? 'border-[#7F77DD] bg-[#7F77DD08]'
-                          : 'border-[#E5E0D8] bg-white hover:border-[#7F77DD]/40'
+                          ? 'border-[#4E7A1B] bg-[#4E7A1B08]'
+                          : 'border-[#E5E0D8] bg-white hover:border-[#4E7A1B]/40'
                       }`}
                     >
                       <div
                         className={`w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 transition-colors ${
-                          enabled ? 'bg-[#7F77DD]' : 'bg-[#F5F2EC] border border-[#E5E0D8]'
+                          enabled ? 'bg-[#4E7A1B]' : 'bg-[#F5F2EC] border border-[#E5E0D8]'
                         }`}
                       >
                         {enabled && <Check size={11} className="text-white" strokeWidth={3} />}

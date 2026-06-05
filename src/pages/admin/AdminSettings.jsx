@@ -62,11 +62,11 @@ export default function AdminSettings() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 flex items-center gap-4">
-        <div className="w-12 h-12 bg-[#7F77DD]/10 rounded-2xl flex items-center justify-center">
-          <Settings size={22} className="text-[#7F77DD]" />
+        <div className="w-12 h-12 bg-[#4E7A1B]/10 rounded-2xl flex items-center justify-center">
+          <Settings size={22} className="text-[#4E7A1B]" />
         </div>
         <div>
-          <p className="text-[#7F77DD] text-xs font-semibold tracking-widest uppercase mb-1">
+          <p className="text-[#4E7A1B] text-xs font-semibold tracking-widest uppercase mb-1">
             Admin &nbsp;/&nbsp; Settings
           </p>
           <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Account &amp; Security</h1>
@@ -79,7 +79,7 @@ export default function AdminSettings() {
       <div className="grid lg:grid-cols-2 gap-4">
         <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
           <div className="px-5 py-3.5 border-b border-[#E5E0D8] flex items-center gap-2.5">
-            <Mail size={14} className="text-[#2DA4D6]" />
+            <Mail size={14} className="text-[#4E7A1B]" />
             <h3 className="font-unbounded text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Email</h3>
           </div>
           <div className="p-5 space-y-3">
@@ -90,7 +90,7 @@ export default function AdminSettings() {
 
         <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
           <div className="px-5 py-3.5 border-b border-[#E5E0D8] flex items-center gap-2.5">
-            <Settings size={14} className="text-[#E89560]" />
+            <Settings size={14} className="text-[#9BE63D]" />
             <h3 className="font-unbounded text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Password Reset</h3>
           </div>
           <div className="p-5 space-y-3">
@@ -112,7 +112,7 @@ export default function AdminSettings() {
 
       <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
         <div className="px-5 py-3.5 border-b border-[#E5E0D8] flex items-center gap-2.5">
-          <Lock size={14} className="text-[#7F77DD]" />
+          <Lock size={14} className="text-[#4E7A1B]" />
           <h3 className="font-unbounded text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Change Password</h3>
         </div>
         <div className="p-5 space-y-4">

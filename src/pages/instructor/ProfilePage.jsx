@@ -17,17 +17,17 @@ import {
 
 // ─── Constants ──────────────────────────────────────────────────
 const SOCIAL_PLATFORMS = [
-  { key: 'instagram', label: 'Instagram', color: '#E1306C',
+  { key: 'instagram', label: 'Instagram', color: '#1A1A1A',
     icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg> },
-  { key: 'facebook', label: 'Facebook', color: '#1877F2',
+  { key: 'facebook', label: 'Facebook', color: '#1A1A1A',
     icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg> },
   { key: 'twitter', label: 'X / Twitter', color: '#000000',
     icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg> },
   { key: 'tiktok', label: 'TikTok', color: '#010101',
     icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1 0-5.78c.27 0 .54.04.79.1v-3.5a6.37 6.37 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15.3 6.34 6.34 0 0 0 9.49 21.64a6.34 6.34 0 0 0 6.34-6.34V8.7a8.16 8.16 0 0 0 4.76 1.52v-3.4a4.85 4.85 0 0 1-1-.13z"/></svg> },
-  { key: 'youtube', label: 'YouTube', color: '#FF0000',
+  { key: 'youtube', label: 'YouTube', color: '#1A1A1A',
     icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg> },
-  { key: 'linkedin', label: 'LinkedIn', color: '#0A66C2',
+  { key: 'linkedin', label: 'LinkedIn', color: '#1A1A1A',
     icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> },
 ];
 
@@ -218,21 +218,21 @@ export default function ProfilePage() {
                 <span className="text-[10px] text-[#9A9A94] ml-auto">How others see your profile</span>
               </div>
               <div className="p-6">
-                <div className="max-w-sm mx-auto bg-gradient-to-br from-[#FDFCF8] to-[#f5fca6]/30 rounded-2xl border border-[#E5E0D8]">
+                <div className="max-w-sm mx-auto bg-gradient-to-br from-[#FFFFFF] to-[#F5FDA6]/30 rounded-2xl border border-[#E5E0D8]">
                   {/* Cover */}
                   <div className="relative">
                     <div className="h-28 rounded-t-2xl overflow-hidden"
-                      style={{ background: form.coverImage ? `url(${form.coverImage}) center/cover` : 'linear-gradient(135deg, #CE4F56, #E89560, #f5fca6, #6BE6A4)' }}>
+                      style={{ background: form.coverImage ? `url(${form.coverImage}) center/cover` : 'linear-gradient(135deg, #4E7A1B, #9BE63D, #F5FDA6, #B4FF5A)' }}>
                       <button onClick={() => setIsFavourited(!isFavourited)}
                         className={`absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm z-20 transition-all
-                          ${isFavourited ? 'bg-[#CE4F56] scale-110' : 'bg-white/30 hover:bg-white/50'}`}>
+                          ${isFavourited ? 'bg-[#4E7A1B] scale-110' : 'bg-white/30 hover:bg-white/50'}`}>
                         <Heart size={14} className={isFavourited ? 'text-white fill-white' : 'text-white'} />
                       </button>
                     </div>
                     <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 z-10">
                       <button onClick={() => setShowAvatarModal(true)}>
                         <ScallopedFrame size={80} borderWidth={2}>
-                          <div className="w-full h-full bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center">
+                          <div className="w-full h-full bg-gradient-to-br from-[#4E7A1B] to-[#9BE63D] flex items-center justify-center">
                             {form.avatarPreview
                               ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
                               : <span className="font-unbounded text-xl font-black text-white">{initials}</span>}
@@ -248,43 +248,43 @@ export default function ProfilePage() {
                       {form.age && <span>{form.age}</span>}
                       {form.pronouns && <span>· {form.pronouns}</span>}
                     </div>
-                    {form.studio && <p className="text-[#CE4F56] text-xs font-semibold mt-1">{form.studio}</p>}
+                    {form.studio && <p className="text-[#4E7A1B] text-xs font-semibold mt-1">{form.studio}</p>}
 
                     <div className="flex items-center justify-center gap-2 mt-3">
                       <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold
-                        ${form.profileStatus === 'active' ? 'bg-[#6BE6A4]/20 text-[#3E3D38]' : 'bg-[#FBF8E4] text-[#9A9A94]'}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${form.profileStatus === 'active' ? 'bg-[#6BE6A4]' : 'bg-[#9A9A94]'}`} />
+                        ${form.profileStatus === 'active' ? 'bg-[#B4FF5A]/20 text-[#3E3D38]' : 'bg-[#FAFEE0] text-[#9A9A94]'}`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${form.profileStatus === 'active' ? 'bg-[#B4FF5A]' : 'bg-[#9A9A94]'}`} />
                         {form.profileStatus === 'active' ? 'Actively Seeking' : 'Not Seeking'}
                       </span>
                     </div>
 
                     <div className="grid grid-cols-2 gap-2 mt-4">
                       {form.bio && (
-                        <div className="bg-[#FBF8E4]/50 rounded-xl p-2.5 col-span-2 text-left">
+                        <div className="bg-[#FAFEE0]/50 rounded-xl p-2.5 col-span-2 text-left">
                           <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold">Bio</p>
                           <p className="text-[#3E3D38] text-[11px] mt-0.5 line-clamp-3">{form.bio.slice(0, 140)}{form.bio.length > 140 ? '...' : ''}</p>
                         </div>
                       )}
                       {(form.languages || []).length > 0 && (
-                        <div className="bg-[#FBF8E4]/50 rounded-xl p-2.5">
+                        <div className="bg-[#FAFEE0]/50 rounded-xl p-2.5">
                           <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold">Languages</p>
                           <p className="text-[#3E3D38] text-[11px] mt-0.5">{(form.languages || []).join(', ')}</p>
                         </div>
                       )}
                       {(form.countryFrom || form.travelingTo) && (
-                        <div className="bg-[#FBF8E4]/50 rounded-xl p-2.5">
+                        <div className="bg-[#FAFEE0]/50 rounded-xl p-2.5">
                           <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold">Country From → To</p>
                           <p className="text-[#3E3D38] text-[11px] mt-0.5">{form.countryFrom || '—'} → {form.travelingTo || '—'}</p>
                         </div>
                       )}
                       {availabilityDisplay && (
-                        <div className="bg-[#FBF8E4]/50 rounded-xl p-2.5">
+                        <div className="bg-[#FAFEE0]/50 rounded-xl p-2.5">
                           <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold">Availability</p>
                           <p className="text-[#3E3D38] text-[11px] mt-0.5">{availabilityDisplay}</p>
                         </div>
                       )}
                       {(form.openTo || []).length > 0 && (
-                        <div className="bg-[#FBF8E4]/50 rounded-xl p-2.5">
+                        <div className="bg-[#FAFEE0]/50 rounded-xl p-2.5">
                           <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold">Open To</p>
                           <p className="text-[#3E3D38] text-[11px] mt-0.5">{(form.openTo || []).join(', ')}</p>
                         </div>
@@ -315,7 +315,7 @@ export default function ProfilePage() {
               <div className="flex flex-col items-center flex-shrink-0">
                 <div className="cursor-pointer group" onClick={() => fileRef.current?.click()}>
                   <ScallopedFrame size={96} borderWidth={2}>
-                    <div className="w-full h-full bg-gradient-to-br from-[#d4f53c] to-[#e8834a] flex items-center justify-center relative">
+                    <div className="w-full h-full bg-gradient-to-br from-[#B4FF5A] to-[#82CC28] flex items-center justify-center relative">
                       {form.avatarPreview
                         ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
                         : <span className="font-unbounded text-2xl font-black text-[#3E3D38]">{initials}</span>}
@@ -373,7 +373,7 @@ export default function ProfilePage() {
               <Field label="Cover Image" hint="Appears at the top of your public profile">
                 <div
                   onClick={() => coverRef.current?.click()}
-                  className="w-full h-32 border-2 border-dashed border-[#E5E0D8] rounded-xl overflow-hidden cursor-pointer hover:border-[#CE4F56] transition-colors relative bg-[#FDFCF8]">
+                  className="w-full h-32 border-2 border-dashed border-[#E5E0D8] rounded-xl overflow-hidden cursor-pointer hover:border-[#4E7A1B] transition-colors relative bg-[#FFFFFF]">
                   {form.coverImage ? (
                     <img src={form.coverImage} alt="" className="w-full h-full object-cover" />
                   ) : (
@@ -515,7 +515,7 @@ export default function ProfilePage() {
               <div className="flex items-center gap-2">
                 <input type="checkbox" id="flexible" checked={!!form.flexibleDates}
                   onChange={e => set('flexibleDates', e.target.checked)}
-                  className="w-4 h-4 rounded border-[#E5E0D8] accent-[#2DA4D6]" />
+                  className="w-4 h-4 rounded border-[#E5E0D8] accent-[#4E7A1B]" />
                 <label htmlFor="flexible" className="text-sm text-[#6B6B66] cursor-pointer">
                   I'm flexible with dates
                 </label>
@@ -544,7 +544,7 @@ export default function ProfilePage() {
                       const cur = (form.openTo || []).filter((o) => o !== 'Energy Exchange');
                       set('openTo', e.target.checked ? [...cur, 'Energy Exchange'] : cur);
                     }}
-                    className="mt-0.5 w-3.5 h-3.5 rounded border-[#E5E0D8] accent-[#6BE6A4] flex-shrink-0"
+                    className="mt-0.5 w-3.5 h-3.5 rounded border-[#E5E0D8] accent-[#B4FF5A] flex-shrink-0"
                   />
                   <span className="text-xs text-[#6B6B66] leading-snug">
                     Open to energy exchange options
@@ -654,7 +654,7 @@ export default function ProfilePage() {
             <p className="text-xs text-[#9A9A94] mb-3">Add up to 4 photos showing your teaching, studio, or travels</p>
             <div className="grid grid-cols-4 gap-3 mb-3">
               {(form.photos || []).map((p, i) => (
-                <div key={i} className="aspect-square rounded-xl overflow-hidden bg-[#FBF8E4] relative group">
+                <div key={i} className="aspect-square rounded-xl overflow-hidden bg-[#FAFEE0] relative group">
                   <img src={p} alt="" className="w-full h-full object-cover" />
                   <button type="button"
                     onClick={() => {
@@ -667,7 +667,7 @@ export default function ProfilePage() {
                 </div>
               ))}
               {(form.photos || []).length < 4 && (
-                <div className="aspect-square rounded-xl border-2 border-dashed border-[#E5E0D8] flex flex-col items-center justify-center cursor-pointer hover:border-[#CE4F56] transition-colors"
+                <div className="aspect-square rounded-xl border-2 border-dashed border-[#E5E0D8] flex flex-col items-center justify-center cursor-pointer hover:border-[#4E7A1B] transition-colors"
                   onClick={() => photosRef.current?.click()}>
                   <Upload size={18} className="text-[#3E3D38]/25" />
                   <p className="text-[10px] text-[#3E3D38]/25 mt-1">Add</p>
@@ -706,7 +706,7 @@ export default function ProfilePage() {
               <div className="flex flex-col items-center">
                 <div className="cursor-pointer group" onClick={() => fileRef.current?.click()}>
                   <ScallopedFrame size={140} borderWidth={2.5}>
-                    <div className="w-full h-full bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center relative">
+                    <div className="w-full h-full bg-gradient-to-br from-[#4E7A1B] to-[#9BE63D] flex items-center justify-center relative">
                       {form.avatarPreview
                         ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
                         : <span className="font-unbounded text-3xl font-black text-white">{initials}</span>}
@@ -720,7 +720,7 @@ export default function ProfilePage() {
                   {form.name || 'Your Name'}
                 </p>
                 {form.studio && (
-                  <p className="text-center text-[10px] text-[#CE4F56] font-semibold mt-0.5 truncate max-w-full">
+                  <p className="text-center text-[10px] text-[#4E7A1B] font-semibold mt-0.5 truncate max-w-full">
                     {form.studio}
                   </p>
                 )}
@@ -739,10 +739,10 @@ export default function ProfilePage() {
                   onClick={() => set('profileStatus', 'active')}
                   className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold border transition-all
                     ${form.profileStatus === 'active'
-                      ? 'bg-[#6BE6A4]/20 border-[#6BE6A4] text-[#3E3D38]'
-                      : 'border-[#E5E0D8] text-[#9A9A94] hover:border-[#6BE6A4]'}`}
+                      ? 'bg-[#B4FF5A]/20 border-[#B4FF5A] text-[#3E3D38]'
+                      : 'border-[#E5E0D8] text-[#9A9A94] hover:border-[#B4FF5A]'}`}
                 >
-                  <span className={`w-1.5 h-1.5 rounded-full ${form.profileStatus === 'active' ? 'bg-[#6BE6A4]' : 'bg-[#9A9A94]'}`} />
+                  <span className={`w-1.5 h-1.5 rounded-full ${form.profileStatus === 'active' ? 'bg-[#B4FF5A]' : 'bg-[#9A9A94]'}`} />
                   Active
                 </button>
                 <button
@@ -750,7 +750,7 @@ export default function ProfilePage() {
                   onClick={() => set('profileStatus', 'inactive')}
                   className={`flex-1 py-2.5 rounded-xl text-xs font-semibold border transition-all
                     ${form.profileStatus === 'inactive'
-                      ? 'bg-[#FBF8E4] border-[#9A9A94] text-[#6B6B66]'
+                      ? 'bg-[#FAFEE0] border-[#9A9A94] text-[#6B6B66]'
                       : 'border-[#E5E0D8] text-[#9A9A94] hover:border-[#9A9A94]'}`}
                 >
                   Inactive
@@ -770,7 +770,7 @@ export default function ProfilePage() {
               </p>
               <div className="grid grid-cols-2 gap-2">
                 {(form.photos || []).map((p, i) => (
-                  <div key={i} className="aspect-square rounded-xl overflow-hidden bg-[#FBF8E4] relative group">
+                  <div key={i} className="aspect-square rounded-xl overflow-hidden bg-[#FAFEE0] relative group">
                     <img src={p} alt="" className="w-full h-full object-cover" />
                     <button
                       type="button"
@@ -786,7 +786,7 @@ export default function ProfilePage() {
                 {(form.photos || []).length < 4 && (
                   <div
                     onClick={() => photosRef.current?.click()}
-                    className="aspect-square rounded-xl border-2 border-dashed border-[#E5E0D8] flex flex-col items-center justify-center cursor-pointer hover:border-[#CE4F56] transition-colors">
+                    className="aspect-square rounded-xl border-2 border-dashed border-[#E5E0D8] flex flex-col items-center justify-center cursor-pointer hover:border-[#4E7A1B] transition-colors">
                     <Upload size={16} className="text-[#3E3D38]/25" />
                     <p className="text-[9px] text-[#3E3D38]/30 mt-1">Add</p>
                   </div>
@@ -822,7 +822,7 @@ export default function ProfilePage() {
                 fullWidth
                 icon={showPreview ? EyeOff : Eye}
                 onClick={() => setShowPreview(!showPreview)}
-                className="hover:border-[#CE4F56] hover:text-[#CE4F56]"
+                className="hover:border-[#4E7A1B] hover:text-[#4E7A1B]"
               >
                 {showPreview ? 'Hide Preview' : 'Show Preview'}
               </Button>
@@ -838,11 +838,11 @@ export default function ProfilePage() {
           onClick={() => setShowAvatarModal(false)}>
           <div className="relative" onClick={e => e.stopPropagation()}>
             <button onClick={() => setShowAvatarModal(false)}
-              className="absolute -top-3 -right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg z-20 hover:bg-[#FBF8E4] transition-colors">
+              className="absolute -top-3 -right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg z-20 hover:bg-[#FAFEE0] transition-colors">
               <X size={14} className="text-[#3E3D38]" />
             </button>
             <ScallopedFrame size={280} borderWidth={2.5}>
-              <div className="w-full h-full bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center">
+              <div className="w-full h-full bg-gradient-to-br from-[#4E7A1B] to-[#9BE63D] flex items-center justify-center">
                 {form.avatarPreview
                   ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
                   : <span className="font-unbounded text-5xl font-black text-white">{initials}</span>}

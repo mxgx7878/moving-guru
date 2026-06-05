@@ -147,10 +147,10 @@ export default function AdminJobs() {
 
       <PageHeader
         icon={Briefcase}
-        iconBg="#E895601A"
-        iconColor="#E89560"
+        iconBg="#9BE63D1A"
+        iconColor="#9BE63D"
         eyebrow="Admin / Job Management"
-        eyebrowColor="#E89560"
+        eyebrowColor="#9BE63D"
         title="Platform Job Listings"
         description="Moderate listings posted by studios. View applicants, deactivate spam, or delete outright."
       />

@@ -41,9 +41,9 @@ import {
 import { UserForm } from "../../features/forms";
 
 const ROLE_TABS = [
-  { id: "all", label: "All Users", icon: Users, color: "#7F77DD" },
-  { id: "instructor", label: "Instructors", icon: Users, color: "#CE4F56" },
-  { id: "studio", label: "Studios", icon: Building2, color: "#2DA4D6" },
+  { id: "all", label: "All Users", icon: Users, color: "#4E7A1B" },
+  { id: "instructor", label: "Instructors", icon: Users, color: "#4E7A1B" },
+  { id: "studio", label: "Studios", icon: Building2, color: "#4E7A1B" },
 ];
 
 const STATUS_FILTERS = [
@@ -215,10 +215,10 @@ export default function AdminUsers() {
     <div className="max-w-6xl mx-auto space-y-6">
       <PageHeader
         icon={Users}
-        iconBg="#7F77DD1A"
-        iconColor="#7F77DD"
+        iconBg="#4E7A1B1A"
+        iconColor="#4E7A1B"
         eyebrow="Admin / User Management"
-        eyebrowColor="#7F77DD"
+        eyebrowColor="#4E7A1B"
         title="Instructors & Studios"
         description="Approve signups, verify studios, suspend or remove accounts."
         actions={
@@ -226,7 +226,7 @@ export default function AdminUsers() {
             variant="primary"
             icon={Plus}
             onClick={openCreate}
-            style={{ backgroundColor: "#7F77DD", borderColor: "#7F77DD" }}
+            style={{ backgroundColor: "#4E7A1B", borderColor: "#4E7A1B" }}
           >
             New User
           </Button>
@@ -268,7 +268,7 @@ export default function AdminUsers() {
             icon={Zap}
             onClick={handleRunSweep}
             loading={sweeping}
-            className="ml-auto hover:border-[#7F77DD] hover:text-[#7F77DD]"
+            className="ml-auto hover:border-[#4E7A1B] hover:text-[#4E7A1B]"
           >
             Run sweep now
           </Button>

@@ -69,7 +69,7 @@ export default function BoostPaymentModal({
       }
     >
       <div className="flex items-start gap-3">
-        <div className="w-10 h-10 rounded-xl bg-[#f5fca6] flex items-center justify-center flex-shrink-0">
+        <div className="w-10 h-10 rounded-xl bg-[#F5FDA6] flex items-center justify-center flex-shrink-0">
           <Zap size={18} className="text-[#3E3D38]" />
         </div>
         <div className="text-sm text-[#3E3D38] leading-relaxed">

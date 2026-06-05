@@ -13,7 +13,7 @@ export default function FileDropzone({
   height = 'h-32',
   icon: Icon = ImageIcon,
   label = 'Click to upload',
-  accent = '#CE4F56',
+  accent = '#4E7A1B',
   children,
   className = '',
   disabled = false,
@@ -32,7 +32,7 @@ export default function FileDropzone({
   return (
     <div
       onClick={() => !disabled && ref.current?.click()}
-      className={`w-full ${height} border-2 border-dashed border-[#E5E0D8] rounded-xl overflow-hidden relative bg-[#FDFCF8] transition-colors ${
+      className={`w-full ${height} border-2 border-dashed border-[#E5E0D8] rounded-xl overflow-hidden relative bg-[#FFFFFF] transition-colors ${
         disabled ? 'opacity-50 cursor-not-allowed' : `cursor-pointer ${borderHover}`
       } ${className}`}
       style={{ '--accent': accent }}

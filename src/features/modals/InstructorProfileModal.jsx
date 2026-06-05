@@ -56,8 +56,8 @@ export default function InstructorProfileModal({ instructor, isSaved, onClose, o
       <div className="flex items-start gap-4 mb-5">
         <Avatar name={instructor.name} src={profilePicture} size="xl" tone="coral" />
         <div className="flex-1 min-w-0 space-y-2">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold bg-[#6BE6A4]/20 text-[#3E3D38]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#6BE6A4]" />
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold bg-[#B4FF5A]/20 text-[#3E3D38]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#B4FF5A]" />
             Actively Seeking
           </span>
           <SocialLinksRow social={instructorDetail?.social_links} />
@@ -75,11 +75,11 @@ export default function InstructorProfileModal({ instructor, isSaved, onClose, o
           <InfoTile label="Languages" value={languages.join(', ')} />
         )}
         {openTo.length > 0 && (
-          <div className="bg-[#FBF8E4]/50 rounded-xl p-3">
+          <div className="bg-[#FAFEE0]/50 rounded-xl p-3">
             <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold mb-1">Open To</p>
             <div className="flex flex-wrap gap-1">
               {openTo.map(o => (
-                <span key={o} className="px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-[#2DA4D6]/10 text-[#2DA4D6]">{o}</span>
+                <span key={o} className="px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-[#4E7A1B]/10 text-[#4E7A1B]">{o}</span>
               ))}
             </div>
           </div>
@@ -91,7 +91,7 @@ export default function InstructorProfileModal({ instructor, isSaved, onClose, o
           <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-bold mb-2">Disciplines</p>
           <div className="flex flex-wrap gap-1.5">
             {instructorDetail?.disciplines.map(d => (
-              <span key={d} className="px-2.5 py-1 bg-[#2DA4D6]/10 text-[#2DA4D6] text-[10px] font-medium rounded-full">{d}</span>
+              <span key={d} className="px-2.5 py-1 bg-[#4E7A1B]/10 text-[#4E7A1B] text-[10px] font-medium rounded-full">{d}</span>
             ))}
           </div>
         </div>
@@ -109,7 +109,7 @@ export default function InstructorProfileModal({ instructor, isSaved, onClose, o
 
 function InfoTile({ label, value, icon }) {
   return (
-    <div className="bg-[#FBF8E4]/50 rounded-xl p-3">
+    <div className="bg-[#FAFEE0]/50 rounded-xl p-3">
       <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold mb-1">{label}</p>
       <p className="text-[#3E3D38] text-xs font-medium flex items-center gap-1">
         {icon && <span className="text-[#9A9A94]">{icon}</span>} {value}

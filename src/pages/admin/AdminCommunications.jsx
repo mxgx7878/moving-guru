@@ -103,10 +103,10 @@ export default function AdminCommunications() {
     <div className="max-w-3xl mx-auto space-y-6">
       <PageHeader
         icon={Mail}
-        iconBg="#7F77DD1A"
-        iconColor="#7F77DD"
+        iconBg="#4E7A1B1A"
+        iconColor="#4E7A1B"
         eyebrow="Admin / Communications"
-        eyebrowColor="#7F77DD"
+        eyebrowColor="#4E7A1B"
         title="Email Broadcast"
         description="Send announcements, updates, or re-engagement emails to platform users. Send a test to yourself first to preview."
       />
@@ -124,13 +124,13 @@ export default function AdminCommunications() {
               onChange={setAudience}
               options={AUDIENCE_OPTIONS.map((o) => ({ value: o.value, label: o.label }))}
               placeholder="Pick audience"
-              accent="#7F77DD"
+              accent="#4E7A1B"
             />
           </div>
 
           {counts && (
-            <div className="flex items-center gap-2 text-xs text-[#6B6B66] bg-[#7F77DD]/5 rounded-xl p-3 border border-[#7F77DD]/20">
-              <Users size={14} className="text-[#7F77DD] flex-shrink-0" />
+            <div className="flex items-center gap-2 text-xs text-[#6B6B66] bg-[#4E7A1B]/5 rounded-xl p-3 border border-[#4E7A1B]/20">
+              <Users size={14} className="text-[#4E7A1B] flex-shrink-0" />
               <span>
                 This will send to <strong className="text-[#3E3D38]">{targetCount.toLocaleString()}</strong> recipient{targetCount === 1 ? '' : 's'}.
               </span>
@@ -146,7 +146,7 @@ export default function AdminCommunications() {
             name="subject"
             label="Subject Line"
             placeholder="e.g. Big news — new categories on Moving Guru"
-            accent="#7F77DD"
+            accent="#4E7A1B"
           />
 
           <RHFInput
@@ -157,11 +157,11 @@ export default function AdminCommunications() {
             textarea
             rows={10}
             placeholder="Hi {first name interpolated automatically},&#10;&#10;Write your message here. New paragraphs are preserved.&#10;&#10;— The team"
-            accent="#7F77DD"
+            accent="#4E7A1B"
           />
 
           <p className="text-[10px] text-[#9A9A94] leading-relaxed flex items-start gap-1.5">
-            <Sparkles size={11} className="text-[#7F77DD] mt-0.5 flex-shrink-0" />
+            <Sparkles size={11} className="text-[#4E7A1B] mt-0.5 flex-shrink-0" />
             Each recipient's email opens with "Hi [their name]," automatically — your body content goes below that greeting.
           </p>
         </div>
@@ -176,7 +176,7 @@ export default function AdminCommunications() {
             loading={testing}
             disabled={!subject || !body}
             onClick={onSendTest}
-            className="hover:border-[#7F77DD] hover:text-[#7F77DD]"
+            className="hover:border-[#4E7A1B] hover:text-[#4E7A1B]"
           >
             Send test to me first
           </Button>
@@ -187,7 +187,7 @@ export default function AdminCommunications() {
             size="md"
             icon={Send}
             disabled={!subject || !body || targetCount === 0}
-            style={{ backgroundColor: '#7F77DD' }}
+            style={{ backgroundColor: '#4E7A1B' }}
           >
             Send to {targetCount.toLocaleString()} {targetCount === 1 ? 'user' : 'users'}
           </Button>
@@ -208,14 +208,14 @@ export default function AdminCommunications() {
                 Cancel
               </Button>
               <Button variant="primary" loading={sending} onClick={onConfirmBroadcast}
-                style={{ backgroundColor: '#7F77DD' }}>
+                style={{ backgroundColor: '#4E7A1B' }}>
                 Yes — send it
               </Button>
             </>
           }
         >
           <div className="space-y-3">
-            <div className="bg-[#FDFCF8] rounded-xl border border-[#E5E0D8] p-4 space-y-2">
+            <div className="bg-[#FFFFFF] rounded-xl border border-[#E5E0D8] p-4 space-y-2">
               <div className="flex items-center gap-2 text-[10px] text-[#9A9A94] uppercase tracking-wider font-semibold">
                 <Mail size={11} /> Subject
               </div>
@@ -230,8 +230,8 @@ export default function AdminCommunications() {
               </p>
             </div>
 
-            <div className="flex items-start gap-2 text-xs text-[#6B6B66] bg-[#F59E0B]/5 rounded-xl p-3 border border-[#F59E0B]/20">
-              <AlertCircle size={14} className="text-[#F59E0B] flex-shrink-0 mt-0.5" />
+            <div className="flex items-start gap-2 text-xs text-[#6B6B66] bg-[#C9A227]/5 rounded-xl p-3 border border-[#C9A227]/20">
+              <AlertCircle size={14} className="text-[#C9A227] flex-shrink-0 mt-0.5" />
               <span>
                 Each recipient gets a personalised copy. Sends are queued and process in the background — expect delivery within a few minutes depending on queue throughput.
               </span>

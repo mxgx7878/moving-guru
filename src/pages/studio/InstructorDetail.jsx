@@ -65,7 +65,7 @@ export default function InstructorDetail() {
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto flex items-center justify-center py-20">
-        <Loader2 size={28} className="animate-spin text-[#2DA4D6]" />
+        <Loader2 size={28} className="animate-spin text-[#4E7A1B]" />
       </div>
     );
   }
@@ -103,7 +103,7 @@ export default function InstructorDetail() {
 
   const heroBg = backgroundImage
     ? { backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }
-    : { background: 'linear-gradient(135deg, #CE4F56 0%, #E89560 60%, #f5fca6 100%)' };
+    : { background: 'linear-gradient(135deg, #4E7A1B 0%, #9BE63D 60%, #F5FDA6 100%)' };
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -121,7 +121,7 @@ export default function InstructorDetail() {
             loading={savingToggle}
             onClick={handleToggleSave}
             disabled={currentUser.user_id === inst.id}
-            className={isSaved ? 'bg-[#CE4F56]/5' : 'hover:border-[#CE4F56] hover:text-[#CE4F56]'}
+            className={isSaved ? 'bg-[#4E7A1B]/5' : 'hover:border-[#4E7A1B] hover:text-[#4E7A1B]'}
           >
             {isSaved ? 'Saved' : 'Save'}
           </Button>
@@ -149,7 +149,7 @@ export default function InstructorDetail() {
         </div>
         <div className="px-6 pb-6 relative">
           <div className="flex items-end gap-4 mb-4">
-            <div className="-mt-12 w-24 h-24 rounded-full border-4 border-white shadow-md overflow-hidden bg-gradient-to-br from-[#CE4F56] to-[#E89560] flex items-center justify-center flex-shrink-0">
+            <div className="-mt-12 w-24 h-24 rounded-full border-4 border-white shadow-md overflow-hidden bg-gradient-to-br from-[#4E7A1B] to-[#9BE63D] flex items-center justify-center flex-shrink-0">
               {profilePicture ? (
                 <img src={profilePicture} alt={inst.name} className="w-full h-full object-cover" />
               ) : (
@@ -171,19 +171,19 @@ export default function InstructorDetail() {
                 <span
                   className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold
                     ${profileStatus === 'active'
-                      ? 'bg-[#6BE6A4]/20 text-[#3E3D38]'
-                      : 'bg-[#FBF8E4] text-[#9A9A94]'}`}
+                      ? 'bg-[#B4FF5A]/20 text-[#3E3D38]'
+                      : 'bg-[#FAFEE0] text-[#9A9A94]'}`}
                 >
-                  <span className={`w-1.5 h-1.5 rounded-full ${profileStatus === 'active' ? 'bg-[#6BE6A4]' : 'bg-[#9A9A94]'}`} />
+                  <span className={`w-1.5 h-1.5 rounded-full ${profileStatus === 'active' ? 'bg-[#B4FF5A]' : 'bg-[#9A9A94]'}`} />
                   {profileStatus === 'active' ? 'Actively Seeking' : 'Not Seeking'}
                 </span>
                 {inst.is_verified && (
-                  <span className="px-3 py-1 rounded-full text-[10px] font-semibold bg-[#2DA4D6]/10 text-[#2DA4D6]">
+                  <span className="px-3 py-1 rounded-full text-[10px] font-semibold bg-[#4E7A1B]/10 text-[#4E7A1B]">
                     Verified
                   </span>
                 )}
                 {detail.plan && (
-                  <span className="px-3 py-1 rounded-full text-[10px] font-semibold bg-[#CE4F56]/10 text-[#CE4F56] capitalize">
+                  <span className="px-3 py-1 rounded-full text-[10px] font-semibold bg-[#4E7A1B]/10 text-[#4E7A1B] capitalize">
                     {detail.plan} plan
                   </span>
                 )}
@@ -239,7 +239,7 @@ export default function InstructorDetail() {
                   <a
                     href={website.startsWith('http') ? website : `https://${website}`}
                     target="_blank" rel="noopener noreferrer"
-                    className="text-[#2DA4D6] hover:underline break-all"
+                    className="text-[#4E7A1B] hover:underline break-all"
                   >
                     {website}
                   </a>
@@ -271,7 +271,7 @@ export default function InstructorDetail() {
                 {disciplines.map((d) => (
                   <span
                     key={d}
-                    className="px-2.5 py-1 bg-[#2DA4D6]/10 text-[#2DA4D6] text-xs font-medium rounded-full"
+                    className="px-2.5 py-1 bg-[#4E7A1B]/10 text-[#4E7A1B] text-xs font-medium rounded-full"
                   >
                     {d}
                   </span>
@@ -288,7 +288,7 @@ export default function InstructorDetail() {
                     key={url + i}
                     type="button"
                     onClick={() => setLightbox(url)}
-                    className="aspect-square rounded-xl overflow-hidden bg-[#FBF8E4] border border-[#E5E0D8] hover:border-[#2DA4D6] transition-colors"
+                    className="aspect-square rounded-xl overflow-hidden bg-[#FAFEE0] border border-[#E5E0D8] hover:border-[#4E7A1B] transition-colors"
                   >
                     <img src={url} alt="" className="w-full h-full object-cover" />
                   </button>
@@ -314,7 +314,7 @@ export default function InstructorDetail() {
                 {openTo.map((o) => (
                   <span
                     key={o}
-                    className="px-2.5 py-1 bg-[#FBF8E4] text-[#3E3D38] text-xs font-medium rounded-full"
+                    className="px-2.5 py-1 bg-[#FAFEE0] text-[#3E3D38] text-xs font-medium rounded-full"
                   >
                     {o}
                   </span>
@@ -339,7 +339,7 @@ export default function InstructorDetail() {
                   </div>
                 )}
                 {flexibleDates && (
-                  <p className="text-[10px] text-[#2DA4D6] font-semibold mt-1">✓ Flexible with dates</p>
+                  <p className="text-[10px] text-[#4E7A1B] font-semibold mt-1">✓ Flexible with dates</p>
                 )}
               </div>
             </Section>
@@ -349,7 +349,7 @@ export default function InstructorDetail() {
             <Section title="Languages">
               <div className="flex flex-wrap gap-1.5">
                 {languages.map((l) => (
-                  <span key={l} className="px-2.5 py-1 bg-[#f5fca6]/30 text-[#3E3D38] text-xs font-medium rounded-full">
+                  <span key={l} className="px-2.5 py-1 bg-[#F5FDA6]/30 text-[#3E3D38] text-xs font-medium rounded-full">
                     {l}
                   </span>
                 ))}

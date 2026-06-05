@@ -22,7 +22,7 @@ export default function InstructorSwapCard({ instructor, onMessage }) {
   const bio         = detail.bio || '';
 
   return (
-    <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5 hover:border-[#E89560]/40 hover:shadow-sm transition-all">
+    <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5 hover:border-[#9BE63D]/40 hover:shadow-sm transition-all">
       <div className="flex items-start gap-4">
         <Avatar name={inst.name} src={profilePic} size="lg" tone="coral" />
 
@@ -41,7 +41,7 @@ export default function InstructorSwapCard({ instructor, onMessage }) {
                 </p>
               )}
             </div>
-            <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold text-white bg-[#E89560]">
+            <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold text-white bg-[#9BE63D]">
               <RefreshCw size={10} /> Open to Swap
             </span>
           </div>

@@ -48,7 +48,7 @@ export default function UserGrowthChart({ data = [], loading = false }) {
               padding: '6px 10px',
             }}
             labelStyle={{ color: '#fff', fontWeight: 600 }}
-            cursor={{ fill: '#7F77DD15' }}
+            cursor={{ fill: '#4E7A1B15' }}
           />
           <Legend
             verticalAlign="top"
@@ -56,8 +56,8 @@ export default function UserGrowthChart({ data = [], loading = false }) {
             iconSize={8}
             wrapperStyle={{ fontSize: 10, paddingBottom: 8 }}
           />
-          <Bar dataKey="instructors" stackId="a" fill="#CE4F56" radius={[0, 0, 0, 0]} />
-          <Bar dataKey="studios"     stackId="a" fill="#2DA4D6" radius={[6, 6, 0, 0]} />
+          <Bar dataKey="instructors" stackId="a" fill="#4E7A1B" radius={[0, 0, 0, 0]} />
+          <Bar dataKey="studios"     stackId="a" fill="#4E7A1B" radius={[6, 6, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

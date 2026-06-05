@@ -3,7 +3,7 @@
    ───────────────────────────────────────────────
    Soft gradient that complements the new mint green
    buttons. The base is the existing warm cream
-   (#FDFCF8) with a very pale mint tint settling into
+   (#FFFFFF) with a very pale mint tint settling into
    the bottom-right corner — gives the page visual
    depth without competing with the bright CTA buttons.
 
@@ -22,9 +22,9 @@
 .dashboard-bg {
   background: linear-gradient(
     135deg,
-    #FDFCF8 0%,
-    #FDFCF8 60%,
-    #F0F9E5 100%
+    #FFFFFF 0%,
+    #FFFFFF 60%,
+    #F6FFE9 100%
   );
   min-height: 100vh;
 }
@@ -33,7 +33,7 @@
    gradient (e.g. settings, profile edit). Just neutral
    cream — same as the existing warm-bg class. */
 .dashboard-bg-neutral {
-  background: #FDFCF8;
+  background: #FFFFFF;
   min-height: 100vh;
 }
 
@@ -42,7 +42,7 @@
    the button colour but with a gentle gradient so it
    doesn't feel like a flat solid block. */
 .mint-banner {
-  background: linear-gradient(135deg, #9DD964 0%, #87C04E 100%);
+  background: linear-gradient(135deg, #B4FF5A 0%, #9BE63D 100%);
   color: #3E3D38;
 }
 

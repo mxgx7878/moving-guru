@@ -40,7 +40,7 @@ export default function PostPreviewModal({ post, onClose }) {
             <AudienceIcon size={9} /> {audienceMeta.label}
           </span>
           {post.is_pinned && (
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#f5fca6] text-[#3E3D38]">
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#F5FDA6] text-[#3E3D38]">
               📌 PINNED
             </span>
           )}
@@ -75,7 +75,7 @@ export default function PostPreviewModal({ post, onClose }) {
 
           {post.link_url && (
             <a href={post.link_url} target="_blank" rel="noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#7F77DD] text-white text-xs font-bold hover:bg-[#6c64c8]">
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#4E7A1B] text-white text-xs font-bold hover:bg-[#4E7A1B]">
               {post.link_label || 'Open link'} →
             </a>
           )}

@@ -85,10 +85,10 @@ export default function MyApplications() {
 
       <PageHeader
         variant="gradient"
-        gradientFrom="#FDFCF8"
-        gradientTo="#CE4F5610"
+        gradientFrom="#FFFFFF"
+        gradientTo="#4E7A1B10"
         eyebrow="Applications"
-        eyebrowColor="#CE4F56"
+        eyebrowColor="#4E7A1B"
         title="My Applications"
         description="Track where you've applied and leave reviews for studios you've worked with"
       />

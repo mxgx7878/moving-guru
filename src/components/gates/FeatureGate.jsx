@@ -94,7 +94,7 @@ function InlineGate({ featureKey }) {
   const subPath  = role === 'studio' ? '/studio/subscription' : '/portal/subscription';
 
   return (
-    <div className="flex items-center gap-3 p-3 rounded-xl border border-[#E5E0D8] bg-[#FDFCF8]">
+    <div className="flex items-center gap-3 p-3 rounded-xl border border-[#E5E0D8] bg-[#FFFFFF]">
       <div
         className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
         style={{ backgroundColor: `${theme.accent}18` }}

@@ -90,7 +90,7 @@ export default function Register() {
 
   const STEPS = role === 'studio' ? STEPS_STUDIO : STEPS_INSTRUCTOR;
   const theme = role === 'studio' ? ROLE_THEME.studio : ROLE_THEME.instructor;
-  const accentColor = theme?.accent || '#CE4F56';
+  const accentColor = theme?.accent || '#4E7A1B';
 
   // ── Validation ───────────────────────────────────────────────
   const validate = () => {
@@ -193,43 +193,43 @@ export default function Register() {
 
   const progress = step > 0 ? ((step - 1) / (STEPS.length - 1)) * 100 : 0;
   const availabilityDisplay = formatDateRange(form.availableFrom, form.availableTo);
-  const inp = "w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none transition-all";
+  const inp = "w-full bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none transition-all";
 
   // ── STEP 0: Role picker ─────────────────────────────────────
   if (step === 0) {
     return (
-      <div className="min-h-screen bg-[#FDFCF8] flex items-center justify-center font-['DM_Sans'] p-4">
+      <div className="min-h-screen bg-[#FFFFFF] flex items-center justify-center font-['DM_Sans'] p-4">
         <div className="w-full max-w-lg">
           <div className="flex items-center justify-center gap-2 mb-10">
-            <Globe size={20} className="text-[#CE4F56]" />
+            <Globe size={20} className="text-[#4E7A1B]" />
             <span className="font-unbounded text-base font-bold text-[#3E3D38] tracking-wider">
-              MOVING <em className="not-italic text-[#CE4F56]">GURU</em>
+              MOVING <em className="not-italic text-[#4E7A1B]">GURU</em>
             </span>
           </div>
           <h1 className="font-unbounded text-2xl font-black text-[#3E3D38] text-center mb-2">Join Moving Guru</h1>
           <p className="text-[#9A9A94] text-sm text-center mb-10">Are you joining as an instructor or a studio?</p>
           <div className="grid grid-cols-2 gap-4">
             <button onClick={() => pickRole('instructor')}
-              className="group bg-white border-2 border-[#E5E0D8] rounded-2xl p-6 text-left hover:border-[#CE4F56] hover:shadow-md transition-all">
-              <div className="w-12 h-12 bg-[#CE4F56]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#CE4F56]/20 transition-colors">
-                <User size={22} className="text-[#CE4F56]" />
+              className="group bg-white border-2 border-[#E5E0D8] rounded-2xl p-6 text-left hover:border-[#4E7A1B] hover:shadow-md transition-all">
+              <div className="w-12 h-12 bg-[#4E7A1B]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#4E7A1B]/20 transition-colors">
+                <User size={22} className="text-[#4E7A1B]" />
               </div>
               <p className="font-unbounded text-sm font-black text-[#3E3D38] mb-1">Instructor</p>
               <p className="text-[#9A9A94] text-xs leading-relaxed">I teach wellness disciplines and want to find work globally.</p>
-              <div className="flex items-center gap-1 mt-4 text-[#CE4F56] text-xs font-semibold">Join as instructor <ArrowRight size={12} /></div>
+              <div className="flex items-center gap-1 mt-4 text-[#4E7A1B] text-xs font-semibold">Join as instructor <ArrowRight size={12} /></div>
             </button>
             <button onClick={() => pickRole('studio')}
-              className="group bg-white border-2 border-[#E5E0D8] rounded-2xl p-6 text-left hover:border-[#2DA4D6] hover:shadow-md transition-all">
-              <div className="w-12 h-12 bg-[#2DA4D6]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#2DA4D6]/20 transition-colors">
-                <Building2 size={22} className="text-[#2DA4D6]" />
+              className="group bg-white border-2 border-[#E5E0D8] rounded-2xl p-6 text-left hover:border-[#4E7A1B] hover:shadow-md transition-all">
+              <div className="w-12 h-12 bg-[#4E7A1B]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#4E7A1B]/20 transition-colors">
+                <Building2 size={22} className="text-[#4E7A1B]" />
               </div>
               <p className="font-unbounded text-sm font-black text-[#3E3D38] mb-1">Studio</p>
               <p className="text-[#9A9A94] text-xs leading-relaxed">I run a wellness studio and want to find travelling instructors.</p>
-              <div className="flex items-center gap-1 mt-4 text-[#2DA4D6] text-xs font-semibold">Join as studio <ArrowRight size={12} /></div>
+              <div className="flex items-center gap-1 mt-4 text-[#4E7A1B] text-xs font-semibold">Join as studio <ArrowRight size={12} /></div>
             </button>
           </div>
           <p className="text-center text-[#9A9A94] text-sm mt-8">
-            Already a member? <Link to="/login" className="text-[#CE4F56] font-medium hover:underline">Sign in</Link>
+            Already a member? <Link to="/login" className="text-[#4E7A1B] font-medium hover:underline">Sign in</Link>
           </p>
         </div>
       </div>
@@ -238,7 +238,7 @@ export default function Register() {
 
   // ── STEP 1+: Multi-step form ────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#FDFCF8] font-['DM_Sans'] py-8 px-4">
+    <div className="min-h-screen bg-[#FFFFFF] font-['DM_Sans'] py-8 px-4">
       <div className="max-w-2xl mx-auto mb-8 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
           <Globe size={18} style={{ color: accentColor }} />
@@ -269,21 +269,21 @@ export default function Register() {
                   <div key={s.id} className="flex items-center flex-1 last:flex-none">
                     <div className="flex flex-col items-center gap-1">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all
-                        ${done ? 'bg-[#f5fca6] text-[#3E3D38]' : active ? 'bg-white text-[#3E3D38]' : 'bg-white/15 text-white/40'}`}>
+                        ${done ? 'bg-[#F5FDA6] text-[#3E3D38]' : active ? 'bg-white text-[#3E3D38]' : 'bg-white/15 text-white/40'}`}>
                         {done ? <Check size={14} /> : <span className="font-unbounded text-[10px] font-bold">{s.id}</span>}
                       </div>
                       <span className={`text-[9px] tracking-wider uppercase hidden sm:block
-                        ${active ? 'text-white' : done ? 'text-[#f5fca6]' : 'text-white/30'}`}>{s.label}</span>
+                        ${active ? 'text-white' : done ? 'text-[#F5FDA6]' : 'text-white/30'}`}>{s.label}</span>
                     </div>
                     {i < STEPS.length - 1 && (
-                      <div className={`h-px flex-1 mx-1 transition-all ${step > s.id ? 'bg-[#f5fca6]' : 'bg-white/20'}`} />
+                      <div className={`h-px flex-1 mx-1 transition-all ${step > s.id ? 'bg-[#F5FDA6]' : 'bg-white/20'}`} />
                     )}
                   </div>
                 );
               })}
             </div>
             <div className="mt-4 h-1 bg-white/20 rounded-full overflow-hidden">
-              <div className="h-full bg-[#f5fca6] rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
+              <div className="h-full bg-[#F5FDA6] rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
             </div>
           </div>
 
@@ -321,7 +321,7 @@ export default function Register() {
                   <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Profile Photo</label>
                   <div className="flex items-center gap-4">
                     <div onClick={() => fileRef.current?.click()}
-                      className="w-20 h-20 rounded-full border-2 border-dashed border-[#E5E0D8] flex items-center justify-center cursor-pointer hover:border-[#CE4F56] transition-colors overflow-hidden bg-[#FDFCF8]">
+                      className="w-20 h-20 rounded-full border-2 border-dashed border-[#E5E0D8] flex items-center justify-center cursor-pointer hover:border-[#4E7A1B] transition-colors overflow-hidden bg-[#FFFFFF]">
                       {form.avatarPreview ? <img src={form.avatarPreview} alt="Avatar" className="w-full h-full object-cover" /> : <Upload size={20} className="text-[#C4BCB4]" />}
                     </div>
                     <input ref={fileRef} type="file" accept="image/*" onChange={handleAvatar} className="hidden" />
@@ -335,7 +335,7 @@ export default function Register() {
                       placeholder="e.g. 30" className={`${inp} ${errors.age ? 'border-red-400' : ''}`} />
                     {errors.age && <p className="text-red-400 text-xs mt-1">{errors.age}</p>}
                   </div>
-                  <SelectField accent="#2DA4D6" label="Pronouns" value={form.pronouns} onChange={v => update('pronouns', v)} options={PRONOUNS} placeholder="Select pronouns..." />
+                  <SelectField accent="#4E7A1B" label="Pronouns" value={form.pronouns} onChange={v => update('pronouns', v)} options={PRONOUNS} placeholder="Select pronouns..." />
                 </div>
                 <Input label="Current Studio / Employer" name="studio" form={form} update={update} errors={errors} placeholder="e.g. STRIVE, Marrickville" />
                 <div>
@@ -344,7 +344,7 @@ export default function Register() {
                     {LANGUAGES.map(l => (
                       <button key={l} type="button" onClick={() => toggleItem('languages', l)}
                         className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
-                          ${form.languages.includes(l) ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}>
+                          ${form.languages.includes(l) ? 'bg-[#4E7A1B] border-[#4E7A1B] text-white' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#4E7A1B]'}`}>
                         {l}
                       </button>
                     ))}
@@ -361,7 +361,7 @@ export default function Register() {
                   <p className="text-[#9A9A94] text-sm">Tell instructors about your studio</p>
                 </div>
                 <div onClick={() => fileRef.current?.click()}
-                  className="w-full h-36 border-2 border-dashed border-[#E5E0D8] rounded-xl flex items-center justify-center cursor-pointer hover:border-[#2DA4D6] transition-colors overflow-hidden bg-[#FDFCF8]">
+                  className="w-full h-36 border-2 border-dashed border-[#E5E0D8] rounded-xl flex items-center justify-center cursor-pointer hover:border-[#4E7A1B] transition-colors overflow-hidden bg-[#FFFFFF]">
                   {form.avatarPreview ? <img src={form.avatarPreview} alt="Studio" className="w-full h-full object-cover" /> :
                     <div className="text-center"><Upload size={20} className="text-[#C4BCB4] mx-auto mb-1" /><p className="text-[#9A9A94] text-xs">Studio main photo (optional)</p></div>}
                 </div>
@@ -380,7 +380,7 @@ export default function Register() {
                       placeholder="e.g. Bali" className={`${inp} ${errors.location ? 'border-red-400' : ''}`} />
                     {errors.location && <p className="text-red-400 text-xs mt-1">{errors.location}</p>}
                   </div>
-                  <SelectField accent="#2DA4D6" label="Country *" value={form.country} onChange={v => update('country', v)} options={COUNTRIES} placeholder="Select country..." error={errors.country} />
+                  <SelectField accent="#4E7A1B" label="Country *" value={form.country} onChange={v => update('country', v)} options={COUNTRIES} placeholder="Select country..." error={errors.country} />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <Input label="Phone (optional)" name="phone" form={form} update={update} errors={errors} placeholder="+62 ..." />
@@ -392,7 +392,7 @@ export default function Register() {
                     {STUDIO_SIZES.map(sz => (
                       <button key={sz} type="button" onClick={() => update('studioSize', sz)}
                         className={`px-3 py-2.5 rounded-xl text-xs font-medium border transition-all text-left
-                          ${form.studioSize === sz ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}>
+                          ${form.studioSize === sz ? 'bg-[#4E7A1B] border-[#4E7A1B] text-white' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#4E7A1B]'}`}>
                         {sz}
                       </button>
                     ))}
@@ -412,15 +412,15 @@ export default function Register() {
                 <Input label="Current Location" name="location" form={form} update={update} errors={errors} placeholder="City, Country (e.g. Sydney, Australia)" />
 
                 <div className="grid grid-cols-2 gap-4">
-                  <SelectField accent="#2DA4D6" label="Country From *" value={form.countryFrom} onChange={v => update('countryFrom', v)}
+                  <SelectField accent="#4E7A1B" label="Country From *" value={form.countryFrom} onChange={v => update('countryFrom', v)}
                     options={COUNTRIES} placeholder="Select your country..." error={errors.countryFrom} />
                   <div>
                     <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Traveling To</label>
-                    <SelectField accent="#2DA4D6" value={form.travelingTo} onChange={v => update('travelingTo', v)}
+                    <SelectField accent="#4E7A1B" value={form.travelingTo} onChange={v => update('travelingTo', v)}
                       options={COUNTRIES_AND_REGIONS} placeholder="Select destination..." />
                     <input value={form.travelingTo} onChange={e => update('travelingTo', e.target.value)}
                       placeholder="Or type: Italy, Bali, Thailand..."
-                      className="mt-2 w-full bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-2.5 text-xs text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-[#2DA4D6] transition-all" />
+                      className="mt-2 w-full bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl px-4 py-2.5 text-xs text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-[#4E7A1B] transition-all" />
                   </div>
                 </div>
 
@@ -445,14 +445,14 @@ export default function Register() {
                     </div>
                   </div>
                   {availabilityDisplay && (
-                    <div className="mt-2 flex items-center gap-2 px-3 py-1.5 bg-[#2DA4D6]/10 rounded-lg w-fit">
-                      <Calendar size={12} className="text-[#2DA4D6]" />
-                      <span className="text-[#2DA4D6] text-xs font-semibold">{availabilityDisplay}</span>
+                    <div className="mt-2 flex items-center gap-2 px-3 py-1.5 bg-[#4E7A1B]/10 rounded-lg w-fit">
+                      <Calendar size={12} className="text-[#4E7A1B]" />
+                      <span className="text-[#4E7A1B] text-xs font-semibold">{availabilityDisplay}</span>
                     </div>
                   )}
                   <label className="flex items-center gap-2 mt-2 cursor-pointer">
                     <input type="checkbox" checked={form.flexibleDates} onChange={e => update('flexibleDates', e.target.checked)}
-                      className="w-4 h-4 rounded border-[#E5E0D8] accent-[#2DA4D6]" />
+                      className="w-4 h-4 rounded border-[#E5E0D8] accent-[#4E7A1B]" />
                     <span className="text-sm text-[#6B6B66]">I'm flexible with exact dates</span>
                   </label>
                 </div>
@@ -463,7 +463,7 @@ export default function Register() {
                     {OPEN_TO.map(opt => (
                       <button key={opt} type="button" onClick={() => toggleItem('openTo', opt)}
                         className={`px-4 py-2 rounded-full text-xs font-medium border transition-all
-                          ${form.openTo.includes(opt) ? 'bg-[#2DA4D6] text-white border-[#2DA4D6]' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}>
+                          ${form.openTo.includes(opt) ? 'bg-[#4E7A1B] text-white border-[#4E7A1B]' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#4E7A1B]'}`}>
                         {opt}
                       </button>
                     ))}
@@ -476,7 +476,7 @@ export default function Register() {
                       const cur = form.openTo.filter((o) => o !== 'Energy Exchange');
                       update('openTo', e.target.checked ? [...cur, 'Energy Exchange'] : cur);
                     }}
-                    className="mt-0.5 w-3.5 h-3.5 rounded border-[#E5E0D8] accent-[#6BE6A4] flex-shrink-0"
+                    className="mt-0.5 w-3.5 h-3.5 rounded border-[#E5E0D8] accent-[#B4FF5A] flex-shrink-0"
                   />
                   <span className="text-xs text-[#6B6B66] leading-snug">
                     Open to energy exchange options
@@ -504,7 +504,7 @@ export default function Register() {
                 {form.disciplines.length > 0 && (
                   <div className="flex flex-wrap gap-1.5">
                     {form.disciplines.map(d => (
-                      <span key={d} className="flex items-center gap-1 px-2.5 py-1 bg-[#2DA4D6]/10 text-[#2DA4D6] rounded-full text-xs font-medium">
+                      <span key={d} className="flex items-center gap-1 px-2.5 py-1 bg-[#4E7A1B]/10 text-[#4E7A1B] rounded-full text-xs font-medium">
                         {d}<button onClick={() => toggleItem('disciplines', d)} className="hover:text-red-500"><X size={10} /></button>
                       </span>
                     ))}
@@ -519,7 +519,7 @@ export default function Register() {
                         {cat.items.map(d => (
                           <button key={d} type="button" onClick={() => toggleItem('disciplines', d)}
                             className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
-                              ${form.disciplines.includes(d) ? 'bg-[#2DA4D6] border-[#2DA4D6] text-white' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}>
+                              ${form.disciplines.includes(d) ? 'bg-[#4E7A1B] border-[#4E7A1B] text-white' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#4E7A1B]'}`}>
                             {d}
                           </button>
                         ))}
@@ -554,7 +554,7 @@ export default function Register() {
                   <div className="grid grid-cols-4 gap-2">
                     {[0,1,2,3].map(i => (
                       <div key={i} onClick={() => photosRef.current?.click()}
-                        className="aspect-square border-2 border-dashed border-[#E5E0D8] rounded-xl overflow-hidden cursor-pointer hover:border-[#CE4F56] transition-all flex items-center justify-center bg-[#FDFCF8]">
+                        className="aspect-square border-2 border-dashed border-[#E5E0D8] rounded-xl overflow-hidden cursor-pointer hover:border-[#4E7A1B] transition-all flex items-center justify-center bg-[#FFFFFF]">
                         {form.photos[i] ? <img src={form.photos[i]} alt="" className="w-full h-full object-cover" /> : <Upload size={16} className="text-[#C4BCB4]" />}
                       </div>
                     ))}
@@ -583,7 +583,7 @@ export default function Register() {
                     {STUDIO_OPEN.map(opt => (
                       <button key={opt} type="button" onClick={() => toggleItem('openTo', opt)}
                         className={`px-4 py-2 rounded-full text-xs font-medium border transition-all
-                          ${form.openTo.includes(opt) ? 'bg-[#2DA4D6] text-white border-[#2DA4D6]' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#2DA4D6]'}`}>
+                          ${form.openTo.includes(opt) ? 'bg-[#4E7A1B] text-white border-[#4E7A1B]' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#4E7A1B]'}`}>
                         {opt}
                       </button>
                     ))}
@@ -594,7 +594,7 @@ export default function Register() {
                   <div className="grid grid-cols-4 gap-2">
                     {[0,1,2,3].map(i => (
                       <div key={i} onClick={() => photosRef.current?.click()}
-                        className="aspect-square border-2 border-dashed border-[#E5E0D8] rounded-xl overflow-hidden cursor-pointer hover:border-[#2DA4D6] transition-all flex items-center justify-center bg-[#FDFCF8]">
+                        className="aspect-square border-2 border-dashed border-[#E5E0D8] rounded-xl overflow-hidden cursor-pointer hover:border-[#4E7A1B] transition-all flex items-center justify-center bg-[#FFFFFF]">
                         {form.photos[i] ? <img src={form.photos[i]} alt="" className="w-full h-full object-cover" /> : <Upload size={16} className="text-[#C4BCB4]" />}
                       </div>
                     ))}
@@ -615,14 +615,14 @@ export default function Register() {
                   {PLANS.map(plan => (
                     <button key={plan.id} type="button" onClick={() => update('plan', plan.id)}
                       className={`w-full p-4 rounded-xl border-2 text-left transition-all relative
-                        ${form.plan === plan.id ? 'border-[#2DA4D6] bg-[#2DA4D6]/5' : 'border-[#E5E0D8] hover:border-[#2DA4D6]/40'}`}>
+                        ${form.plan === plan.id ? 'border-[#4E7A1B] bg-[#4E7A1B]/5' : 'border-[#E5E0D8] hover:border-[#4E7A1B]/40'}`}>
                       {plan.highlight && (
-                        <span className="absolute top-3 right-3 bg-[#f5fca6] text-[#3E3D38] text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Most Popular</span>
+                        <span className="absolute top-3 right-3 bg-[#F5FDA6] text-[#3E3D38] text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Most Popular</span>
                       )}
                       <div className="flex items-center gap-3">
                         <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0
-                          ${form.plan === plan.id ? 'border-[#2DA4D6]' : 'border-[#C4BCB4]'}`}>
-                          {form.plan === plan.id && <div className="w-2 h-2 rounded-full bg-[#2DA4D6]" />}
+                          ${form.plan === plan.id ? 'border-[#4E7A1B]' : 'border-[#C4BCB4]'}`}>
+                          {form.plan === plan.id && <div className="w-2 h-2 rounded-full bg-[#4E7A1B]" />}
                         </div>
                         <div>
                           <div className="flex items-baseline gap-1">
@@ -635,7 +635,7 @@ export default function Register() {
                     </button>
                   ))}
                 </div>
-                <div className="bg-[#f5fca6]/30 rounded-xl p-4 border border-[#f5fca6]">
+                <div className="bg-[#F5FDA6]/30 rounded-xl p-4 border border-[#F5FDA6]">
                   <p className="text-[#3E3D38] text-xs font-semibold mb-1">🎉 Launch Promo Active</p>
                   <p className="text-[#6B6B66] text-xs">First 3 months for $2. First 100 studios get 6 months free. Founding member pricing locked in forever.</p>
                 </div>
@@ -680,7 +680,7 @@ export default function Register() {
         </div>
 
         <p className="text-center text-[#9A9A94] text-xs mt-6">
-          Already a member? <Link to="/login" className="text-[#CE4F56] hover:underline">Sign in</Link>
+          Already a member? <Link to="/login" className="text-[#4E7A1B] hover:underline">Sign in</Link>
         </p>
       </div>
     </div>

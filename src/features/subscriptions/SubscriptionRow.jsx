@@ -32,7 +32,7 @@ export default function SubscriptionRow({ sub }) {
     : (sub.currentPeriodEnd || sub.current_period_end);
 
   return (
-    <tr className="border-t border-[#F0EBE3] hover:bg-[#FDFCF8]">
+    <tr className="border-t border-[#F0EBE3] hover:bg-[#FFFFFF]">
       <td className="py-3 px-4">
         <p className="font-semibold text-[#3E3D38] text-xs">{user.name || user.studio_name || '—'}</p>
         <p className="text-[10px] text-[#9A9A94]">{user.email || '—'}</p>

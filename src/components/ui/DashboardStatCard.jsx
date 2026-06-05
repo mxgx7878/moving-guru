@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 // pattern that dashboard pages used to redeclare. Supports:
 //
 //   - `icon`    — lucide component
-//   - `color`   — raw hex (e.g. "#2DA4D6") OR one of the named enums
+//   - `color`   — raw hex (e.g. "#4E7A1B") OR one of the named enums
 //                 ('blue' | 'coral' | 'green' | 'purple' | 'orange')
 //   - `delta`   — signed percentage; positive shows emerald "+N%", negative
 //                 shows red "-N%" with a rotated arrow
@@ -18,11 +18,11 @@ import { Link } from 'react-router-dom';
 //   StatTile       — tiny drawer tile with cream background
 //   StatTileGroup  — strip of value-first KPIs (no icon)
 const ENUM_COLORS = {
-  blue:   '#2DA4D6',
-  coral:  '#CE4F56',
-  green:  '#6BE6A4',
-  purple: '#7F77DD',
-  orange: '#E89560',
+  blue:   '#4E7A1B',
+  coral:  '#4E7A1B',
+  green:  '#B4FF5A',
+  purple: '#4E7A1B',
+  orange: '#9BE63D',
 };
 
 export default function DashboardStatCard({

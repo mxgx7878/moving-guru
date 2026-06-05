@@ -39,7 +39,7 @@ export default function SuspendUserModal({ onCancel, onConfirm, busy = false }) 
           textarea
           rows={4}
           placeholder="Reason (e.g. policy violation, spam reports)..."
-          accent="#7F77DD"
+          accent="#4E7A1B"
         />
       </form>
     </Modal>

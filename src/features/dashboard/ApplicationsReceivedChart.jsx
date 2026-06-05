@@ -31,13 +31,13 @@ export default function ApplicationsReceivedChart({ data = [], loading = false }
               fontSize: 11, padding: '6px 10px',
             }}
             labelStyle={{ color: '#fff', fontWeight: 600 }}
-            itemStyle={{ color: '#2DA4D6' }}
+            itemStyle={{ color: '#4E7A1B' }}
             formatter={(v) => [v, 'Applications']}
-            cursor={{ fill: '#2DA4D615' }}
+            cursor={{ fill: '#4E7A1B15' }}
           />
           <Bar dataKey="applications" radius={[6, 6, 0, 0]}>
             {data.map((_, i) => (
-              <Cell key={i} fill={i === lastIdx ? '#2DA4D6' : '#2DA4D655'} />
+              <Cell key={i} fill={i === lastIdx ? '#4E7A1B' : '#4E7A1B55'} />
             ))}
           </Bar>
         </BarChart>

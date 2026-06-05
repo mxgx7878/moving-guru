@@ -2,8 +2,8 @@ import { Mail } from 'lucide-react';
 import { Avatar } from '../../components/ui';
 
 const APPLICATION_STATUS = {
-  pending:   { label: 'Pending',   cls: 'bg-[#2DA4D6]/10 text-[#2DA4D6]' },
-  viewed:    { label: 'Viewed',    cls: 'bg-[#FBF8E4] text-[#6B6B66]'    },
+  pending:   { label: 'Pending',   cls: 'bg-[#4E7A1B]/10 text-[#4E7A1B]' },
+  viewed:    { label: 'Viewed',    cls: 'bg-[#FAFEE0] text-[#6B6B66]'    },
   accepted:  { label: 'Hired',     cls: 'bg-emerald-50 text-emerald-600' },
   rejected:  { label: 'Declined',  cls: 'bg-red-50 text-red-500'         },
   withdrawn: { label: 'Withdrawn', cls: 'bg-gray-100 text-gray-500'      },
@@ -23,7 +23,7 @@ export default function ApplicantRow({ app }) {
   };
 
   return (
-    <div className="flex items-center justify-between gap-3 bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl p-3">
+    <div className="flex items-center justify-between gap-3 bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl p-3">
       <div className="flex items-center gap-3 min-w-0">
         <Avatar name={name} src={profilePicture} />
         <div className="min-w-0">

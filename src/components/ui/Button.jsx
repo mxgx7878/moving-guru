@@ -10,23 +10,30 @@ import { ButtonLoader } from '../feedback';
 // Passing `loading` swaps the icon for a spinner. `disabled` dims the button
 // normally; for "result" displays (Accepted / Applied / Closed) use
 // `state="static"` so the pill stays fully opaque.
+// Brand palette: GREEN #B4FF5A, YELLOW #F5FDA6, BLACK #1A1A1A, WHITE #FFFFFF.
+// Buttons are green by default; use `yellow`/`accent` to differentiate two
+// buttons sitting next to each other. Text on the bright fills is black.
 const VARIANT = {
   // ── Solid, interactive ──────────────────────────────────────────
-  primary:   'bg-[#2DA4D6] text-white border-[#2DA4D6] hover:bg-[#2590bd]',
-  danger:    'bg-[#CE4F56] text-white border-[#CE4F56] hover:bg-[#b8454c]',
-  accent:    'bg-[#3E3D38] text-[#f5fca6] border-[#3E3D38] hover:bg-black',
-  success:   'bg-emerald-500 text-white border-emerald-500 hover:bg-emerald-600',
+  primary:   'bg-[#B4FF5A] text-[#1A1A1A] border-[#B4FF5A] hover:bg-[#9BE63D]',
+  // `yellow` / `accent` are the differentiator buttons (yellow fill).
+  yellow:    'bg-[#F5FDA6] text-[#1A1A1A] border-[#F5FDA6] hover:bg-[#ECF77A]',
+  accent:    'bg-[#F5FDA6] text-[#1A1A1A] border-[#F5FDA6] hover:bg-[#ECF77A]',
+  // Destructive actions use yellow so they read distinct from the green
+  // primary while staying on-palette (no red on the site).
+  danger:    'bg-[#F5FDA6] text-[#1A1A1A] border-[#F5FDA6] hover:bg-[#ECF77A]',
+  success:   'bg-[#B4FF5A] text-[#1A1A1A] border-[#B4FF5A] hover:bg-[#9BE63D]',
 
   // ── Outline / neutral ───────────────────────────────────────────
-  secondary:     'bg-white text-[#6B6B66] border-[#E5E0D8] hover:border-[#9A9A94]',
-  ghost:         'bg-transparent text-[#6B6B66] border-transparent hover:bg-[#FBF8E4]',
-  outlineDanger: 'bg-white text-[#CE4F56] border-[#CE4F56] hover:bg-[#CE4F56]/5',
+  secondary:     'bg-white text-[#1A1A1A] border-[#E5E0D8] hover:border-[#9A9A94]',
+  ghost:         'bg-transparent text-[#6B6B66] border-transparent hover:bg-[#FAFEE0]',
+  outlineDanger: 'bg-white text-[#1A1A1A] border-[#1A1A1A] hover:bg-[#1A1A1A]/5',
 
   // ── Tinted (low-contrast, usually paired with state="static") ──
-  infoSoft:    'bg-[#2DA4D6]/10 text-[#2DA4D6] border-[#2DA4D6]/30 hover:bg-[#2DA4D6]/15',
-  dangerSoft:  'bg-red-50 text-red-500 border-red-200 hover:bg-red-100',
-  successSoft: 'bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100',
-  mutedSoft:   'bg-[#FBF8E4] text-[#9A9A94] border-[#E5E0D8]',
+  infoSoft:    'bg-[#B4FF5A]/20 text-[#3F6216] border-[#B4FF5A]/50 hover:bg-[#B4FF5A]/30',
+  dangerSoft:  'bg-[#F5FDA6]/50 text-[#7E811F] border-[#F5FDA6] hover:bg-[#F5FDA6]/70',
+  successSoft: 'bg-[#B4FF5A]/20 text-[#3F6216] border-[#B4FF5A]/50 hover:bg-[#B4FF5A]/30',
+  mutedSoft:   'bg-[#FAFEE0] text-[#9A9A94] border-[#E5E0D8]',
 };
 
 const SIZE = {
@@ -36,9 +43,9 @@ const SIZE = {
   lg: 'px-6 py-3 text-sm rounded-xl',
 };
 
-// Variants where the button text is already dark on white — ButtonLoader
-// needs the muted color instead of the default white.
-const DARK_TEXT_VARIANTS = new Set([
+// Outline / neutral variants render the spinner in the muted grey; all the
+// solid fills (green / yellow) carry black text, so their spinner is black.
+const MUTED_LOADER_VARIANTS = new Set([
   'secondary', 'ghost', 'outlineDanger',
   'infoSoft', 'dangerSoft', 'successSoft', 'mutedSoft',
 ]);
@@ -66,7 +73,7 @@ export default function Button({
 
   const variantCls = VARIANT[variant] || VARIANT.primary;
   const sizeCls    = SIZE[size] || SIZE.md;
-  const loaderColor = DARK_TEXT_VARIANTS.has(variant) ? '#6B6B66' : '#fff';
+  const loaderColor = MUTED_LOADER_VARIANTS.has(variant) ? '#6B6B66' : '#1A1A1A';
 
   return (
     <button

@@ -42,7 +42,7 @@ export default function ReviewList({ userId, direction, compact = false, emptyLa
 
   return (
     <div className="space-y-4">
-      <div className="bg-[#FBF8E4]/50 rounded-xl p-4 flex items-center gap-4">
+      <div className="bg-[#FAFEE0]/50 rounded-xl p-4 flex items-center gap-4">
         <div className="text-center">
           <p className="font-unbounded text-3xl font-black text-[#3E3D38] leading-none">
             {summary.count > 0 ? summary.average.toFixed(1) : '—'}
@@ -60,9 +60,9 @@ export default function ReviewList({ userId, direction, compact = false, emptyLa
               return (
                 <div key={n} className="flex items-center gap-2 text-[10px] text-[#6B6B66]">
                   <span className="w-3 text-right">{n}</span>
-                  <Star size={10} className="text-[#E89560]" fill="#E89560" />
+                  <Star size={10} className="text-[#9BE63D]" fill="#9BE63D" />
                   <div className="flex-1 bg-white rounded-full h-1.5 overflow-hidden">
-                    <div className="h-full bg-[#E89560]" style={{ width: `${pct}%` }} />
+                    <div className="h-full bg-[#9BE63D]" style={{ width: `${pct}%` }} />
                   </div>
                   <span className="w-5 text-[#9A9A94]">{c}</span>
                 </div>
@@ -87,7 +87,7 @@ export default function ReviewList({ userId, direction, compact = false, emptyLa
             return (
               <div key={r.id} className="bg-white rounded-xl border border-[#E5E0D8] p-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#2DA4D6] to-[#2590bd] flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4E7A1B] to-[#3F6216] flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
                     {reviewer.detail?.profile_picture || reviewer.profile_picture ? (
                       <img
                         src={reviewer.detail?.profile_picture || reviewer.profile_picture}
@@ -120,7 +120,7 @@ export default function ReviewList({ userId, direction, compact = false, emptyLa
                           title="Delete your review"
                           className="!text-ink-soft hover:!text-red-500"
                         >
-                          {deletingId === r.id ? <ButtonLoader size={12} color="#CE4F56" /> : <Trash2 size={12} />}
+                          {deletingId === r.id ? <ButtonLoader size={12} color="#4E7A1B" /> : <Trash2 size={12} />}
                         </IconButton>
                       )}
                     </div>

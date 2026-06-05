@@ -10,7 +10,7 @@ import { GROW_TYPE_META, GROW_STATUS_CONFIG } from '../../constants/growConstant
 // feature button doesn't exist in the shared component, so we hand it a
 // className override for the pressed look.
 const FEATURED_ACTIVE_CLS =
-  'border-[#F59E0B] text-[#F59E0B] bg-[#F59E0B]/10 hover:bg-[#F59E0B]/10';
+  'border-[#C9A227] text-[#C9A227] bg-[#C9A227]/10 hover:bg-[#C9A227]/10';
 
 // ── Helpers ────────────────────────────────────────────────────────
 
@@ -88,7 +88,7 @@ export default function GrowPostRow({
   } = getLifecycle(post);
 
   return (
-    <tr className={`border-t border-[#F0EBE3] hover:bg-[#FDFCF8] ${isExpired ? 'opacity-75' : ''}`}>
+    <tr className={`border-t border-[#F0EBE3] hover:bg-[#FFFFFF] ${isExpired ? 'opacity-75' : ''}`}>
       <td className="py-3 px-4">
         <div className="flex items-start gap-3 max-w-sm">
           <div className="flex-1 min-w-0">
@@ -106,7 +106,7 @@ export default function GrowPostRow({
             {expiresAt && (
               <p
                 className={`flex items-center gap-1 text-[10px] mt-1 font-semibold ${
-                  isExpired ? 'text-[#EF4444]' : 'text-[#9A9A94]'
+                  isExpired ? 'text-[#1A1A1A]' : 'text-[#9A9A94]'
                 }`}
                 title={expiresAt.toLocaleString()}
               >
@@ -120,13 +120,13 @@ export default function GrowPostRow({
             {/* Badge row — keeps order consistent: status badges first, then feature */}
             <div className="flex flex-wrap items-center gap-1 mt-1.5">
               {isExpired && (
-                <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#FEE2E2] text-[#991B1B] uppercase tracking-wider">
+                <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#F4F4F4] text-[#1A1A1A] uppercase tracking-wider">
                   <AlertCircle size={9} /> Expired
                 </span>
               )}
 
               {isCurrentlyFeatured && (
-                <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#f5fca6] text-[#3E3D38] uppercase tracking-wider">
+                <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#F5FDA6] text-[#3E3D38] uppercase tracking-wider">
                   <Zap size={9} /> Featured
                 </span>
               )}
@@ -178,7 +178,7 @@ export default function GrowPostRow({
                 title="Approve"
                 onClick={() => onApprove?.(post)}
                 disabled={isActing}
-                className="border-[#10B981] text-[#10B981] hover:bg-[#10B981]/10"
+                className="border-[#4E7A1B] text-[#4E7A1B] hover:bg-[#4E7A1B]/10"
               >
                 {isActing
                   ? <Loader2 size={14} className="animate-spin" />
@@ -188,7 +188,7 @@ export default function GrowPostRow({
                 title="Reject"
                 onClick={() => onReject?.(post)}
                 disabled={isActing}
-                className="border-[#EF4444] text-[#EF4444] hover:bg-[#EF4444]/10"
+                className="border-[#1A1A1A] text-[#1A1A1A] hover:bg-[#1A1A1A]/10"
               >
                 <AlertCircle size={14} />
               </IconButton>
@@ -210,7 +210,7 @@ export default function GrowPostRow({
             title="Delete"
             onClick={() => onDelete?.(post)}
             disabled={isActing}
-            className="border-[#EF4444] text-[#EF4444] hover:bg-[#EF4444]/10"
+            className="border-[#1A1A1A] text-[#1A1A1A] hover:bg-[#1A1A1A]/10"
           >
             <Trash2 size={14} />
           </IconButton>

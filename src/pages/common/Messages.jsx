@@ -128,7 +128,7 @@ const filteredConversations = conversations.filter(c =>
             </div>
 
             <div className="p-3 border-b border-[#E5E0D8]">
-              <div className="flex items-center gap-2 bg-[#FDFCF8] rounded-xl px-3 py-2 border border-[#E5E0D8]">
+              <div className="flex items-center gap-2 bg-[#FFFFFF] rounded-xl px-3 py-2 border border-[#E5E0D8]">
                 <Search size={14} className="text-[#9A9A94]" />
                 <input
                   type="text"
@@ -150,7 +150,7 @@ const filteredConversations = conversations.filter(c =>
                   key={convo.id}
                   onClick={() => handleOpenConvo(convo)}
                   className={`w-full text-left px-4 py-3.5 flex items-center gap-3 transition-colors border-b border-[#E5E0D8]/50
-                    ${activeConvo?.id === convo.id ? `bg-[${theme.accent}]/5` : 'hover:bg-[#FDFCF8]'}`}
+                    ${activeConvo?.id === convo.id ? `bg-[${theme.accent}]/5` : 'hover:bg-[#FFFFFF]'}`}
                 >
                   <Avatar
                     name={convo.name}
@@ -199,7 +199,7 @@ const filteredConversations = conversations.filter(c =>
                   {/* Mobile back arrow */}
                   <button
                     onClick={handleBackToList}
-                    className="md:hidden -ml-1 p-1.5 rounded-lg hover:bg-[#FDFCF8] transition-colors text-[#3E3D38] flex-shrink-0"
+                    className="md:hidden -ml-1 p-1.5 rounded-lg hover:bg-[#FFFFFF] transition-colors text-[#3E3D38] flex-shrink-0"
                     aria-label="Back to messages"
                   >
                     <ArrowLeft size={20} />
@@ -213,7 +213,7 @@ const filteredConversations = conversations.filter(c =>
                   />
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-[#3E3D38] truncate">{activeConvo.name}</p>
-                    <p className="text-[10px] text-[#6BE6A4] font-medium truncate">
+                    <p className="text-[10px] text-[#B4FF5A] font-medium truncate">
                       {activeConvo.online ? 'Online' : activeConvo.discipline || ''}
                     </p>
                   </div>
@@ -228,7 +228,7 @@ const filteredConversations = conversations.filter(c =>
                           className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed
                             ${msg.from === 'me' || msg.is_mine
                               ? 'text-white rounded-br-md'
-                              : 'bg-[#f5fca6]/40 text-[#3E3D38] rounded-bl-md border border-[#f5fca6]'
+                              : 'bg-[#F5FDA6]/40 text-[#3E3D38] rounded-bl-md border border-[#F5FDA6]'
                             }`}
                           style={msg.from === 'me' || msg.is_mine ? { backgroundColor: theme.accent } : undefined}
                         >
@@ -250,7 +250,7 @@ const filteredConversations = conversations.filter(c =>
                     onChange={e => setMsgText(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && handleSend()}
                     placeholder="Type a message..."
-                    className="flex-1 bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none transition-all min-w-0"
+                    className="flex-1 bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none transition-all min-w-0"
                     style={{ '--tw-ring-color': theme.accent }}
                   />
                   <button

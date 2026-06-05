@@ -79,7 +79,7 @@ export default function SearchInstructors() {
       {/* Search + filter bar */}
       <div className="bg-white rounded-2xl border border-[#E5E0D8] p-4 space-y-4">
         <div className="flex gap-3">
-          <div className="flex-1 flex items-center gap-2 bg-[#FDFCF8] border border-[#E5E0D8] rounded-xl px-4 py-2.5">
+          <div className="flex-1 flex items-center gap-2 bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl px-4 py-2.5">
             <Search size={16} className="text-[#9A9A94] flex-shrink-0" />
             <input type="text" value={query} onChange={e => setQuery(e.target.value)}
               placeholder="Search by name, discipline, location..."
@@ -110,7 +110,7 @@ export default function SearchInstructors() {
               onChange={(v) => setFilters((f) => ({ ...f, discipline: v }))}
               options={allDisciplines}
               placeholder="All disciplines"
-              accent="#2DA4D6"
+              accent="#4E7A1B"
               size="sm"
             />
             <SelectField
@@ -119,7 +119,7 @@ export default function SearchInstructors() {
               onChange={(v) => setFilters((f) => ({ ...f, openTo: v }))}
               options={ALL_OPEN_TO}
               placeholder="Any arrangement"
-              accent="#2DA4D6"
+              accent="#4E7A1B"
               size="sm"
             />
             <Input
@@ -127,7 +127,7 @@ export default function SearchInstructors() {
               value={filters.location}
               onChange={(e) => setFilters((f) => ({ ...f, location: e.target.value }))}
               placeholder="e.g. Bali, Europe..."
-              accent="#2DA4D6"
+              accent="#4E7A1B"
             />
           </div>
         )}
@@ -176,10 +176,10 @@ export default function SearchInstructors() {
             return (
               <div
                 key={inst.id}
-                className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden hover:border-[#2DA4D6] hover:shadow-sm transition-all group cursor-pointer"
+                className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden hover:border-[#4E7A1B] hover:shadow-sm transition-all group cursor-pointer"
                 onClick={() => navigate(`/studio/instructors/${inst.id}`)}
               >
-                <div className="bg-gradient-to-br from-[#FDFCF8] to-[#f5fca6]/20 px-5 pt-5 pb-4">
+                <div className="bg-gradient-to-br from-[#FFFFFF] to-[#F5FDA6]/20 px-5 pt-5 pb-4">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
                       <Avatar
@@ -202,12 +202,12 @@ export default function SearchInstructors() {
                       className={isSaved ? '' : '!text-ink-faint hover:!text-coral'}
                     >
                       {savingId === inst.id
-                        ? <ButtonLoader size={16} color="#CE4F56" />
+                        ? <ButtonLoader size={16} color="#4E7A1B" />
                         : <Heart size={16} fill={isSaved ? 'currentColor' : 'none'} />}
                     </IconButton>
                   </div>
                   <div className="flex items-center gap-1 mt-3">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#6BE6A4]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#B4FF5A]" />
                     <span className="text-[#6B6B66] text-[10px] font-semibold">Actively Seeking</span>
                   </div>
                 </div>
@@ -215,10 +215,10 @@ export default function SearchInstructors() {
                 <div className="px-5 pb-4 space-y-3">
                   <div className="flex flex-wrap gap-1">
                     {(inst.detail.disciplines || []).slice(0, 3).map(d => (
-                      <span key={d} className="px-2 py-0.5 bg-[#FBF8E4] text-[#6B6B66] text-[10px] rounded-full">{d}</span>
+                      <span key={d} className="px-2 py-0.5 bg-[#FAFEE0] text-[#6B6B66] text-[10px] rounded-full">{d}</span>
                     ))}
                     {(inst.detail.disciplines || []).length > 3 && (
-                      <span className="px-2 py-0.5 bg-[#FBF8E4] text-[#9A9A94] text-[10px] rounded-full">+{inst.detail.disciplines.length - 3}</span>
+                      <span className="px-2 py-0.5 bg-[#FAFEE0] text-[#9A9A94] text-[10px] rounded-full">+{inst.detail.disciplines.length - 3}</span>
                     )}
                   </div>
 
@@ -237,9 +237,9 @@ export default function SearchInstructors() {
                   <div className="flex flex-wrap gap-1">
                     {openTo.map(o => (
                       <span key={o} className={`px-2 py-0.5 text-[10px] rounded-full font-medium
-                        ${o === 'Direct Hire'     ? 'bg-[#2DA4D6]/10 text-[#2DA4D6]' :
-                          o === 'Swaps'           ? 'bg-[#E89560]/15 text-[#E89560]' :
-                          'bg-[#6BE6A4]/15 text-[#3E3D38]'}`}>
+                        ${o === 'Direct Hire'     ? 'bg-[#4E7A1B]/10 text-[#4E7A1B]' :
+                          o === 'Swaps'           ? 'bg-[#9BE63D]/15 text-[#9BE63D]' :
+                          'bg-[#B4FF5A]/15 text-[#3E3D38]'}`}>
                         {o}
                       </span>
                     ))}
@@ -254,7 +254,7 @@ export default function SearchInstructors() {
                       icon={Eye}
                       fullWidth
                       onClick={() => setSelectedInstructor(inst)}
-                      className="hover:border-[#2DA4D6] hover:text-[#2DA4D6]"
+                      className="hover:border-[#4E7A1B] hover:text-[#4E7A1B]"
                     >
                       Quick View
                     </Button>

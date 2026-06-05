@@ -35,7 +35,7 @@ export default function Input({
   textarea = false,
   hint,
   iconLeft,
-  accent = '#CE4F56',
+  accent = '#4E7A1B',
   className = '',
   ...rest
 }) {

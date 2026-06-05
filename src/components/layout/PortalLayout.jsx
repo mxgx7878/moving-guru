@@ -54,7 +54,7 @@ export default function PortalLayout() {
             </IconButton>
             <Link
               to={theme.profilePath}
-              className="flex items-center gap-2 text-sm hover:bg-[#FBF8E4] rounded-lg px-2 py-1 -mx-2 -my-1 transition-colors"
+              className="flex items-center gap-2 text-sm hover:bg-[#FAFEE0] rounded-lg px-2 py-1 -mx-2 -my-1 transition-colors"
               title="View your profile"
             >
               <span className="text-[#9A9A94] hidden sm:inline">Hi,</span>
@@ -64,7 +64,7 @@ export default function PortalLayout() {
                 size="sm"
                 tone={theme.avatarTone}
               />
-              <span className="font-semibold text-[#3E3D38] hover:text-[#CE4F56]">{firstName}</span>
+              <span className="font-semibold text-[#3E3D38] hover:text-[#4E7A1B]">{firstName}</span>
             </Link>
           </div>
         </header>

@@ -40,7 +40,7 @@ export default function GrowPostCard({
       )}
 
       {/* Type colour strip (kept for posts without an image) */}
-      <div className="h-1 w-full" style={{ backgroundColor: post.color || typeCfg?.color || '#2DA4D6' }} />
+      <div className="h-1 w-full" style={{ backgroundColor: post.color || typeCfg?.color || '#4E7A1B' }} />
 
       <div className="p-5 flex-1 flex flex-col">
         <div className="flex items-start justify-between gap-3 mb-3">
@@ -50,7 +50,7 @@ export default function GrowPostCard({
                 <TypeIcon size={9} /> {(post.type || '').toUpperCase()}
               </span>
               {post.is_featured && (
-                <Chip size="xs" className="bg-[#f5fca6] text-[#3E3D38]">⚡ FEATURED</Chip>
+                <Chip size="xs" className="bg-[#F5FDA6] text-[#3E3D38]">⚡ FEATURED</Chip>
               )}
               {showStatus && (
                 <StatusPill status={post.status} config={GROW_STATUS_PUBLIC_CONFIG} size="xs" />
@@ -116,7 +116,7 @@ export default function GrowPostCard({
                 size="sm"
                 icon={Zap}
                 onClick={(e) => { e.stopPropagation(); onBoost(post); }}
-                className="hover:border-[#E89560] hover:text-[#E89560]"
+                className="hover:border-[#9BE63D] hover:text-[#9BE63D]"
               >
                 Boost
               </Button>

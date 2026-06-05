@@ -135,22 +135,23 @@ const typeCounts = GROW_FILTER_TABS.reduce((acc, t) => ({
     : 'Upskill, deepen your practice, and connect with the global wellness community.';
 
   return (
+    // Grow uses a full-bleed GREEN page background (white boxes inside).
+    <div className="-m-4 lg:-m-6 p-4 lg:p-6 min-h-full bg-[#B4FF5A]">
     <div className="max-w-5xl mx-auto space-y-6">
 
-      <div className="rounded-2xl p-6 border relative overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, #f5fca6 0%, #6BE6A4 60%, #2DA4D6 100%)' }}>
+      <div className="rounded-2xl p-6 border border-[#E5E0D8] bg-white relative overflow-hidden">
         <div className="relative z-10">
-          <p className="text-[#3E3D38]/60 text-xs font-semibold tracking-widest uppercase mb-2">Grow</p>
-          <h1 className="font-['Unbounded'] text-2xl font-black text-[#3E3D38] mb-1">{heroTitle}</h1>
-          <p className="text-[#3E3D38]/70 text-sm max-w-lg">{heroBlurb}</p>
+          <p className="text-[#6B6B66] text-xs font-semibold tracking-widest uppercase mb-2">Grow</p>
+          <h1 className="font-['Unbounded'] text-2xl font-black text-[#1A1A1A] mb-1">{heroTitle}</h1>
+          <p className="text-[#6B6B66] text-sm max-w-lg">{heroBlurb}</p>
           {canPost && (
             <Button variant="accent" size="sm" icon={Plus} onClick={goNew} className="mt-4">
               Post an Opportunity
             </Button>
           )}
         </div>
-        <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white/20" />
-        <div className="absolute -right-2 -bottom-6 w-20 h-20 rounded-full bg-white/10" />
+        <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-[#B4FF5A]/20" />
+        <div className="absolute -right-2 -bottom-6 w-20 h-20 rounded-full bg-[#B4FF5A]/10" />
       </div>
 
       {!isMine && <StatTileGroup tiles={statTiles} columns={3} />}
@@ -203,7 +204,7 @@ const typeCounts = GROW_FILTER_TABS.reduce((acc, t) => ({
 
       {status === STATUS.LOADING && (
         <div className="flex items-center justify-center py-16">
-          <Loader2 size={28} className="animate-spin text-[#2DA4D6]" />
+          <Loader2 size={28} className="animate-spin text-[#4E7A1B]" />
         </div>
       )}
 
@@ -240,14 +241,14 @@ const typeCounts = GROW_FILTER_TABS.reduce((acc, t) => ({
       )}
 
       {!isAdmin && canPost && !isMine && (
-        <div className="bg-gradient-to-r from-[#3E3D38] to-[#6B6B66] rounded-2xl p-5 flex items-center justify-between gap-4">
+        <div className="bg-white border border-[#E5E0D8] rounded-2xl p-5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4 min-w-0">
-            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
-              <BookOpen size={18} className="text-white" />
+            <div className="w-10 h-10 bg-[#B4FF5A]/20 rounded-xl flex items-center justify-center flex-shrink-0">
+              <BookOpen size={18} className="text-[#3F6216]" />
             </div>
             <div>
-              <p className="font-unbounded text-sm font-bold text-white">Running a training or retreat?</p>
-              <p className="text-white/60 text-xs mt-0.5">
+              <p className="font-unbounded text-sm font-bold text-[#1A1A1A]">Running a training or retreat?</p>
+              <p className="text-[#6B6B66] text-xs mt-0.5">
                 Post it here and reach thousands of wellness professionals globally.
               </p>
             </div>
@@ -256,7 +257,7 @@ const typeCounts = GROW_FILTER_TABS.reduce((acc, t) => ({
             variant="accent"
             size="md"
             onClick={goNew}
-            className="bg-[#f5fca6] !text-[#3E3D38] border-[#f5fca6] hover:bg-white flex-shrink-0"
+            className="flex-shrink-0"
           >
             Post Now
           </Button>
@@ -279,6 +280,7 @@ const typeCounts = GROW_FILTER_TABS.reduce((acc, t) => ({
         onCancel={() => setBoostingPost(null)}
         onPaid={handleBoostPaid}
       />
+    </div>
     </div>
   );
 }
