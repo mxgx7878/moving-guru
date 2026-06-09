@@ -27,9 +27,9 @@ export default function SavedInstructorCard({
   return (
     <div
       onClick={onView}
-      className="bg-white rounded-2xl border border-[#4E7A1B]/20 overflow-hidden hover:border-[#4E7A1B]/50 hover:shadow-sm transition-all cursor-pointer"
+      className="bg-white rounded-2xl border border-coral/20 overflow-hidden hover:border-coral/50 hover:shadow-sm transition-all cursor-pointer"
     >
-      <div className="bg-gradient-to-br from-[#FFFFFF] to-[#4E7A1B]/5 px-5 pt-5 pb-4">
+      <div className="bg-gradient-to-br from-[#FFFFFF] to-coral/5 px-5 pt-5 pb-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <Avatar

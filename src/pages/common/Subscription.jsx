@@ -249,17 +249,17 @@ export default function Subscription() {
 
       {/* ── Current plan card ─────────────────────────────────── */}
       <div
-        className="rounded-2xl p-6 text-white"
+        className="rounded-2xl p-6 text-black"
         style={{ background: `linear-gradient(135deg, ${theme.accent}, ${theme.accent}dd)` }}
       >
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap mb-2">
-              <p className="text-white/80 text-[10px] font-semibold tracking-widest uppercase">
+              <p className="text-black/80 text-[10px] font-semibold tracking-widest uppercase">
                 Current Plan
               </p>
               {isTrialing && (
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-white/25 text-white px-2 py-0.5 rounded-full">
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-black/25 text-black px-2 py-0.5 rounded-full">
                   <Gift size={10} /> Free Trial
                 </span>
               )}
@@ -268,7 +268,7 @@ export default function Subscription() {
               {currentPlan?.name || 'No active plan'}
             </p>
             {currentPlan && (
-              <p className="text-white/80 text-sm mt-2">
+              <p className="text-black/80 text-sm mt-2">
                 ${currentPlan.price}{currentPlan.period}
                 {currentPlan.description ? ` · ${currentPlan.description}` : ''}
               </p>
@@ -471,7 +471,7 @@ export default function Subscription() {
 
       <p className="text-center text-[#9A9A94] text-xs">
         Questions about your plan?{' '}
-        <a href="mailto:admin@movingguru.co" className="text-[#4E7A1B] hover:underline">
+        <a href="mailto:admin@movingguru.co" className="text-coral hover:underline">
           admin@movingguru.co
         </a>
       </p>

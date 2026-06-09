@@ -142,7 +142,13 @@ export default function MyApplications() {
                   jobTitle: job.title,
                 })}
                 onWithdraw={() => setWithdrawTarget(app.id)}
-                onMessage={() => navigate('/portal/messages')}
+                onMessage={() => navigate('/portal/messages', {
+                  state: studio.id ? {
+                    recipientId: studio.id,
+                    recipientName: studioName,
+                    recipientAvatar: studio.detail?.profile_picture || studio.profile_picture,
+                  } : undefined,
+                })}
               />
             );
           })}
@@ -168,6 +174,7 @@ export default function MyApplications() {
           onConfirm={confirmWithdraw}
         />
       )}
+
     </div>
   );
 }

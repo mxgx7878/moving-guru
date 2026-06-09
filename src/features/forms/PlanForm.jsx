@@ -236,7 +236,7 @@ export default function PlanForm({ plan, saving = false, onCancel, onSubmit }) {
               {features.map((feat, i) => (
                 <div key={i} className="flex gap-2">
                   <input
-                    className="flex-1 border border-[#E5E0D8] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#4E7A1B]"
+                    className="flex-1 border border-[#E5E0D8] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-coral"
                     value={feat}
                     onChange={(e) => updateFeature(i, e.target.value)}
                     placeholder="e.g. Unlimited messages"

@@ -79,7 +79,7 @@ export default function InstructorProfileModal({ instructor, isSaved, onClose, o
             <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold mb-1">Open To</p>
             <div className="flex flex-wrap gap-1">
               {openTo.map(o => (
-                <span key={o} className="px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-[#4E7A1B]/10 text-[#4E7A1B]">{o}</span>
+                <span key={o} className="px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-coral/10 text-coral">{o}</span>
               ))}
             </div>
           </div>
@@ -91,7 +91,7 @@ export default function InstructorProfileModal({ instructor, isSaved, onClose, o
           <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-bold mb-2">Disciplines</p>
           <div className="flex flex-wrap gap-1.5">
             {instructorDetail?.disciplines.map(d => (
-              <span key={d} className="px-2.5 py-1 bg-[#4E7A1B]/10 text-[#4E7A1B] text-[10px] font-medium rounded-full">{d}</span>
+              <span key={d} className="px-2.5 py-1 bg-coral/10 text-coral text-[10px] font-medium rounded-full">{d}</span>
             ))}
           </div>
         </div>

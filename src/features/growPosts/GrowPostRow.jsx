@@ -178,7 +178,7 @@ export default function GrowPostRow({
                 title="Approve"
                 onClick={() => onApprove?.(post)}
                 disabled={isActing}
-                className="border-[#4E7A1B] text-[#4E7A1B] hover:bg-[#4E7A1B]/10"
+                className="border-coral text-coral hover:bg-coral/10"
               >
                 {isActing
                   ? <Loader2 size={14} className="animate-spin" />

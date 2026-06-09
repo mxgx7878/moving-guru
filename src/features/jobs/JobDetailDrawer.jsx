@@ -185,7 +185,7 @@ export default function JobDetailDrawer({
           </div>
           <Link
             to="/admin/users?role=studio"
-            className="text-[11px] font-bold text-[#4E7A1B] hover:underline flex items-center gap-1 flex-shrink-0"
+            className="text-[11px] font-bold text-coral hover:underline flex items-center gap-1 flex-shrink-0"
           >
             View in users <ExternalLink size={10} />
           </Link>

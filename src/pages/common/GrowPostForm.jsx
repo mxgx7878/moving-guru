@@ -243,12 +243,12 @@ const dispatchSave = ({ expiry_date, pricing_tier }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 size={28} className="animate-spin text-[#4E7A1B]" />
+        <Loader2 size={28} className="animate-spin text-coral" />
       </div>
     );
   }
 
-  const inp = "w-full bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-[#4E7A1B]";
+  const inp = "w-full bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] focus:outline-none focus:border-coral";
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
@@ -302,7 +302,7 @@ const dispatchSave = ({ expiry_date, pricing_tier }) => {
             className={`w-full h-48 rounded-xl overflow-hidden relative bg-[#FFFFFF]
               ${form.cover_image
                 ? 'border border-[#E5E0D8]'
-                : 'border-2 border-dashed border-[#E5E0D8] hover:border-[#4E7A1B] cursor-pointer'}`}
+                : 'border-2 border-dashed border-[#E5E0D8] hover:border-coral cursor-pointer'}`}
           >
             {form.cover_image ? (
               <>
@@ -409,7 +409,7 @@ const dispatchSave = ({ expiry_date, pricing_tier }) => {
               type="checkbox"
               checked={!!form.show_spots}
               onChange={(e) => update('show_spots', e.target.checked)}
-              className="mt-1 w-4 h-4 accent-[#4E7A1B] flex-shrink-0"
+              className="mt-1 w-4 h-4 accent-coral flex-shrink-0"
             />
             <div>
               <p className="text-sm font-semibold text-[#3E3D38]">

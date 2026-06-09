@@ -26,17 +26,17 @@ export const ROLE_THEME = {
     profilePath: '/portal/profile'
   },
   studio: {
-    accent: '#4E7A1B',
-    accentLight: '#4E7A1B/10',
-    avatarGradient: 'from-[#4E7A1B] to-[#3F6216]',
+    accent: '#B4FF5A',
+    accentLight: '#B4FF5A/10',
+    avatarGradient: 'from-coral to-[#3F6216]',
     label: 'Studio Portal',
     defaultPath: '/studio/dashboard',
     profilePath: '/studio/profile'
   },
   admin: {
-    accent: '#4E7A1B',
-    accentLight: '#4E7A1B/10',
-    avatarGradient: 'from-[#4E7A1B] to-[#3F6216]',
+    accent: '#B4FF5A',
+    accentLight: '#B4FF5A/10',
+    avatarGradient: 'from-coral to-[#3F6216]',
     label: 'Admin Portal',
     defaultPath: '/admin/dashboard',
     profilePath: '/admin/settings'

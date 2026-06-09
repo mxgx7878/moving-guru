@@ -1,38 +1,46 @@
 // src/hooks/useStripeCheckout.js
 //
 // CHANGES:
-// - confirmAndAttach renamed to confirmCard since we don't attach anymore
-// - No longer dispatches attachPaymentMethod — caller passes paymentMethodId
-//   directly to changePlan() in a single atomic call
-// - Cleaner DRY flow: SetupIntent confirms → return paymentMethodId → done
+// - confirmSetup (PaymentElement) → confirmCardSetup (CardElement).
+//   SetupIntent ab SIRF card se confirm hota hai — no billing_details,
+//   no confirmParams. Card SetupIntents don't require name/email/address.
+// - confirmCard(clientSecret) — clientSecret ab explicitly pass hota hai
+//   (CardElement flow me Elements options me clientSecret nahi jata).
+//
+// Return contract UNCHANGED: { ok, paymentMethodId }.
 
 import { useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { useStripe, useElements } from '@stripe/react-stripe-js';
+import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 import { toast } from 'sonner';
 
 import { createSetupIntent } from '../store/actions/subscriptionAction';
 
 /**
- * Confirms the SetupIntent and returns the resulting paymentMethodId.
- * Caller is responsible for what to do next (subscribe with it, etc).
+ * Confirms the SetupIntent with the mounted CardElement and returns the
+ * resulting paymentMethodId. Caller decides what to do next (subscribe, etc).
  */
 export function useStripeCheckout() {
   const stripe   = useStripe();
   const elements = useElements();
   const [busy, setBusy] = useState(false);
 
-  const confirmCard = useCallback(async () => {
-    if (!stripe || !elements) {
+  const confirmCard = useCallback(async (clientSecret) => {
+    if (!stripe || !elements || !clientSecret) {
+      toast.error('Payment form not ready, please retry.');
+      return { ok: false };
+    }
+
+    const card = elements.getElement(CardElement);
+    if (!card) {
       toast.error('Payment form not ready, please retry.');
       return { ok: false };
     }
 
     setBusy(true);
     try {
-      const { error, setupIntent } = await stripe.confirmSetup({
-        elements,
-        redirect: 'if_required',
+      const { error, setupIntent } = await stripe.confirmCardSetup(clientSecret, {
+        payment_method: { card },
       });
 
       if (error) {

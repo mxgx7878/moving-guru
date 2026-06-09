@@ -108,7 +108,7 @@ export default function GrowPostPreviewModal({ post, onClose }) {
               href={externalUrl}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1 text-[#4E7A1B] font-semibold hover:underline"
+              className="inline-flex items-center gap-1 text-coral font-semibold hover:underline"
             >
               {externalUrl} <ExternalLink size={11} />
             </a>

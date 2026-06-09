@@ -5,6 +5,7 @@ import Sidebar from './Sidebar';
 import { Menu, Bell } from 'lucide-react';
 import { ROLE_THEME } from '../../config/portalConfig';
 import AccessBanner from './AccessBanner';
+import RealtimeListener from './RealtimeListener';
 import { Avatar, IconButton } from '../ui';
 
 export default function PortalLayout() {
@@ -22,6 +23,10 @@ export default function PortalLayout() {
 
   return (
     <div className="flex h-screen dashboard-bg font-['DM_Sans'] overflow-hidden">
+      {/* Single Pusher subscription for the whole authed portal —
+          chat inbox events + toasts. Renders nothing. */}
+      <RealtimeListener />
+
       <Sidebar mobileOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
@@ -48,6 +53,8 @@ export default function PortalLayout() {
           <div className="flex-1" />
 
           <div className="flex items-center gap-3">
+            {/* Static for now — notifications phase me NotificationBell
+                component se replace hoga */}
             <IconButton variant="plain" aria-label="Notifications" title="Notifications" className="relative">
               <Bell size={18} className="text-ink-muted" />
               <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-coral rounded-full" />

@@ -21,7 +21,7 @@ export const MONTHS_SHORT = [
 // map here means other components (pills, badges, status dots) can pick
 // up the same palette without re-inventing class strings.
 export const AVATAR_TONES = {
-  coral:  'bg-coral text-white',
+  coral:  'bg-coral text-black',
   blue:   'bg-sky-mg text-white',
   purple: 'bg-purple-mg text-white',
   dark:   'bg-ink text-white',

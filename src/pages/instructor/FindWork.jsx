@@ -234,7 +234,7 @@ export default function FindWork() {
           >
             <span className="hidden sm:inline">Filters</span>
             {!showFilters && hasFilters && (
-              <span className="w-1.5 h-1.5 bg-[#4E7A1B] rounded-full ml-1.5" />
+              <span className="w-1.5 h-1.5 bg-coral rounded-full ml-1.5" />
             )}
           </Button>
         </div>
@@ -270,7 +270,7 @@ export default function FindWork() {
             <button
               type="button"
               onClick={clearFilters}
-              className="text-[10px] text-[#4E7A1B] font-bold hover:underline ml-auto"
+              className="text-[10px] text-coral font-bold hover:underline ml-auto"
             >
               Clear all
             </button>
@@ -350,7 +350,7 @@ export default function FindWork() {
             message="Try adjusting your search or filters"
             action={hasFilters ? (
               <Button variant="ghost" size="sm" onClick={clearFilters}
-                className="!text-[#4E7A1B] hover:!underline">
+                className="!text-coral hover:!underline">
                 Clear filters
               </Button>
             ) : null}
@@ -390,7 +390,7 @@ export default function FindWork() {
                 size="md"
                 loading={loadingMore}
                 onClick={loadMore}
-                className="hover:border-[#4E7A1B] hover:text-[#4E7A1B]"
+                className="hover:border-coral hover:text-coral"
               >
                 {viewIsSwaps ? 'Load more instructors' : 'Load more jobs'}
               </Button>

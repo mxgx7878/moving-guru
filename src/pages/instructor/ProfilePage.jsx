@@ -225,14 +225,14 @@ export default function ProfilePage() {
                       style={{ background: form.coverImage ? `url(${form.coverImage}) center/cover` : 'linear-gradient(135deg, #4E7A1B, #9BE63D, #F5FDA6, #B4FF5A)' }}>
                       <button onClick={() => setIsFavourited(!isFavourited)}
                         className={`absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm z-20 transition-all
-                          ${isFavourited ? 'bg-[#4E7A1B] scale-110' : 'bg-white/30 hover:bg-white/50'}`}>
+                          ${isFavourited ? 'bg-coral scale-110' : 'bg-white/30 hover:bg-white/50'}`}>
                         <Heart size={14} className={isFavourited ? 'text-white fill-white' : 'text-white'} />
                       </button>
                     </div>
                     <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 z-10">
                       <button onClick={() => setShowAvatarModal(true)}>
                         <ScallopedFrame size={80} borderWidth={2}>
-                          <div className="w-full h-full bg-gradient-to-br from-[#4E7A1B] to-[#9BE63D] flex items-center justify-center">
+                          <div className="w-full h-full bg-gradient-to-br from-coral to-[#9BE63D] flex items-center justify-center">
                             {form.avatarPreview
                               ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
                               : <span className="font-unbounded text-xl font-black text-white">{initials}</span>}
@@ -248,7 +248,7 @@ export default function ProfilePage() {
                       {form.age && <span>{form.age}</span>}
                       {form.pronouns && <span>· {form.pronouns}</span>}
                     </div>
-                    {form.studio && <p className="text-[#4E7A1B] text-xs font-semibold mt-1">{form.studio}</p>}
+                    {form.studio && <p className="text-coral text-xs font-semibold mt-1">{form.studio}</p>}
 
                     <div className="flex items-center justify-center gap-2 mt-3">
                       <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold
@@ -373,7 +373,7 @@ export default function ProfilePage() {
               <Field label="Cover Image" hint="Appears at the top of your public profile">
                 <div
                   onClick={() => coverRef.current?.click()}
-                  className="w-full h-32 border-2 border-dashed border-[#E5E0D8] rounded-xl overflow-hidden cursor-pointer hover:border-[#4E7A1B] transition-colors relative bg-[#FFFFFF]">
+                  className="w-full h-32 border-2 border-dashed border-[#E5E0D8] rounded-xl overflow-hidden cursor-pointer hover:border-coral transition-colors relative bg-[#FFFFFF]">
                   {form.coverImage ? (
                     <img src={form.coverImage} alt="" className="w-full h-full object-cover" />
                   ) : (
@@ -515,7 +515,7 @@ export default function ProfilePage() {
               <div className="flex items-center gap-2">
                 <input type="checkbox" id="flexible" checked={!!form.flexibleDates}
                   onChange={e => set('flexibleDates', e.target.checked)}
-                  className="w-4 h-4 rounded border-[#E5E0D8] accent-[#4E7A1B]" />
+                  className="w-4 h-4 rounded border-[#E5E0D8] accent-coral" />
                 <label htmlFor="flexible" className="text-sm text-[#6B6B66] cursor-pointer">
                   I'm flexible with dates
                 </label>
@@ -532,7 +532,7 @@ export default function ProfilePage() {
                     set('openTo', ee ? [...next, 'Energy Exchange'] : next);
                   }}
                   multiple
-                  tone="blue"
+                  tone="coral"
                   className="mt-1"
                 />
 
@@ -567,7 +567,7 @@ export default function ProfilePage() {
               value={form.languages || []}
               onChange={(next) => set('languages', next)}
               multiple
-              tone="blue"
+              tone="coral"
               size="md"
             />
           </Section>
@@ -586,7 +586,7 @@ export default function ProfilePage() {
                   <ToggleChip
                     key={d}
                     active
-                    tone="blue"
+                    tone="coral"
                     size="md"
                     onClick={() => toggle('disciplines', d)}
                     onRemove={() => toggle('disciplines', d)}
@@ -637,7 +637,7 @@ export default function ProfilePage() {
                       value={form.disciplines || []}
                       onChange={(next) => set('disciplines', next)}
                       multiple
-                      tone="blue"
+                      tone="coral"
                       size="md"
                       className="gap-1.5"
                     />
@@ -667,7 +667,7 @@ export default function ProfilePage() {
                 </div>
               ))}
               {(form.photos || []).length < 4 && (
-                <div className="aspect-square rounded-xl border-2 border-dashed border-[#E5E0D8] flex flex-col items-center justify-center cursor-pointer hover:border-[#4E7A1B] transition-colors"
+                <div className="aspect-square rounded-xl border-2 border-dashed border-[#E5E0D8] flex flex-col items-center justify-center cursor-pointer hover:border-coral transition-colors"
                   onClick={() => photosRef.current?.click()}>
                   <Upload size={18} className="text-[#3E3D38]/25" />
                   <p className="text-[10px] text-[#3E3D38]/25 mt-1">Add</p>
@@ -706,7 +706,7 @@ export default function ProfilePage() {
               <div className="flex flex-col items-center">
                 <div className="cursor-pointer group" onClick={() => fileRef.current?.click()}>
                   <ScallopedFrame size={140} borderWidth={2.5}>
-                    <div className="w-full h-full bg-gradient-to-br from-[#4E7A1B] to-[#9BE63D] flex items-center justify-center relative">
+                    <div className="w-full h-full bg-gradient-to-br from-coral to-[#9BE63D] flex items-center justify-center relative">
                       {form.avatarPreview
                         ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
                         : <span className="font-unbounded text-3xl font-black text-white">{initials}</span>}
@@ -720,7 +720,7 @@ export default function ProfilePage() {
                   {form.name || 'Your Name'}
                 </p>
                 {form.studio && (
-                  <p className="text-center text-[10px] text-[#4E7A1B] font-semibold mt-0.5 truncate max-w-full">
+                  <p className="text-center text-[10px] text-coral font-semibold mt-0.5 truncate max-w-full">
                     {form.studio}
                   </p>
                 )}
@@ -786,7 +786,7 @@ export default function ProfilePage() {
                 {(form.photos || []).length < 4 && (
                   <div
                     onClick={() => photosRef.current?.click()}
-                    className="aspect-square rounded-xl border-2 border-dashed border-[#E5E0D8] flex flex-col items-center justify-center cursor-pointer hover:border-[#4E7A1B] transition-colors">
+                    className="aspect-square rounded-xl border-2 border-dashed border-[#E5E0D8] flex flex-col items-center justify-center cursor-pointer hover:border-coral transition-colors">
                     <Upload size={16} className="text-[#3E3D38]/25" />
                     <p className="text-[9px] text-[#3E3D38]/30 mt-1">Add</p>
                   </div>
@@ -822,7 +822,7 @@ export default function ProfilePage() {
                 fullWidth
                 icon={showPreview ? EyeOff : Eye}
                 onClick={() => setShowPreview(!showPreview)}
-                className="hover:border-[#4E7A1B] hover:text-[#4E7A1B]"
+                className="hover:border-coral hover:text-coral"
               >
                 {showPreview ? 'Hide Preview' : 'Show Preview'}
               </Button>
@@ -842,7 +842,7 @@ export default function ProfilePage() {
               <X size={14} className="text-[#3E3D38]" />
             </button>
             <ScallopedFrame size={280} borderWidth={2.5}>
-              <div className="w-full h-full bg-gradient-to-br from-[#4E7A1B] to-[#9BE63D] flex items-center justify-center">
+              <div className="w-full h-full bg-gradient-to-br from-coral to-[#9BE63D] flex items-center justify-center">
                 {form.avatarPreview
                   ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
                   : <span className="font-unbounded text-5xl font-black text-white">{initials}</span>}
