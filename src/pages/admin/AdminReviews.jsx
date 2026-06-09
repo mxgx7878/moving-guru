@@ -183,7 +183,7 @@ export default function AdminReviews() {
             size="md"
             loading={loadingMore}
             onClick={loadMore}
-            className="hover:border-[#4E7A1B] hover:text-[#4E7A1B]"
+            className="hover:border-coral hover:text-coral"
           >
             Load more reviews
           </Button>

@@ -94,8 +94,17 @@ export default function StudioDetail() {
           className="!text-ink-muted hover:!text-ink !bg-transparent !border-transparent">
           Back
         </Button>
-        <Button variant="primary" icon={MessageCircle} onClick={() => navigate(messagesBase)}>
-          Message Studio
+        {/* Opens the Messages screen with this studio's thread (draft if no
+            conversation exists yet — created on first send). */}
+        <Button variant="primary" icon={MessageCircle}
+          onClick={() => navigate(messagesBase, {
+            state: {
+              recipientId: studio.id,
+              recipientName: studioName,
+              recipientAvatar: studio.profile_picture || detail.profile_picture,
+            },
+          })}>
+          Chat
         </Button>
       </div>
 
@@ -264,7 +273,7 @@ export default function StudioDetail() {
           )}
         </div>
       </div>
+
     </div>
   );
 }
-
