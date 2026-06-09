@@ -32,7 +32,7 @@ export function initEcho(token) {
   echoToken = token;
   echoInstance = new Echo({
     broadcaster: 'pusher',
-    key: import.meta.env.VITE_PUSHER_APP_KEY,
+    key: import.meta.env.VITE_PUSHER_APP_KEY || 'b639deeddd4986f367ac',
     cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER || 'ap1',
     forceTLS: true,
     authEndpoint: `${BASE_URL}/broadcasting/auth`,
