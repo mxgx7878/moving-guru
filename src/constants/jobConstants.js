@@ -37,20 +37,20 @@ export const DURATION_OPTIONS = [
 
 // Listing types used in the studio create form (no "All" option)
 export const JOB_TYPES = [
-  { id: 'hire',            label: 'Direct Hire',     icon: Briefcase, color: '#4E7A1B', bg: 'bg-[#4E7A1B]/10' },
+  { id: 'hire',            label: 'Direct Hire',     icon: Briefcase, color: '#4E7A1B', bg: 'bg-coral/10' },
   { id: 'swap',            label: 'Instructor Swap', icon: RefreshCw, color: '#9BE63D', bg: 'bg-[#9BE63D]/10' },
 ];
 
 // Filter tabs shown on the instructor Find Work page (includes "All")
 export const JOB_FILTER_TABS = [
   { id: 'all',             label: 'All Listings',    color: '#B4FF5A', bg: 'bg-[#B4FF5A]', activeText: '#3E3D38' },
-  { id: 'hire',            label: 'Direct Hire',     color: '#4E7A1B', bg: 'bg-[#4E7A1B]', activeText: '#FFFFFF' },
+  { id: 'hire',            label: 'Direct Hire',     color: '#4E7A1B', bg: 'bg-coral', activeText: '#FFFFFF' },
   { id: 'swap',            label: 'Instructor Swap', color: '#9BE63D', bg: 'bg-[#9BE63D]', activeText: '#FFFFFF' },
 ];
 
 // Display styling for job cards on the instructor Find Work feed
 export const TYPE_STYLES = {
-  hire:            { icon: Briefcase, color: '#4E7A1B', bg: 'bg-[#4E7A1B]/10', text: 'text-[#4E7A1B]', label: 'Direct Hire'     },
+  hire:            { icon: Briefcase, color: '#4E7A1B', bg: 'bg-coral/10', text: 'text-coral', label: 'Direct Hire'     },
   swap:            { icon: RefreshCw, color: '#9BE63D', bg: 'bg-[#9BE63D]/15', text: 'text-[#9BE63D]', label: 'Instructor Swap' },
   energy_exchange: { icon: Zap,       color: '#B4FF5A', bg: 'bg-[#B4FF5A]/20', text: 'text-[#3E3D38]', label: 'Energy Exchange' },
 };

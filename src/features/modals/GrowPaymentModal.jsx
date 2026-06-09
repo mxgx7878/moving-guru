@@ -88,12 +88,12 @@ export default function GrowPaymentModal({
               onClick={() => setTierId(t.id)}
               className={`w-full flex items-center justify-between gap-4 rounded-xl border p-4 text-left transition-colors
                 ${selected
-                  ? 'border-[#4E7A1B] bg-[#4E7A1B]/5'
+                  ? 'border-coral bg-coral/5'
                   : 'border-[#E5E0D8] hover:border-[#3E3D38]'}`}
             >
               <div className="flex items-start gap-3">
                 <div className={`w-5 h-5 rounded-full border-2 mt-0.5 flex items-center justify-center
-                  ${selected ? 'border-[#4E7A1B] bg-[#4E7A1B]' : 'border-[#E5E0D8]'}`}>
+                  ${selected ? 'border-coral bg-coral' : 'border-[#E5E0D8]'}`}>
                   {selected && <CheckCircle2 size={14} className="text-white" />}
                 </div>
                 <div>

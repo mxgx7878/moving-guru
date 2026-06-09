@@ -1,16 +1,40 @@
 // src/features/billing/CheckoutModal.jsx
 //
-// CHANGE: onSuccess receives the paymentMethodId so the caller can
-// pass it straight to changePlan in a single atomic backend call.
+// CHANGE: PaymentElement → CardElement (card-only form).
+// Sirf card number + expiry + CVC. No name/email/phone/address/postal —
+// kuch collect nahi hota, isliye confirm pe kuch bhejna bhi nahi padta.
+// (PaymentElement + fields:"never" forced us to supply billing details
+//  manually at confirmSetup — CardElement has no such requirement.)
+//
+// Props contract UNCHANGED: open, clientSecret, title, ctaLabel,
+// onClose, onSuccess(paymentMethodId), role.
 
 import { useState } from "react";
-import { Elements, PaymentElement } from "@stripe/react-stripe-js";
+import { Elements, CardElement } from "@stripe/react-stripe-js";
 import { CreditCard, Lock, Loader2 } from "lucide-react";
 
 import { Modal, Button } from "../../components/ui";
 import { loadStripeOnce } from "../../services/stripe";
 import { useStripeCheckout } from "../../hooks/useStripeCheckout";
 import { ROLE_THEME } from "../../config/portalConfig";
+
+// Stripe iframe styling — black text, muted placeholders, Inter font.
+const CARD_ELEMENT_OPTIONS = {
+  hidePostalCode: true, // ZIP/postal field bhi nahi — pure card-only
+  style: {
+    base: {
+      fontSize: "15px",
+      color: "#000000",
+      fontFamily: "Inter, system-ui, sans-serif",
+      "::placeholder": { color: "#9A9A94" },
+      iconColor: "#6B6B66",
+    },
+    invalid: {
+      color: "#DC2626",
+      iconColor: "#DC2626",
+    },
+  },
+};
 
 export default function CheckoutModal({
   open,
@@ -29,18 +53,17 @@ export default function CheckoutModal({
     <Elements
       stripe={loadStripeOnce()}
       options={{
-        clientSecret,
-        appearance: {
-          theme: "stripe",
-          variables: {
-            colorPrimary: theme.accent,
-            fontFamily: "Inter, system-ui, sans-serif",
-            borderRadius: "12px",
+        // Load Inter inside Stripe's iframe so the card inputs match the app font.
+        fonts: [
+          {
+            cssSrc:
+              "https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap",
           },
-        },
+        ],
       }}
     >
       <CheckoutInner
+        clientSecret={clientSecret}
         title={title}
         ctaLabel={ctaLabel}
         accent={theme.accent}
@@ -51,12 +74,12 @@ export default function CheckoutModal({
   );
 }
 
-function CheckoutInner({ title, ctaLabel, accent, onClose, onSuccess }) {
+function CheckoutInner({ clientSecret, title, ctaLabel, accent, onClose, onSuccess }) {
   const { confirmCard, busy } = useStripeCheckout();
   const [elementReady, setElementReady] = useState(false);
 
   const handleSubmit = async () => {
-    const { ok, paymentMethodId } = await confirmCard();
+    const { ok, paymentMethodId } = await confirmCard(clientSecret);
     if (ok) onSuccess?.(paymentMethodId);
   };
 
@@ -94,27 +117,12 @@ function CheckoutInner({ title, ctaLabel, accent, onClose, onSuccess }) {
         )}
 
         <div className={elementReady ? "" : "hidden"}>
-          <PaymentElement
-            options={{
-              layout: "tabs",
-              fields: {
-                billingDetails: {
-                  name: "never",
-                  email: "never",
-                  phone: "never",
-                  address: {
-                    country: "never",
-                    postalCode: "never",
-                    line1: "never",
-                    line2: "never",
-                    city: "never",
-                    state: "never",
-                  },
-                },
-              },
-            }}
-            onReady={() => setElementReady(true)}
-          />
+          <div className="rounded-xl border border-[#E5E5E0] bg-white px-4 py-3.5">
+            <CardElement
+              options={CARD_ELEMENT_OPTIONS}
+              onReady={() => setElementReady(true)}
+            />
+          </div>
         </div>
 
         {elementReady && (

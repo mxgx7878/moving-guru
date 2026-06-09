@@ -36,7 +36,7 @@ export default function UserDetailDrawer({
         open
         onClose={onClose}
         loading
-        loadingSpinner={<Loader2 size={26} className="animate-spin text-[#4E7A1B]" />}
+        loadingSpinner={<Loader2 size={26} className="animate-spin text-coral" />}
       />
     );
   }

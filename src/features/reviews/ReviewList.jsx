@@ -87,7 +87,7 @@ export default function ReviewList({ userId, direction, compact = false, emptyLa
             return (
               <div key={r.id} className="bg-white rounded-xl border border-[#E5E0D8] p-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4E7A1B] to-[#3F6216] flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-coral to-[#3F6216] flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
                     {reviewer.detail?.profile_picture || reviewer.profile_picture ? (
                       <img
                         src={reviewer.detail?.profile_picture || reviewer.profile_picture}

@@ -129,8 +129,8 @@ export default function AdminCommunications() {
           </div>
 
           {counts && (
-            <div className="flex items-center gap-2 text-xs text-[#6B6B66] bg-[#4E7A1B]/5 rounded-xl p-3 border border-[#4E7A1B]/20">
-              <Users size={14} className="text-[#4E7A1B] flex-shrink-0" />
+            <div className="flex items-center gap-2 text-xs text-[#6B6B66] bg-coral/5 rounded-xl p-3 border border-coral/20">
+              <Users size={14} className="text-coral flex-shrink-0" />
               <span>
                 This will send to <strong className="text-[#3E3D38]">{targetCount.toLocaleString()}</strong> recipient{targetCount === 1 ? '' : 's'}.
               </span>
@@ -161,7 +161,7 @@ export default function AdminCommunications() {
           />
 
           <p className="text-[10px] text-[#9A9A94] leading-relaxed flex items-start gap-1.5">
-            <Sparkles size={11} className="text-[#4E7A1B] mt-0.5 flex-shrink-0" />
+            <Sparkles size={11} className="text-coral mt-0.5 flex-shrink-0" />
             Each recipient's email opens with "Hi [their name]," automatically — your body content goes below that greeting.
           </p>
         </div>
@@ -176,7 +176,7 @@ export default function AdminCommunications() {
             loading={testing}
             disabled={!subject || !body}
             onClick={onSendTest}
-            className="hover:border-[#4E7A1B] hover:text-[#4E7A1B]"
+            className="hover:border-coral hover:text-coral"
           >
             Send test to me first
           </Button>

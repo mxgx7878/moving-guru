@@ -60,12 +60,12 @@ export default function TabBar({
           ? {
               backgroundColor: t.color,
               borderColor:     t.color,
-              color:           t.activeText || (isPill ? '#3E3D38' : '#fff'),
+              color:           t.activeText || (isPill ? '#3E3D38' : 'black'),
             }
           : undefined;
 
         const activeCls = active
-          ? (isPill ? 'shadow-sm' : 'text-white bg-[#4E7A1B] border-transparent')
+          ? (isPill ? 'shadow-sm' : 'text-white bg-coral border-transparent')
           : resting;
 
         return (

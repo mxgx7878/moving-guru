@@ -76,7 +76,7 @@ export default function AdminDashboard() {
       delta: stats?.instructors?.growth,
       sub: `${stats?.instructors?.new_this_month ?? 0} this month`,
       icon: Users,
-      color: "#4E7A1B",
+      color: "#B4FF5A",
       to: "/admin/users?role=instructor",
     },
     {
@@ -85,7 +85,7 @@ export default function AdminDashboard() {
       delta: stats?.studios?.growth,
       sub: `${stats?.studios?.new_this_month ?? 0} this month`,
       icon: Building2,
-      color: "#4E7A1B",
+      color: "#B4FF5A",
       to: "/admin/users?role=studio",
     },
     {
@@ -99,7 +99,7 @@ export default function AdminDashboard() {
         ? "Demo data — Stripe not connected"
         : `$${Number(revenue?.this_month ?? 0).toLocaleString()} this month`,
       icon: DollarSign,
-      color: "#4E7A1B",
+      color: "#B4FF5A",
       to: "/admin/dashboard",
     },
     {
@@ -107,7 +107,7 @@ export default function AdminDashboard() {
       value: stats?.grow_posts?.total,
       sub: `${stats?.grow_posts?.pending ?? 0} pending review`,
       icon: Sprout,
-      color: "#4E7A1B",
+      color: "#B4FF5A",
       to: "/admin/grow",
     },
     {
@@ -115,7 +115,7 @@ export default function AdminDashboard() {
       value: stats?.jobs?.total,
       sub: `${stats?.jobs?.active ?? 0} active`,
       icon: Briefcase,
-      color: "#9BE63D",
+      color: "#B4FF5A",
       to: "/admin/jobs",
     },
     {
@@ -123,7 +123,7 @@ export default function AdminDashboard() {
       value: stats?.subscriptions?.active,
       sub: `${stats?.subscriptions?.trialing ?? 0} on trial`,
       icon: CreditCard,
-      color: "#4E7A1B",
+      color: "#B4FF5A",
       to: "/admin/subscriptions",
     },
     {
@@ -131,7 +131,7 @@ export default function AdminDashboard() {
       value: stats?.platform_posts?.published,
       sub: `${stats?.platform_posts?.draft ?? 0} drafts`,
       icon: FileText,
-      color: "#C9A227",
+      color: "#B4FF5A",
       to: "/admin/posts",
     },
   ];
@@ -150,8 +150,8 @@ export default function AdminDashboard() {
           {stats.signups_today}
         </p>
       </div>
-      <div className="w-12 h-12 bg-[#4E7A1B]/10 rounded-2xl flex items-center justify-center">
-        <TrendingUp size={22} className="text-[#4E7A1B]" />
+      <div className="w-12 h-12 bg-coral/10 rounded-2xl flex items-center justify-center">
+        <TrendingUp size={22} className="text-coral" />
       </div>
     </div>
   );
@@ -174,7 +174,7 @@ return (
       <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
         <div className="flex items-center justify-between mb-3">
           <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase">Users</p>
-          <Users size={14} className="text-[#4E7A1B]" />
+          <Users size={14} className="text-coral" />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <Link to="/admin/users?role=instructor" className="hover:opacity-70 transition-opacity">
@@ -182,7 +182,7 @@ return (
             <p className="font-unbounded text-2xl font-black text-[#3E3D38] mt-0.5">
               {stats?.instructors?.total ?? '—'}
             </p>
-            <p className="text-[10px] text-[#4E7A1B] mt-0.5 flex items-center gap-1">
+            <p className="text-[10px] text-coral mt-0.5 flex items-center gap-1">
               <TrendingUp size={9} />+{stats?.instructors?.new_this_month ?? 0} this month
             </p>
           </Link>
@@ -191,7 +191,7 @@ return (
             <p className="font-unbounded text-2xl font-black text-[#3E3D38] mt-0.5">
               {stats?.studios?.total ?? '—'}
             </p>
-            <p className="text-[10px] text-[#4E7A1B] mt-0.5 flex items-center gap-1">
+            <p className="text-[10px] text-coral mt-0.5 flex items-center gap-1">
               <TrendingUp size={9} />+{stats?.studios?.new_this_month ?? 0} this month
             </p>
           </Link>
@@ -202,7 +202,7 @@ return (
       <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
         <div className="flex items-center justify-between mb-3">
           <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase">Content</p>
-          <Sprout size={14} className="text-[#4E7A1B]" />
+          <Sprout size={14} className="text-coral" />
         </div>
         <div className="grid grid-cols-3 gap-3">
           <Link to="/admin/grow" className="hover:opacity-70 transition-opacity">
@@ -217,7 +217,7 @@ return (
             <p className="font-unbounded text-2xl font-black text-[#3E3D38] mt-0.5">
               {stats?.jobs?.total ?? '—'}
             </p>
-            <p className="text-[10px] text-[#4E7A1B] mt-0.5">{stats?.jobs?.active ?? 0} active</p>
+            <p className="text-[10px] text-coral mt-0.5">{stats?.jobs?.active ?? 0} active</p>
           </Link>
           <Link to="/admin/posts" className="hover:opacity-70 transition-opacity">
             <p className="text-[10px] text-[#9A9A94] font-semibold">Posts</p>
@@ -230,7 +230,7 @@ return (
       </div>
 
       {/* Revenue summary */}
-      <div className="bg-gradient-to-br from-[#4E7A1B] to-[#3F6216] rounded-2xl p-5 text-white">
+      <div className="bg-gradient-to-br from-coral to-[#3F6216] rounded-2xl p-5 text-white">
         <div className="flex items-center justify-between mb-3">
           <p className="text-[10px] font-bold text-white/80 tracking-widest uppercase">Revenue</p>
           <DollarSign size={14} className="text-white/80" />
@@ -261,8 +261,8 @@ return (
     <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
       <div className="flex items-start justify-between gap-3 mb-4 flex-wrap">
         <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-xl bg-[#4E7A1B]/10 flex items-center justify-center">
-            <DollarSign size={16} className="text-[#4E7A1B]" />
+          <div className="w-9 h-9 rounded-xl bg-coral/10 flex items-center justify-center">
+            <DollarSign size={16} className="text-coral" />
           </div>
           <div>
             <h3 className="font-unbounded text-sm font-bold text-[#3E3D38]">Revenue</h3>
@@ -294,8 +294,8 @@ return (
     {/* ── User growth chart (full width) ──────────────────────── */}
     <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-9 h-9 rounded-xl bg-[#4E7A1B]/10 flex items-center justify-center">
-          <TrendingUp size={16} className="text-[#4E7A1B]" />
+        <div className="w-9 h-9 rounded-xl bg-coral/10 flex items-center justify-center">
+          <TrendingUp size={16} className="text-coral" />
         </div>
         <div>
           <h3 className="font-unbounded text-sm font-bold text-[#3E3D38]">User Growth</h3>

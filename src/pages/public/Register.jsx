@@ -201,35 +201,35 @@ export default function Register() {
       <div className="min-h-screen bg-[#FFFFFF] flex items-center justify-center font-['DM_Sans'] p-4">
         <div className="w-full max-w-lg">
           <div className="flex items-center justify-center gap-2 mb-10">
-            <Globe size={20} className="text-[#4E7A1B]" />
+            <Globe size={20} className="text-coral" />
             <span className="font-unbounded text-base font-bold text-[#3E3D38] tracking-wider">
-              MOVING <em className="not-italic text-[#4E7A1B]">GURU</em>
+              MOVING <em className="not-italic text-coral">GURU</em>
             </span>
           </div>
           <h1 className="font-unbounded text-2xl font-black text-[#3E3D38] text-center mb-2">Join Moving Guru</h1>
           <p className="text-[#9A9A94] text-sm text-center mb-10">Are you joining as an instructor or a studio?</p>
           <div className="grid grid-cols-2 gap-4">
             <button onClick={() => pickRole('instructor')}
-              className="group bg-white border-2 border-[#E5E0D8] rounded-2xl p-6 text-left hover:border-[#4E7A1B] hover:shadow-md transition-all">
-              <div className="w-12 h-12 bg-[#4E7A1B]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#4E7A1B]/20 transition-colors">
-                <User size={22} className="text-[#4E7A1B]" />
+              className="group bg-white border-2 border-[#E5E0D8] rounded-2xl p-6 text-left hover:border-coral hover:shadow-md transition-all">
+              <div className="w-12 h-12 bg-coral/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-coral/20 transition-colors">
+                <User size={22} className="text-coral" />
               </div>
               <p className="font-unbounded text-sm font-black text-[#3E3D38] mb-1">Instructor</p>
               <p className="text-[#9A9A94] text-xs leading-relaxed">I teach wellness disciplines and want to find work globally.</p>
-              <div className="flex items-center gap-1 mt-4 text-[#4E7A1B] text-xs font-semibold">Join as instructor <ArrowRight size={12} /></div>
+              <div className="flex items-center gap-1 mt-4 text-coral text-xs font-semibold">Join as instructor <ArrowRight size={12} /></div>
             </button>
             <button onClick={() => pickRole('studio')}
-              className="group bg-white border-2 border-[#E5E0D8] rounded-2xl p-6 text-left hover:border-[#4E7A1B] hover:shadow-md transition-all">
-              <div className="w-12 h-12 bg-[#4E7A1B]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#4E7A1B]/20 transition-colors">
-                <Building2 size={22} className="text-[#4E7A1B]" />
+              className="group bg-white border-2 border-[#E5E0D8] rounded-2xl p-6 text-left hover:border-coral hover:shadow-md transition-all">
+              <div className="w-12 h-12 bg-coral/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-coral/20 transition-colors">
+                <Building2 size={22} className="text-coral" />
               </div>
               <p className="font-unbounded text-sm font-black text-[#3E3D38] mb-1">Studio</p>
               <p className="text-[#9A9A94] text-xs leading-relaxed">I run a wellness studio and want to find travelling instructors.</p>
-              <div className="flex items-center gap-1 mt-4 text-[#4E7A1B] text-xs font-semibold">Join as studio <ArrowRight size={12} /></div>
+              <div className="flex items-center gap-1 mt-4 text-coral text-xs font-semibold">Join as studio <ArrowRight size={12} /></div>
             </button>
           </div>
           <p className="text-center text-[#9A9A94] text-sm mt-8">
-            Already a member? <Link to="/login" className="text-[#4E7A1B] font-medium hover:underline">Sign in</Link>
+            Already a member? <Link to="/login" className="text-coral font-medium hover:underline">Sign in</Link>
           </p>
         </div>
       </div>
@@ -321,7 +321,7 @@ export default function Register() {
                   <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Profile Photo</label>
                   <div className="flex items-center gap-4">
                     <div onClick={() => fileRef.current?.click()}
-                      className="w-20 h-20 rounded-full border-2 border-dashed border-[#E5E0D8] flex items-center justify-center cursor-pointer hover:border-[#4E7A1B] transition-colors overflow-hidden bg-[#FFFFFF]">
+                      className="w-20 h-20 rounded-full border-2 border-dashed border-[#E5E0D8] flex items-center justify-center cursor-pointer hover:border-coral transition-colors overflow-hidden bg-[#FFFFFF]">
                       {form.avatarPreview ? <img src={form.avatarPreview} alt="Avatar" className="w-full h-full object-cover" /> : <Upload size={20} className="text-[#C4BCB4]" />}
                     </div>
                     <input ref={fileRef} type="file" accept="image/*" onChange={handleAvatar} className="hidden" />
@@ -344,7 +344,7 @@ export default function Register() {
                     {LANGUAGES.map(l => (
                       <button key={l} type="button" onClick={() => toggleItem('languages', l)}
                         className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
-                          ${form.languages.includes(l) ? 'bg-[#4E7A1B] border-[#4E7A1B] text-white' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#4E7A1B]'}`}>
+                          ${form.languages.includes(l) ? 'bg-coral border-coral text-white' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-coral'}`}>
                         {l}
                       </button>
                     ))}
@@ -361,7 +361,7 @@ export default function Register() {
                   <p className="text-[#9A9A94] text-sm">Tell instructors about your studio</p>
                 </div>
                 <div onClick={() => fileRef.current?.click()}
-                  className="w-full h-36 border-2 border-dashed border-[#E5E0D8] rounded-xl flex items-center justify-center cursor-pointer hover:border-[#4E7A1B] transition-colors overflow-hidden bg-[#FFFFFF]">
+                  className="w-full h-36 border-2 border-dashed border-[#E5E0D8] rounded-xl flex items-center justify-center cursor-pointer hover:border-coral transition-colors overflow-hidden bg-[#FFFFFF]">
                   {form.avatarPreview ? <img src={form.avatarPreview} alt="Studio" className="w-full h-full object-cover" /> :
                     <div className="text-center"><Upload size={20} className="text-[#C4BCB4] mx-auto mb-1" /><p className="text-[#9A9A94] text-xs">Studio main photo (optional)</p></div>}
                 </div>
@@ -392,7 +392,7 @@ export default function Register() {
                     {STUDIO_SIZES.map(sz => (
                       <button key={sz} type="button" onClick={() => update('studioSize', sz)}
                         className={`px-3 py-2.5 rounded-xl text-xs font-medium border transition-all text-left
-                          ${form.studioSize === sz ? 'bg-[#4E7A1B] border-[#4E7A1B] text-white' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#4E7A1B]'}`}>
+                          ${form.studioSize === sz ? 'bg-coral border-coral text-white' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-coral'}`}>
                         {sz}
                       </button>
                     ))}
@@ -420,7 +420,7 @@ export default function Register() {
                       options={COUNTRIES_AND_REGIONS} placeholder="Select destination..." />
                     <input value={form.travelingTo} onChange={e => update('travelingTo', e.target.value)}
                       placeholder="Or type: Italy, Bali, Thailand..."
-                      className="mt-2 w-full bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl px-4 py-2.5 text-xs text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-[#4E7A1B] transition-all" />
+                      className="mt-2 w-full bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl px-4 py-2.5 text-xs text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-coral transition-all" />
                   </div>
                 </div>
 
@@ -445,14 +445,14 @@ export default function Register() {
                     </div>
                   </div>
                   {availabilityDisplay && (
-                    <div className="mt-2 flex items-center gap-2 px-3 py-1.5 bg-[#4E7A1B]/10 rounded-lg w-fit">
-                      <Calendar size={12} className="text-[#4E7A1B]" />
-                      <span className="text-[#4E7A1B] text-xs font-semibold">{availabilityDisplay}</span>
+                    <div className="mt-2 flex items-center gap-2 px-3 py-1.5 bg-coral/10 rounded-lg w-fit">
+                      <Calendar size={12} className="text-coral" />
+                      <span className="text-coral text-xs font-semibold">{availabilityDisplay}</span>
                     </div>
                   )}
                   <label className="flex items-center gap-2 mt-2 cursor-pointer">
                     <input type="checkbox" checked={form.flexibleDates} onChange={e => update('flexibleDates', e.target.checked)}
-                      className="w-4 h-4 rounded border-[#E5E0D8] accent-[#4E7A1B]" />
+                      className="w-4 h-4 rounded border-[#E5E0D8] accent-coral" />
                     <span className="text-sm text-[#6B6B66]">I'm flexible with exact dates</span>
                   </label>
                 </div>
@@ -463,7 +463,7 @@ export default function Register() {
                     {OPEN_TO.map(opt => (
                       <button key={opt} type="button" onClick={() => toggleItem('openTo', opt)}
                         className={`px-4 py-2 rounded-full text-xs font-medium border transition-all
-                          ${form.openTo.includes(opt) ? 'bg-[#4E7A1B] text-white border-[#4E7A1B]' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#4E7A1B]'}`}>
+                          ${form.openTo.includes(opt) ? 'bg-coral text-white border-coral' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-coral'}`}>
                         {opt}
                       </button>
                     ))}
@@ -504,7 +504,7 @@ export default function Register() {
                 {form.disciplines.length > 0 && (
                   <div className="flex flex-wrap gap-1.5">
                     {form.disciplines.map(d => (
-                      <span key={d} className="flex items-center gap-1 px-2.5 py-1 bg-[#4E7A1B]/10 text-[#4E7A1B] rounded-full text-xs font-medium">
+                      <span key={d} className="flex items-center gap-1 px-2.5 py-1 bg-coral/10 text-coral rounded-full text-xs font-medium">
                         {d}<button onClick={() => toggleItem('disciplines', d)} className="hover:text-red-500"><X size={10} /></button>
                       </span>
                     ))}
@@ -519,7 +519,7 @@ export default function Register() {
                         {cat.items.map(d => (
                           <button key={d} type="button" onClick={() => toggleItem('disciplines', d)}
                             className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
-                              ${form.disciplines.includes(d) ? 'bg-[#4E7A1B] border-[#4E7A1B] text-white' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#4E7A1B]'}`}>
+                              ${form.disciplines.includes(d) ? 'bg-coral border-coral text-white' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-coral'}`}>
                             {d}
                           </button>
                         ))}
@@ -554,7 +554,7 @@ export default function Register() {
                   <div className="grid grid-cols-4 gap-2">
                     {[0,1,2,3].map(i => (
                       <div key={i} onClick={() => photosRef.current?.click()}
-                        className="aspect-square border-2 border-dashed border-[#E5E0D8] rounded-xl overflow-hidden cursor-pointer hover:border-[#4E7A1B] transition-all flex items-center justify-center bg-[#FFFFFF]">
+                        className="aspect-square border-2 border-dashed border-[#E5E0D8] rounded-xl overflow-hidden cursor-pointer hover:border-coral transition-all flex items-center justify-center bg-[#FFFFFF]">
                         {form.photos[i] ? <img src={form.photos[i]} alt="" className="w-full h-full object-cover" /> : <Upload size={16} className="text-[#C4BCB4]" />}
                       </div>
                     ))}
@@ -583,7 +583,7 @@ export default function Register() {
                     {STUDIO_OPEN.map(opt => (
                       <button key={opt} type="button" onClick={() => toggleItem('openTo', opt)}
                         className={`px-4 py-2 rounded-full text-xs font-medium border transition-all
-                          ${form.openTo.includes(opt) ? 'bg-[#4E7A1B] text-white border-[#4E7A1B]' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#4E7A1B]'}`}>
+                          ${form.openTo.includes(opt) ? 'bg-coral text-white border-coral' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-coral'}`}>
                         {opt}
                       </button>
                     ))}
@@ -594,7 +594,7 @@ export default function Register() {
                   <div className="grid grid-cols-4 gap-2">
                     {[0,1,2,3].map(i => (
                       <div key={i} onClick={() => photosRef.current?.click()}
-                        className="aspect-square border-2 border-dashed border-[#E5E0D8] rounded-xl overflow-hidden cursor-pointer hover:border-[#4E7A1B] transition-all flex items-center justify-center bg-[#FFFFFF]">
+                        className="aspect-square border-2 border-dashed border-[#E5E0D8] rounded-xl overflow-hidden cursor-pointer hover:border-coral transition-all flex items-center justify-center bg-[#FFFFFF]">
                         {form.photos[i] ? <img src={form.photos[i]} alt="" className="w-full h-full object-cover" /> : <Upload size={16} className="text-[#C4BCB4]" />}
                       </div>
                     ))}
@@ -615,14 +615,14 @@ export default function Register() {
                   {PLANS.map(plan => (
                     <button key={plan.id} type="button" onClick={() => update('plan', plan.id)}
                       className={`w-full p-4 rounded-xl border-2 text-left transition-all relative
-                        ${form.plan === plan.id ? 'border-[#4E7A1B] bg-[#4E7A1B]/5' : 'border-[#E5E0D8] hover:border-[#4E7A1B]/40'}`}>
+                        ${form.plan === plan.id ? 'border-coral bg-coral/5' : 'border-[#E5E0D8] hover:border-coral/40'}`}>
                       {plan.highlight && (
                         <span className="absolute top-3 right-3 bg-[#F5FDA6] text-[#3E3D38] text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Most Popular</span>
                       )}
                       <div className="flex items-center gap-3">
                         <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0
-                          ${form.plan === plan.id ? 'border-[#4E7A1B]' : 'border-[#C4BCB4]'}`}>
-                          {form.plan === plan.id && <div className="w-2 h-2 rounded-full bg-[#4E7A1B]" />}
+                          ${form.plan === plan.id ? 'border-coral' : 'border-[#C4BCB4]'}`}>
+                          {form.plan === plan.id && <div className="w-2 h-2 rounded-full bg-coral" />}
                         </div>
                         <div>
                           <div className="flex items-baseline gap-1">
@@ -680,7 +680,7 @@ export default function Register() {
         </div>
 
         <p className="text-center text-[#9A9A94] text-xs mt-6">
-          Already a member? <Link to="/login" className="text-[#4E7A1B] hover:underline">Sign in</Link>
+          Already a member? <Link to="/login" className="text-coral hover:underline">Sign in</Link>
         </p>
       </div>
     </div>

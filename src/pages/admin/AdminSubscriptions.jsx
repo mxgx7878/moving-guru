@@ -244,7 +244,7 @@ export default function AdminSubscriptions() {
                     onClick={() => setFeaturesTarget(p)}
                     disabled={adminPlanMutating}
                   >
-                    <Sliders size={14} className="text-[#4E7A1B]" />
+                    <Sliders size={14} className="text-coral" />
                   </IconButton>
                   <IconButton
                     variant="plain"

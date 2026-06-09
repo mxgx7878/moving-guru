@@ -91,7 +91,7 @@ function RoleRedirect() {
     if (status === STATUS.IDLE || status === STATUS.LOADING) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-[#FFFFFF]">
-          <div className="w-8 h-8 border-2 border-[#4E7A1B]/30 border-t-[#4E7A1B] rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-coral/30 border-t-coral rounded-full animate-spin" />
         </div>
       );
     }

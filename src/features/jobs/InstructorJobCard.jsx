@@ -70,7 +70,7 @@ export default function InstructorJobCard({
   return (
     <div
       className={`bg-white rounded-2xl border overflow-hidden transition-all
-      ${isFull ? "border-[#E5E0D8] opacity-85" : "border-[#E5E0D8] hover:border-[#4E7A1B]/30 hover:shadow-sm"}`}
+      ${isFull ? "border-[#E5E0D8] opacity-85" : "border-[#E5E0D8] hover:border-coral/30 hover:shadow-sm"}`}
     >
       {isFull && (
         <div className="bg-[#FAFEE0] border-b border-[#E5E0D8] px-6 py-2 flex items-center gap-2 text-xs text-[#6B6B66]">
@@ -113,7 +113,7 @@ export default function InstructorJobCard({
                 {job.studio?.id ? (
                   <Link
                     to={`/portal/studios/${job.studio.id}`}
-                    className="inline-flex items-center gap-1 text-[#9A9A94] text-xs mt-0.5 hover:text-[#4E7A1B] hover:underline"
+                    className="inline-flex items-center gap-1 text-[#9A9A94] text-xs mt-0.5 hover:text-coral hover:underline"
                   >
                     {job.studio?.studio_name ||
                       job.studio?.name ||
@@ -205,7 +205,7 @@ export default function InstructorJobCard({
             </div>
           )}
           {vacancies > 1 && !isFull && (
-            <div className="flex items-center gap-1.5 text-xs bg-[#4E7A1B]/10 text-[#4E7A1B] px-3 py-1.5 rounded-full">
+            <div className="flex items-center gap-1.5 text-xs bg-coral/10 text-coral px-3 py-1.5 rounded-full">
               <Users size={12} /> {filled} of {vacancies} filled
             </div>
           )}
@@ -217,8 +217,8 @@ export default function InstructorJobCard({
             onClick={onToggleSave}
             className={
               isSaved
-                ? "bg-[#4E7A1B]/5"
-                : "hover:border-[#4E7A1B] hover:text-[#4E7A1B]"
+                ? "bg-coral/5"
+                : "hover:border-coral hover:text-coral"
             }
           >
             {isSaved ? "Saved" : "Save"}

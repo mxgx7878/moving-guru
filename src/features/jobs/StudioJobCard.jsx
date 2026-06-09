@@ -94,7 +94,7 @@ export default function StudioJobCard({
               )}
               <span
                 className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold
-                  ${isFull ? "bg-emerald-50 text-emerald-600" : "bg-[#4E7A1B]/10 text-[#4E7A1B]"}`}
+                  ${isFull ? "bg-emerald-50 text-emerald-600" : "bg-coral/10 text-coral"}`}
               >
                 <UserCheck size={10} /> {filled} of {vacancies} filled
               </span>

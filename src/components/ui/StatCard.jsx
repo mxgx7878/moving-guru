@@ -2,12 +2,12 @@ import { TrendingUp } from 'lucide-react';
 
 export default function StatCard({ icon: Icon, label, value, sub, color = 'default', trend }) {
   const bgMap = {
-    coral: 'bg-[#4E7A1B]/10',
+    coral: 'bg-coral/10',
     orange: 'bg-[#9BE63D]/10',
     default: 'bg-[#FAFEE0]',
   };
   const iconMap = {
-    coral: 'text-[#4E7A1B]',
+    coral: 'text-coral',
     orange: 'text-[#9BE63D]',
     default: 'text-[#6B6B66]',
   };

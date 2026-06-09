@@ -204,7 +204,7 @@ const typeCounts = GROW_FILTER_TABS.reduce((acc, t) => ({
 
       {status === STATUS.LOADING && (
         <div className="flex items-center justify-center py-16">
-          <Loader2 size={28} className="animate-spin text-[#4E7A1B]" />
+          <Loader2 size={28} className="animate-spin text-coral" />
         </div>
       )}
 
