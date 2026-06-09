@@ -75,7 +75,7 @@ export default function PostPreviewModal({ post, onClose }) {
 
           {post.link_url && (
             <a href={post.link_url} target="_blank" rel="noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#4E7A1B] text-white text-xs font-bold hover:bg-[#4E7A1B]">
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-coral text-white text-xs font-bold hover:bg-coral">
               {post.link_label || 'Open link'} →
             </a>
           )}

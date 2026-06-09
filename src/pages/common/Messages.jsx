@@ -1,58 +1,161 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { Search, Send, ArrowLeft } from 'lucide-react';
 import { ROLE_THEME } from '../../config/portalConfig';
-import { fetchConversations, fetchMessages, sendMessage as sendMessageAction } from '../../store/actions/messageAction';
+import {
+  fetchConversations,
+  fetchMessages,
+  sendMessage as sendMessageAction,
+  createConversation,
+  markConversationRead,
+} from '../../store/actions/messageAction';
+import {
+  setActiveConversation,
+  clearMessages,
+  chatMessageReceived,
+} from '../../store/slices/messageSlice';
 import { STATUS } from '../../constants/apiConstants';
 import { TableSkeleton } from '../../components/feedback';
 import { ButtonLoader } from '../../components/feedback';
 import { Avatar } from '../../components/ui';
+import { getEcho } from '../../config/echo';
+import { toast } from 'sonner';
+
+// "14:32" today, "Tue" within the week, "12 May" beyond that.
+const formatStamp = (iso) => {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  const now = new Date();
+  if (d.toDateString() === now.toDateString()) {
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+  if ((now - d) / 86400000 < 7) {
+    return d.toLocaleDateString([], { weekday: 'short' });
+  }
+  return d.toLocaleDateString([], { day: 'numeric', month: 'short' });
+};
 
 export default function Messages() {
   const dispatch = useDispatch();
+  const location = useLocation();
   const { user } = useSelector((s) => s.auth);
-  const { conversations, messages, allMessages, status } = useSelector((s) => s.message);
+  // Real users.id — flattenUser detail.id se user.id ko override kar
+  // deta hai, isliye user_id pehle (admin ke liye id fallback).
+  const myId = user?.user_id ?? user?.id;
+  const { conversations, messages, status, messagesStatus, sendStatus } = useSelector((s) => s.message);
   const role = user?.role || 'instructor';
   const theme = ROLE_THEME[role] || ROLE_THEME.instructor;
 
-  const [activeConvo, setActiveConvo] = useState(null);
+  const [activeId, setActiveId] = useState(null);
   const [msgText, setMsgText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [sending, setSending] = useState(false);
-  const [localMessages, setLocalMessages] = useState([]);
   // Mobile: controls whether we're showing the conversation list or the chat
   const [mobileView, setMobileView] = useState('list'); // 'list' | 'chat'
+  // Draft thread — jab kisi ke profile/card se "Chat" dabate hain aur in
+  // dono ke beech abhi koi conversation nahi hai. Pehla message bhejte hi
+  // real conversation ban jati hai.
+  const [draftRecipient, setDraftRecipient] = useState(null); // { id, name, avatarUrl }
+  const [creating, setCreating] = useState(false);
 
+  const scrollRef = useRef(null);
+  // Deep-link target (kisi page se navigate hua to) — sirf ek baar consume.
+  const deepLinkRef = useRef(false);
+
+  const activeConvo = (!activeId && draftRecipient)
+    ? { id: null, participant: draftRecipient, isDraft: true }
+    : conversations.find((c) => c.id === activeId) || null;
+  const sending = sendStatus === STATUS.LOADING || creating;
+
+  // Load inbox; reset active conversation state on unmount so inbox events
+  // bump unread badges again once we leave this page.
   useEffect(() => {
     dispatch(fetchConversations());
+    return () => {
+      dispatch(setActiveConversation(null));
+      dispatch(clearMessages());
+    };
   }, [dispatch]);
 
   // On desktop only: auto-select first conversation. On mobile we wait for tap.
+  // (Skip when arriving with a recipient to open, or a draft is pending.)
   useEffect(() => {
-    if (conversations.length > 0 && !activeConvo && window.innerWidth >= 768) {
-      setActiveConvo(conversations[0]);
+    if (location.state?.recipientId && !deepLinkRef.current) return;
+    if (draftRecipient) return;
+    if (conversations.length > 0 && !activeId && window.innerWidth >= 768) {
+      setActiveId(conversations[0].id);
     }
-  }, [conversations, activeConvo]);
+  }, [conversations, activeId, location.state, draftRecipient]);
 
-  // Load messages — use allMessages dict (dummy) or fetch from API
+  // Deep-link: a "Chat" button elsewhere navigates here with
+  // { state: { recipientId, recipientName, recipientAvatar } }. If a thread
+  // with that user already exists we open it; otherwise we open a DRAFT
+  // thread — the real conversation is created on the first send.
   useEffect(() => {
-    if (!activeConvo?.id) return;
-    if (allMessages && allMessages[activeConvo.id]) {
-      setLocalMessages(allMessages[activeConvo.id]);
+    const recipientId = location.state?.recipientId;
+    if (!recipientId || deepLinkRef.current) return;
+    if (status !== STATUS.SUCCEEDED) return; // wait for the inbox to load first
+    deepLinkRef.current = true;
+
+    const existing = conversations.find(
+      (c) => Number(c.participant?.id) === Number(recipientId),
+    );
+    if (existing) {
+      setDraftRecipient(null);
+      setActiveId(existing.id);
     } else {
-      dispatch(fetchMessages(activeConvo.id));
+      dispatch(clearMessages());
+      dispatch(setActiveConversation(null));
+      setActiveId(null);
+      setDraftRecipient({
+        id: recipientId,
+        name: location.state?.recipientName,
+        avatarUrl: location.state?.recipientAvatar,
+      });
     }
-  }, [activeConvo?.id, allMessages, dispatch]);
+    setMobileView('chat');
+  }, [location.state, conversations, status, dispatch]);
 
-  // Sync API messages into localMessages
+  // Opening a thread: clear the previous one, mark it active (zeroes its
+  // unread badge) and fetch — the backend marks incoming messages read.
   useEffect(() => {
-    if (messages.length > 0) {
-      setLocalMessages(messages);
+    if (!activeId) return;
+    dispatch(clearMessages());
+    dispatch(setActiveConversation(activeId));
+    dispatch(fetchMessages(activeId));
+  }, [activeId, dispatch]);
+
+  // Live thread: subscribe to conversation.{id} while it's open.
+  useEffect(() => {
+    const echo = getEcho();
+    if (!echo || !activeId) return undefined;
+
+    const channelName = `conversation.${activeId}`;
+    echo.private(channelName).listen('.message.sent', (payload) => {
+      const msg = payload?.message;
+      // Own messages already arrive via the send response — skip the echo.
+      if (!msg || msg.senderId === myId) return;
+      dispatch(chatMessageReceived(payload));
+      // It was read on screen — keep the server's unread counter in sync.
+      dispatch(markConversationRead(activeId));
+    });
+
+    return () => {
+      echo.leave(channelName);
+    };
+  }, [activeId, myId, dispatch]);
+
+  // Pin the thread to the newest message.
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages.length, activeId]);
 
   const handleOpenConvo = (convo) => {
-    setActiveConvo(convo);
+    setDraftRecipient(null);
+    setActiveId(convo.id);
     setMobileView('chat');
   };
 
@@ -61,25 +164,46 @@ export default function Messages() {
   };
 
   const convoDisplayName = (convo) => {
-  const r = convo?.role || convo?.participant?.role;
-  // Platform admin messages always appear from "GURU" in the inbox.
-  if (r === 'admin') return 'GURU';
-  return convo?.name || 'Unknown';
-};
-
-  const handleSend = async () => {
-    if (!msgText.trim() || !activeConvo) return;
-    setSending(true);
-    const newMsg = { id: `msg_local_${Date.now()}`, from: 'me', is_mine: true, text: msgText, time: 'Just now' };
-    setLocalMessages(prev => [...prev, newMsg]);
-    dispatch(sendMessageAction({ conversationId: activeConvo.id, text: msgText }));
-    setMsgText('');
-    setSending(false);
+    const r = convo?.participant?.role;
+    // Platform admin messages always appear from "GURU" in the inbox.
+    if (r === 'admin') return 'GURU';
+    return convo?.participant?.name || 'Unknown';
   };
 
-const filteredConversations = conversations.filter(c =>
-  !searchQuery || convoDisplayName(c).toLowerCase().includes(searchQuery.toLowerCase())
-);
+  const handleSend = () => {
+    const text = msgText.trim();
+    if (!text || sending) return;
+    if (!activeId && !draftRecipient) return;
+    setMsgText('');
+
+    if (activeId) {
+      dispatch(sendMessageAction({ conversationId: activeId, text }));
+      return;
+    }
+
+    // Draft → create the conversation with this first message, then switch to
+    // the real thread so live updates + read state work normally.
+    setCreating(true);
+    dispatch(createConversation({ recipientId: draftRecipient.id, message: text }))
+      .unwrap()
+      .then((res) => {
+        const newId = res?.data?.conversation?.id;
+        if (newId) {
+          setDraftRecipient(null);
+          setActiveId(newId);
+        }
+      })
+      .catch((err) => {
+        setMsgText(text); // restore so the message isn't lost
+        toast.error(err?.message || (typeof err === 'string' ? err : 'Failed to send message'));
+      })
+      .finally(() => setCreating(false));
+  };
+
+  const filteredConversations = conversations.filter(c =>
+    !searchQuery || convoDisplayName(c).toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const subtitle = role === 'studio'
     ? 'Connect with instructors'
     : 'Connect with studios and instructors';
@@ -150,39 +274,41 @@ const filteredConversations = conversations.filter(c =>
                   key={convo.id}
                   onClick={() => handleOpenConvo(convo)}
                   className={`w-full text-left px-4 py-3.5 flex items-center gap-3 transition-colors border-b border-[#E5E0D8]/50
-                    ${activeConvo?.id === convo.id ? `bg-[${theme.accent}]/5` : 'hover:bg-[#FFFFFF]'}`}
+                    ${activeId === convo.id ? 'bg-[#FAFEE0]' : 'hover:bg-[#FAFEE0]/50'}`}
                 >
                   <Avatar
-                    name={convo.name}
-                    src={convo.profile_picture_url || convo.profile_picture || convo.avatar_url || convo.avatar}
-                    size="md"
-                    tone="coral"
+                    name={convoDisplayName(convo)}
+                    src={convo.participant?.avatarUrl}
+                    size="sm"
+                    tone={theme.avatarTone}
                   />
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-0.5">
-                      <p className="text-[#3E3D38] text-sm font-semibold truncate">{convo.name}</p>
-                      <span className="text-[#9A9A94] text-[10px] flex-shrink-0 ml-2">{convo.time || convo.last_message_at}</span>
+                    <div className="flex items-baseline justify-between gap-2">
+                      <p className="text-sm font-semibold text-[#3E3D38] truncate">
+                        {convoDisplayName(convo)}
+                      </p>
+                      <span className="text-[10px] text-[#9A9A94] flex-shrink-0">
+                        {formatStamp(convo.lastMessageAt)}
+                      </span>
                     </div>
-                    <p className="text-[#9A9A94] text-xs truncate">{convo.lastMessage || convo.last_message}</p>
-                    {convo.discipline && (
-                      <p className="text-[10px] text-[#C4BCB4] mt-0.5">{convo.discipline}</p>
-                    )}
+                    <div className="flex items-center justify-between gap-2 mt-0.5">
+                      <p className="text-xs text-[#9A9A94] truncate">
+                        {convo.lastMessage?.body || 'No messages yet'}
+                      </p>
+                      {convo.unreadCount > 0 && (
+                        <span className="flex-shrink-0 min-w-[18px] h-[18px] px-1.5 bg-[#B4FF5A] text-black text-[10px] font-bold rounded-full flex items-center justify-center">
+                          {convo.unreadCount > 9 ? '9+' : convo.unreadCount}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  {convo.unread > 0 && (
-                    <span
-                      className="w-5 h-5 rounded-full text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0"
-                      style={{ backgroundColor: theme.accent }}
-                    >
-                      {convo.unread}
-                    </span>
-                  )}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* ── Chat area ──
-              Mobile: full-width slide-in from right when convo is selected.
+          {/* ── Chat panel ──
+              Mobile: slides in over the list when a conversation is open.
               Desktop: always visible right column. */}
           <div
             className={`
@@ -206,40 +332,58 @@ const filteredConversations = conversations.filter(c =>
                   </button>
 
                   <Avatar
-                    name={activeConvo.name}
-                    src={activeConvo.profile_picture_url || activeConvo.profile_picture || activeConvo.avatar_url || activeConvo.avatar}
+                    name={convoDisplayName(activeConvo)}
+                    src={activeConvo.participant?.avatarUrl}
                     size="sm"
                     tone={theme.avatarTone}
                   />
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-[#3E3D38] truncate">{activeConvo.name}</p>
-                    <p className="text-[10px] text-[#B4FF5A] font-medium truncate">
-                      {activeConvo.online ? 'Online' : activeConvo.discipline || ''}
+                    <p className="text-sm font-semibold text-[#3E3D38] truncate">
+                      {convoDisplayName(activeConvo)}
+                    </p>
+                    <p
+                      className="text-[10px] font-medium truncate capitalize"
+                      style={{ color: theme.accent }}
+                    >
+                      {activeConvo.participant?.role === 'admin' ? 'Moving Guru' : activeConvo.participant?.role}
                     </p>
                   </div>
                 </div>
 
                 {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
-                  {localMessages.map(msg => (
-                    <div key={msg.id} className={`flex ${msg.from === 'me' || msg.is_mine ? 'justify-end' : 'justify-start'}`}>
-                      <div className="max-w-[80%] sm:max-w-[70%]">
-                        <div
-                          className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed
-                            ${msg.from === 'me' || msg.is_mine
-                              ? 'text-white rounded-br-md'
-                              : 'bg-[#F5FDA6]/40 text-[#3E3D38] rounded-bl-md border border-[#F5FDA6]'
-                            }`}
-                          style={msg.from === 'me' || msg.is_mine ? { backgroundColor: theme.accent } : undefined}
-                        >
-                          {msg.text || msg.body}
-                        </div>
-                        <p className={`text-[10px] text-[#9A9A94] mt-1 ${msg.from === 'me' || msg.is_mine ? 'text-right' : ''}`}>
-                          {msg.time || msg.created_at}
-                        </p>
-                      </div>
+                <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
+                  {activeId && messagesStatus === STATUS.LOADING ? (
+                    <div className="h-full flex items-center justify-center">
+                      <div className="w-6 h-6 border-2 border-[#B4FF5A] border-t-transparent rounded-full animate-spin" />
                     </div>
-                  ))}
+                  ) : messages.length === 0 ? (
+                    <div className="h-full flex items-center justify-center">
+                      <p className="text-[#9A9A94] text-sm">No messages yet — say hi!</p>
+                    </div>
+                  ) : (
+                    messages.map(msg => {
+                      const isMine = msg.senderId === myId;
+                      return (
+                        <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
+                          <div className="max-w-[80%] sm:max-w-[70%]">
+                            <div
+                              className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed
+                                ${isMine
+                                  ? 'text-white rounded-br-md'
+                                  : 'bg-[#F5FDA6]/40 text-[#3E3D38] rounded-bl-md border border-[#F5FDA6]'
+                                }`}
+                              style={isMine ? { backgroundColor: theme.accent } : undefined}
+                            >
+                              {msg.body}
+                            </div>
+                            <p className={`text-[10px] text-[#9A9A94] mt-1 ${isMine ? 'text-right' : ''}`}>
+                              {formatStamp(msg.createdAt)}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
                 </div>
 
                 {/* Input */}

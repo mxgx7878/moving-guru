@@ -58,8 +58,18 @@ export default function InstructorDetail() {
     setSavingToggle(false);
   };
 
+  // Opens the Messages screen with this instructor's thread. If no
+  // conversation exists yet, a draft thread opens and the real one is
+  // created on the first send.
   const handleMessage = () => {
-    navigate('/studio/messages');
+    if (!inst) return;
+    navigate('/studio/messages', {
+      state: {
+        recipientId: inst.id,
+        recipientName: inst.name,
+        recipientAvatar: inst.detail?.profile_picture_url || inst.detail?.profile_picture,
+      },
+    });
   };
 
   if (loading) {
@@ -126,7 +136,7 @@ export default function InstructorDetail() {
             {isSaved ? 'Saved' : 'Save'}
           </Button>
           <Button disabled={currentUser.user_id === inst.id} variant="primary" size="md" icon={MessageCircle} onClick={handleMessage}>
-            Message
+            Chat
           </Button>
           {currentUser.user_id === inst.id && (
           <Button
@@ -372,6 +382,7 @@ export default function InstructorDetail() {
           />
         </div>
       )}
+
     </div>
   );
 }

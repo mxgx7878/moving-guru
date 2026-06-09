@@ -26,7 +26,7 @@ export default function AccessBanner() {
       cta:    { to: profilePath, label: 'Go to profile' },
     },
     pending: {
-      bg:     'bg-[#4E7A1B]',
+      bg:     'bg-coral',
       text:   'text-white',
       icon:   Sparkles,
       label:  'Awaiting admin approval',

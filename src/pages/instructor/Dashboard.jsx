@@ -66,14 +66,14 @@ export default function Dashboard() {
       {/* KPI grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiTile icon={Eye}           label="Profile Views" value={kpis.profile_views_this_month ?? 0}
-          sub={`${kpis.profile_views_total ?? 0} all time`} color="#4E7A1B" loading={loading} />
+          sub={`${kpis.profile_views_total ?? 0} all time`} color="#B4FF5A" loading={loading} />
         <KpiTile icon={MessageCircle} label="Active Apps"   value={kpis.applications_active ?? 0}
-          sub={`${kpis.applications_total ?? 0} total`}     color="#9BE63D" loading={loading} />
+          sub={`${kpis.applications_total ?? 0} total`}     color="#B4FF5A" loading={loading} />
         <KpiTile icon={Heart}         label="Favourited"    value={kpis.favourited_by_count ?? 0}
-          sub="By studios"                                  color="#4E7A1B" loading={loading} />
+          sub="By studios"                                  color="#B4FF5A " loading={loading} />
         <KpiTile icon={Star}          label="Rating"
           value={kpis.rating_avg ? `${kpis.rating_avg}★` : '—'}
-          sub={`${kpis.rating_count ?? 0} reviews`}         color="#C9A227" loading={loading} />
+          sub={`${kpis.rating_count ?? 0} reviews`}         color="#B4FF5A" loading={loading} />
       </div>
 
       {/* Charts row */}

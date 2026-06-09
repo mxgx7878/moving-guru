@@ -103,7 +103,7 @@ export default function Payments() {
           </p>
         </div>
         <div className="bg-white rounded-2xl p-4 border border-[#E5E0D8] text-center">
-          <Calendar size={16} className="text-[#4E7A1B] mx-auto mb-2" />
+          <Calendar size={16} className="text-coral mx-auto mb-2" />
           <p className="font-unbounded text-sm font-black text-[#3E3D38]">
             {user?.subscriptionRenews || user?.subscription_renews || "—"}
           </p>
