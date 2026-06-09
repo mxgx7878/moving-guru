@@ -46,7 +46,7 @@ export default function Login() {
           the public face of the product and stays on the original
           coral palette regardless of token changes. */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden flex-col justify-between p-12">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#4E7A1B] via-[#4E7A1B]/90 to-[#9BE63D]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-coral via-coral/90 to-[#9BE63D]" />
         <div className="absolute inset-0 opacity-20"
           style={{
             backgroundImage: `radial-gradient(circle at 20% 80%, #F5FDA6 0%, transparent 50%),
@@ -152,7 +152,7 @@ export default function Login() {
           <div className="border-t border-edge mt-6 pt-6 space-y-3">
             <p className="text-center text-ink-soft text-sm">New to Moving Guru?</p>
             <Link to="/register">
-              <Button  variant="outlineDanger" size="md" fullWidth className="border-2 mb-2 border-sky-mg text-sky-mg hover:bg-sky-mg hover:text-white ">
+              <Button  variant="outlineDanger" size="md" fullWidth className="border-2 mb-2 border-coral text-coral hover:bg-coral hover:text-white ">
                 Join as Instructor
               </Button>
             </Link>
@@ -161,7 +161,7 @@ export default function Login() {
                 variant="secondary"
                 size="md"
                 fullWidth
-                className="border-2 border-sky-mg text-sky-mg hover:bg-sky-mg hover:text-white"
+                className="border-2 border-coral text-coral hover:bg-coral hover:text-white"
               >
                 Join as Studio
               </Button>

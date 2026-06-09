@@ -76,7 +76,7 @@ export default function RevenueCumulativeChart({ data = [], loading = false }) {
 
       <div className="text-center pt-1">
         <span className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-semibold">Lifetime · </span>
-        <span className="font-unbounded text-sm font-black text-[#4E7A1B]">
+        <span className="font-unbounded text-sm font-black text-coral">
           ${Number(lifetime).toLocaleString()}
         </span>
       </div>

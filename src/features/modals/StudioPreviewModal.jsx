@@ -5,7 +5,7 @@ import {
 import { Modal, Button } from '../../components/ui';
 
 const OPEN_TO_COLORS = {
-  'Direct Hire':     { bg: 'bg-[#4E7A1B]/10', text: 'text-[#4E7A1B]' },
+  'Direct Hire':     { bg: 'bg-coral/10', text: 'text-coral' },
   'Swaps':           { bg: 'bg-[#9BE63D]/15', text: 'text-[#9BE63D]' },
   'Energy Exchange': { bg: 'bg-[#B4FF5A]/20', text: 'text-[#3E3D38]' },
 };
@@ -53,7 +53,7 @@ export default function StudioPreviewModal({
           Preview
         </span>
         <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 z-10">
-          <div className="w-20 h-20 rounded-full border-4 border-white shadow-md overflow-hidden bg-gradient-to-br from-[#4E7A1B] to-[#3F6216] flex items-center justify-center">
+          <div className="w-20 h-20 rounded-full border-4 border-white shadow-md overflow-hidden bg-gradient-to-br from-coral to-[#3F6216] flex items-center justify-center">
             {form.avatarPreview
               ? <img src={form.avatarPreview} alt={form.studioName} className="w-full h-full object-cover" />
               : <span className="font-unbounded text-xl font-black text-white">{initials}</span>}
@@ -90,7 +90,7 @@ export default function StudioPreviewModal({
               <a
                 href={form.website.startsWith('http') ? form.website : `https://${form.website}`}
                 target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-semibold bg-[#4E7A1B]/10 text-[#4E7A1B] hover:bg-[#4E7A1B]/20"
+                className="flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-semibold bg-coral/10 text-coral hover:bg-coral/20"
               >
                 <Globe size={11} /> Website <ExternalLink size={9} />
               </a>
@@ -170,7 +170,7 @@ export default function StudioPreviewModal({
             <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-bold mb-2">Disciplines Offered</p>
             <div className="flex flex-wrap gap-1.5">
               {form.disciplines.map(d => (
-                <span key={d} className="px-2.5 py-1 bg-[#4E7A1B]/10 text-[#4E7A1B] text-[10px] font-medium rounded-full">{d}</span>
+                <span key={d} className="px-2.5 py-1 bg-coral/10 text-coral text-[10px] font-medium rounded-full">{d}</span>
               ))}
             </div>
           </div>

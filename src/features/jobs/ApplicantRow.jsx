@@ -2,7 +2,7 @@ import { Mail } from 'lucide-react';
 import { Avatar } from '../../components/ui';
 
 const APPLICATION_STATUS = {
-  pending:   { label: 'Pending',   cls: 'bg-[#4E7A1B]/10 text-[#4E7A1B]' },
+  pending:   { label: 'Pending',   cls: 'bg-coral/10 text-coral' },
   viewed:    { label: 'Viewed',    cls: 'bg-[#FAFEE0] text-[#6B6B66]'    },
   accepted:  { label: 'Hired',     cls: 'bg-emerald-50 text-emerald-600' },
   rejected:  { label: 'Declined',  cls: 'bg-red-50 text-red-500'         },

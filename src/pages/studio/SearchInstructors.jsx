@@ -8,6 +8,7 @@ import { CardSkeleton, ButtonLoader } from '../../components/feedback';
 import { Avatar, Button, Input, SelectField, IconButton } from '../../components/ui';
 import { InstructorProfileModal } from '../../features/modals';
 import { OPEN_TO as ALL_OPEN_TO } from '../../constants/profileConstants';
+import StartChatModal from '../../features/chat/StartChatModal';
 
 export default function SearchInstructors() {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ export default function SearchInstructors() {
   const [showFilters, setShowFilters] = useState(false);
   const [savingId, setSavingId]     = useState(null);
   const [selectedInstructor, setSelectedInstructor] = useState(null);
+  const [chatTarget, setChatTarget] = useState(null);
 
   useEffect(() => {
     dispatch(fetchInstructors());
@@ -36,11 +38,10 @@ export default function SearchInstructors() {
     setSavingId(null);
   };
 
-  const handleMessage = (inst) => {
+ const handleMessage = (inst) => {
     setSelectedInstructor(null);
-    navigate('/studio/messages');
+    setChatTarget({ id: inst.id, name: inst.name });
   };
-
   const allDisciplines = useMemo(() => (
     [...new Set(instructors.flatMap(i => i.disciplines || []))].sort()
   ), [instructors]);
@@ -176,7 +177,7 @@ export default function SearchInstructors() {
             return (
               <div
                 key={inst.id}
-                className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden hover:border-[#4E7A1B] hover:shadow-sm transition-all group cursor-pointer"
+                className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden hover:border-coral hover:shadow-sm transition-all group cursor-pointer"
                 onClick={() => navigate(`/studio/instructors/${inst.id}`)}
               >
                 <div className="bg-gradient-to-br from-[#FFFFFF] to-[#F5FDA6]/20 px-5 pt-5 pb-4">
@@ -237,7 +238,7 @@ export default function SearchInstructors() {
                   <div className="flex flex-wrap gap-1">
                     {openTo.map(o => (
                       <span key={o} className={`px-2 py-0.5 text-[10px] rounded-full font-medium
-                        ${o === 'Direct Hire'     ? 'bg-[#4E7A1B]/10 text-[#4E7A1B]' :
+                        ${o === 'Direct Hire'     ? 'bg-coral/10 text-coral' :
                           o === 'Swaps'           ? 'bg-[#9BE63D]/15 text-[#9BE63D]' :
                           'bg-[#B4FF5A]/15 text-[#3E3D38]'}`}>
                         {o}
@@ -254,7 +255,7 @@ export default function SearchInstructors() {
                       icon={Eye}
                       fullWidth
                       onClick={() => setSelectedInstructor(inst)}
-                      className="hover:border-[#4E7A1B] hover:text-[#4E7A1B]"
+                      className="hover:border-coral hover:text-coral"
                     >
                       Quick View
                     </Button>
@@ -282,6 +283,14 @@ export default function SearchInstructors() {
           onClose={() => setSelectedInstructor(null)}
           onMessage={() => handleMessage(selectedInstructor)}
           onToggleSave={() => toggleSave(selectedInstructor.id)}
+        />
+      )}
+
+       {chatTarget && (
+        <StartChatModal
+          recipientId={chatTarget.id}
+          recipientName={chatTarget.name}
+          onClose={() => setChatTarget(null)}
         />
       )}
     </div>

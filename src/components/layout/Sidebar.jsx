@@ -16,6 +16,13 @@ export default function Sidebar({ mobileOpen, onClose }) {
   const theme = ROLE_THEME[role] || ROLE_THEME.instructor;
   const navItems = NAV_CONFIG[role] || NAV_CONFIG.instructor;
 
+  // App-level unread message count = sum of per-conversation unread.
+  // The inbox is fetched once at portal load (RealtimeListener) and kept
+  // live by realtime inbox events, so this badge stays current on every page.
+  const messageUnread = useSelector((s) =>
+    (s.message?.conversations || []).reduce((n, c) => n + (c.unreadCount || 0), 0),
+  );
+
   // Display name: studios show studio_name, others show name
   const displayName = role === 'studio'
     ? (user?.studio_name || user?.studioName || user?.name || 'Studio')
@@ -74,27 +81,39 @@ export default function Sidebar({ mobileOpen, onClose }) {
 
         {/* Navigation */}
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-          {navItems.map(({ to, icon: Icon, label }) => (
-            <NavLink
-              key={to}
-              to={to}
-              onClick={onClose}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group
-                ${isActive
-                  ? 'bg-[#3E3D38] text-white'
-                  : 'text-[#6B6B66] hover:bg-[#FAFEE0] hover:text-[#3E3D38]'}`
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <Icon size={16} className={isActive ? 'text-white' : 'text-[#9A9A94] group-hover:text-[#6B6B66]'} />
-                  <span className="flex-1">{label}</span>
-                  {isActive && <ChevronRight size={12} />}
-                </>
-              )}
-            </NavLink>
-          ))}
+          {navItems.map(({ to, icon: Icon, label }) => {
+            const isMessages = to.includes('/messages');
+            return (
+              <NavLink
+                key={to}
+                to={to}
+                onClick={onClose}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group
+                  ${isActive
+                    ? 'bg-[#3E3D38] text-white'
+                    : 'text-[#6B6B66] hover:bg-[#FAFEE0] hover:text-[#3E3D38]'}`
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <Icon size={16} className={isActive ? 'text-white' : 'text-[#9A9A94] group-hover:text-[#6B6B66]'} />
+                    <span className="flex-1">{label}</span>
+                    {isMessages && messageUnread > 0 ? (
+                      <span
+                        className={`min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center
+                          ${isActive ? 'bg-white text-[#3E3D38]' : 'bg-coral text-white'}`}
+                      >
+                        {messageUnread > 99 ? '99+' : messageUnread}
+                      </span>
+                    ) : (
+                      isActive && <ChevronRight size={12} />
+                    )}
+                  </>
+                )}
+              </NavLink>
+            );
+          })}
         </nav>
 
         {/* Logout */}

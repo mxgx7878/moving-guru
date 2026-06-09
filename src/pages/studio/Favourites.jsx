@@ -100,11 +100,18 @@ export default function Favourites() {
               unsaving={unsavingId === inst.id}
               onUnsave={(e) => handleUnsave(inst.id, e)}
               onView={() => navigate(`/studio/instructors/${inst.id}`)}
-              onMessage={() => navigate('/studio/messages')}
+              onMessage={() => navigate('/studio/messages', {
+                state: {
+                  recipientId: inst.id,
+                  recipientName: inst.name,
+                  recipientAvatar: inst.detail?.profile_picture_url || inst.detail?.profile_picture,
+                },
+              })}
             />
           ))}
         </div>
       )}
+
     </div>
   );
 }

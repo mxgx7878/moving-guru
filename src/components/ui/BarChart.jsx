@@ -13,7 +13,7 @@ export default function BarChart({ data }) {
             <div className="w-full relative group">
               <div
                 className={`w-full rounded-t-md transition-all duration-500 cursor-default
-                  ${isLast ? 'bg-[#4E7A1B]' : 'bg-[#FAFEE0] group-hover:bg-[#E5E0D8]'}`}
+                  ${isLast ? 'bg-coral' : 'bg-[#FAFEE0] group-hover:bg-[#E5E0D8]'}`}
                 style={{ height: `${Math.max(height * 0.8, 6)}px` }}
               />
             </div>

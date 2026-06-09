@@ -12,7 +12,7 @@ import { X } from 'lucide-react';
 
 const TONE = {
   coral: {
-    active:   'bg-coral text-white border-coral',
+    active:   'bg-coral text-black border-coral',
     inactive: 'bg-white border-edge text-ink-muted hover:border-coral',
   },
   blue: {

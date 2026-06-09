@@ -268,7 +268,7 @@ export default function AdminUsers() {
             icon={Zap}
             onClick={handleRunSweep}
             loading={sweeping}
-            className="ml-auto hover:border-[#4E7A1B] hover:text-[#4E7A1B]"
+            className="ml-auto hover:border-coral hover:text-coral"
           >
             Run sweep now
           </Button>
