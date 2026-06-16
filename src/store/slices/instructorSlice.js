@@ -114,7 +114,7 @@ const instructorSlice = createSlice({
       .addCase(fetchInstructorDetail.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
         console.log(payload, "payload in slice");
-        const inst = payload?.data?.instructor || payload?.data || null;
+        const inst = payload?.data?.user || payload?.data || null;
         state.selectedInstructor = inst;
         if (inst) upsertInstructor(state, inst);
       })

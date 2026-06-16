@@ -1,58 +1,62 @@
-import { useState, useEffect, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useLocation } from 'react-router-dom';
-import { Search, Send, ArrowLeft } from 'lucide-react';
-import { ROLE_THEME } from '../../config/portalConfig';
+import { useState, useEffect, useRef } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useLocation, Link } from "react-router-dom";
+import { Search, Send, ArrowLeft } from "lucide-react";
+import { ROLE_THEME } from "../../config/portalConfig";
 import {
   fetchConversations,
   fetchMessages,
   sendMessage as sendMessageAction,
   createConversation,
   markConversationRead,
-} from '../../store/actions/messageAction';
+} from "../../store/actions/messageAction";
 import {
   setActiveConversation,
   clearMessages,
   chatMessageReceived,
-} from '../../store/slices/messageSlice';
-import { STATUS } from '../../constants/apiConstants';
-import { TableSkeleton } from '../../components/feedback';
-import { ButtonLoader } from '../../components/feedback';
-import { Avatar } from '../../components/ui';
-import { getEcho } from '../../config/echo';
-import { toast } from 'sonner';
+} from "../../store/slices/messageSlice";
+import { STATUS } from "../../constants/apiConstants";
+import { TableSkeleton } from "../../components/feedback";
+import { ButtonLoader } from "../../components/feedback";
+import { Avatar } from "../../components/ui";
+import { getEcho } from "../../config/echo";
+import { toast } from "sonner";
+import MessageActionsMenu from "../../features/chat/MessageActionsMenu";
+import ReportModal from "../../features/chat/ReportModal";
 
 // "14:32" today, "Tue" within the week, "12 May" beyond that.
 const formatStamp = (iso) => {
-  if (!iso) return '';
+  if (!iso) return "";
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '';
+  if (Number.isNaN(d.getTime())) return "";
   const now = new Date();
   if (d.toDateString() === now.toDateString()) {
-    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   }
   if ((now - d) / 86400000 < 7) {
-    return d.toLocaleDateString([], { weekday: 'short' });
+    return d.toLocaleDateString([], { weekday: "short" });
   }
-  return d.toLocaleDateString([], { day: 'numeric', month: 'short' });
+  return d.toLocaleDateString([], { day: "numeric", month: "short" });
 };
 
 export default function Messages() {
   const dispatch = useDispatch();
   const location = useLocation();
   const { user } = useSelector((s) => s.auth);
+  const [report, setReport] = useState(null);
   // Real users.id — flattenUser detail.id se user.id ko override kar
   // deta hai, isliye user_id pehle (admin ke liye id fallback).
   const myId = user?.user_id ?? user?.id;
-  const { conversations, messages, status, messagesStatus, sendStatus } = useSelector((s) => s.message);
-  const role = user?.role || 'instructor';
+  const { conversations, messages, status, messagesStatus, sendStatus } =
+    useSelector((s) => s.message);
+  const role = user?.role || "instructor";
   const theme = ROLE_THEME[role] || ROLE_THEME.instructor;
 
   const [activeId, setActiveId] = useState(null);
-  const [msgText, setMsgText] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [msgText, setMsgText] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   // Mobile: controls whether we're showing the conversation list or the chat
-  const [mobileView, setMobileView] = useState('list'); // 'list' | 'chat'
+  const [mobileView, setMobileView] = useState("list"); // 'list' | 'chat'
   // Draft thread — jab kisi ke profile/card se "Chat" dabate hain aur in
   // dono ke beech abhi koi conversation nahi hai. Pehla message bhejte hi
   // real conversation ban jati hai.
@@ -63,9 +67,10 @@ export default function Messages() {
   // Deep-link target (kisi page se navigate hua to) — sirf ek baar consume.
   const deepLinkRef = useRef(false);
 
-  const activeConvo = (!activeId && draftRecipient)
-    ? { id: null, participant: draftRecipient, isDraft: true }
-    : conversations.find((c) => c.id === activeId) || null;
+  const activeConvo =
+    !activeId && draftRecipient
+      ? { id: null, participant: draftRecipient, isDraft: true }
+      : conversations.find((c) => c.id === activeId) || null;
   const sending = sendStatus === STATUS.LOADING || creating;
 
   // Load inbox; reset active conversation state on unmount so inbox events
@@ -114,7 +119,7 @@ export default function Messages() {
         avatarUrl: location.state?.recipientAvatar,
       });
     }
-    setMobileView('chat');
+    setMobileView("chat");
   }, [location.state, conversations, status, dispatch]);
 
   // Opening a thread: clear the previous one, mark it active (zeroes its
@@ -132,7 +137,7 @@ export default function Messages() {
     if (!echo || !activeId) return undefined;
 
     const channelName = `conversation.${activeId}`;
-    echo.private(channelName).listen('.message.sent', (payload) => {
+    echo.private(channelName).listen(".message.sent", (payload) => {
       const msg = payload?.message;
       // Own messages already arrive via the send response — skip the echo.
       if (!msg || msg.senderId === myId) return;
@@ -156,25 +161,25 @@ export default function Messages() {
   const handleOpenConvo = (convo) => {
     setDraftRecipient(null);
     setActiveId(convo.id);
-    setMobileView('chat');
+    setMobileView("chat");
   };
 
   const handleBackToList = () => {
-    setMobileView('list');
+    setMobileView("list");
   };
 
   const convoDisplayName = (convo) => {
     const r = convo?.participant?.role;
     // Platform admin messages always appear from "GURU" in the inbox.
-    if (r === 'admin') return 'GURU';
-    return convo?.participant?.name || 'Unknown';
+    if (r === "admin") return "GURU";
+    return convo?.participant?.name || "Unknown";
   };
 
   const handleSend = () => {
     const text = msgText.trim();
     if (!text || sending) return;
     if (!activeId && !draftRecipient) return;
-    setMsgText('');
+    setMsgText("");
 
     if (activeId) {
       dispatch(sendMessageAction({ conversationId: activeId, text }));
@@ -184,7 +189,9 @@ export default function Messages() {
     // Draft → create the conversation with this first message, then switch to
     // the real thread so live updates + read state work normally.
     setCreating(true);
-    dispatch(createConversation({ recipientId: draftRecipient.id, message: text }))
+    dispatch(
+      createConversation({ recipientId: draftRecipient.id, message: text }),
+    )
       .unwrap()
       .then((res) => {
         const newId = res?.data?.conversation?.id;
@@ -195,24 +202,32 @@ export default function Messages() {
       })
       .catch((err) => {
         setMsgText(text); // restore so the message isn't lost
-        toast.error(err?.message || (typeof err === 'string' ? err : 'Failed to send message'));
+        toast.error(
+          err?.message ||
+            (typeof err === "string" ? err : "Failed to send message"),
+        );
       })
       .finally(() => setCreating(false));
   };
 
-  const filteredConversations = conversations.filter(c =>
-    !searchQuery || convoDisplayName(c).toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredConversations = conversations.filter(
+    (c) =>
+      !searchQuery ||
+      convoDisplayName(c).toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  const subtitle = role === 'studio'
-    ? 'Connect with instructors'
-    : 'Connect with studios and instructors';
+  const subtitle =
+    role === "studio"
+      ? "Connect with instructors"
+      : "Connect with studios and instructors";
 
   if (status === STATUS.LOADING && conversations.length === 0) {
     return (
       <div className="max-w-5xl mx-auto">
         <div className="mb-6">
-          <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Messages</h1>
+          <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">
+            Messages
+          </h1>
           <p className="text-[#9A9A94] text-sm mt-1">{subtitle}</p>
         </div>
         <TableSkeleton rows={6} cols={3} />
@@ -223,7 +238,9 @@ export default function Messages() {
   return (
     <div className="max-w-5xl mx-auto">
       <div className="mb-4 sm:mb-6 hidden md:block">
-        <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Messages</h1>
+        <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">
+          Messages
+        </h1>
         <p className="text-[#9A9A94] text-sm mt-1">{subtitle}</p>
       </div>
 
@@ -232,22 +249,26 @@ export default function Messages() {
           aren't cut off. Use dvh (dynamic viewport height) for iOS Safari. */}
       <div
         className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden"
-        style={{ height: 'min(calc(100dvh - 7rem), calc(100vh - 7rem))', minHeight: '420px' }}
+        style={{
+          height: "min(calc(100dvh - 7rem), calc(100vh - 7rem))",
+          minHeight: "420px",
+        }}
       >
         <div className="flex h-full relative">
-
           {/* ── Conversation list ──
               Mobile: full-width slide panel, hidden when chat is open.
               Desktop (md+): always visible left column. */}
           <div
             className={`
-              ${mobileView === 'list' ? 'flex' : 'hidden'} md:flex
+              ${mobileView === "list" ? "flex" : "hidden"} md:flex
               w-full md:w-80 border-r border-[#E5E0D8] flex-col flex-shrink-0
             `}
           >
             {/* Mobile header inside list */}
             <div className="md:hidden px-4 pt-3 pb-1">
-              <h1 className="font-unbounded text-lg font-black text-[#3E3D38]">Messages</h1>
+              <h1 className="font-unbounded text-lg font-black text-[#3E3D38]">
+                Messages
+              </h1>
               <p className="text-[#9A9A94] text-xs">{subtitle}</p>
             </div>
 
@@ -257,7 +278,7 @@ export default function Messages() {
                 <input
                   type="text"
                   value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search messages..."
                   className="flex-1 bg-transparent border-none outline-none text-sm text-[#3E3D38] placeholder-[#C4BCB4] min-w-0"
                 />
@@ -269,12 +290,12 @@ export default function Messages() {
                   <p className="text-[#9A9A94] text-sm">No conversations yet</p>
                 </div>
               )}
-              {filteredConversations.map(convo => (
+              {filteredConversations.map((convo) => (
                 <button
                   key={convo.id}
                   onClick={() => handleOpenConvo(convo)}
                   className={`w-full text-left px-4 py-3.5 flex items-center gap-3 transition-colors border-b border-[#E5E0D8]/50
-                    ${activeId === convo.id ? 'bg-[#FAFEE0]' : 'hover:bg-[#FAFEE0]/50'}`}
+                    ${activeId === convo.id ? "bg-[#FAFEE0]" : "hover:bg-[#FAFEE0]/50"}`}
                 >
                   <Avatar
                     name={convoDisplayName(convo)}
@@ -293,11 +314,11 @@ export default function Messages() {
                     </div>
                     <div className="flex items-center justify-between gap-2 mt-0.5">
                       <p className="text-xs text-[#9A9A94] truncate">
-                        {convo.lastMessage?.body || 'No messages yet'}
+                        {convo.lastMessage?.body || "No messages yet"}
                       </p>
                       {convo.unreadCount > 0 && (
                         <span className="flex-shrink-0 min-w-[18px] h-[18px] px-1.5 bg-[#B4FF5A] text-black text-[10px] font-bold rounded-full flex items-center justify-center">
-                          {convo.unreadCount > 9 ? '9+' : convo.unreadCount}
+                          {convo.unreadCount > 9 ? "9+" : convo.unreadCount}
                         </span>
                       )}
                     </div>
@@ -312,10 +333,10 @@ export default function Messages() {
               Desktop: always visible right column. */}
           <div
             className={`
-              ${mobileView === 'chat' ? 'flex' : 'hidden'} md:flex
+              ${mobileView === "chat" ? "flex" : "hidden"} md:flex
               flex-1 flex-col min-w-0 absolute md:relative inset-0 md:inset-auto bg-white
               transition-transform duration-300 ease-out
-              ${mobileView === 'chat' ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
+              ${mobileView === "chat" ? "translate-x-0" : "translate-x-full md:translate-x-0"}
             `}
           >
             {activeConvo ? (
@@ -330,56 +351,114 @@ export default function Messages() {
                   >
                     <ArrowLeft size={20} />
                   </button>
+                  {
+                    // Link to participant profile based on role
+                  }
+                  <Link
+                    to={(() => {
+                      const p = activeConvo.participant;
+                      if (!p) return "#";
+                      if (p.role === "instructor")
+                        return `/studio/instructors/${p.id}`;
+                      if (p.role === "studio") return `/studio/studios/${p.id}`;
+                      return `/studio/instructors/${p.id}`;
+                    })()}
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex items-center gap-3 min-w-0"
+                  >
+                    <Avatar
+                      name={convoDisplayName(activeConvo)}
+                      src={activeConvo.participant?.avatarUrl}
+                      size="sm"
+                      tone={theme.avatarTone}
+                    />
 
-                  <Avatar
-                    name={convoDisplayName(activeConvo)}
-                    src={activeConvo.participant?.avatarUrl}
-                    size="sm"
-                    tone={theme.avatarTone}
-                  />
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-[#3E3D38] truncate">
-                      {convoDisplayName(activeConvo)}
-                    </p>
-                    <p
-                      className="text-[10px] font-medium truncate capitalize"
-                      style={{ color: theme.accent }}
-                    >
-                      {activeConvo.participant?.role === 'admin' ? 'Moving Guru' : activeConvo.participant?.role}
-                    </p>
-                  </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-[#3E3D38] truncate">
+                        {convoDisplayName(activeConvo)}
+                      </p>
+                      <p
+                        className="text-[10px] font-medium truncate capitalize"
+                        style={{ color: theme.accent }}
+                      >
+                        {activeConvo.participant?.role === "admin"
+                          ? "Moving Guru"
+                          : activeConvo.participant?.role}
+                      </p>
+                    </div>
+                  </Link>
                 </div>
 
                 {/* Messages */}
-                <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
+                <div
+                  ref={scrollRef}
+                  className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4"
+                >
                   {activeId && messagesStatus === STATUS.LOADING ? (
                     <div className="h-full flex items-center justify-center">
                       <div className="w-6 h-6 border-2 border-[#B4FF5A] border-t-transparent rounded-full animate-spin" />
                     </div>
                   ) : messages.length === 0 ? (
                     <div className="h-full flex items-center justify-center">
-                      <p className="text-[#9A9A94] text-sm">No messages yet — say hi!</p>
+                      <p className="text-[#9A9A94] text-sm">
+                        No messages yet — say hi!
+                      </p>
                     </div>
                   ) : (
-                    messages.map(msg => {
+                    messages.map((msg) => {
                       const isMine = msg.senderId === myId;
                       return (
-                        <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
+                        <div
+                          key={msg.id}
+                          className={`group flex items-start gap-1.5 ${isMine ? "justify-end" : "justify-start"}`}
+                        >
                           <div className="max-w-[80%] sm:max-w-[70%]">
                             <div
                               className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed
-                                ${isMine
-                                  ? 'text-white rounded-br-md'
-                                  : 'bg-[#F5FDA6]/40 text-[#3E3D38] rounded-bl-md border border-[#F5FDA6]'
-                                }`}
-                              style={isMine ? { backgroundColor: theme.accent } : undefined}
+            ${
+              isMine
+                ? "text-white rounded-br-md"
+                : "bg-[#F5FDA6]/40 text-[#3E3D38] rounded-bl-md border border-[#F5FDA6]"
+            }`}
+                              style={
+                                isMine
+                                  ? { backgroundColor: theme.accent }
+                                  : undefined
+                              }
                             >
                               {msg.body}
                             </div>
-                            <p className={`text-[10px] text-[#9A9A94] mt-1 ${isMine ? 'text-right' : ''}`}>
+                            <p
+                              className={`text-[10px] text-[#9A9A94] mt-1 ${isMine ? "text-right" : ""}`}
+                            >
                               {formatStamp(msg.createdAt)}
                             </p>
                           </div>
+
+                          {/* Report menu — incoming messages only */}
+                          {!isMine && (
+                            <div className="pt-1.5">
+                              <MessageActionsMenu
+                                onReportMessage={() =>
+                                  setReport({
+                                    type: "message",
+                                    reportedUserId: msg.senderId,
+                                    conversationId: activeId,
+                                    messageId: msg.id,
+                                  })
+                                }
+                                onReportProfile={() =>
+                                  setReport({
+                                    type: "profile",
+                                    reportedUserId:
+                                    activeConvo?.participant?.id,
+                                    conversationId: activeId,
+                                    messageId: null,
+                                  })
+                                }
+                              />
+                            </div>
+                          )}
                         </div>
                       );
                     })
@@ -391,11 +470,11 @@ export default function Messages() {
                   <input
                     type="text"
                     value={msgText}
-                    onChange={e => setMsgText(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && handleSend()}
+                    onChange={(e) => setMsgText(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSend()}
                     placeholder="Type a message..."
                     className="flex-1 bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none transition-all min-w-0"
-                    style={{ '--tw-ring-color': theme.accent }}
+                    style={{ "--tw-ring-color": theme.accent }}
                   />
                   <button
                     onClick={handleSend}
@@ -406,10 +485,21 @@ export default function Messages() {
                     {sending ? <ButtonLoader size={16} /> : <Send size={16} />}
                   </button>
                 </div>
+                {report && (
+                  <ReportModal
+                    type={report.type}
+                    reportedUserId={report.reportedUserId}
+                    conversationId={report.conversationId}
+                    messageId={report.messageId}
+                    onClose={() => setReport(null)}
+                  />
+                )}
               </>
             ) : (
               <div className="flex-1 flex items-center justify-center p-6">
-                <p className="text-[#9A9A94] text-sm text-center">Select a conversation to start messaging</p>
+                <p className="text-[#9A9A94] text-sm text-center">
+                  Select a conversation to start messaging
+                </p>
               </div>
             )}
           </div>

@@ -1,6 +1,6 @@
 // Base URL
-// export const BASE_URL = "http://localhost:8000/api";
-export const BASE_URL = 'https://demowebportals.com/moving-guru-backend/public/api';
+export const BASE_URL = "http://localhost:8000/api";
+// export const BASE_URL = 'https://demowebportals.com/moving-guru-backend/public/api';
 
 // API Endpoints
 export const API_ENDPOINTS = {
@@ -134,6 +134,8 @@ export const API_ENDPOINTS = {
 
   ADMIN_FEATURES: "/admin/features",
   ADMIN_PLANS_SYNC: "/admin/plans/sync-from-stripe",
+  REPORTS: "/reports",
+  ADMIN_REPORTS: "/admin/reports",
 };
 
 // Roles

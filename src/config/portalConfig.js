@@ -4,6 +4,7 @@ import {
   Heart, Sprout, MapPin, Bookmark, ClipboardList,
   Megaphone,
   Mail,
+  Flag,
 } from 'lucide-react';
 
 // ── Per-role theme tokens ────────────────────────────────────────
@@ -77,6 +78,7 @@ export const NAV_CONFIG = {
     { to: '/admin/subscriptions',    icon: Star,            label: 'Subscriptions'     },
     { to: '/admin/settings',         icon: Settings,        label: 'Settings'          },
     { to: '/admin/reviews',          icon: Star,            label: 'Review Moderation' },
+    { to: '/admin/reports',         icon: Flag,            label: 'Reports'           },
     { to: '/admin/communications',   icon: Mail,            label: 'Communications'    },
   ],
 };

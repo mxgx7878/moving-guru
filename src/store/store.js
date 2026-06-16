@@ -9,6 +9,7 @@ import growReducer from "./slices/growSlice";
 import postReducer from "./slices/postSlice";
 import reviewReducer from "./slices/reviewSlice";
 import dashboardReducer from "./slices/dashboardSlice";
+import reportReducer from "./slices/reportSlice";
 
 const store = configureStore({
   reducer: {
@@ -22,6 +23,7 @@ const store = configureStore({
     post: postReducer,
     review: reviewReducer,
     dashboard: dashboardReducer,
+    report: reportReducer,
   },
   devTools: import.meta.env.DEV,
 });

@@ -39,7 +39,8 @@ export default function StudioDetail() {
     axiosInstance.get(`${API_ENDPOINTS.STUDIO_DETAIL}/${id}`)
       .then(({ data }) => {
         if (cancelled) return;
-        const payload = data?.data?.studio || data?.data || null;
+        const payload = data?.data?.user || data?.data || null;
+        console.log('Fetched studio detail:', payload);
         setStudio(payload);
       })
       .catch((err) => {

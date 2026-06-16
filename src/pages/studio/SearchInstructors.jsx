@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Search, MapPin, Calendar, Filter, X, Heart, MessageCircle, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -9,6 +9,7 @@ import { Avatar, Button, Input, SelectField, IconButton } from '../../components
 import { InstructorProfileModal } from '../../features/modals';
 import { OPEN_TO as ALL_OPEN_TO } from '../../constants/profileConstants';
 import StartChatModal from '../../features/chat/StartChatModal';
+import { ALL_DISCIPLINES } from '../../data/disciplines';
 
 export default function SearchInstructors() {
   const navigate = useNavigate();
@@ -17,15 +18,39 @@ export default function SearchInstructors() {
 
   const [query, setQuery]           = useState('');
   const [filters, setFilters]       = useState({ discipline: '', openTo: '', location: '' });
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [debouncedFilters, setDebouncedFilters] = useState({ discipline: '', openTo: '', location: '' });
   const [showFilters, setShowFilters] = useState(false);
   const [savingId, setSavingId]     = useState(null);
   const [selectedInstructor, setSelectedInstructor] = useState(null);
   const [chatTarget, setChatTarget] = useState(null);
+  const debounceTimer = useRef(null);
 
+  // Debounce search and filters
   useEffect(() => {
-    dispatch(fetchInstructors());
-    dispatch(fetchSavedInstructors());
-  }, [dispatch]);
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+
+    debounceTimer.current = setTimeout(() => {
+      setDebouncedQuery(query);
+      setDebouncedFilters(filters);
+    }, 500);
+
+    return () => clearTimeout(debounceTimer.current);
+  }, [query, filters]);
+
+  // Fetch instructors with debounced params
+  useEffect(() => {
+    const params = {};
+    if (debouncedQuery) params.search = debouncedQuery;
+    if (debouncedFilters.discipline) params.discipline = debouncedFilters.discipline;
+    if (debouncedFilters.openTo) params.open_to = debouncedFilters.openTo;
+    if (debouncedFilters.location) params.location = debouncedFilters.location;
+    
+    dispatch(fetchInstructors(params));
+    // dispatch(fetchSavedInstructors());
+  }, [dispatch, debouncedQuery, debouncedFilters]);
 
   const toggleSave = async (id, e) => {
     if (e) e.stopPropagation();
@@ -46,28 +71,13 @@ export default function SearchInstructors() {
     [...new Set(instructors.flatMap(i => i.disciplines || []))].sort()
   ), [instructors]);
 
-  const filtered = useMemo(() => {
-    return instructors.filter(inst => {
-      const q = query.toLowerCase();
-      const matchQ = !q ||
-        inst.name?.toLowerCase().includes(q) ||
-        (inst.disciplines || []).some(d => d.toLowerCase().includes(q)) ||
-        inst.location?.toLowerCase().includes(q) ||
-        (inst.travelingTo || inst.traveling_to || '').toLowerCase().includes(q);
-      const matchD = !filters.discipline ||
-        (inst.disciplines || []).some(d => d.toLowerCase().includes(filters.discipline.toLowerCase()));
-      const matchO = !filters.openTo ||
-        (inst.openTo || inst.open_to || []).includes(filters.openTo);
-      const matchL = !filters.location ||
-        inst.location?.toLowerCase().includes(filters.location.toLowerCase()) ||
-        (inst.travelingTo || inst.traveling_to || '').toLowerCase().includes(filters.location.toLowerCase());
-      return matchQ && matchD && matchO && matchL;
-    });
-  }, [instructors, query, filters]);
+  // Use server-filtered results directly (no client-side filtering needed)
+  const filtered = instructors;
 
   const clearFilters = () => { setFilters({ discipline: '', openTo: '', location: '' }); setQuery(''); };
   const hasActiveFilters = query || filters.discipline || filters.openTo || filters.location;
-  const loading = status === STATUS.LOADING && instructors.length === 0;
+  const isSearching = query !== debouncedQuery || JSON.stringify(filters) !== JSON.stringify(debouncedFilters);
+  const loading = (status === STATUS.LOADING || isSearching) && instructors.length === 0;
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -109,7 +119,7 @@ export default function SearchInstructors() {
               label="Discipline"
               value={filters.discipline}
               onChange={(v) => setFilters((f) => ({ ...f, discipline: v }))}
-              options={allDisciplines}
+              options={ALL_DISCIPLINES}
               placeholder="All disciplines"
               accent="#4E7A1B"
               size="sm"
@@ -135,7 +145,10 @@ export default function SearchInstructors() {
 
         {hasActiveFilters && (
           <div className="flex items-center justify-between pt-2 border-t border-[#E5E0D8]">
-            <p className="text-[#9A9A94] text-xs">{filtered.length} result{filtered.length !== 1 ? 's' : ''} found</p>
+            <div className="flex items-center gap-2">
+              <p className="text-[#9A9A94] text-xs">{filtered.length} result{filtered.length !== 1 ? 's' : ''} found</p>
+              {isSearching && <ButtonLoader size={12} color="#4E7A1B" />}
+            </div>
             <Button
               variant="ghost"
               size="xs"

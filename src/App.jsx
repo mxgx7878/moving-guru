@@ -50,6 +50,7 @@ import AdminSubscriptions  from './pages/admin/AdminSubscriptions';
 import AdminSettings       from './pages/admin/AdminSettings';
 import AdminReviews        from './pages/admin/AdminReviews';
 import AdminCommunications from './pages/admin/AdminCommunications';
+import AdminReports         from './pages/admin/AdminReports';
 import './styles/dashboard-bg.css';
 
 // StudioDetail lives in `pages/public/` because the view itself is
@@ -268,6 +269,7 @@ export default function App() {
           <Route path="subscriptions"  element={<AdminSubscriptions />} />
           <Route path="settings"       element={<AdminSettings />} />
           <Route path="communications" element={<AdminCommunications />} />
+          <Route path="reports"        element={<AdminReports />} />
         </Route>
 
         {/* ── Root → role home ──────────────────────────────── */}
