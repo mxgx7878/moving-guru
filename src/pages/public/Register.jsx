@@ -11,6 +11,7 @@ import { registerUser } from '../../store/actions/authAction';
 import { STATUS } from '../../constants/apiConstants';
 import { DISCIPLINE_CATEGORIES } from '../../data/disciplines';
 import { COUNTRIES, COUNTRIES_AND_REGIONS } from '../../data/countries';
+import AgeGateModal from '../../features/auth/AgeGateModal';
 import { ROLE_THEME } from '../../config/portalConfig';
 import {
   Globe, ArrowRight, ArrowLeft, Check, Upload, X,
@@ -49,6 +50,8 @@ const PLANS = [
   { id:'annual',   label:'12 Months', price:60, per:'/yr',  desc:'Best value — ~$5/mo',      highlight:false },
 ];
 
+const MIN_AGE = 16;
+
 // ─── Main ────────────────────────────────────────────────────────
 export default function Register() {
   const [role, setRole]   = useState('');
@@ -68,6 +71,7 @@ export default function Register() {
   });
   const [errors, setErrors] = useState({});
   const [discSearch, setDiscSearch] = useState('');
+  const [showAgeGate, setShowAgeGate] = useState(false);
   const fileRef   = useRef();
   const photosRef = useRef();
 
@@ -117,7 +121,18 @@ export default function Register() {
     return !Object.keys(e).length;
   };
 
-  const next = () => { if (validate()) setStep(s => s + 1); };
+  const next = () => {
+  // ── Child-safety age gate (instructor) ──
+  if (role === 'instructor' && step === 2) {
+    const ageNum = parseInt(form.age, 10);
+    if (!Number.isNaN(ageNum) && ageNum < MIN_AGE) {
+      setShowAgeGate(true);
+      return; // block — minimum age se kam pe aage nahi badh sakte
+    }
+  }
+  if (validate()) setStep(s => s + 1);
+};
+
   const prev = () => setStep(s => s - 1);
   const pickRole = (r) => { setRole(r); setStep(1); };
 
@@ -133,6 +148,15 @@ export default function Register() {
   };
 
  const handleSubmit = () => {
+
+  if (role === 'instructor') {
+    const ageNum = parseInt(form.age, 10);
+    if (Number.isNaN(ageNum) || ageNum < MIN_AGE) {
+      setShowAgeGate(true);
+      return;
+    }
+  }
+
     const fd = new FormData();
  
     // Common
@@ -331,7 +355,7 @@ export default function Register() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Age *</label>
-                    <input type="number" min="18" max="80" value={form.age} onChange={e => update('age', e.target.value)}
+                    <input type="number" min={MIN_AGE} max="80" value={form.age} onChange={e => update('age', e.target.value)}
                       placeholder="e.g. 30" className={`${inp} ${errors.age ? 'border-red-400' : ''}`} />
                     {errors.age && <p className="text-red-400 text-xs mt-1">{errors.age}</p>}
                   </div>
@@ -400,6 +424,8 @@ export default function Register() {
                 </div>
               </div>
             )}
+
+            <AgeGateModal open={showAgeGate} onClose={() => setShowAgeGate(false)} />
 
             {/* ── STEP 3 INSTRUCTOR: Location & Travel ── */}
             {step === 3 && role === 'instructor' && (

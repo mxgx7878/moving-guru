@@ -58,6 +58,7 @@ const REPORT_COLUMNS = [
 
 /* ── Helpers ───────────────────────────────────────────────── */
 const personName = (u) => {
+  console.log('personName u:', u);
   if (!u) return 'Unknown';
   if (u.role === 'admin') return 'Moving Guru';
   if (u.role === 'studio') return u.detail?.studioName || u.name || 'Studio';
@@ -186,6 +187,7 @@ export default function AdminReports() {
         renderRow={(r) => {
           const reason = REASON_META[r.reason] || REASON_META.other;
           const st = STATUS_META[r.status] || STATUS_META.pending;
+          console.log('Rendering row for report:', r);
           return (
             <tr
               key={r.id}
@@ -194,10 +196,10 @@ export default function AdminReports() {
             >
               <td className="px-4 py-3">
                 <div className="flex items-center gap-2.5">
-                  <Avatar name={personName(r.reportedUser)} src={personAvatar(r.reportedUser)} size="sm" />
+                  <Avatar name={personName(r.reported_user)} src={personAvatar(r.reported_user)} size="sm" />
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-[#3E3D38] truncate">{personName(r.reportedUser)}</p>
-                    <p className="text-[11px] text-[#9A9A94] capitalize">{r.reportedUser?.role || '—'}</p>
+                    <p className="text-sm font-semibold text-[#3E3D38] truncate">{personName(r.reported_user)}</p>
+                    <p className="text-[11px] text-[#9A9A94] capitalize">{r.reported_user?.role || '—'}</p>
                   </div>
                 </div>
               </td>
@@ -289,7 +291,7 @@ function ReportDetailModal({ report, busy, onUpdateStatus, onClose }) {
         {/* Parties */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[
-            { tag: 'Reported user', u: report.reportedUser },
+            { tag: 'Reported user', u: report.reported_user },
             { tag: 'Reported by',   u: report.reporter     },
           ].map(({ tag, u }) => (
             <div key={tag} className="rounded-xl border border-[#E5E0D8] p-3">
@@ -350,7 +352,7 @@ function ReportDetailModal({ report, busy, onUpdateStatus, onClose }) {
                           : 'bg-[#F5FDA6]/40 border border-[#F5FDA6] text-[#3E3D38]'}`}
                     >
                       <p className="text-[10px] font-semibold text-[#9A9A94] mb-0.5">
-                        {fromReported ? personName(report.reportedUser) : personName(report.reporter)}
+                        {fromReported ? personName(report.reported_user) : personName(report.reporter)}
                         {isReported && <span className="ml-1.5 text-red-600">· reported</span>}
                       </p>
                       <p className="whitespace-pre-wrap">{m.body}</p>
