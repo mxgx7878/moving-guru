@@ -28,6 +28,13 @@ const BILLING_CYCLES = [
   { value: 'month-3', label: 'Every 3 months', interval: 'month', intervalCount: 3, period: '/3mo' },
   { value: 'month-6', label: 'Every 6 months', interval: 'month', intervalCount: 6, period: '/6mo' },
   { value: 'year-1',  label: 'Yearly',         interval: 'year',  intervalCount: 1, period: '/yr'  },
+
+];
+
+const DISCOUNT_DURATIONS = [
+  { value: 'once',      label: 'First payment only' },
+  { value: 'repeating', label: 'For N months' },
+  { value: 'forever',   label: 'Every payment (forever)' },
 ];
 
 const cycleFromPlan = (p) => {
@@ -47,7 +54,7 @@ const buildSchema = (isEdit) => yup.object({
   name:            yup.string().trim().required('Name is required').max(64),
   description:     yup.string().nullable().max(255),
   price:           yup.number().typeError('Must be a number').required('Price is required').min(0),
-  currency:        yup.string().required('Currency is required').length(3),
+  // currency:        yup.string().required('Currency is required').length(3),
   billingCycle:    yup.string().required().oneOf(BILLING_CYCLES.map((c) => c.value)),
   trialPeriodDays: yup.number()
     .typeError('Must be a number')
@@ -57,14 +64,24 @@ const buildSchema = (isEdit) => yup.object({
   features:        yup.array().of(yup.string().max(140)),
   isActive:        yup.boolean(),
   sortOrder:       yup.number().typeError('Must be a number').integer().min(0).max(9999),
+  discountType:  yup.string().oneOf(['', 'percent', 'fixed']).nullable(),
+  discountValue: yup.number().typeError('Must be a number').min(0, 'Cannot be negative').nullable(),
+  discountDuration: yup.string().oneOf(['', 'once', 'repeating', 'forever']).nullable(),
+  discountMonths:   yup.number().typeError('Must be a number').nullable().integer().min(1).max(36),
 });
+  const DISCOUNT_TYPES = [
+  { value: '',        label: 'No discount' },
+  { value: 'percent', label: 'Percent (%)' },
+  { value: 'fixed',   label: 'Fixed amount' },
+];
 
 const EMPTY_FORM = {
   id: '', name: '', description: '',
-  price: 0, currency: 'USD',
+  price: 0, currency: 'AUD',
   billingCycle: 'month-1',
   trialPeriodDays: 0,
   features: [], isActive: true, sortOrder: 0,
+  discountType: '', discountValue: 0,   discountDuration: 'forever', discountMonths: 3,
 };
 
 const planToForm = (p) => ({
@@ -72,12 +89,16 @@ const planToForm = (p) => ({
   name:            p.name || '',
   description:     p.description || '',
   price:           Number(p.price) || 0,
-  currency:        p.currency || 'USD',
+  currency:        'AUD',
   billingCycle:    cycleFromPlan(p),
   trialPeriodDays: Number(p.trialPeriodDays) || 0,
   features:        Array.isArray(p.features) ? p.features : [],
   isActive:        p.isActive !== undefined ? Boolean(p.isActive) : true,
   sortOrder:       Number(p.sortOrder) || 0,
+    discountType:    p.discountType || '',
+  discountValue:   Number(p.discountValue) || 0,
+    discountDuration: p.discountDuration || 'forever',
+  discountMonths:   Number(p.discountMonths) || 3,
 });
 
 export default function PlanForm({ plan, saving = false, onCancel, onSubmit }) {
@@ -103,6 +124,8 @@ export default function PlanForm({ plan, saving = false, onCancel, onSubmit }) {
   const removeFeature = (i) =>
     setValue('features', features.filter((_, idx) => idx !== i), { shouldValidate: true });
 
+
+
   const submit = (values) => {
     const cycle = BILLING_CYCLES.find((c) => c.value === values.billingCycle) || BILLING_CYCLES[0];
 
@@ -116,6 +139,14 @@ export default function PlanForm({ plan, saving = false, onCancel, onSubmit }) {
       features:        (values.features || []).map((f) => f.trim()).filter(Boolean),
       isFeatured:      plan?.isFeatured ?? false,
     };
+
+     const dType  = values.discountType || null;
+    const dValue = Number(values.discountValue) || 0;
+    payload.discountType  = dType && dValue > 0 ? dType : null;
+    payload.discountValue = dType && dValue > 0 ? dValue : null;
+    payload.discountDuration = dType && dValue > 0 ? (values.discountDuration || 'forever') : null;
+    payload.discountMonths   = dType && dValue > 0 && values.discountDuration === 'repeating'
+      ? Number(values.discountMonths) : null;
 
     delete payload.billingCycle;
     if (isEditing) delete payload.id;
@@ -173,7 +204,7 @@ export default function PlanForm({ plan, saving = false, onCancel, onSubmit }) {
             control={control} errors={errors}
             name="price" label="Price" type="number" step="0.01"
           />
-          <Controller
+          {/* <Controller
             control={control} name="currency"
             render={({ field }) => (
               <SelectField
@@ -182,7 +213,7 @@ export default function PlanForm({ plan, saving = false, onCancel, onSubmit }) {
                 error={errors.currency?.message}
               />
             )}
-          />
+          /> */}
           <Controller
             control={control} name="billingCycle"
             render={({ field }) => (
@@ -193,6 +224,57 @@ export default function PlanForm({ plan, saving = false, onCancel, onSubmit }) {
               />
             )}
           />
+        </div>
+
+          <div className="grid sm:grid-cols-3 gap-4">
+          <Controller
+            control={control} name="discountType"
+            render={({ field }) => (
+              <SelectField
+                label="Discount" options={DISCOUNT_TYPES}
+                value={field.value} onChange={field.onChange}
+                error={errors.discountType?.message}
+              />
+            )}
+          />
+          {watch('discountType') ? (
+            <>
+              <RHFInput
+                control={control} errors={errors}
+                name="discountValue"
+                label={watch('discountType') === 'percent' ? 'Percent off (%)' : 'Amount off'}
+                type="number" step="0.01" min={0}
+              />
+              <div className="flex items-start pt-6">
+                <p className="text-[11px] text-[#6B6B66] leading-relaxed">
+                  Discount applies to <strong>all subscribers</strong> of this plan and is charged
+                  through Stripe at the reduced price. Set to “No discount” to remove it.
+                </p>
+              </div>
+            </>
+          ) : (
+            <div className="sm:col-span-2 flex items-start pt-6">
+              <p className="text-[11px] text-[#9A9A94]">No discount — subscribers pay the full price above.</p>
+            </div>
+          )}
+
+          <Controller
+                control={control} name="discountDuration"
+                render={({ field }) => (
+                  <SelectField
+                    label="Applies to" options={DISCOUNT_DURATIONS}
+                    value={field.value} onChange={field.onChange}
+                    error={errors.discountDuration?.message}
+                  />
+                )}
+              />
+              {watch('discountDuration') === 'repeating' && (
+                <RHFInput
+                  control={control} errors={errors}
+                  name="discountMonths" label="For how many months?"
+                  type="number" min={1} max={36}
+                />
+              )}
         </div>
 
         {/* Trial — set once at plan level, applied per-subscription */}

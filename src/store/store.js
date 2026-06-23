@@ -10,6 +10,7 @@ import postReducer from "./slices/postSlice";
 import reviewReducer from "./slices/reviewSlice";
 import dashboardReducer from "./slices/dashboardSlice";
 import reportReducer from "./slices/reportSlice";
+import promoReducer from './slices/promoCodeSlice';
 
 const store = configureStore({
   reducer: {
@@ -24,6 +25,7 @@ const store = configureStore({
     review: reviewReducer,
     dashboard: dashboardReducer,
     report: reportReducer,
+    promo: promoReducer,
   },
   devTools: import.meta.env.DEV,
 });

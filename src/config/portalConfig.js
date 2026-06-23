@@ -5,6 +5,7 @@ import {
   Megaphone,
   Mail,
   Flag,
+  Ticket,
 } from 'lucide-react';
 
 // ── Per-role theme tokens ────────────────────────────────────────
@@ -80,5 +81,6 @@ export const NAV_CONFIG = {
     { to: '/admin/reviews',          icon: Star,            label: 'Review Moderation' },
     { to: '/admin/reports',         icon: Flag,            label: 'Reports'           },
     { to: '/admin/communications',   icon: Mail,            label: 'Communications'    },
+    { to: '/admin/promo-codes',   icon: Ticket,            label: 'Promo Codes'    },
   ],
 };

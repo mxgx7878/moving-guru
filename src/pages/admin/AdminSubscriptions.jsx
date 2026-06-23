@@ -198,12 +198,22 @@ export default function AdminSubscriptions() {
                   )}
                 </div>
               </td>
-              <td className="px-4 py-3">
-                <span className="font-unbounded text-sm font-bold text-[#3E3D38]">
-                  ${Number(p.price).toFixed(2)}
-                </span>
+  <td className="px-4 py-3">
+                {p.hasDiscount ? (
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-xs text-[#9A9A94] line-through">${Number(p.price).toFixed(2)}</span>
+                    <span className="font-unbounded text-sm font-bold text-[#3E3D38]">${Number(p.discountedPrice).toFixed(2)}</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wide bg-[#B4FF5A] text-[#1A1A18] px-1.5 py-0.5 rounded-full">
+                      {p.discountType === 'percent' ? `-${Number(p.discountValue)}%` : `-$${Number(p.discountValue)}`}
+                    </span>
+                  </div>
+                ) : (
+                  <span className="font-unbounded text-sm font-bold text-[#3E3D38]">${Number(p.price).toFixed(2)}</span>
+                )}
                 <span className="text-xs text-[#9A9A94] ml-1">{p.currency}</span>
               </td>
+
+              
               <td className="px-4 py-3 text-sm text-[#3E3D38]">
                 {p.intervalCount > 1 ? `Every ${p.intervalCount} ${p.interval}s` : `Per ${p.interval}`}
               </td>

@@ -56,6 +56,7 @@ import './styles/dashboard-bg.css';
 // StudioDetail lives in `pages/public/` because the view itself is
 // read-only and has no role-specific affordances.
 import StudioDetail from './pages/public/StudioDetail';
+import AdminPromoCodes from './pages/admin/AdminPromoCodes';
 
 // ─── Feature key constants ────────────────────────────────────────
 // Must match the `key` column in the `features` DB table.
@@ -270,6 +271,7 @@ export default function App() {
           <Route path="settings"       element={<AdminSettings />} />
           <Route path="communications" element={<AdminCommunications />} />
           <Route path="reports"        element={<AdminReports />} />
+          <Route path="promo-codes" element={<AdminPromoCodes />} />
         </Route>
 
         {/* ── Root → role home ──────────────────────────────── */}

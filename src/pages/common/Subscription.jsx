@@ -40,6 +40,7 @@ import { CardSkeleton } from '../../components/feedback';
 import CheckoutModal from '../../features/billing/CheckoutModal';
 import { ConfirmModal } from '../../features/modals';
 import { useFetchSetupIntent } from '../../hooks/useStripeCheckout';
+import PromoCodeField from '../../features/billing/PromoCodeField';
 
 // ─── Date formatting helper ───────────────────────────────────────
 // Backend stores dates as UTC strings. Convert to user's locale + readable format.
@@ -85,6 +86,7 @@ export default function Subscription() {
   const [pendingPlanId,   setPendingPlanId]   = useState(null);
   const [subscribing,     setSubscribing]     = useState(false);
   const [confirmingCancel, setConfirmingCancel] = useState(false);
+  const [promo, setPromo] = useState(null);
 
   const {
     clientSecret,
@@ -108,6 +110,8 @@ export default function Subscription() {
     }
   }, [error, dispatch]);
 
+  const CURRENCY_SYMBOLS = { USD: '$', AUD: '$', CAD: '$', NZD: '$', GBP: '£', EUR: '€', INR: '₹', AED: 'د.إ' };
+
   // Map API plans → flat shape used by the card grid.
   // Includes trialPeriodDays so the trial badge can render per-card.
   const livePlans = (plans || []).map((p) => ({
@@ -120,12 +124,38 @@ export default function Subscription() {
     highlighted:     Boolean(p.highlighted ?? p.highlight ?? p.isFeatured ?? p.is_featured),
     sortOrder:       Number(p.sortOrder ?? p.sort_order ?? 0),
     trialPeriodDays: Number(p.trialPeriodDays ?? p.trial_period_days ?? 0),
+    hasDiscount:     Boolean(p.hasDiscount),
+    discountType:    p.discountType || null,
+    discountValue:   Number(p.discountValue) || 0,
+    discountedPrice: Number(p.discountedPrice ?? p.price ?? 0),
+    currency:        p.currency || 'USD',
   }));
 
   const sortedPlans = [...livePlans].sort((a, b) => {
     if (a.sortOrder !== b.sortOrder) return a.sortOrder - b.sortOrder;
     return a.name.localeCompare(b.name);
   });
+
+const priceFor = (p) => {
+    const original = Number(p.price) || 0;
+
+    // Step 1: plan's own discount.
+    let final = p.hasDiscount ? (Number(p.discountedPrice) || original) : original;
+
+    // Step 2: stack the promo on top.
+    if (promo) {
+      final = promo.discountType === 'percent'
+        ? final * (1 - Number(promo.discountValue) / 100)
+        : final - Number(promo.discountValue);
+    }
+    final = Math.max(0, Math.round(final * 100) / 100);
+
+    let badge = '';
+    if (promo) badge = promo.discountType === 'percent' ? `-${Number(promo.discountValue)}%` : 'PROMO';
+    else if (p.hasDiscount) badge = p.discountType === 'percent' ? `-${Number(p.discountValue)}%` : 'SAVE';
+
+    return { original, final, discounted: final < original, badge };
+  };
 
   const currentPlanId = String(
     currentSubscription?.plan?.id
@@ -182,7 +212,7 @@ export default function Subscription() {
     }
 
     setSubscribing(true);
-    const result = await dispatch(changePlan({ planId }));
+    const result = await dispatch(changePlan({ planId , promoCode: promo?.code || undefined  }));
     if (changePlan.fulfilled.match(result)) {
       await refreshAfterPurchase();
     }
@@ -200,7 +230,7 @@ export default function Subscription() {
     }
 
     setSubscribing(true);
-    const result = await dispatch(changePlan({ planId, paymentMethodId }));
+    const result = await dispatch(changePlan({ planId, paymentMethodId , promoCode: promo?.code || undefined  }));
     if (changePlan.fulfilled.match(result)) {
       await refreshAfterPurchase();
     }
@@ -356,12 +386,16 @@ export default function Subscription() {
             </p>
           </div>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <>
+          
+          <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-2">
             {sortedPlans.map((p) => {
               const isCurrent   = String(p.id).toLowerCase() === currentPlanId;
               const isSwitching = switchingPlanId === p.id;
               const isAnyBusy   = switchingPlanId !== null || mutating;
               const hasTrial    = p.trialPeriodDays > 0;
+              const sym  = CURRENCY_SYMBOLS[(p.currency || 'USD').toUpperCase()] || '$';
+              const view = priceFor(p);
               const borderCls   = isCurrent
                 ? 'border-[#3E3D38]'
                 : p.highlighted
@@ -394,17 +428,33 @@ export default function Subscription() {
                     </div>
                   )}
 
+
+
                   {/* Plan name + price */}
                   <div>
                     <p className="font-unbounded text-lg font-black text-[#3E3D38]">
                       {p.name}
                     </p>
-                    <div className="flex items-baseline gap-1 mt-1">
-                      <span className="font-unbounded text-2xl font-black text-[#3E3D38]">
-                        ${p.price}
-                      </span>
-                      <span className="text-xs text-[#9A9A94]">{p.period}</span>
+                    <div className="mt-1">
+                      <div className="flex items-baseline gap-1 flex-wrap">
+                        <span className="font-unbounded text-2xl font-black text-[#3E3D38] break-all">
+                          {sym}{view.final.toFixed(2)}
+                        </span>
+                        <span className="text-xs text-[#9A9A94]">{p.period}</span>
+                      </div>
+                      {view.discounted && (
+                        <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                          <span className="text-xs text-[#9A9A94] line-through">{sym}{view.original.toFixed(2)}</span>
+                          <span className="text-[9px] font-bold uppercase tracking-wide bg-[#B4FF5A] text-[#1A1A18] px-1.5 py-0.5 rounded-full">
+                            {view.badge}
+                          </span>
+                        </div>
+                      )}
                     </div>
+
+                                      <div className="mb-4 max-w-sm">
+              <PromoCodeField onApplied={setPromo} />
+            </div>
 
                     {/* Trial subtitle — only for cards with trial */}
                     {hasTrial && !isCurrent && (
@@ -431,6 +481,8 @@ export default function Subscription() {
                       ))}
                     </ul>
                   )}
+
+
 
                   {/* Action buttons */}
                   <div className="mt-5 space-y-2">
@@ -466,6 +518,7 @@ export default function Subscription() {
               );
             })}
           </div>
+          </>
         )}
       </div>
 
