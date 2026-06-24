@@ -24,9 +24,9 @@ export const GROW_FILTER_TABS = [
 ];
 
 export const GROW_TYPE_BG = {
-  training: 'bg-coral/10 text-coral',
+  training: 'bg-coral/10 text-[#3E3D38]',
   retreat:  'bg-[#B4FF5A]/30 text-[#3E3D38]',
-  event:    'bg-[#9BE63D]/15 text-[#9BE63D]',
+  event:    'bg-[#9BE63D]/15 text-[#3E3D38]',
 };
 
 // ── Moderation status ─────────────────────────────────────────────
