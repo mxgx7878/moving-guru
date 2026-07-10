@@ -134,6 +134,18 @@ export default {
           hover: '#4E7A1B',
         },
 
+         danger: {
+    50: "#fef2f2",
+    100: "#fee2e2",
+    200: "#fecaca",
+    300: "#fca5a5",
+    400: "#f87171",
+    500: "#ef4444",
+    600: "#dc2626",
+    700: "#b91c1c",
+    DEFAULT: "#ef4444",
+  },
+
         // Warm hues → yellow.
         orange: {
           ...YELLOW,
@@ -144,7 +156,19 @@ export default {
         yellow: YELLOW,
 
         // Errors / destructive → neutral ink (no red on the site).
-        red:  INK,
+        red: {
+  50: "#fef2f2",
+  100: "#fee2e2",
+  200: "#fecaca",
+  300: "#fca5a5",
+  400: "#f87171",
+  500: "#ef4444",
+  600: "#dc2626",
+  700: "#b91c1c",
+  800: "#991b1b",
+  900: "#7f1d1d",
+  DEFAULT: "#ef4444",
+},
         rose: INK,
         pink: INK,
 

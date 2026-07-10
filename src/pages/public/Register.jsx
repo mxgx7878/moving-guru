@@ -27,7 +27,7 @@ const STEPS_INSTRUCTOR = [
   { id: 3, label: 'Travel',      icon: MapPin },
   { id: 4, label: 'Disciplines', icon: Dumbbell },
   { id: 5, label: 'Bio & Photos',icon: FileText },
-  { id: 6, label: 'Plan',        icon: CreditCard },
+  // { id: 6, label: 'Plan',        icon: CreditCard },
 ];
 
 const STEPS_STUDIO = [
@@ -35,7 +35,7 @@ const STEPS_STUDIO = [
   { id: 2, label: 'Studio',      icon: Building2 },
   { id: 3, label: 'Disciplines', icon: Dumbbell },
   { id: 4, label: 'About',       icon: FileText },
-  { id: 5, label: 'Plan',        icon: CreditCard },
+  // { id: 5, label: 'Plan',        icon: CreditCard },
 ];
 
 // ─── Constants ──────────────────────────────────────────────────
@@ -357,11 +357,11 @@ export default function Register() {
                     <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Age *</label>
                     <input type="number" min={MIN_AGE} max="80" value={form.age} onChange={e => update('age', e.target.value)}
                       placeholder="e.g. 30" className={`${inp} ${errors.age ? 'border-red-400' : ''}`} />
-                    {errors.age && <p className="text-red-400 text-xs mt-1">{errors.age}</p>}
+                    {errors.age && <p className="text-red-500 text-xs mt-1">{errors.age}</p>}
                   </div>
                   <SelectField accent="#4E7A1B" label="Pronouns" value={form.pronouns} onChange={v => update('pronouns', v)} options={PRONOUNS} placeholder="Select pronouns..." />
                 </div>
-                <Input label="Current Studio / Employer" name="studio" form={form} update={update} errors={errors} placeholder="e.g. STRIVE, Marrickville" />
+                <Input label="Current Studio / Employer" name="studio" form={form} update={update} errors={errors}  />
                 <div>
                   <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">Languages Spoken</label>
                   <div className="flex flex-wrap gap-2">
@@ -631,7 +631,7 @@ export default function Register() {
             )}
 
             {/* ── LAST STEP: Plan ── */}
-            {((step === 6 && role === 'instructor') || (step === 5 && role === 'studio')) && (
+            {/* {((step === 6 && role === 'instructor') || (step === 5 && role === 'studio')) && (
               <div className="space-y-5">
                 <div>
                   <h2 className="font-unbounded text-xl font-black text-[#3E3D38] mb-1">Choose your plan</h2>
@@ -666,7 +666,7 @@ export default function Register() {
                   <p className="text-[#6B6B66] text-xs">First 3 months for $2. First 100 studios get 6 months free. Founding member pricing locked in forever.</p>
                 </div>
               </div>
-            )}
+            )} */}
           </div>
 
           {/* Navigation */}

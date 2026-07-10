@@ -120,7 +120,7 @@ export default function Subscription() {
     price:           p.price ?? p.price_monthly ?? p.amount ?? 0,
     period:          p.period || p.per || (p.interval ? `/${p.interval}` : ''),
     description:     p.description || p.desc || '',
-    features:        p.features || [],
+    features:        p.plan_features || [],
     highlighted:     Boolean(p.highlighted ?? p.highlight ?? p.isFeatured ?? p.is_featured),
     sortOrder:       Number(p.sortOrder ?? p.sort_order ?? 0),
     trialPeriodDays: Number(p.trialPeriodDays ?? p.trial_period_days ?? 0),
@@ -474,9 +474,9 @@ const priceFor = (p) => {
                   {p.features.length > 0 && (
                     <ul className="mt-4 space-y-1.5 flex-1">
                       {p.features.map((f, i) => (
-                        <li key={i} className="flex items-start gap-2 text-xs text-[#3E3D38]">
-                          <Check size={12} className="flex-shrink-0 mt-0.5" style={{ color: theme.accent }} />
-                          <span>{f}</span>
+                        <li key={i} className="flex items-start gap-2 text-sm text-[#3E3D38]">
+                          <Check size={16} strokeWidth={4} className="flex-shrink-0 mt-0.5" style={{ color: theme.accent }} />
+                          <span>{f.label}</span>
                         </li>
                       ))}
                     </ul>

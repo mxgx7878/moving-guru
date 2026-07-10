@@ -3,7 +3,7 @@ import { Modal, Button } from '../../components/ui';
 
 // Public Grow page — blocked under-age users are pointed here for free.
 // TODO: apne live public Grow page ka URL daalo (static site grow.html).
-const GROW_URL = 'https://demowebportals.com/moving-guru/grow.html';
+const GROW_URL = 'https://movingguru.co/grow.html';
 
 /**
  * AgeGateModal

@@ -362,7 +362,6 @@ export default function ProfilePage() {
                     label="Current Studio / Employer"
                     value={form.studio || ''}
                     onChange={(e) => set('studio', e.target.value)}
-                    placeholder="e.g. STRIVE, Marrickville"
                   />
                 </div>
               </div>
