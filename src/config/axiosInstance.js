@@ -61,6 +61,15 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+     if (
+      error.response?.status === 402
+      && error.response?.data?.code === 'SUBSCRIPTION_REQUIRED'
+      && window.location.pathname !== '/checkout'
+    ) {
+      window.location.replace(error.response.data.redirectTo || '/checkout');
+      return Promise.reject(error);
+    }
+
     // Only handle 401 — skip if already retried or if it's a public route
     const requestUrl = originalRequest.url || '';
     const isPublicRoute = SKIP_REFRESH_ROUTES.some((route) => requestUrl.includes(route));

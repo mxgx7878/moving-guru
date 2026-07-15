@@ -57,6 +57,7 @@ import './styles/dashboard-bg.css';
 // read-only and has no role-specific affordances.
 import StudioDetail from './pages/public/StudioDetail';
 import AdminPromoCodes from './pages/admin/AdminPromoCodes';
+import SubscriptionCheckout from './pages/common/SubscriptionCheckout';
 
 // ─── Feature key constants ────────────────────────────────────────
 // Must match the `key` column in the `features` DB table.
@@ -100,6 +101,10 @@ function RoleRedirect() {
     return <Navigate to="/login" replace />;
   }
 
+  if (user.role !== 'admin' && user.status === 'pending_payment') {
+    return <Navigate to="/checkout" replace />;
+  }
+
   return <Navigate to={ROLE_THEME[user.role]?.defaultPath || '/login'} replace />;
 }
 
@@ -120,6 +125,16 @@ export default function App() {
         <Route path="/register"        element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password"  element={<ResetPassword />} />
+        <Route
+  path="/checkout"
+  element={
+    <ProtectedRoute
+      allowedRoles={['instructor', 'studio']}
+    >
+      <SubscriptionCheckout />
+    </ProtectedRoute>
+  }
+/>
 
         {/* ═══════════════════════════════════════════════════════════
             Instructor portal

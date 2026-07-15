@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { getMe } from '../../store/actions/authAction';
 import { STATUS } from '../../constants/apiConstants';
@@ -17,6 +17,7 @@ import { ROLE_THEME } from '../../config/portalConfig';
  */
 export default function ProtectedRoute({ children, allowedRoles = [] }) {
   const dispatch = useDispatch();
+  const location = useLocation();
   const { user, token, status } = useSelector((s) => s.auth);
 
   // Only kick off validation when we're genuinely idle — otherwise StrictMode
@@ -45,9 +46,23 @@ export default function ProtectedRoute({ children, allowedRoles = [] }) {
   }
 
   // Wrong role → redirect to correct portal
+  if (
+    user.role !== 'admin'
+    && user.status === 'pending_payment'
+    && location.pathname !== '/checkout'
+  ) {
+    return <Navigate to="/checkout" replace />;
+  }
+
+  if (location.pathname === '/checkout' && user.status !== 'pending_payment') {
+    return <Navigate to={ROLE_THEME[user.role]?.defaultPath || '/login'} replace />;
+  }
+
   if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
-    const correctPath = ROLE_THEME[user.role]?.defaultPath || '/login';
-    return <Navigate to={correctPath} replace />;
+    if (user.status === 'pending_payment' && user.role !== 'admin') {
+      return <Navigate to="/checkout" replace />;
+    }
+    return <Navigate to={ROLE_THEME[user.role]?.defaultPath || '/login'} replace />;
   }
 
   return children;

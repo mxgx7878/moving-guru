@@ -13,10 +13,11 @@
 // - ConfirmModal: named import from features/modals barrel
 // - formatDate + SubscriptionSkeleton: kept as inline helpers (existing pattern)
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
+import axiosInstance from '../../config/axiosInstance';
 import {
   Check, Sparkles, Calendar, ArrowRight, Star, CreditCard, AlertTriangle, Gift,
 } from 'lucide-react';
@@ -26,6 +27,7 @@ import {
   fetchPlans,
   fetchCurrentSubscription,
   changePlan,
+  attachPaymentMethod,
   cancelSubscription,
   resumeSubscription,
 } from '../../store/actions/subscriptionAction';
@@ -34,13 +36,26 @@ import {
   clearSubscriptionMessage,
   clearSubscriptionError,
 } from '../../store/slices/subscriptionSlice';
-import { STATUS } from '../../constants/apiConstants';
+import { API_ENDPOINTS, STATUS } from '../../constants/apiConstants';
 import { Button } from '../../components/ui';
 import { CardSkeleton } from '../../components/feedback';
 import CheckoutModal from '../../features/billing/CheckoutModal';
 import { ConfirmModal } from '../../features/modals';
-import { useFetchSetupIntent } from '../../hooks/useStripeCheckout';
+import {
+  confirmSubscriptionPayment,
+  useFetchSetupIntent,
+} from '../../hooks/useStripeCheckout';
 import PromoCodeField from '../../features/billing/PromoCodeField';
+
+const CARD_BRANDS = {
+  amex: 'American Express',
+  diners: 'Diners Club',
+  discover: 'Discover',
+  jcb: 'JCB',
+  mastercard: 'Mastercard',
+  unionpay: 'UnionPay',
+  visa: 'Visa',
+};
 
 // ─── Date formatting helper ───────────────────────────────────────
 // Backend stores dates as UTC strings. Convert to user's locale + readable format.
@@ -81,10 +96,22 @@ export default function Subscription() {
   const role         = user?.role || 'instructor';
   const theme        = ROLE_THEME[role] || ROLE_THEME.instructor;
   const paymentsPath = role === 'studio' ? '/studio/payments' : '/portal/payments';
+  const defaultPaymentMethodId =
+    user?.defaultPaymentMethodId || user?.default_payment_method_id || null;
 
   const [switchingPlanId, setSwitchingPlanId] = useState(null);
   const [pendingPlanId,   setPendingPlanId]   = useState(null);
   const [subscribing,     setSubscribing]     = useState(false);
+  const [savingCard,      setSavingCard]      = useState(false);
+  const [settingDefaultCardId, setSettingDefaultCardId] = useState(null);
+  const [paymentMethods, setPaymentMethods] = useState(
+    () => defaultPaymentMethodId
+      ? [{ id: defaultPaymentMethodId, isDefault: true }]
+      : [],
+  );
+  const [savedCardLoading, setSavedCardLoading] = useState(
+    Boolean(defaultPaymentMethodId),
+  );
   const [confirmingCancel, setConfirmingCancel] = useState(false);
   const [promo, setPromo] = useState(null);
 
@@ -94,14 +121,50 @@ export default function Subscription() {
     reset: resetClientSecret,
   } = useFetchSetupIntent();
 
+  const loadSavedPaymentMethod = useCallback(async () => {
+    setSavedCardLoading(true);
+    try {
+      const { data } = await axiosInstance.get(
+        API_ENDPOINTS.ATTACH_PAYMENT_METHOD,
+      );
+      const methods = Array.isArray(data.data?.paymentMethods)
+        ? data.data.paymentMethods
+        : data.data?.paymentMethod
+          ? [data.data.paymentMethod]
+          : [];
+      setPaymentMethods(methods);
+      return methods;
+    } catch {
+      // Keep the stored ID usable for plan changes even when masked card
+      // details cannot be loaded from Stripe.
+      setPaymentMethods(
+        defaultPaymentMethodId
+          ? [{ id: defaultPaymentMethodId, isDefault: true }]
+          : [],
+      );
+      return [];
+    } finally {
+      setSavedCardLoading(false);
+    }
+  }, [defaultPaymentMethodId]);
+
   useEffect(() => {
     dispatch(fetchPlans());
     dispatch(fetchCurrentSubscription());
   }, [dispatch]);
 
   useEffect(() => {
-    if (message) { toast.success(message); dispatch(clearSubscriptionMessage()); }
-  }, [message, dispatch]);
+    loadSavedPaymentMethod();
+  }, [loadSavedPaymentMethod]);
+
+  useEffect(() => {
+    if (message) {
+      // An incomplete subscription still needs browser payment confirmation;
+      // do not announce success before Stripe has completed that step.
+      if (!subscribing && currentSubscription?.status !== 'incomplete') toast.success(message);
+      dispatch(clearSubscriptionMessage());
+    }
+  }, [message, currentSubscription?.status, subscribing, dispatch]);
 
   useEffect(() => {
     if (error) {
@@ -157,14 +220,21 @@ const priceFor = (p) => {
     return { original, final, discounted: final < original, badge };
   };
 
-  const currentPlanId = String(
-    currentSubscription?.plan?.id
-    ?? currentSubscription?.plan_id
-    ?? currentSubscription?.planId
-    ?? user?.subscription?.plan
-    ?? user?.plan
-    ?? '',
-  ).toLowerCase();
+  // A plan is "current" only when it belongs to a real usable subscription.
+  // user.plan is registration/profile data and must never be treated as proof
+  // that Stripe checkout has completed.
+  const hasUsableSubscription = ['active', 'trialing'].includes(
+    currentSubscription?.status,
+  );
+
+  const currentPlanId = hasUsableSubscription
+    ? String(
+        currentSubscription?.plan?.id
+        ?? currentSubscription?.plan_id
+        ?? currentSubscription?.planId
+        ?? '',
+      ).toLowerCase()
+    : '';
 
   const currentPlan = sortedPlans.find(
     (p) => String(p.id).toLowerCase() === currentPlanId,
@@ -189,14 +259,47 @@ const priceFor = (p) => {
   const renewalDate = formatDate(renewalDateRaw);
 
   const hasPaymentMethod = Boolean(
-    user?.defaultPaymentMethodId || user?.default_payment_method_id,
+    paymentMethods.length > 0 || defaultPaymentMethodId,
   );
 
-  const refreshAfterPurchase = async () => {
-    await Promise.all([
-      dispatch(fetchCurrentSubscription()),
-      dispatch(getMe()),
-    ]);
+  const waitForSubscriptionAccess = async () => {
+    // Webhooks are asynchronous. Poll briefly so we redirect only after the
+    // backend has made Stripe's active/trialing status authoritative.
+    for (let attempt = 0; attempt < 12; attempt += 1) {
+      const result = await dispatch(getMe());
+      if (getMe.fulfilled.match(result)) {
+        const refreshedUser = result.payload?.data?.user || result.payload?.data;
+        if (refreshedUser?.status === 'active') {
+          await dispatch(fetchCurrentSubscription());
+          return true;
+        }
+      }
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+    return false;
+  };
+
+  const finishSubscriptionChange = async (result) => {
+    if (!changePlan.fulfilled.match(result)) return false;
+
+    const response = result.payload?.data || {};
+    if (response.requiresPaymentConfirmation) {
+      const confirmation = await confirmSubscriptionPayment(response.paymentClientSecret, paymentMethodId);
+      if (!confirmation.ok) {
+        toast.error(confirmation.error || 'Payment could not be confirmed.');
+        return false;
+      }
+    }
+
+    const active = await waitForSubscriptionAccess();
+    if (!active) {
+      toast.info('Your payment is being confirmed. Please wait a moment and retry.');
+      return false;
+    }
+
+    toast.success('Plan updated successfully.');
+
+    return true;
   };
 
   const handleSwitch = async (planId, forceNewCard = false) => {
@@ -207,15 +310,17 @@ const priceFor = (p) => {
 
     if (!hasPaymentMethod || forceNewCard) {
       setPendingPlanId(planId);
-      await fetchClientSecret();
+      const secret = await fetchClientSecret();
+      if (!secret) {
+        setPendingPlanId(null);
+        setSwitchingPlanId(null);
+      }
       return;
     }
 
     setSubscribing(true);
     const result = await dispatch(changePlan({ planId , promoCode: promo?.code || undefined  }));
-    if (changePlan.fulfilled.match(result)) {
-      await refreshAfterPurchase();
-    }
+    await finishSubscriptionChange(result);
     setSwitchingPlanId(null);
     setSubscribing(false);
   };
@@ -224,18 +329,55 @@ const priceFor = (p) => {
     const planId = pendingPlanId;
     setPendingPlanId(null);
     resetClientSecret();
-    if (!planId || !paymentMethodId) {
+    if (!paymentMethodId) {
       setSwitchingPlanId(null);
+      return;
+    }
+
+    // No pending plan means the user opened the standalone "Add another
+    // card" action. Save it as the new default without changing their plan.
+    if (!planId) {
+      setSavingCard(true);
+      const result = await dispatch(attachPaymentMethod(paymentMethodId));
+      if (attachPaymentMethod.fulfilled.match(result)) {
+        await dispatch(getMe());
+        await loadSavedPaymentMethod();
+        toast.success('Your default payment method has been updated.');
+      } else {
+        toast.error(result.payload || 'Could not save this payment method.');
+      }
+      setSavingCard(false);
       return;
     }
 
     setSubscribing(true);
     const result = await dispatch(changePlan({ planId, paymentMethodId , promoCode: promo?.code || undefined  }));
-    if (changePlan.fulfilled.match(result)) {
-      await refreshAfterPurchase();
-    }
+    await finishSubscriptionChange(result);
     setSwitchingPlanId(null);
     setSubscribing(false);
+  };
+
+  const handleAddAnotherCard = async () => {
+    if (savingCard || switchingPlanId || subscribing) return;
+
+    setPendingPlanId(null);
+    const secret = await fetchClientSecret();
+    if (!secret) resetClientSecret();
+  };
+
+  const handleSetDefaultCard = async (paymentMethodId) => {
+    if (!paymentMethodId || settingDefaultCardId || savingCard || subscribing) return;
+
+    setSettingDefaultCardId(paymentMethodId);
+    const result = await dispatch(attachPaymentMethod(paymentMethodId));
+    if (attachPaymentMethod.fulfilled.match(result)) {
+      await dispatch(getMe());
+      await loadSavedPaymentMethod();
+      toast.success('Default payment method updated.');
+    } else {
+      toast.error(result.payload || 'Could not update the default payment method.');
+    }
+    setSettingDefaultCardId(null);
   };
 
   const handleCloseModal = () => {
@@ -248,7 +390,7 @@ const priceFor = (p) => {
     setConfirmingCancel(false);
     const result = await dispatch(cancelSubscription());
     if (cancelSubscription.fulfilled.match(result)) {
-      await refreshAfterPurchase();
+      await Promise.all([dispatch(fetchCurrentSubscription()), dispatch(getMe())]);
     }
   };
 
@@ -256,7 +398,7 @@ const priceFor = (p) => {
     status === STATUS.LOADING && plans.length === 0 && !currentSubscription;
 
   if (initialLoading) return <SubscriptionSkeleton />;
-  if (subscribing)    return <SubscriptionSkeleton message="Activating your subscription…" />;
+  if (subscribing)    return <SubscriptionSkeleton message="Confirming your subscription…" />;
 
   const mutating = status === STATUS.LOADING;
 
@@ -367,6 +509,103 @@ const priceFor = (p) => {
             </Button>
           )
         )}
+      </div>
+
+      {/* ── Saved payment method ─────────────────────────────── */}
+      <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5 sm:p-6">
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[.16em] text-[#9A9A94]">
+              Payment Method
+            </p>
+            <h2 className="font-unbounded text-sm font-black text-[#3E3D38] mt-1">
+              Saved cards
+            </h2>
+            <p className="text-xs text-[#77736C] mt-1">
+              Choose which card Stripe should use for plan changes and renewals.
+            </p>
+          </div>
+
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={CreditCard}
+            loading={savingCard}
+            disabled={savingCard || switchingPlanId !== null || subscribing}
+            onClick={handleAddAnotherCard}
+          >
+            {hasPaymentMethod ? 'Add another card' : 'Add payment method'}
+          </Button>
+        </div>
+
+        <div className="mt-4">
+          {savedCardLoading ? (
+            <div className="space-y-2">
+              <div className="h-20 rounded-xl bg-[#F5F2EC] animate-pulse" />
+              <div className="h-20 rounded-xl bg-[#F5F2EC] animate-pulse" />
+            </div>
+          ) : paymentMethods.length > 0 ? (
+            <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+              {paymentMethods.map((paymentMethod) => {
+                const isDefault = Boolean(paymentMethod.isDefault);
+                const isUpdating = settingDefaultCardId === paymentMethod.id;
+
+                return (
+                  <div
+                    key={paymentMethod.id}
+                    className={`rounded-xl border-2 p-4 flex items-center gap-3 ${isDefault ? 'border-emerald-500 bg-emerald-50/50' : 'border-[#E5E0D8] bg-white'}`}
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-white border border-[#E5E0D8] flex items-center justify-center flex-shrink-0">
+                      <CreditCard size={18} className={isDefault ? 'text-emerald-700' : 'text-[#77736C]'} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="text-sm font-black text-[#3E3D38]">
+                          {CARD_BRANDS[paymentMethod.brand]
+                            || paymentMethod.brand
+                            || 'Saved card'}
+                          {paymentMethod.last4 ? ` •••• ${paymentMethod.last4}` : ''}
+                        </p>
+                        {isDefault && (
+                          <span className="rounded-full bg-emerald-100 text-emerald-700 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider">
+                            Default
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-[#77736C] mt-1">
+                        {paymentMethod.expMonth && paymentMethod.expYear
+                          ? `Expires ${String(paymentMethod.expMonth).padStart(2, '0')}/${String(paymentMethod.expYear).slice(-2)}`
+                          : 'Saved payment method'}
+                      </p>
+                    </div>
+
+                    {isDefault ? (
+                      <Check size={18} strokeWidth={3} className="text-emerald-600 flex-shrink-0" />
+                    ) : (
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        loading={isUpdating}
+                        disabled={Boolean(settingDefaultCardId) || savingCard || subscribing}
+                        onClick={() => handleSetDefaultCard(paymentMethod.id)}
+                      >
+                        Make default
+                      </Button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="rounded-xl border border-dashed border-[#D8D2C8] bg-[#FAF9F6] p-4 flex items-center gap-3">
+              <CreditCard size={18} className="text-[#9A9A94] flex-shrink-0" />
+              <div>
+                <p className="text-sm font-semibold text-[#3E3D38]">No payment method saved</p>
+                <p className="text-xs text-[#8A857D] mt-0.5">Add a card before selecting a paid plan.</p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ── Plan switcher ─────────────────────────────────────── */}
@@ -533,8 +772,14 @@ const priceFor = (p) => {
         open={Boolean(clientSecret)}
         clientSecret={clientSecret}
         role={role}
-        title={hasPaymentMethod ? 'Use a different card' : 'Add a payment method'}
-        ctaLabel={`Subscribe to ${sortedPlans.find((p) => p.id === pendingPlanId)?.name || 'plan'}`}
+        title={pendingPlanId
+          ? 'Use a different card'
+          : hasPaymentMethod
+            ? 'Add another card'
+            : 'Add a payment method'}
+        ctaLabel={pendingPlanId
+          ? `Continue with ${sortedPlans.find((p) => p.id === pendingPlanId)?.name || 'plan'}`
+          : 'Save card'}
         onClose={handleCloseModal}
         onSuccess={handleCardSaved}
       />
