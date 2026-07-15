@@ -141,6 +141,8 @@ export const API_ENDPOINTS = {
   ADMIN_PROMO_CODES:       "/admin/promo-codes",   // GET, POST
   ADMIN_PROMO_CODE_DETAIL: "/admin/promo-codes",   // PATCH /:id, DELETE /:id
   PROMO_VALIDATE:          "/promo-codes/validate", // POST { code, planId? }
+  RETRY_SUBSCRIPTION_PAYMENT:
+    '/subscription/retry-payment',
 };
 
 // Roles

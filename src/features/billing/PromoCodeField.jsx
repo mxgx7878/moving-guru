@@ -11,6 +11,9 @@ export default function PromoCodeField({ onApplied, className = '' }) {
   const [err,     setErr]     = useState(null);
   const [applied, setApplied] = useState(null);
 
+  // console.log(applied, 'applied');
+  
+
   const apply = async () => {
     const trimmed = code.trim().toUpperCase();
     if (!trimmed) return;

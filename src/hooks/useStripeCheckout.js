@@ -117,36 +117,29 @@ export async function confirmSubscriptionPayment(
   clientSecret,
   paymentMethodId = null,
 ) {
-  if (!clientSecret) {
-    return {
-      ok: false,
-      error: 'Payment confirmation is missing.',
-    };
-  }
-
   const stripe = await loadStripeOnce();
 
-  if (!stripe) {
+  if (!stripe || !clientSecret) {
     return {
       ok: false,
-      error: 'Stripe could not be loaded.',
+      error: 'Payment confirmation is unavailable.',
     };
   }
 
-  const confirmOptions = paymentMethodId
+  const options = paymentMethodId
     ? { payment_method: paymentMethodId }
     : undefined;
 
   const { error, paymentIntent } =
     await stripe.confirmCardPayment(
       clientSecret,
-      confirmOptions,
+      options,
     );
 
   if (error) {
     return {
       ok: false,
-      error: error.message || 'Payment confirmation failed.',
+      error: error.message,
       paymentIntent,
     };
   }

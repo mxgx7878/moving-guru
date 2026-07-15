@@ -11,6 +11,7 @@ import {
   Loader2,
   Lock,
   LogOut,
+  RefreshCw,
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
@@ -20,9 +21,11 @@ import { ROLE_THEME } from '../../config/portalConfig';
 import { API_ENDPOINTS } from '../../constants/apiConstants';
 import axiosInstance from '../../config/axiosInstance';
 import { loadStripeOnce } from '../../services/stripe';
+import logo from '../../assets/logo.png';
 import {
   changePlan,
   fetchPlans,
+  fetchCurrentSubscription,
 } from '../../store/actions/subscriptionAction';
 import { getMe, logoutUser } from '../../store/actions/authAction';
 import {
@@ -81,13 +84,15 @@ export default function SubscriptionCheckout() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
-  const { plans } = useSelector((state) => state.subscription);
+  const { plans, currentSubscription } = useSelector((state) => state.subscription);
+  const isPastDue = currentSubscription?.status === 'past_due';
 
   const [selectedPlanId, setSelectedPlanId] = useState(
     () => sessionStorage.getItem('pending_subscription_plan_id') || '',
   );
   const [promo, setPromo] = useState(null);
   const [processing, setProcessing] = useState(false);
+  const [subscriptionChecked, setSubscriptionChecked] = useState(false);
   const defaultPaymentMethodId =
     user?.defaultPaymentMethodId || user?.default_payment_method_id || null;
   const [paymentMethods, setPaymentMethods] = useState(
@@ -130,15 +135,34 @@ export default function SubscriptionCheckout() {
     (plan) => String(plan.id) === String(selectedPlanId),
   );
 
+  const recoveryPlan = currentSubscription?.plan
+    ? normalisePlan(currentSubscription.plan)
+    : selectedPlan;
+
   useEffect(() => {
-    dispatch(fetchPlans());
+    let mounted = true;
+
+    Promise.all([
+      dispatch(fetchPlans()),
+      dispatch(fetchCurrentSubscription()),
+    ]).finally(() => {
+      if (mounted) setSubscriptionChecked(true);
+    });
+
+    return () => { mounted = false; };
   }, [dispatch]);
 
   useEffect(() => {
-    if (!selectedPlanId && livePlans.length > 0) {
+    const currentPlanId = currentSubscription?.plan?.id
+      || currentSubscription?.planId
+      || currentSubscription?.plan_id;
+
+    if (isPastDue && currentPlanId) {
+      setSelectedPlanId(String(currentPlanId));
+    } else if (!selectedPlanId && livePlans.length > 0) {
       setSelectedPlanId(String(livePlans[0].id));
     }
-  }, [livePlans, selectedPlanId]);
+  }, [currentSubscription, isPastDue, livePlans, selectedPlanId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -203,6 +227,7 @@ export default function SubscriptionCheckout() {
       ? selectedPlan.discountedPrice
       : original;
 
+      console.log(promo, 'promo');
     if (promo) {
       final = promo.discountType === 'percent'
         ? final * (1 - Number(promo.discountValue) / 100)
@@ -227,74 +252,220 @@ export default function SubscriptionCheckout() {
     return false;
   };
 
-  const completeCheckout = async (paymentMethodId = null) => {
-    if (!selectedPlan || processing) return;
+  const retryPastDuePayment = async (paymentMethodId) => {
+    if (!paymentMethodId) {
+      toast.error('Please select or add a payment method.');
+      return false;
+    }
 
-    setProcessing(true);
     try {
-      const payload = {
-        planId: selectedPlan.id,
-        promoCode: promo?.code || undefined,
-      };
-      if (paymentMethodId) payload.paymentMethodId = paymentMethodId;
+      const { data } = await axiosInstance.post(
+        API_ENDPOINTS.RETRY_SUBSCRIPTION_PAYMENT,
+        { paymentMethodId },
+      );
 
-      const result = await dispatch(changePlan(payload));
+      const response = data.data || {};
 
-      if (!changePlan.fulfilled.match(result)) {
-        toast.error(result.payload || 'Could not create your subscription.');
-        return;
-      }
-
-      const response = result.payload?.data || {};
       if (response.requiresPaymentConfirmation) {
         const confirmation = await confirmSubscriptionPayment(
           response.paymentClientSecret,
-          paymentMethodId
+          paymentMethodId,
         );
 
         if (!confirmation.ok) {
-          toast.error(confirmation.error || 'Your payment could not be confirmed.');
-          return;
+          toast.error(
+            confirmation.error || 'Payment could not be completed.',
+          );
+          return false;
         }
       }
 
       const active = await waitForActivation();
+
       if (!active) {
-        toast.info('Your subscription is still being confirmed. Please wait a moment and try again.');
-        return;
+        toast.info(
+          'Your payment is still being confirmed. Please wait a moment and retry.',
+        );
+        return false;
       }
 
       sessionStorage.removeItem('pending_subscription_plan_id');
-      toast.success('Your subscription is active. Welcome to Moving Guru!');
-      navigate(ROLE_THEME[user?.role]?.defaultPath || '/portal/dashboard', { replace: true });
-    } finally {
-      setProcessing(false);
+      toast.success('Payment completed. Your subscription is active again.');
+      navigate(
+        ROLE_THEME[user?.role]?.defaultPath || '/portal/dashboard',
+        { replace: true },
+      );
+      return true;
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message
+        || 'Unable to retry the subscription payment.',
+      );
+      return false;
     }
   };
 
+const completeCheckout = async (
+  paymentMethodId = null,
+) => {
+  if (processing) return;
+
+  if (!paymentMethodId) {
+    toast.error('Please select a payment method.');
+    return;
+  }
+
+  // A normal signup needs a selected plan.
+  if (!isPastDue && !selectedPlan) {
+    toast.error('Please select a plan.');
+    return;
+  }
+
+  setProcessing(true);
+
+  try {
+    // Renewal recovery:
+    // retry the unpaid invoice instead of creating/changing a plan.
+    if (isPastDue) {
+      await retryPastDuePayment(
+        paymentMethodId,
+      );
+
+      return;
+    }
+
+    // Normal new-subscription checkout.
+    const payload = {
+      planId: selectedPlan.id,
+      paymentMethodId,
+      promoCode: promo?.code || undefined,
+    };
+
+    const result = await dispatch(
+      changePlan(payload),
+    );
+
+    if (!changePlan.fulfilled.match(result)) {
+      toast.error(
+        result.payload ||
+        'Could not create your subscription.',
+      );
+
+      return;
+    }
+
+    const response = result.payload?.data || {};
+
+    if (response.requiresPaymentConfirmation) {
+      const confirmation =
+        await confirmSubscriptionPayment(
+          response.paymentClientSecret,
+          paymentMethodId,
+        );
+
+      if (!confirmation.ok) {
+        toast.error(
+          confirmation.error ||
+          'Your payment could not be confirmed.',
+        );
+
+        return;
+      }
+    }
+
+    const active = await waitForActivation();
+
+    if (!active) {
+      toast.info(
+        'Your subscription is still being confirmed.',
+      );
+
+      return;
+    }
+
+    sessionStorage.removeItem(
+      'pending_subscription_plan_id',
+    );
+
+    toast.success(
+      'Your subscription is active.',
+    );
+
+    navigate(
+      ROLE_THEME[user?.role]?.defaultPath ||
+        '/portal/dashboard',
+      {
+        replace: true,
+      },
+    );
+  } finally {
+    setProcessing(false);
+  }
+};
+
+  
+
   const symbol = CURRENCY_SYMBOLS[selectedPlan?.currency] || '$';
   const dueToday = selectedPlan?.trialPeriodDays > 0 ? 0 : priceView.final;
+
+  const handleSignOut = async () => {
+    await dispatch(logoutUser());
+    sessionStorage.removeItem('pending_subscription_plan_id');
+    navigate('/login', { replace: true });
+  };
+
+  if (!subscriptionChecked) {
+    return (
+      <div className="min-h-screen bg-[#F7F5F0] flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 size={28} className="animate-spin mx-auto text-[#77736C]" />
+          <p className="text-sm text-[#77736C] mt-3">
+            Checking your subscription…
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isPastDue) {
+    return (
+      <PastDueRecoveryPage
+        subscription={currentSubscription}
+        plan={recoveryPlan}
+        processing={processing}
+        savedCardLoading={savedCardLoading}
+        paymentMethods={paymentMethods}
+        selectedPaymentMethodId={selectedPaymentMethodId}
+        onSelectPaymentMethod={setSelectedPaymentMethodId}
+        useNewCard={useNewCard}
+        setUseNewCard={setUseNewCard}
+        clientSecret={clientSecret}
+        setupLoading={setupLoading}
+        ensureCardForm={ensureCardForm}
+        onRetry={completeCheckout}
+        onSignOut={handleSignOut}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F7F5F0] text-[#302F2A] font-['DM_Sans']">
       <header className="border-b border-[#E6E1D8] bg-white/90 backdrop-blur">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-[#F5FDA6] flex items-center justify-center">
+            {/* <div className="w-9 h-9 rounded-xl bg-[#F5FDA6] flex items-center justify-center">
               <Globe size={18} />
             </div>
             <span className="font-unbounded text-sm sm:text-base font-black tracking-wide">
               MOVING <span className="text-coral">GURU</span>
-            </span>
+            </span> */}
+
+            <img src={logo} alt="Moving Guru" className="h-8 sm:h-10" />
           </div>
           <button
             type="button"
             disabled={processing}
-            onClick={async () => {
-              await dispatch(logoutUser());
-              sessionStorage.removeItem('pending_subscription_plan_id');
-              navigate('/login', { replace: true });
-            }}
+            onClick={handleSignOut}
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#6B6B66] hover:text-[#302F2A] disabled:opacity-50"
           >
             <LogOut size={14} /> Sign out
@@ -362,7 +533,7 @@ export default function SubscriptionCheckout() {
                     onClick={() => {
                       setSelectedPlanId(String(plan.id));
                       sessionStorage.setItem('pending_subscription_plan_id', String(plan.id));
-                      setPromo(null);
+                      // setPromo(null);
                     }}
                     className={`w-full text-left rounded-2xl border-2 p-4 transition-all ${selected ? 'border-[#302F2A] bg-[#FAF9F6] shadow-sm' : 'border-[#E8E3DA] hover:border-[#BBB4A9]'}`}
                   >
@@ -538,6 +709,223 @@ export default function SubscriptionCheckout() {
   );
 }
 
+function PastDueRecoveryPage({
+  subscription,
+  plan,
+  processing,
+  savedCardLoading,
+  paymentMethods,
+  selectedPaymentMethodId,
+  onSelectPaymentMethod,
+  useNewCard,
+  setUseNewCard,
+  clientSecret,
+  setupLoading,
+  ensureCardForm,
+  onRetry,
+  onSignOut,
+}) {
+  const symbol = CURRENCY_SYMBOLS[plan?.currency] || '$';
+  const renewalDateValue = subscription?.currentPeriodEnd
+    || subscription?.current_period_end;
+  const renewalDate = renewalDateValue
+    ? new Date(renewalDateValue).toLocaleDateString(undefined, {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      })
+    : null;
+
+  return (
+    <div className="min-h-screen bg-[#F7F5F0] text-[#302F2A] font-['DM_Sans']">
+      <header className="border-b border-[#E6E1D8] bg-white/90 backdrop-blur">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-9 h-9 rounded-xl bg-[#F5FDA6] flex items-center justify-center">
+              <Globe size={18} />
+            </div>
+            <span className="font-unbounded text-sm sm:text-base font-black tracking-wide">
+              MOVING <span className="text-coral">GURU</span>
+            </span>
+          </div>
+          <button
+            type="button"
+            disabled={processing}
+            onClick={onSignOut}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#6B6B66] hover:text-[#302F2A] disabled:opacity-50"
+          >
+            <LogOut size={14} /> Sign out
+          </button>
+        </div>
+      </header>
+
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <div className="max-w-3xl mx-auto text-center mb-8">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 text-red-700 px-3 py-1 text-xs font-bold mb-4">
+            <AlertCircle size={14} /> Renewal payment unsuccessful
+          </span>
+          <h1 className="font-unbounded text-2xl sm:text-4xl font-black leading-tight">
+            Restore your subscription
+          </h1>
+          <p className="text-[#77736C] text-sm sm:text-base mt-3">
+            Update your payment method and retry the outstanding renewal payment to regain access.
+          </p>
+        </div>
+
+        <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-4 flex items-start gap-3">
+          <Lock size={19} className="text-red-700 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="font-bold text-red-900 text-sm">
+              Dashboard access is temporarily locked
+            </p>
+            <p className="text-red-800/80 text-xs sm:text-sm mt-1">
+              Your subscription has not been cancelled. Access returns automatically after the outstanding invoice is paid.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid lg:grid-cols-[.85fr_1.15fr] gap-6 items-start">
+          <section className="space-y-5">
+            <div className="bg-white border border-[#E6E1D8] rounded-3xl p-5 sm:p-7 shadow-sm">
+              <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#9A958D]">
+                Current subscription
+              </p>
+              <div className="flex items-start justify-between gap-4 mt-3">
+                <div>
+                  <h2 className="font-unbounded text-xl font-black">
+                    {plan?.name || 'Subscription plan'}
+                  </h2>
+                  <p className="text-sm text-[#77736C] mt-2">
+                    {symbol}{Number(plan?.price || 0).toFixed(2)} per {plan?.interval || 'month'}
+                  </p>
+                </div>
+                <span className="rounded-full bg-red-50 text-red-700 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider">
+                  Past due
+                </span>
+              </div>
+
+              <div className="mt-5 pt-5 border-t border-[#EEEAE3] space-y-3 text-xs">
+                {renewalDate && (
+                  <div className="flex justify-between gap-4">
+                    <span className="text-[#858078]">Failed renewal date</span>
+                    <span className="font-bold">{renewalDate}</span>
+                  </div>
+                )}
+                <div className="flex justify-between gap-4">
+                  <span className="text-[#858078]">Subscription status</span>
+                  <span className="font-bold text-red-700">Payment required</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+              <div className="flex items-start gap-3">
+                <RefreshCw size={18} className="text-emerald-700 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-bold text-emerald-900">What happens next?</p>
+                  <ol className="mt-2 space-y-1.5 text-xs text-emerald-900/75 list-decimal pl-4">
+                    <li>Select a funded saved card or add another card.</li>
+                    <li>Stripe retries your outstanding renewal invoice securely.</li>
+                    <li>Your dashboard unlocks automatically after payment succeeds.</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="bg-white border border-[#E6E1D8] rounded-3xl p-5 sm:p-7 shadow-sm lg:sticky lg:top-6">
+            <div className="mb-5">
+              <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#9A958D]">
+                Payment recovery
+              </p>
+              <h2 className="font-unbounded text-lg font-black mt-1">
+                Choose a card and retry
+              </h2>
+              <p className="text-xs text-[#858078] mt-1">
+                The selected card becomes the default for this subscription and future renewals.
+              </p>
+            </div>
+
+            {savedCardLoading ? (
+              <div className="rounded-2xl border border-[#E6E1D8] p-5 text-center">
+                <Loader2 size={22} className="animate-spin mx-auto text-[#8A857D]" />
+                <p className="text-xs text-[#858078] mt-2">Loading your saved cards…</p>
+              </div>
+            ) : paymentMethods.length > 0 && !useNewCard ? (
+              <SavedPaymentMethods
+                paymentMethods={paymentMethods}
+                selectedPaymentMethodId={selectedPaymentMethodId}
+                onSelect={onSelectPaymentMethod}
+                processing={processing}
+                ctaLabel="Update Card & Retry Payment"
+                onContinue={() => onRetry(selectedPaymentMethodId)}
+                onAddAnother={async () => {
+                  setUseNewCard(true);
+                  await ensureCardForm();
+                }}
+              />
+            ) : clientSecret ? (
+              <>
+                <Elements stripe={loadStripeOnce()}>
+                  <EmbeddedCardForm
+                    clientSecret={clientSecret}
+                    processing={processing}
+                    ctaLabel="Save Card & Retry Payment"
+                    onPaymentMethod={onRetry}
+                    consentText="By continuing, you authorise Stripe to retry the outstanding subscription invoice and use this card for future renewals."
+                  />
+                </Elements>
+                {paymentMethods.length > 0 && (
+                  <button
+                    type="button"
+                    disabled={processing}
+                    onClick={() => setUseNewCard(false)}
+                    className="w-full mt-3 text-xs font-bold text-[#5F5B55] hover:text-[#302F2A] underline disabled:opacity-50"
+                  >
+                    Use a saved card instead
+                  </button>
+                )}
+              </>
+            ) : (
+              <div className="rounded-2xl border border-[#E6E1D8] p-5 text-center">
+                {setupLoading ? (
+                  <>
+                    <Loader2 size={22} className="animate-spin mx-auto text-[#8A857D]" />
+                    <p className="text-xs text-[#858078] mt-2">Preparing secure payment form…</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-xs text-red-600 mb-3">
+                      The secure card form could not be loaded.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={ensureCardForm}
+                      className="text-xs font-bold underline"
+                    >
+                      Try again
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+
+            <div className="mt-5 space-y-2">
+              <div className="flex items-center gap-2 text-[11px] text-[#77736C]">
+                <ShieldCheck size={14} className="text-emerald-600" />
+                Secure payments powered by Stripe
+              </div>
+              <div className="flex items-center gap-2 text-[11px] text-[#77736C]">
+                <Lock size={14} /> Your card information never touches our servers
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  );
+}
+
 function SavedPaymentMethods({
   paymentMethods,
   selectedPaymentMethodId,
@@ -627,6 +1015,7 @@ function EmbeddedCardForm({
   processing,
   ctaLabel,
   onPaymentMethod,
+  consentText = 'By continuing, you authorise recurring charges according to the selected plan. You can manage or cancel your subscription from your account after activation.',
 }) {
   const { confirmCard, busy } = useStripeCheckout();
   const [ready, setReady] = useState(false);
@@ -657,7 +1046,7 @@ function EmbeddedCardForm({
         {processing ? 'Confirming your subscription…' : ctaLabel}
       </button>
       <p className="text-[10px] text-center text-[#918C84] mt-3 leading-relaxed">
-        By continuing, you authorise recurring charges according to the selected plan. You can manage or cancel your subscription from your account after activation.
+        {consentText}
       </p>
     </div>
   );
