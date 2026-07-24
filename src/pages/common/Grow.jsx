@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'sonner';
 import { BookOpen, Plus, Loader2 } from 'lucide-react';
 import {
-  fetchGrowPosts, fetchMyGrowPosts, deleteGrowPost, boostGrowPost,
+  fetchGrowPosts, fetchMyGrowPosts, deleteGrowPost,
 } from '../../store/actions/grow';
 import { clearGrowMessage, clearGrowError } from '../../store/slices/growSlice';
 import { ROLE_THEME } from '../../config/portalConfig';
@@ -95,11 +95,11 @@ const sourcePosts = isMine
 
   const handleBoostPaid = async () => {
     if (!boostingPost) return;
-    const id = boostingPost.id;
     setBoostingPost(null);
-    // Use the existing boost endpoint to flip is_featured on. When payment is
-    // real, this call will carry the Stripe receipt so backend can audit.
-    dispatch(boostGrowPost({ id, is_featured: true }));
+    await Promise.all([
+      dispatch(fetchGrowPosts()),
+      dispatch(fetchMyGrowPosts()),
+    ]);
   };
 
   const canPost = isStudio || role === 'instructor';
@@ -277,6 +277,7 @@ const typeCounts = GROW_FILTER_TABS.reduce((acc, t) => ({
       <BoostPaymentModal
         open={!!boostingPost}
         post={boostingPost}
+        role={role}
         onCancel={() => setBoostingPost(null)}
         onPaid={handleBoostPaid}
       />

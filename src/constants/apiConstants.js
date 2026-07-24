@@ -66,12 +66,19 @@ export const API_ENDPOINTS = {
   GROW_POSTS_MY: "/grow-posts/my", // GET (own posts)
   GROW_POST_UPDATE: "/grow-posts", // PUT /:id
   GROW_POST_DELETE: "/grow-posts", // DELETE /:id
+  GROW_PAYMENT_INTENTS: "/grow-payments/intents",
+  GROW_PAYMENT_COMPLETE: "/grow-payments/complete",
+  GROW_POST_TIERS: "/grow-post-tiers",
+  PUBLIC_GROW_PAYMENT_INTENTS: "/public/grow-payments/intents",
+  PUBLIC_GROW_PAYMENT_COMPLETE: "/public/grow-payments/complete",
+  PUBLIC_GROW_POSTS: "/public/grow-posts",
 
   // Admin grow endpoints
   ADMIN_GROW_POSTS: "/admin/grow-posts",
   ADMIN_GROW_APPROVE: "/admin/grow-posts", // PATCH /:id/approve
   ADMIN_GROW_REJECT: "/admin/grow-posts", // PATCH /:id/reject
   ADMIN_GROW_BOOST: "/admin/grow-posts", // PATCH /:id/boost
+  ADMIN_GROW_POST_TIERS: "/admin/grow-post-tiers",
 
   // ── Admin: Dashboard ─────────────────────────────────────
   ADMIN_DASHBOARD_STATS: "/admin/dashboard/stats", // GET — overview counters + trends

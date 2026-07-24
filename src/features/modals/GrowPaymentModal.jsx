@@ -1,55 +1,199 @@
-import { useState } from 'react';
-import { CheckCircle2, CreditCard, Clock } from 'lucide-react';
-import { Modal, Button } from '../../components/ui';
-import { GROW_PRICING_TIERS } from '../../constants/growConstants';
-import { processPayment } from '../../services/payments';
+import { useCallback, useEffect, useState } from 'react';
+import { CheckCircle2, CreditCard, Clock, Loader2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
-// Payment gate shown on first submission of a Grow post. Author picks a
-// duration tier; we charge the matching price and stamp the post's
-// expiry_date. Edits within the live window skip this modal entirely.
-//
-// When real payments are wired up, only processPayment() needs to change —
-// this component stays as-is.
-export default function GrowPaymentModal({
-  open,
-  onCancel,
-  // Called with { tier, days, price, expiry_date } once payment succeeds.
-  onPaid,
+import { Modal, Button } from '../../components/ui';
+import CheckoutModal from '../billing/CheckoutModal';
+import { API_ENDPOINTS } from '../../constants/apiConstants';
+import axiosInstance from '../../config/axiosInstance';
+import { loadStripeOnce } from '../../services/stripe';
+
+const cardName = (card) => {
+  const brand = card.brand
+    ? card.brand.charAt(0).toUpperCase() + card.brand.slice(1)
+    : 'Card';
+  return `${brand}${card.last4 ? ` •••• ${card.last4}` : ''}`;
+};
+
+export function GrowStripePaymentControls({
+  purpose,
+  amount,
+  pricingTierId = null,
+  postId = null,
+  ctaLabel,
+  role,
+  onSuccess,
+  onBusyChange,
 }) {
-  const [tierId, setTierId] = useState(GROW_PRICING_TIERS[0].id);
+  const [cards, setCards] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
+  const [loadingCards, setLoadingCards] = useState(true);
   const [working, setWorking] = useState(false);
+  const [setupSecret, setSetupSecret] = useState(null);
+  const [addingCard, setAddingCard] = useState(false);
 
-  const tier = GROW_PRICING_TIERS.find((t) => t.id === tierId) || GROW_PRICING_TIERS[0];
-
-  const handlePay = async () => {
-    setWorking(true);
-    const res = await processPayment({
-      kind: 'grow_post',
-      amount: tier.price,
-      meta: { tier: tier.id, days: tier.days },
-    });
-    setWorking(false);
-
-    if (!res.ok) {
-      toast.error(res.error || 'Payment failed. Please try again.');
-      return;
-    }
-
-    // Compute expiry date = now + tier.days (ISO yyyy-mm-dd to match the API).
-    const d = new Date();
-    d.setDate(d.getDate() + tier.days);
-    const expiry = d.toISOString().slice(0, 10);
-
-    toast.success('Payment successful — submitting your post for approval.');
-    onPaid({
-      tier:         tier.id,
-      days:         tier.days,
-      price:        tier.price,
-      expiry_date:  expiry,
-      receipt:      res.receipt,
-    });
+  const setPaymentBusy = (value) => {
+    setWorking(value);
+    onBusyChange?.(value);
   };
+
+  const loadCards = useCallback(async (preferredId = null) => {
+    setLoadingCards(true);
+    try {
+      const { data } = await axiosInstance.get(API_ENDPOINTS.ATTACH_PAYMENT_METHOD);
+      const list = Array.isArray(data.data?.paymentMethods)
+        ? data.data.paymentMethods
+        : data.data?.paymentMethod ? [data.data.paymentMethod] : [];
+      const nextId = preferredId
+        || data.data?.defaultPaymentMethodId
+        || list.find((card) => card.isDefault)?.id
+        || list[0]?.id
+        || null;
+      setCards(list);
+      setSelectedId(nextId);
+    } catch {
+      toast.error('Could not load your saved cards.');
+    } finally {
+      setLoadingCards(false);
+    }
+  }, []);
+
+  useEffect(() => { loadCards(); }, [loadCards]);
+
+  const openCardForm = async () => {
+    setPaymentBusy(true);
+    try {
+      const { data } = await axiosInstance.post(API_ENDPOINTS.SETUP_INTENT);
+      setSetupSecret(data.data?.clientSecret || null);
+      setAddingCard(true);
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Could not open the secure card form.');
+    } finally {
+      setPaymentBusy(false);
+    }
+  };
+
+  const pay = async () => {
+    if (!selectedId || working) return;
+    setPaymentBusy(true);
+    try {
+      const { data } = await axiosInstance.post(API_ENDPOINTS.GROW_PAYMENT_INTENTS, {
+        purpose,
+        pricingTierId,
+        postId,
+        paymentMethodId: selectedId,
+      });
+      const payment = data.data;
+      const stripe = await loadStripeOnce();
+      const { error, paymentIntent } = await stripe.confirmCardPayment(
+        payment.clientSecret,
+        { payment_method: selectedId },
+      );
+
+      if (error) {
+        toast.error(error.message || 'Stripe could not complete the payment.');
+        return;
+      }
+      if (paymentIntent?.status !== payment.expectedStatus) {
+        toast.error('Stripe has not completed this payment yet. Please retry.');
+        return;
+      }
+
+      const completed = await axiosInstance.post(API_ENDPOINTS.GROW_PAYMENT_COMPLETE, {
+        paymentIntentId: payment.paymentIntentId,
+      });
+      onSuccess?.(completed.data.data);
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Payment could not be completed.');
+    } finally {
+      setPaymentBusy(false);
+    }
+  };
+
+  return (
+    <div className="space-y-3 pt-4 border-t border-[#E5E0D8]">
+      <p className="text-xs font-bold">Payment method</p>
+      {loadingCards ? (
+        <div className="flex items-center justify-center gap-2 py-5 text-xs text-[#6B6B66]">
+          <Loader2 size={16} className="animate-spin" /> Loading saved cards…
+        </div>
+      ) : cards.length > 0 ? (
+        <div className="space-y-2 max-h-44 overflow-y-auto">
+          {cards.map((card) => (
+            <button
+              key={card.id}
+              type="button"
+              disabled={working}
+              onClick={() => setSelectedId(card.id)}
+              className={`w-full rounded-xl border p-3 text-left flex items-center gap-3 ${selectedId === card.id ? 'border-coral bg-coral/5' : 'border-[#E5E0D8]'}`}
+            >
+              <CreditCard size={17} />
+              <span className="flex-1 text-sm font-semibold">{cardName(card)}</span>
+              {card.expMonth && <span className="text-[10px] text-[#6B6B66]">{card.expMonth}/{String(card.expYear).slice(-2)}</span>}
+              {card.isDefault && <span className="text-[9px] font-bold text-blue-700">DEFAULT</span>}
+            </button>
+          ))}
+        </div>
+      ) : (
+        <p className="rounded-xl bg-amber-50 p-3 text-xs text-amber-800">Add a card before continuing.</p>
+      )}
+
+      <button
+        type="button"
+        disabled={working}
+        onClick={openCardForm}
+        className="inline-flex items-center gap-1.5 text-xs font-bold underline disabled:opacity-50"
+      >
+        <Plus size={13} /> Add another card
+      </button>
+
+      <Button
+        variant="primary"
+        icon={CreditCard}
+        loading={working}
+        disabled={!selectedId || loadingCards}
+        onClick={pay}
+        className="w-full"
+      >
+        {ctaLabel || `Pay $${amount}`}
+      </Button>
+
+      <CheckoutModal
+        open={addingCard}
+        clientSecret={setupSecret}
+        title="Add a payment card"
+        ctaLabel="Save card"
+        role={role}
+        onClose={() => setAddingCard(false)}
+        onSuccess={async (paymentMethodId) => {
+          setAddingCard(false);
+          setSetupSecret(null);
+          await loadCards(paymentMethodId);
+        }}
+      />
+    </div>
+  );
+}
+
+export default function GrowPaymentModal({ open, onCancel, onPaid, role = 'instructor' }) {
+  const [tiers, setTiers] = useState([]);
+  const [tierId, setTierId] = useState(null);
+  const [loadingTiers, setLoadingTiers] = useState(false);
+  const [working, setWorking] = useState(false);
+  const tier = tiers.find((item) => String(item.id) === String(tierId)) || tiers[0];
+
+  useEffect(() => {
+    if (!open) return;
+    setLoadingTiers(true);
+    axiosInstance.get(API_ENDPOINTS.GROW_POST_TIERS)
+      .then(({ data }) => {
+        const list = Array.isArray(data.data) ? data.data : [];
+        setTiers(list);
+        setTierId(list[0]?.id ?? null);
+      })
+      .catch(() => toast.error('Could not load Grow pricing tiers.'))
+      .finally(() => setLoadingTiers(false));
+  }, [open]);
 
   if (!open) return null;
 
@@ -58,67 +202,54 @@ export default function GrowPaymentModal({
       open
       size="md"
       title="Choose your post duration"
-      subtitle="One-off payment. Edits within this window are free."
+      subtitle="Your card is charged now. The listing is published after admin approval."
       onClose={working ? undefined : onCancel}
       dismissOnBackdrop={!working}
       zIndex="z-[60]"
-      footer={
-        <>
-          <Button variant="secondary" onClick={onCancel} disabled={working}>
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            icon={CreditCard}
-            loading={working}
-            onClick={handlePay}
-          >
-            Pay ${tier.price} & Submit
-          </Button>
-        </>
-      }
+      footer={<Button variant="secondary" onClick={onCancel} disabled={working}>Cancel</Button>}
     >
       <div className="space-y-3">
-        {GROW_PRICING_TIERS.map((t) => {
-          const selected = t.id === tierId;
+        {loadingTiers && (
+          <div className="flex justify-center py-6"><Loader2 className="animate-spin" size={20} /></div>
+        )}
+        {!loadingTiers && tiers.map((item) => {
+          const selected = item.id === tierId;
           return (
             <button
-              key={t.id}
+              key={item.id}
               type="button"
-              onClick={() => setTierId(t.id)}
-              className={`w-full flex items-center justify-between gap-4 rounded-xl border p-4 text-left transition-colors
-                ${selected
-                  ? 'border-coral bg-coral/5'
-                  : 'border-[#E5E0D8] hover:border-[#3E3D38]'}`}
+              disabled={working}
+              onClick={() => setTierId(item.id)}
+              className={`w-full flex items-center justify-between gap-4 rounded-xl border p-4 text-left ${selected ? 'border-coral bg-coral/5' : 'border-[#E5E0D8]'}`}
             >
               <div className="flex items-start gap-3">
-                <div className={`w-5 h-5 rounded-full border-2 mt-0.5 flex items-center justify-center
-                  ${selected ? 'border-coral bg-coral' : 'border-[#E5E0D8]'}`}>
-                  {selected && <CheckCircle2 size={14} className="text-white" />}
-                </div>
+                {selected ? <CheckCircle2 size={20} className="text-coral" /> : <Clock size={20} />}
                 <div>
-                  <p className="font-['Unbounded'] text-sm font-black text-[#3E3D38]">
-                    {t.label}
-                  </p>
-                  <p className="text-xs text-[#6B6B66] mt-0.5 flex items-center gap-1">
-                    <Clock size={11} className="text-[#9A9A94]" />
-                    {t.blurb}
-                  </p>
+                  <p className="font-['Unbounded'] text-sm font-black">{item.name}</p>
+                  <p className="text-xs text-[#6B6B66] mt-0.5">{item.description || `${item.duration_days} days live`}</p>
                 </div>
               </div>
-              <p className="font-['Unbounded'] text-lg font-black text-[#3E3D38]">
-                ${t.price}
-              </p>
+              <p className="font-['Unbounded'] text-lg font-black">${Number(item.price).toFixed(2)}</p>
             </button>
           );
         })}
 
-        <p className="text-[11px] text-[#9A9A94] pt-2 leading-relaxed">
-          Your post will be submitted for review after payment. Once approved
-          it goes live for the duration you selected. You can edit for free
-          at any time while it's live — every edit is reviewed before the
-          updated version is published.
+        <p className="text-[11px] text-[#6B6B66] leading-relaxed">
+          Payment is taken immediately. The purchased live period begins when an admin approves the post.
         </p>
+
+        {tier && <GrowStripePaymentControls
+          purpose="listing"
+          amount={Number(tier.price)}
+          pricingTierId={tier.id}
+          role={role}
+          onBusyChange={setWorking}
+          ctaLabel={`Pay $${Number(tier.price).toFixed(2)} & Submit`}
+          onSuccess={({ paymentIntentId }) => {
+            toast.success('Payment successful—submitting your post for approval.');
+            onPaid?.({ tierId: tier.id, paymentIntentId });
+          }}
+        />}
       </div>
     </Modal>
   );

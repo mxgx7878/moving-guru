@@ -155,6 +155,14 @@ const clearImage = () => {
     if (form.date_from && form.date_to && form.date_from > form.date_to) {
       errs.date_to = 'Start date must be before end date';
     }
+    if (
+      form.show_spots
+      && form.spots !== ''
+      && form.spots_left !== ''
+      && Number(form.spots_left) > Number(form.spots)
+    ) {
+      errs.spots_left = 'Spots left cannot be greater than total spots';
+    }
     setErrors(errs);
     if (Object.keys(errs).length) {
       toast.error(Object.values(errs)[0]);
@@ -168,7 +176,7 @@ const clearImage = () => {
   //   2. if no external_url → show MissingLinkConfirmModal
   //      └─ "Go back" (cancel)  |  "Submit without link" (continue)
   //   3. if creating (not editing) → show GrowPaymentModal (pick tier, pay)
-  //      └─ on success, writes expiry_date + dispatches createGrowPost
+  //      └─ on success, sends the verified PaymentIntent ID with the post
   //   4. if editing → dispatch updateGrowPost directly (no payment)
   const handleSubmit = (e) => {
     e?.preventDefault?.();
@@ -183,14 +191,14 @@ const clearImage = () => {
 
   const proceedToPaymentOrSave = () => {
     if (isEditing) {
-      dispatchSave({ expiry_date: form.expiry_date || null, pricing_tier: null });
+      dispatchSave({ expiry_date: form.expiry_date || null });
     } else {
       setPayModal(true);
     }
   };
 
   // Build the API payload and dispatch create or update.
-const dispatchSave = ({ expiry_date, pricing_tier }) => {
+const dispatchSave = ({ expiry_date = null, paymentIntentId = null }) => {
   const showSpots = !!form.show_spots;
   const fd = new FormData();
 
@@ -208,7 +216,7 @@ const dispatchSave = ({ expiry_date, pricing_tier }) => {
   if (form.date_to)         fd.append('date_to',      form.date_to);
   if (form.external_url?.trim()) fd.append('external_url', form.external_url.trim());
   if (expiry_date)          fd.append('expiry_date',  expiry_date);
-  if (pricing_tier)         fd.append('pricing_tier', pricing_tier);
+  if (paymentIntentId)      fd.append('payment_intent_id', paymentIntentId);
 
   // Spots — only sent when the author opted in.
   if (showSpots) {
@@ -244,6 +252,16 @@ const dispatchSave = ({ expiry_date, pricing_tier }) => {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 size={28} className="animate-spin text-coral" />
+      </div>
+    );
+  }
+
+  if (isEditing && existingPost?.status === 'approved') {
+    return (
+      <div className="max-w-xl mx-auto rounded-2xl border border-amber-200 bg-amber-50 p-6 text-center">
+        <h2 className="font-unbounded font-black text-lg">Approved posts cannot be edited</h2>
+        <p className="text-sm text-[#6B6B66] mt-2">Contact an administrator if an approved listing needs to be changed.</p>
+        <Button className="mt-5" onClick={() => navigate(basePath)}>Back to Grow</Button>
       </div>
     );
   }
@@ -435,7 +453,8 @@ const dispatchSave = ({ expiry_date, pricing_tier }) => {
             </Field>
             <Field label="Spots Left">
               <input
-                type="number" min="0"
+                type="number" min="1"
+                max={form.spots === '' ? undefined : Number(form.spots)}
                 value={form.spots_left}
                 onChange={(e) => update('spots_left', e.target.value)}
                 placeholder="5"
@@ -503,10 +522,11 @@ const dispatchSave = ({ expiry_date, pricing_tier }) => {
       {/* Payment gate (create only) */}
       <GrowPaymentModal
         open={payModal}
+        role={role}
         onCancel={() => setPayModal(false)}
-        onPaid={({ expiry_date, tier }) => {
+        onPaid={({ paymentIntentId }) => {
           setPayModal(false);
-          dispatchSave({ expiry_date, pricing_tier: tier });
+          dispatchSave({ paymentIntentId });
         }}
       />
     </div>

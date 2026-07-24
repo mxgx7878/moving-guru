@@ -6,8 +6,8 @@ import {
 // ── Grow post types ───────────────────────────────────────────────
 export const GROW_TYPES = [
   { id: 'training', label: 'Teacher Training', icon: BookOpen, color: '#4E7A1B' },
-  { id: 'retreat',  label: 'Retreats',         icon: Palmtree, color: '#B4FF5A' },
-  { id: 'event',    label: 'Events',           icon: Calendar, color: '#9BE63D' },
+  { id: 'retreat',  label: 'Retreats',         icon: Palmtree, color: '#4E7A1B' },
+  { id: 'event',    label: 'Events',           icon: Calendar, color: '#4E7A1B' },
 ];
 
 export const GROW_TYPE_META = GROW_TYPES.reduce(
@@ -56,15 +56,8 @@ export const GROW_TYPE_OPTIONS = [
   { id: 'event',    label: 'Event'     },
 ];
 
-// ── Pricing tiers for new grow posts ─────────────────────────────
-// Authors pick one of these at submission time. Duration sets the post's
-// expiry_date; price is charged once. Edits within the live window are free
-// (but re-enter admin moderation).
-export const GROW_PRICING_TIERS = [
-  { id: '1m', label: '1 month',  days:  30, price: 30, blurb: 'Up to 30 days live' },
-  { id: '3m', label: '3 months', days:  90, price: 40, blurb: 'Up to 3 months live' },
-  { id: '6m', label: '6 months', days: 180, price: 60, blurb: 'Up to 6 months live' },
-];
+// Grow listing tiers are loaded from /api/grow-post-tiers. The backend is
+// the single source of truth for listing prices and live durations.
 
 // One-off boost: keeps the post pinned to the top of the feed for 7 days.
 export const BOOST_CONFIG = {

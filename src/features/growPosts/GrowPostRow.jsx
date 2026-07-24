@@ -157,8 +157,8 @@ export default function GrowPostRow({
 
       <td className="py-3 px-4">
         <p className="text-xs font-semibold text-[#3E3D38]">{postedBy}</p>
-        {post.user?.email && (
-          <p className="text-[10px] text-[#9A9A94]">{post.user.email}</p>
+        {(post.user?.email || post.contact_email) && (
+          <p className="text-[10px] text-[#9A9A94]">{post.user?.email || post.contact_email}</p>
         )}
       </td>
 

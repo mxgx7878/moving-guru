@@ -72,10 +72,10 @@ export default function GrowPostCard({
               <MapPin size={11} className="text-[#9A9A94]" /> {post.location}
             </span>
           )}
-          {(post.date_from || post.dates) && (
+          {(post.date_from || post.date_label || post.dates) && (
             <span className="flex items-center gap-1 text-xs text-[#6B6B66]">
               <Calendar size={11} className="text-[#9A9A94]" />
-              {post.dates || `${post.date_from} – ${post.date_to || ''}`}
+              {post.date_label || post.dates || `${post.date_from} – ${post.date_to || ''}`}
             </span>
           )}
           {/* Spots only render when the author opted in AND actually set a value. */}
@@ -110,7 +110,7 @@ export default function GrowPostCard({
           </div>
 
           <div className="flex items-center gap-2 flex-wrap justify-end">
-            {ownerActions && onBoost && (
+            {ownerActions && onBoost && post.status === 'approved' && (
               <Button
                 variant="secondary"
                 size="sm"
@@ -121,7 +121,7 @@ export default function GrowPostCard({
                 Boost
               </Button>
             )}
-            {ownerActions && (
+            {ownerActions && ['pending', 'rejected'].includes(post.status) && (
               <>
                 <IconButton title="Edit post" onClick={() => onEdit?.(post)}>
                   <Edit3 size={13} />
