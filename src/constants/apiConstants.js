@@ -1,6 +1,6 @@
 // Base URL
-// export const BASE_URL = "http://localhost:8000/api";
-export const BASE_URL = 'https://movingguru.co/moving-guru-backend/public/api';
+export const BASE_URL = "http://localhost:8000/api";
+// export const BASE_URL = 'https://movingguru.co/moving-guru-backend/public/api';
 
 // API Endpoints
 export const API_ENDPOINTS = {
@@ -148,6 +148,9 @@ export const API_ENDPOINTS = {
   ADMIN_PROMO_CODES:       "/admin/promo-codes",   // GET, POST
   ADMIN_PROMO_CODE_DETAIL: "/admin/promo-codes",   // PATCH /:id, DELETE /:id
   PROMO_VALIDATE:          "/promo-codes/validate", // POST { code, planId? }
+  ADMIN_GROW_PROMO_CODES:       "/admin/grow-promo-codes",   // GET, POST
+  ADMIN_GROW_PROMO_CODE_DETAIL: "/admin/grow-promo-codes",   // PATCH /:id, DELETE /:id
+  GROW_PROMO_VALIDATE:          "/grow-promo-codes/validate", // POST { code, pricingTierId }
   RETRY_SUBSCRIPTION_PAYMENT:
     '/subscription/retry-payment',
 };

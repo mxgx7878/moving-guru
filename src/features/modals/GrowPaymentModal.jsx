@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 
 import { Modal, Button } from '../../components/ui';
 import CheckoutModal from '../billing/CheckoutModal';
+import GrowPromoField from '../billing/GrowPromoField';
 import { API_ENDPOINTS } from '../../constants/apiConstants';
 import axiosInstance from '../../config/axiosInstance';
 import { loadStripeOnce } from '../../services/stripe';
@@ -20,6 +21,7 @@ export function GrowStripePaymentControls({
   amount,
   pricingTierId = null,
   postId = null,
+  promoCode = null,
   ctaLabel,
   role,
   onSuccess,
@@ -82,6 +84,8 @@ export function GrowStripePaymentControls({
         pricingTierId,
         postId,
         paymentMethodId: selectedId,
+        // Promo codes apply to listing fees only; ignored server-side for boosts.
+        ...(promoCode ? { promoCode } : {}),
       });
       const payment = data.data;
       const stripe = await loadStripeOnce();
@@ -180,7 +184,12 @@ export default function GrowPaymentModal({ open, onCancel, onPaid, role = 'instr
   const [tierId, setTierId] = useState(null);
   const [loadingTiers, setLoadingTiers] = useState(false);
   const [working, setWorking] = useState(false);
+  const [promo, setPromo] = useState(null); // server price preview for an applied Grow promo code
   const tier = tiers.find((item) => String(item.id) === String(tierId)) || tiers[0];
+
+  const listPrice  = Number(tier?.price ?? 0);
+  const payAmount  = promo ? Number(promo.finalAmount) : listPrice;
+  const discount   = promo ? Number(promo.discountAmount) : 0;
 
   useEffect(() => {
     if (!open) return;
@@ -238,13 +247,37 @@ export default function GrowPaymentModal({ open, onCancel, onPaid, role = 'instr
           Payment is taken immediately. The purchased live period begins when an admin approves the post.
         </p>
 
+        {tier && (
+          <div className="pt-1">
+            <GrowPromoField
+              pricingTierId={tier.id}
+              onApplied={setPromo}
+            />
+          </div>
+        )}
+
+        {tier && promo && (
+          <div className="rounded-xl bg-[#F7F5F0] px-4 py-3 text-sm space-y-1">
+            <div className="flex justify-between text-[#6B6B66]">
+              <span>Subtotal</span><span>${listPrice.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-emerald-700">
+              <span>Discount ({promo.code})</span><span>−${discount.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between font-bold text-[#3E3D38] pt-1 border-t border-[#E5E0D8]">
+              <span>Total due</span><span>${payAmount.toFixed(2)}</span>
+            </div>
+          </div>
+        )}
+
         {tier && <GrowStripePaymentControls
           purpose="listing"
-          amount={Number(tier.price)}
+          amount={payAmount}
           pricingTierId={tier.id}
+          promoCode={promo?.code || null}
           role={role}
           onBusyChange={setWorking}
-          ctaLabel={`Pay $${Number(tier.price).toFixed(2)} & Submit`}
+          ctaLabel={`Pay $${payAmount.toFixed(2)} & Submit`}
           onSuccess={({ paymentIntentId }) => {
             toast.success('Payment successful—submitting your post for approval.');
             onPaid?.({ tierId: tier.id, paymentIntentId });

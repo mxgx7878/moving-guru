@@ -82,5 +82,6 @@ export const NAV_CONFIG = {
     { to: '/admin/reports',         icon: Flag,            label: 'Reports'           },
     { to: '/admin/communications',   icon: Mail,            label: 'Communications'    },
     { to: '/admin/promo-codes',   icon: Ticket,            label: 'Promo Codes'    },
+    { to: '/admin/grow-promo-codes', icon: Ticket,         label: 'Grow Promo Codes' }
   ],
 };

@@ -11,6 +11,7 @@ import reviewReducer from "./slices/reviewSlice";
 import dashboardReducer from "./slices/dashboardSlice";
 import reportReducer from "./slices/reportSlice";
 import promoReducer from './slices/promoCodeSlice';
+import growPromoReducer from './slices/growPromoSlice';
 
 const store = configureStore({
   reducer: {
@@ -26,6 +27,7 @@ const store = configureStore({
     dashboard: dashboardReducer,
     report: reportReducer,
     promo: promoReducer,
+    growPromo: growPromoReducer,
   },
   devTools: import.meta.env.DEV,
 });

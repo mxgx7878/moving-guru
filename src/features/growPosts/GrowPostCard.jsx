@@ -24,6 +24,8 @@ export default function GrowPostCard({
   const hasExternal = externalUrl && externalUrl !== '#';
   const coverImage  = (post.images && post.images[0]) || post.cover_image || null;
 
+  console.log(post)
+
   return (
     <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden hover:shadow-md transition-shadow flex flex-col">
 

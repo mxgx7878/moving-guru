@@ -233,7 +233,7 @@ const typeCounts = GROW_FILTER_TABS.reduce((acc, t) => ({
                 onEdit={goEdit}
                 onDelete={setDeletingPost}
                 // Only enable Boost for the author's own posts on My Posts.
-                onBoost={isMine ? openBoost : undefined}
+                onBoost={ isMine && !post.is_featured  ? openBoost : undefined}
               />
             );
           })}

@@ -50,6 +50,7 @@ import AdminSubscriptions  from './pages/admin/AdminSubscriptions';
 import AdminSettings       from './pages/admin/AdminSettings';
 import AdminReviews        from './pages/admin/AdminReviews';
 import AdminCommunications from './pages/admin/AdminCommunications';
+import AdminGrowPromoCodes from './pages/admin/AdminGrowPromoCodes'
 import AdminReports         from './pages/admin/AdminReports';
 import './styles/dashboard-bg.css';
 
@@ -287,6 +288,7 @@ export default function App() {
           <Route path="communications" element={<AdminCommunications />} />
           <Route path="reports"        element={<AdminReports />} />
           <Route path="promo-codes" element={<AdminPromoCodes />} />
+          <Route path="grow-promo-codes" element={<AdminGrowPromoCodes />} />
         </Route>
 
         {/* ── Root → role home ──────────────────────────────── */}
