@@ -42,7 +42,10 @@ export default function SearchInstructors() {
 
   // Fetch instructors with debounced params
   useEffect(() => {
-    const params = {};
+    const params = {
+      status: 'active' ,
+      active_only: true,
+    };
     if (debouncedQuery) params.search = debouncedQuery;
     if (debouncedFilters.discipline) params.discipline = debouncedFilters.discipline;
     if (debouncedFilters.openTo) params.open_to = debouncedFilters.openTo;

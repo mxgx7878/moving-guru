@@ -52,7 +52,7 @@ export default function PageHeader({
             style={{ backgroundImage: `radial-gradient(circle at 85% 50%, ${gradientAccent} 0%, transparent 60%)` }}
           />
         )}
-        <div className="relative z-10 flex-1 min-w-0">
+        <div className="relative z-10 md:flex-1 min-w-0">
           <HeaderText
             eyebrow={eyebrow}
             eyebrowColor={eyebrowColor}
@@ -61,7 +61,7 @@ export default function PageHeader({
           />
           {children}
         </div>
-        {actions && <div className="relative z-10 flex items-center gap-2 flex-wrap">{actions}</div>}
+        {actions && <div className="relative z-10 flex items-center gap-2 flex-wrap md:max-w-max w-full">{actions}</div>}
       </div>
     );
   }
@@ -69,7 +69,7 @@ export default function PageHeader({
   // Default "card" variant (admin look)
   return (
     <div className={`bg-white border border-[#E5E0D8] ${base} ${className}`}>
-      <div className="flex items-center gap-4 min-w-0 flex-1">
+      <div className="flex items-center gap-4 min-w-0 md:flex-1">
         {Icon && (
           <div
             className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
@@ -85,7 +85,7 @@ export default function PageHeader({
           description={description}
         />
       </div>
-      {actions && <div className="flex items-center gap-2 flex-wrap">{actions}</div>}
+      {actions && <div className="flex items-center gap-2 flex-wrap md:max-w-max w-full">{actions}</div>}
       {children}
     </div>
   );

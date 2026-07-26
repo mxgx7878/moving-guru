@@ -192,11 +192,11 @@ export default function InstructorDetail() {
                     Verified
                   </span>
                 )}
-                {detail.plan && (
+                {/* {detail.plan && (
                   <span className="px-3 py-1 rounded-full text-[10px] font-semibold bg-[#4E7A1B]/10 text-[#4E7A1B] capitalize">
                     {detail.plan} plan
                   </span>
-                )}
+                )} */}
               </div>
             </div>
           </div>

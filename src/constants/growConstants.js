@@ -45,7 +45,7 @@ export const GROW_STATUS_PUBLIC_CONFIG = {
 export const GROW_STATUS_TABS = [
   { id: 'pending',  label: 'Pending',  icon: Clock,        color: '#C9A227' },
   { id: 'approved', label: 'Approved', icon: CheckCircle2, color: '#4E7A1B' },
-  { id: 'rejected', label: 'Rejected', icon: AlertCircle,  color: '#1A1A1A' },
+  { id: 'rejected', label: 'Rejected', icon: AlertCircle,  color: '#FF0000' },
   { id: 'all',      label: 'All',      icon: Sprout,       color: '#4E7A1B' },
 ];
 

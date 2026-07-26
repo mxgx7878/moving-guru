@@ -389,7 +389,7 @@ export default function ProfilePage() {
             {/* Social Links */}
             <div className="mt-5 pt-5 border-t border-[#E5E0D8]">
               <Field label="Social Links">
-                <div className="grid grid-cols-2 gap-3 mt-2">
+                <div className="grid  grid-col-1 md:grid-cols-2 gap-3 mt-2">
                   {SOCIAL_PLATFORMS.map(p => (
                     <div key={p.key} className="flex items-center gap-2.5">
                       <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"

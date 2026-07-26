@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from "sonner";
-import { Users, Building2, Plus } from "lucide-react";
+import { Users, Building2, Plus, Zap } from "lucide-react";
 
 import {
   fetchAdminUsers,
@@ -226,7 +226,7 @@ export default function AdminUsers() {
             variant="primary"
             icon={Plus}
             onClick={openCreate}
-            style={{ backgroundColor: "#4E7A1B", borderColor: "#4E7A1B" }}
+            style={{ backgroundColor: "#4E7A1B", borderColor: "#4E7A1B", width: '100%' }}
           >
             New User
           </Button>

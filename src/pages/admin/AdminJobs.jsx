@@ -33,7 +33,7 @@ const STATUS_OPTIONS = [
 ];
 
 const TYPE_TABS = [
-  { id: 'all', label: 'All Listings', color: '#3E3D38' },
+  { id: 'all', label: 'All Listings', color: '#B4FF5A' },
   ...JOB_TYPES.map((t) => ({ id: t.id, label: t.label, icon: t.icon, color: t.color })),
 ];
 

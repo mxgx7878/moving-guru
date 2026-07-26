@@ -11,7 +11,7 @@
 // (small drawer tile with cream background).
 export default function StatTileGroup({ tiles, columns = 4, className = '' }) {
   return (
-    <div className={`grid gap-4 grid-cols-${columns} ${className}`}>
+    <div className={`grid md:gap-4 gap-2  grid-cols-2 md:grid-cols-${columns} ${className}`}>
       {tiles.map((t) => {
         const content = (
           <>

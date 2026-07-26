@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import {
   Drawer, Chip, StatusPill, StatTile, LabeledBlock, InfoRow, Avatar, Button, EmptyState,
+  EnergyExchangeBadge,
 } from '../../components/ui';
 import {
   TYPE_STYLES, ROLE_TYPE_LABELS, QUALIFICATION_LABELS, JOB_STATUS_CONFIG, getJobTypes,isOpenToEnergyExchange, getDisplayableJobTypes,

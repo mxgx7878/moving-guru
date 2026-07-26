@@ -28,6 +28,7 @@ export default function Payments() {
   const { user }            = useSelector((s) => s.auth);
   const { payments, status } = useSelector((s) => s.payment);
 
+
   const role  = user?.role || "instructor";
   const theme = ROLE_THEME[role] || ROLE_THEME.instructor;
 
@@ -79,7 +80,7 @@ export default function Payments() {
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         <div className="bg-white rounded-2xl p-4 border border-[#E5E0D8] text-center">
           <DollarSign
             size={16}
@@ -102,7 +103,7 @@ export default function Payments() {
             Payments
           </p>
         </div>
-        <div className="bg-white rounded-2xl p-4 border border-[#E5E0D8] text-center">
+        {/* <div className="bg-white rounded-2xl p-4 border border-[#E5E0D8] text-center">
           <Calendar size={16} className="text-coral mx-auto mb-2" />
           <p className="font-unbounded text-sm font-black text-[#3E3D38]">
             {user?.subscriptionRenews || user?.subscription_renews || "—"}
@@ -110,7 +111,7 @@ export default function Payments() {
           <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider mt-1">
             Next Renewal
           </p>
-        </div>
+        </div> */}
       </div>
 
       {/* Table */}
@@ -121,7 +122,7 @@ export default function Payments() {
           </h3>
         </div>
 
-        <div className="divide-y divide-[#E5E0D8]/50">
+        <div className="divide-y divide-[#E5E0D8]/50 overflow-x-auto">
           {payments.map((p) => {
             const cfg = STATUS_CONFIG[p.status] || STATUS_CONFIG.pending;
             const { Icon } = cfg;
