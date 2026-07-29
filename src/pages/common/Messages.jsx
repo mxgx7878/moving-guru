@@ -417,7 +417,7 @@ export default function Messages() {
                               className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed
             ${
               isMine
-                ? "text-white rounded-br-md"
+                ? "text-black rounded-br-md"
                 : "bg-[#F5FDA6]/40 text-[#3E3D38] rounded-bl-md border border-[#F5FDA6]"
             }`}
                               style={
