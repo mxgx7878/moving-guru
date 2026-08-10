@@ -2,9 +2,6 @@ import { MapPin, Calendar, MessageCircle, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Modal, Button, Avatar, SocialLinksRow } from '../../components/ui';
 
-// Quick-look instructor preview modal. For the full experience studios are
-// routed to the dedicated detail page; this modal gives a brief glance from
-// search results without losing context.
 export default function InstructorProfileModal({ instructor, isSaved, onClose, onMessage, onToggleSave }) {
   const navigate = useNavigate();
   if (!instructor) return null;

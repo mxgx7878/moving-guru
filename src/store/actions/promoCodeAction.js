@@ -3,7 +3,6 @@ import axiosInstance from '../../config/axiosInstance';
 import { API_ENDPOINTS } from '../../constants/apiConstants';
 import { getErrorMessage } from '../../utils/errorUtils';
 
-// ── Admin ──────────────────────────────────────────────────────
 export const fetchPromoCodes = createAsyncThunk(
   'promo/fetchAll',
   async (_, { rejectWithValue }) => {
@@ -47,13 +46,12 @@ export const deletePromoCode = createAsyncThunk(
   },
 );
 
-// ── User ───────────────────────────────────────────────────────
 export const validatePromoCode = createAsyncThunk(
   'promo/validate',
   async ({ code, planId }, { rejectWithValue }) => {
     try {
       const { data } = await axiosInstance.post(API_ENDPOINTS.PROMO_VALIDATE, { code, planId });
-      return data.data; // { code, discountType, discountValue, duration, preview? }
+      return data.data;
     } catch (e) { return rejectWithValue(getErrorMessage(e)); }
   },
 );

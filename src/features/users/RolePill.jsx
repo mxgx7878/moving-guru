@@ -7,8 +7,6 @@ const ROLE_CONFIG = {
   admin:      { icon: ShieldCheck, tone: 'purple', label: 'Admin'      },
 };
 
-// Role badge used in user rows / drawers. Small wrapper over Chip so the
-// role-specific icon + colour is configured in one place.
 export default function RolePill({ role, size = 'sm', className = '' }) {
   const cfg = ROLE_CONFIG[role] || { icon: Users, tone: 'neutral', label: role || '—' };
   return (

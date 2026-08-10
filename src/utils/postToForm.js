@@ -1,10 +1,6 @@
-// Normalize a Grow post coming from the API into the shape the create/edit
-// form expects. Shared by GrowPostForm and admin preview.
 export const postToGrowForm = (p) => {
   const spots      = p?.spots ?? '';
   const spotsLeft  = p?.spots_left ?? '';
-  // If the post was originally saved with spots data, default the toggle on
-  // so editors can see the values; otherwise default off (hidden fields).
   const showSpots  = spots !== '' || spotsLeft !== '';
 
   const images = Array.isArray(p?.images) ? p.images : [];
@@ -27,6 +23,6 @@ export const postToGrowForm = (p) => {
     cover_image:      images[0] || null,
     cover_image_file: null,
     expiry_date:      p?.expiry_date  || p?.expires_at || '',
-    pricing_tier:     null, // not part of stored data
+    pricing_tier:     null,
   };
 };

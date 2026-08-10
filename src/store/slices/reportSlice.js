@@ -3,9 +3,7 @@ import { STATUS } from '../../constants/apiConstants';
 import { submitReport, fetchAdminReports, updateReportStatus } from '../actions/reportAction';
 
 const initialState = {
-  // user side
   submitStatus: STATUS.IDLE,
-  // admin side
   adminReports: [],
   adminStatus: STATUS.IDLE,
   meta: null,
@@ -23,7 +21,6 @@ const reportSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // ── User: submit a report ──
       .addCase(submitReport.pending, (state) => {
         state.submitStatus = STATUS.LOADING;
         state.error = null;
@@ -36,7 +33,6 @@ const reportSlice = createSlice({
         state.error = payload;
       })
 
-      // ── Admin: list reports ──
       .addCase(fetchAdminReports.pending, (state) => {
         state.adminStatus = STATUS.LOADING;
         state.error = null;
@@ -51,7 +47,6 @@ const reportSlice = createSlice({
         state.error = payload;
       })
 
-      // ── Admin: update status ──
       .addCase(updateReportStatus.pending, (state) => {
         state.statusUpdating = STATUS.LOADING;
       })
@@ -61,8 +56,6 @@ const reportSlice = createSlice({
         if (updated) {
           const idx = state.adminReports.findIndex((r) => r.id === updated.id);
           if (idx !== -1) {
-            // PATCH response has no eager-loaded relations — keep the list
-            // row's reporter/reportedUser and just overlay the fresh fields.
             state.adminReports[idx] = { ...state.adminReports[idx], ...updated };
           }
         }

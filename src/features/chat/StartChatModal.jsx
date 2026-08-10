@@ -7,34 +7,11 @@ import { toast } from 'sonner';
 import { createConversation } from '../../store/actions/messageAction';
 import { Modal, Button } from '../../components/ui';
 
-/**
- * StartChatModal
- * -----------------------------------------------------------------
- * First-message composer. Parent conditionally mounts it — same
- * pattern as ApplyJobModal / InstructorProfileModal:
- *
- *   {chatTarget && (
- *     <StartChatModal
- *       recipientId={chatTarget.id}        // USER id (users table)
- *       recipientName={chatTarget.name}
- *       onClose={() => setChatTarget(null)}
- *     />
- *   )}
- *
- * POST /conversations backend par findOrCreate karta hai — agar in
- * dono ke beech pehle se thread hai to message usi me jata hai,
- * duplicate conversation kabhi nahi banti. Send ke baad Messages page
- * par navigate hota hai aur wahi thread khul jati hai (Messages.jsx
- * ka deep-link state isi ke liye hai).
- */
 export default function StartChatModal({ recipientId, recipientName, onClose }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((s) => s.auth);
 
-  // flattenUser spreads detail over the user, so `user.id` becomes the
-  // user_details id. The real users.id always lives in `user_id`
-  // (admins have no detail row, hence the `id` fallback).
   const myId = user?.user_id ?? user?.id;
   const messagesBase = user?.role === 'studio' ? '/studio/messages' : '/portal/messages';
 

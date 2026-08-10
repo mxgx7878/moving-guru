@@ -4,8 +4,6 @@ import { ArrowLeft, Compass } from 'lucide-react';
 import { ROLE_THEME } from '../../config/portalConfig';
 import { Button } from '../../components/ui';
 
-// Generic 404. Surfaces a reasonable "home" based on the role of the
-// current user (if signed in) — falls back to /login for anonymous.
 export default function NotFound() {
   const navigate = useNavigate();
   const { user, token } = useSelector((s) => s.auth);

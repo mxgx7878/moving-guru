@@ -39,7 +39,6 @@ export default function Grow() {
 
   useEffect(() => {
     dispatch(fetchGrowPosts());
-    // Both instructors and studios need their own posts for the "My Posts" tab.
     if (!isAdmin) dispatch(fetchMyGrowPosts());
   }, [dispatch, isAdmin]);
 
@@ -51,7 +50,6 @@ export default function Grow() {
     if (error) { toast.error(error); dispatch(clearGrowError()); }
   }, [error, dispatch]);
 
-  // Source is the public feed by default; "My Posts" tab switches to myPosts.
   const isMine      = activeType === 'my';
 const sourcePosts = isMine
   ? myPosts
@@ -63,7 +61,6 @@ const sourcePosts = isMine
 
   const filtered = useMemo(() => (
     sourcePosts.filter((p) => {
-      // Type filter doesn't apply in "my posts" view — we show all their types there.
       const matchType = isMine || activeType === 'all' || p.type === activeType;
       const q = query.toLowerCase();
       const matchQ = !q
@@ -90,7 +87,6 @@ const sourcePosts = isMine
   const goNew  = () => navigate(`${basePath}/new`);
   const goEdit = (post) => navigate(`${basePath}/edit/${post.id}`);
 
-  // Called by GrowPostCard on click; opens the paid boost modal.
   const openBoost = (post) => setBoostingPost(post);
 
   const handleBoostPaid = async () => {
@@ -108,7 +104,6 @@ const sourcePosts = isMine
   () => posts.filter((p) => (p.user_id ?? p.user?.id) !== user?.id),
   [posts, user?.id],
 );
-  // KPI tiles (on the marketplace view only)
   const statTiles = GROW_TYPES.map((t) => ({
     label:   t.label,
     value:  publicFeed.filter((p) => p.type === t.id).length,
@@ -116,7 +111,6 @@ const sourcePosts = isMine
     active:  activeType === t.id,
     onClick: () => setActiveType(activeType === t.id ? 'all' : t.id),
   }));
-
 
 const typeCounts = GROW_FILTER_TABS.reduce((acc, t) => ({
   ...acc,
@@ -126,7 +120,6 @@ const typeCounts = GROW_FILTER_TABS.reduce((acc, t) => ({
   : publicFeed.filter((p) => p.type === t.id).length,
 }), {});
 
-  // Hero copy depends on whether you're looking at your own posts or the feed.
   const heroTitle = isMine
     ? 'My Posts'
     : 'Training, Retreats & Events';
@@ -135,7 +128,6 @@ const typeCounts = GROW_FILTER_TABS.reduce((acc, t) => ({
     : 'Upskill, deepen your practice, and connect with the global wellness community.';
 
   return (
-    // Grow uses a full-bleed GREEN page background (white boxes inside).
     <div className="-m-4 lg:-m-6 p-4 lg:p-6 min-h-full bg-[#B4FF5A]">
     <div className="max-w-5xl mx-auto space-y-6">
 
@@ -232,7 +224,6 @@ const typeCounts = GROW_FILTER_TABS.reduce((acc, t) => ({
                 ownerActions={isOwn || isAdmin}
                 onEdit={goEdit}
                 onDelete={setDeletingPost}
-                // Only enable Boost for the author's own posts on My Posts.
                 onBoost={ isMine && !post.is_featured  ? openBoost : undefined}
               />
             );

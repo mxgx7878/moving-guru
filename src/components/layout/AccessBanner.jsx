@@ -4,8 +4,6 @@ import { AlertCircle, Sparkles, XCircle, ArrowRight } from 'lucide-react';
 import { getAccessState } from '../../utils/approvalUtils';
 import { ROLE_THEME } from '../../config/portalConfig';
 
-// Marquee-style banner pinned to the top of PortalLayout. Renders only when
-// the user needs to take action or wait on admin — never for approved users.
 export default function AccessBanner() {
   const { user } = useSelector((s) => s.auth);
   const state = getAccessState(user);
@@ -15,7 +13,6 @@ export default function AccessBanner() {
   const profilePath = ROLE_THEME[user.role]?.defaultPath?.replace('/dashboard', '/profile')
                    || '/portal/profile';
 
-  // Config per state — color, icon, message, optional CTA
   const cfg = {
     incomplete: {
       bg:     'bg-[#9BE63D]',
@@ -63,7 +60,6 @@ export default function AccessBanner() {
       <div className="px-4 lg:px-6 py-2.5 flex items-center gap-3 flex-wrap">
         <Icon size={16} className="flex-shrink-0" />
 
-        {/* On small screens this becomes a simple message; on wider screens it animates */}
         <div className="flex-1 min-w-0 flex items-center gap-3">
           <span className="font-bold text-xs tracking-widest uppercase flex-shrink-0">
             {cfg.label}
@@ -81,7 +77,6 @@ export default function AccessBanner() {
         )}
       </div>
 
-      {/* Mobile-only body line */}
       <p className="sm:hidden px-4 pb-2 text-[11px] opacity-90">{cfg.body}</p>
     </div>
   );
