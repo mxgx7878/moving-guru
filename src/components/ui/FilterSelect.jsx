@@ -1,7 +1,5 @@
 import { Filter } from 'lucide-react';
 
-// Filter dropdown that matches the SearchBar pill styling — used next to
-// SearchBar on admin/listing pages. `options` is an array of { id, label }.
 export default function FilterSelect({
   value,
   onChange,

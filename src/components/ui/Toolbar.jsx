@@ -2,37 +2,16 @@ import { X } from 'lucide-react';
 import SearchBar from './SearchBar';
 import FilterSelect from './FilterSelect';
 
-// Universal search + filter toolbar used by every listing / admin page.
-//
-// All fields are optional so the same component covers:
-//   - simple search-only pages
-//   - search + one filter dropdown
-//   - search + multiple filter dropdowns
-//   - pages that need a collapsible "Advanced filters" panel
-//
-// Layout:
-//   [ SearchBar ..................... ][ filter 1 ][ filter 2 ][ advanced ▾ ]
-//   └─ collapsible advanced panel ─────────────────────────────────────────┘
-//   └─ footer: "N results" + clear-all ───────────────────────────────────┘
-//
-// `filters` is an array of:
-//   { id, value, onChange, options, icon? }       — renders a FilterSelect
-// or `{ render: () => <YourOwnControl/> }`        — escape hatch
-//
-// `advanced` enables the toggle + collapsible panel:
-//   advanced={{ open, onToggle, children, accent? }}
-//
-// `resultCount` + `onClear` show the footer line ("5 results · Clear all").
 export default function Toolbar({
-  search,          // { value, onChange, placeholder, autoFocus? }
+  search,
   filters = [],
-  advanced,        // { open, onToggle, children, accent?, toggleLabel? }
-  resultCount,     // number | null
+  advanced,
+  resultCount,
   resultNoun = 'result',
-  onClear,         // () => void — shown alongside resultCount if any filters active
-  hasActiveFilters,// optional override — defaults to Boolean(resultCount && onClear)
+  onClear,
+  hasActiveFilters,
   className = '',
-  children,        // optional extra controls appended to the filter row
+  children,
 }) {
   const showFooter = typeof resultCount === 'number' &&
     (hasActiveFilters ?? !!onClear);

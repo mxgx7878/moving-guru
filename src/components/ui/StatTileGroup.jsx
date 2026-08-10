@@ -1,14 +1,3 @@
-// Numeric KPI strip used at the top of listing/dashboard pages
-// (JobListings, FindWork, Grow, etc). Pass an array of tiles — each
-// renders as a bordered card with a big value and a caption.
-//
-// Each tile: { label, value, color?, onClick?, active? }
-//   - color:  Tailwind class for the value ("text-coral")
-//   - onClick: makes the tile interactive (toggle active filter, etc.)
-//   - active:  currently-selected state
-//
-// Distinct from StatCard (dashboard card with icon + trend) and StatTile
-// (small drawer tile with cream background).
 export default function StatTileGroup({ tiles, columns = 4, className = '' }) {
   return (
     <div className={`grid md:gap-4 gap-2  grid-cols-2 md:grid-cols-${columns} ${className}`}>

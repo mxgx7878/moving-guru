@@ -1,17 +1,8 @@
 import { ShieldCheck, Sprout } from 'lucide-react';
 import { Modal, Button } from '../../components/ui';
 
-// Public Grow page — blocked under-age users are pointed here for free.
-// TODO: apne live public Grow page ka URL daalo (static site grow.html).
 const GROW_URL = 'https://movingguru.co/grow.html';
 
-/**
- * AgeGateModal
- * ─────────────────────────────────────────────────────────────
- * Instructor registration ke dauraan dikhta hai jab entered age
- * minimum se kam ho. Account creation hard-block hoti hai (parent
- * advance/submit rok deta hai) aur visitor ko free Grow page bhejta hai.
- */
 export default function AgeGateModal({ open, onClose }) {
   if (!open) return null;
 

@@ -7,9 +7,6 @@ import { ButtonLoader, CardSkeleton } from '../../components/feedback';
 import { StarRating, IconButton } from '../../components/ui';
 import { ConfirmModal } from '../modals';
 
-// Review list for a given userId. Auto-fetches on mount, shows an
-// aggregated distribution bar, and lets the reviewer delete their own
-// review through a branded confirm dialog.
 export default function ReviewList({ userId, direction, compact = false, emptyLabel }) {
   const dispatch = useDispatch();
   const { user: currentUser } = useSelector((s) => s.auth);

@@ -1,19 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { STATUS } from '../../constants/apiConstants';
 import {
-  // User-facing
   fetchPlans,
   fetchCurrentSubscription,
   changePlan,
   cancelSubscription,
   resumeSubscription,
-  // Admin — plans
   fetchAdminPlans,
   createAdminPlan,
   updateAdminPlan,
   deleteAdminPlan,
   syncAdminPlansFromStripe,
-  // Admin — features
   fetchAllFeatures,
   fetchPlanFeatures,
   updatePlanFeatures,
@@ -37,8 +34,6 @@ const initialState = {
   planFeaturesMutating: false,
 };
 
-// Helper to extract subscription from cancel/resume response and merge it
-// into state. Both endpoints return { subscription: {...} } in data.
 const applySubscriptionPayload = (state, payload) => {
   state.message = payload.message || state.message;
   const sub = payload.data?.subscription;
@@ -59,7 +54,6 @@ const subscriptionSlice = createSlice({
   },
   extraReducers: (builder) => {
 
-    // fetchPlans
     builder
       .addCase(fetchPlans.pending,   (s) => { s.status = STATUS.LOADING; s.error = null; })
       .addCase(fetchPlans.fulfilled, (s, { payload }) => {
@@ -69,14 +63,12 @@ const subscriptionSlice = createSlice({
       })
       .addCase(fetchPlans.rejected,  (s, { payload }) => { s.status = STATUS.FAILED; s.error = payload; });
 
-    // fetchCurrentSubscription — populate allowedFeatures
     builder.addCase(fetchCurrentSubscription.fulfilled, (s, { payload }) => {
       const sub = payload.data?.subscription || payload.data || null;
       s.currentSubscription = sub;
       s.allowedFeatures = Array.isArray(sub?.plan?.featureKeys) ? sub.plan.featureKeys : [];
     });
 
-    // changePlan
     builder
       .addCase(changePlan.pending,   (s) => { s.status = STATUS.LOADING; s.error = null; })
       .addCase(changePlan.fulfilled, (s, { payload }) => {
@@ -86,7 +78,6 @@ const subscriptionSlice = createSlice({
       })
       .addCase(changePlan.rejected,  (s, { payload }) => { s.status = STATUS.FAILED; s.error = payload; });
 
-    // ── Cancel subscription ─────────────────────────────────────
     builder
       .addCase(cancelSubscription.pending,   (s) => { s.status = STATUS.LOADING; s.error = null; })
       .addCase(cancelSubscription.fulfilled, (s, { payload }) => {
@@ -96,7 +87,6 @@ const subscriptionSlice = createSlice({
       })
       .addCase(cancelSubscription.rejected,  (s, { payload }) => { s.status = STATUS.FAILED; s.error = payload; });
 
-    // ── Resume subscription ─────────────────────────────────────
     builder
       .addCase(resumeSubscription.pending,   (s) => { s.status = STATUS.LOADING; s.error = null; })
       .addCase(resumeSubscription.fulfilled, (s, { payload }) => {
@@ -106,7 +96,6 @@ const subscriptionSlice = createSlice({
       })
       .addCase(resumeSubscription.rejected,  (s, { payload }) => { s.status = STATUS.FAILED; s.error = payload; });
 
-    // Admin: plans
     builder
       .addCase(fetchAdminPlans.pending,   (s) => { s.adminPlansStatus = STATUS.LOADING; s.error = null; })
       .addCase(fetchAdminPlans.fulfilled, (s, { payload }) => {
@@ -144,7 +133,6 @@ const subscriptionSlice = createSlice({
         }
       });
 
-    // Admin: sync from Stripe
     if (syncAdminPlansFromStripe) {
       builder
         .addCase(syncAdminPlansFromStripe.pending,   (s) => { s.adminSyncing = true; s.error = null; })
@@ -155,7 +143,6 @@ const subscriptionSlice = createSlice({
         .addCase(syncAdminPlansFromStripe.rejected,  (s, { payload }) => { s.adminSyncing = false; s.error = payload; });
     }
 
-    // Admin: features
     if (fetchAllFeatures) {
       builder.addCase(fetchAllFeatures.fulfilled, (s, { payload }) => {
         s.allFeatures = payload || [];

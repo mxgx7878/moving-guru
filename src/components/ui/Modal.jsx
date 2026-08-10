@@ -3,9 +3,6 @@ import { X } from 'lucide-react';
 import IconButton from './IconButton';
 import useFocusTrap from '../../hooks/useFocusTrap';
 
-// Single reusable Modal shell used by every modal in the app.
-// Handles backdrop click-to-close, Escape key, focus trap + restore,
-// and a consistent header/body/footer layout.
 const SIZE_CLASS = {
   sm: 'max-w-sm',
   md: 'max-w-lg',

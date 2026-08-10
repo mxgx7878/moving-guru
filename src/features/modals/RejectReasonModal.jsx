@@ -6,9 +6,6 @@ import { Mail } from 'lucide-react';
 
 import { Modal, Button, RHFInput } from '../../components/ui';
 
-// Build the inbox message body for a given reason. Kept in a named export so
-// AdminGrowPosts can reuse it when dispatching the follow-up conversation
-// after a rejection succeeds.
 export const buildRejectionMessage = (reason) => {
   const base =
     "Hi — we need you to tweak your grow post before we accept it.\n\n" +
@@ -21,8 +18,6 @@ export const buildRejectionMessage = (reason) => {
   return base + reasonLine + tail;
 };
 
-// Reason is optional, but when the admin types one it must be at least
-// 5 characters so a stray keystroke doesn't get sent to the author.
 const schema = yup.object({
   reason: yup
     .string()

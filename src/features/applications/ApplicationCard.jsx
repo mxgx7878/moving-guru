@@ -5,8 +5,6 @@ import {
 import { Avatar, Button } from '../../components/ui';
 import { formatShortDate } from '../../utils/formatters';
 
-// Card rendered in the instructor's My Applications list.
-// Callbacks are optional — the parent wires message / review / withdraw.
 const STATUS_META = {
   accepted: { label: 'Accepted',          bg: 'bg-emerald-50',   text: 'text-emerald-600', icon: CheckCircle2 },
   rejected: { label: 'Not selected',      bg: 'bg-red-50',       text: 'text-red-500',     icon: XCircle      },

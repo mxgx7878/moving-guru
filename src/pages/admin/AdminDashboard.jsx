@@ -27,15 +27,13 @@ import {
 import { RevenueChart,  RevenueTrendChart, RevenueCumulativeChart, ActivityCard, UserGrowthChart } from "../../features/dashboard";
 import { Link } from "react-router-dom";
 
-// Dashboard is a read-only aggregator. Local state keeps it thin — no
-// shared store needed for data that appears on a single page.
 export default function AdminDashboard() {
   const { user } = useSelector((s) => s.auth);
   const adminName = user?.name?.split(" ")[0] || "Admin";
 
   const [stats, setStats] = useState(null);
   const [activity, setActivity] = useState(null);
-  const [revenue, setRevenue] = useState(null); // ← new
+  const [revenue, setRevenue] = useState(null);
   const [loading, setLoading] = useState(true);
   const [revenueView, setRevenueView] = useState('bars');
 
@@ -52,7 +50,7 @@ export default function AdminDashboard() {
     Promise.allSettled([
       axiosInstance.get(API_ENDPOINTS.ADMIN_DASHBOARD_STATS),
       axiosInstance.get(API_ENDPOINTS.ADMIN_DASHBOARD_ACTIVITY),
-      axiosInstance.get(API_ENDPOINTS.ADMIN_DASHBOARD_REVENUE), // ← new
+      axiosInstance.get(API_ENDPOINTS.ADMIN_DASHBOARD_REVENUE),
     ]).then(([statsRes, activityRes, revenueRes]) => {
       if (cancelled) return;
       if (statsRes.status === "fulfilled")
@@ -167,10 +165,8 @@ return (
       actions={signupsAction}
     />
 
-    {/* ── Summary strip — 3 columns of grouped metrics ───────── */}
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
-      {/* Users */}
       <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
         <div className="flex items-center justify-between mb-3">
           <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase">Users</p>
@@ -198,7 +194,6 @@ return (
         </div>
       </div>
 
-      {/* Content */}
       <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
         <div className="flex items-center justify-between mb-3">
           <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase">Content</p>
@@ -229,7 +224,6 @@ return (
         </div>
       </div>
 
-      {/* Revenue summary */}
       <div className="bg-gradient-to-br from-coral to-[#3F6216] rounded-2xl p-5 text-white">
         <div className="flex items-center justify-between mb-3">
           <p className="text-[10px] font-bold text-white/80 tracking-widest uppercase">Revenue</p>
@@ -257,7 +251,6 @@ return (
 
     </div>
 
-    {/* ── Revenue chart card (full width) ─────────────────────── */}
     <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
       <div className="flex items-start justify-between gap-3 mb-4 flex-wrap">
         <div className="flex items-center gap-2">
@@ -291,7 +284,6 @@ return (
       )}
     </div>
 
-    {/* ── User growth chart (full width) ──────────────────────── */}
     <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
       <div className="flex items-center gap-2 mb-4">
         <div className="w-9 h-9 rounded-xl bg-coral/10 flex items-center justify-center">
@@ -306,7 +298,6 @@ return (
       <UserGrowthChart data={stats?.signups_by_month} loading={loading} />
     </div>
 
-    {/* ── Activity feeds (compact two-column) ─────────────────── */}
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <ActivityCard
         title="Pending Moderation"

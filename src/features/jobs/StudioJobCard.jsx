@@ -20,9 +20,6 @@ import {
 } from "../../constants/jobConstants";
 import { EnergyExchangeBadge } from "../../components/ui";
 
-// Studio-facing job card used on JobListings (a studio managing its own
-// postings). Distinct from the admin JobRow which renders inside a
-// table — this version is a stand-alone card for the studio dashboard.
 export default function StudioJobCard({
   job,
   deleting = false,
@@ -33,7 +30,7 @@ export default function StudioJobCard({
 }) {
   const typesIds = getDisplayableJobTypes(job);
   const typesInfo = typesIds
-    .map((id) => JOB_TYPES.find((t) => t.id === id)) // JOB_TYPES is hire+swap only
+    .map((id) => JOB_TYPES.find((t) => t.id === id))
     .filter(Boolean);
   const primary = typesInfo[0] || JOB_TYPES[0];
   const eeOpen = isOpenToEnergyExchange(job);

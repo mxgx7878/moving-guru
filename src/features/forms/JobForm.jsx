@@ -25,9 +25,6 @@ import { jobSchema } from "./schemas/entitySchema";
 import { FileDropzone } from "../../components/ui";
 import useFileUploadPreview from "../../hooks/useFileUploadPreview";
 
-// Shared Job Listing create/edit form used by studios. Uses yup + RHF
-// for validation; controlled via <Controller> for non-text inputs like
-// the discipline chips and type picker.
 export default function JobForm({
   initial = EMPTY_JOB_FORM,
   saving = false,
@@ -159,7 +156,6 @@ export default function JobForm({
           </p>
         </div>
 
-        {/* Listing type */}
         <div>
           <label className="block text-[10px] font-bold text-ink-soft tracking-widest uppercase mb-2">
             Listing Type

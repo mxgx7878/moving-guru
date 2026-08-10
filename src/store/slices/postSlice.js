@@ -12,7 +12,6 @@ import {
 } from '../actions/postAction';
 
 const initialState = {
-  // Admin moderation
   posts: [],
   pagination: null,
   status: STATUS.IDLE,
@@ -21,7 +20,6 @@ const initialState = {
   error: null,
   fieldErrors: null,
 
-  // User-facing announcements
   announcements: [],
   selectedAnnouncement: null,
   announcementsStatus: STATUS.IDLE,
@@ -108,7 +106,6 @@ const postSlice = createSlice({
       })
       .addCase(unpublishPost.rejected, (state, { payload }) => { state.error = payload; })
 
-      // ═══ User-facing announcements ═════════════════════════
       .addCase(fetchAnnouncements.pending, (state) => {
         state.announcementsStatus = STATUS.LOADING;
       })

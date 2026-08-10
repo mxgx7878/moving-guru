@@ -3,16 +3,6 @@ import { useSelector } from 'react-redux';
 import { MessageCircle } from 'lucide-react';
 import { Button } from '../../components/ui';
 
-/**
- * StartChatButton
- * -----------------------------------------------------------------
- * Convenience "Chat" button — directly opens the Messages screen with
- * the given recipient's thread (draft if none exists yet). Detail pages
- * jinke paas apna styled button hai wo seedha navigate karte hain; ye
- * un jagahon ke liye hai jahan koi button abhi nahi hai.
- *
- *   <StartChatButton recipientId={inst.id} recipientName={inst.name} />
- */
 export default function StartChatButton({
   recipientId,
   recipientName,

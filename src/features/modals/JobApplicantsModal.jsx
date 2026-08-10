@@ -16,7 +16,6 @@ import { Button, IconButton } from "../../components/ui";
 import  StarRating  from "../../components/ui/StarRating";
 import ReviewFormModal from "./ReviewFormModal";
 
-// Tone + label for each status the studio can land an applicant in.
 const STATUS_STYLES = {
   pending:  { label: "New",      bg: "bg-coral/10", text: "text-coral" },
   viewed:   { label: "Viewed",   bg: "bg-[#FAFEE0]",    text: "text-[#6B6B66]" },
@@ -24,27 +23,6 @@ const STATUS_STYLES = {
   rejected: { label: "Declined", bg: "bg-red-50",       text: "text-red-500" },
 };
 
-/**
- * JobApplicantsModal
- * -----------------------------------------------------------------
- * Studio-facing modal listing applicants for a single listing.
- *
- * Review UX
- * -----------------------------------------------------------------
- * Once a studio has hired an applicant, they get a "Leave Review" CTA.
- * After the review is posted (or if they've already reviewed this
- * instructor for this listing in the past), the CTA is replaced by
- * a disabled green "Reviewed" badge so the studio can't double-submit
- * and can see at a glance who still needs feedback.
- *
- * The duplicate check is a two-layer belt-and-braces:
- *   1. Client-side via `state.review.myReviews` (fetched on mount).
- *   2. Server-side via a unique index on (reviewer, reviewee, listing).
- *
- * When ReviewForm closes after a successful post, the slice has
- * already unshifted the new review into `myReviews`, so the badge
- * flips without another round-trip.
- */
 export default function JobApplicantsModal({ job, onClose }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -65,17 +43,9 @@ export default function JobApplicantsModal({ job, onClose }) {
 
   useEffect(() => {
     if (job?.id) dispatch(fetchJobApplicants(job.id));
-    // Keep myReviews fresh so the "already reviewed" badge is accurate
-    // even on the first open after a reload.
     dispatch(fetchMyReviews());
   }, [job?.id, dispatch]);
 
-  // Pre-fetch review summaries for visible applicants.
-  //
-  // Effect runs only when the applicant id-set changes (derived stably via
-  // useMemo), not every time the review cache fills. We read the latest
-  // `reviewsByUserId` through a ref so we don't fire the same fetches
-  // again each render — previously silenced with eslint-disable.
   const reviewsByUserIdRef = useRef(reviewsByUserId);
   useEffect(() => { reviewsByUserIdRef.current = reviewsByUserId; }, [reviewsByUserId]);
 
@@ -93,8 +63,6 @@ export default function JobApplicantsModal({ job, onClose }) {
     });
   }, [applicantIdsKey, dispatch]);
 
-  // Build an O(1) lookup of (revieweeId, jobListingId) pairs I've
-  // already reviewed, so the per-applicant render is cheap.
   const reviewedKeys = useMemo(() => {
     const s = new Set();
     myReviews.forEach((r) => {
@@ -139,7 +107,6 @@ export default function JobApplicantsModal({ job, onClose }) {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start justify-center z-[60] p-4 overflow-y-auto">
       <div className="bg-white rounded-2xl w-full max-w-3xl shadow-2xl my-8">
-        {/* Header */}
         <div className="px-6 py-4 border-b border-[#E5E0D8] flex items-start justify-between gap-4">
           <div className="min-w-0">
             <div className="flex items-center gap-2 mb-1">
@@ -178,7 +145,6 @@ export default function JobApplicantsModal({ job, onClose }) {
           </div>
         )}
 
-        {/* Body */}
         <div className="p-6 max-h-[70vh] overflow-y-auto">
           {loading && applicants.length === 0 && (
             <div className="flex items-center justify-center py-12">
@@ -286,7 +252,6 @@ export default function JobApplicantsModal({ job, onClose }) {
                       </div>
                     </div>
 
-                    {/* Actions */}
                     <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[#E5E0D8] flex-wrap">
                       <Button variant="secondary" size="xs" icon={ExternalLink}
                         onClick={() => handleViewProfile(inst.id)}
@@ -301,9 +266,6 @@ export default function JobApplicantsModal({ job, onClose }) {
 
                       <div className="flex-1" />
 
-                      {/* "Reviewed" badge wins over "Leave Review" even when
-                          status != 'accepted' — legacy data may have slipped
-                          through, so we show the record instead of nothing. */}
                       {app.status === "accepted" && alreadyReviewed && (
                         <Button variant="successSoft" size="xs" icon={Check} state="static"
                           title="You've already reviewed this instructor for this listing">

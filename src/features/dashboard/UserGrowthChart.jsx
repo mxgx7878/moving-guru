@@ -3,13 +3,6 @@ import {
   ResponsiveContainer, Legend,
 } from 'recharts';
 
-/**
- * UserGrowthChart
- * ─────────────────────────────────────────────────────────────
- * Stacked-bar comparison of new instructor vs studio signups
- * over the last 6 months. Sourced from the existing stats
- * endpoint's `signups_by_month` field (added in this round).
- */
 export default function UserGrowthChart({ data = [], loading = false }) {
   if (loading) {
     return <div className="h-48 bg-[#F0EBE3] animate-pulse rounded-lg" />;

@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react';
 
-// CSS selector for elements considered focusable by default.
 const FOCUSABLE = [
   'a[href]',
   'button:not([disabled])',
@@ -10,19 +9,6 @@ const FOCUSABLE = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(',');
 
-/**
- * useFocusTrap
- * ─────────────────────────────────────────────────────────────
- * When `active` becomes true:
- *   1. Remember the element that had focus before the modal opened.
- *   2. Move focus to the first focusable child (or the container).
- *   3. While active, keep Tab / Shift+Tab cycling inside the container.
- *   4. When deactivated, return focus to the element from step 1.
- *
- * Usage:
- *   const trapRef = useFocusTrap(open);
- *   <div ref={trapRef}>…</div>
- */
 export default function useFocusTrap(active) {
   const containerRef = useRef(null);
 
@@ -33,7 +19,6 @@ export default function useFocusTrap(active) {
     const node = containerRef.current;
     if (!node) return;
 
-    // Focus the first focusable child so keyboard users start inside.
     const first = node.querySelector(FOCUSABLE);
     (first || node).focus?.();
 
@@ -61,7 +46,6 @@ export default function useFocusTrap(active) {
 
     return () => {
       node.removeEventListener('keydown', handleKey);
-      // Defer so React finishes unmounting the overlay before we restore.
       if (previouslyFocused && typeof previouslyFocused.focus === 'function') {
         setTimeout(() => previouslyFocused.focus(), 0);
       }

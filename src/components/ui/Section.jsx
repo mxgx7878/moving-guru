@@ -1,8 +1,3 @@
-// Bordered section with optional icon + uppercase title header.
-// Used to wrap form sections, detail-page blocks, etc.
-//
-// Pass `padding={false}` to remove the inner p-6 when the body handles
-// its own spacing (e.g. a list that wants edge-to-edge rows).
 export default function Section({
   title,
   icon: Icon,

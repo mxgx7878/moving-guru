@@ -1,5 +1,3 @@
-// Saved jobs are kept in localStorage under a single per-user key so the
-// bookmark state survives reloads without requiring a backend endpoint.
 const KEY = 'mg.savedJobs';
 
 export const loadSavedJobs = () => {
@@ -17,7 +15,6 @@ export const saveSavedJobs = (ids) => {
   try {
     localStorage.setItem(KEY, JSON.stringify(ids));
   } catch {
-    // swallow: storage full or disabled
   }
 };
 

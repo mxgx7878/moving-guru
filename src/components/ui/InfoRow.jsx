@@ -1,6 +1,3 @@
-// Label-on-top / value-below pair used in detail drawers. Pass `icon` to
-// render an icon next to the label. Returns null when the value is empty
-// to avoid rendering blank rows.
 export default function InfoRow({ label, value, icon: Icon, hideEmpty = false, className = '' }) {
   if (hideEmpty && !value) return null;
   return (

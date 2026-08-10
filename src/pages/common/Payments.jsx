@@ -15,7 +15,6 @@ import { STATUS } from "../../constants/apiConstants";
 import { TableSkeleton, CardSkeleton } from "../../components/feedback";
 import { Button, IconButton } from "../../components/ui";
 
-// Status config — pill colour + icon per payment status
 const STATUS_CONFIG = {
   paid:    { label: "Paid",    cls: "text-emerald-600 bg-emerald-50", Icon: CheckCircle },
   failed:  { label: "Failed",  cls: "text-rose-600 bg-rose-50",       Icon: XCircle    },
@@ -28,7 +27,6 @@ export default function Payments() {
   const { user }            = useSelector((s) => s.auth);
   const { payments, status } = useSelector((s) => s.payment);
 
-
   const role  = user?.role || "instructor";
   const theme = ROLE_THEME[role] || ROLE_THEME.instructor;
 
@@ -40,8 +38,6 @@ export default function Payments() {
     .filter((p) => p.status === "paid")
     .reduce((s, p) => s + (p.amount || 0), 0);
 
-  // Use the Stripe-hosted PDF URL returned directly in the API response.
-  // No auth header needed — Stripe URLs are time-limited signed URLs.
   const handleDownload = (p) => {
     const url = p.invoicePdfUrl || p.hostedInvoiceUrl;
     if (url) {
@@ -79,7 +75,6 @@ export default function Payments() {
         </p>
       </div>
 
-      {/* Summary cards */}
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-white rounded-2xl p-4 border border-[#E5E0D8] text-center">
           <DollarSign
@@ -103,18 +98,8 @@ export default function Payments() {
             Payments
           </p>
         </div>
-        {/* <div className="bg-white rounded-2xl p-4 border border-[#E5E0D8] text-center">
-          <Calendar size={16} className="text-coral mx-auto mb-2" />
-          <p className="font-unbounded text-sm font-black text-[#3E3D38]">
-            {user?.subscriptionRenews || user?.subscription_renews || "—"}
-          </p>
-          <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider mt-1">
-            Next Renewal
-          </p>
-        </div> */}
       </div>
 
-      {/* Table */}
       <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
         <div className="px-6 py-4 border-b border-[#E5E0D8]">
           <h3 className="font-unbounded text-xs font-bold text-[#3E3D38] tracking-wider uppercase">

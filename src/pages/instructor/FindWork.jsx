@@ -42,19 +42,16 @@ export default function FindWork() {
     instructors, status: swapsStatus, pagination: instructorsMeta,
   } = useSelector((s) => s.instructor);
 
-  // ── View toggle (jobs ↔ swaps) ───────────────────────────────
   const myOpenTo   = user?.openTo || user?.open_to || [];
   const iOfferSwap = myOpenTo.includes('Swaps');
-  const [view, setView] = useState('jobs');               // 'jobs' | 'swaps'
+  const [view, setView] = useState('jobs');
 
-  // If user toggles off swap availability, force them back to jobs
   useEffect(() => {
     if (!iOfferSwap && view === 'swaps') setView('jobs');
   }, [iOfferSwap, view]);
 
   const viewIsSwaps = view === 'swaps';
 
-  // ── Filter / sort state (pushed to backend) ──────────────────
   const [query,            setQuery]            = useState('');
   const [filterType,       setFilterType]       = useState('all');
   const [showFilters,      setShowFilters]      = useState(false);
@@ -68,7 +65,6 @@ export default function FindWork() {
   const [applyTarget,      setApplyTarget]      = useState(null);
   const [loadingMore,      setLoadingMore]      = useState(false);
 
-  // ── Build query params ───────────────────────────────────────
   const buildJobParams = useCallback((page = 1) => {
     const p = { page, per_page: PER_PAGE, sort };
     if (query)                p.search     = query;
@@ -90,7 +86,6 @@ export default function FindWork() {
     return p;
   }, [query, filterDiscipline, filterCountry, filterCity, filterSuburb, sort]);
 
-  // ── Refetch on view / filter change (debounced for search) ───
   useEffect(() => {
     const debounce = query ? 350 : 0;
     const handle = setTimeout(() => {
@@ -118,7 +113,6 @@ export default function FindWork() {
     }
   };
 
-  // ── Load more ────────────────────────────────────────────────
   const loadMore = async () => {
     setLoadingMore(true);
     if (viewIsSwaps) {
@@ -135,7 +129,6 @@ export default function FindWork() {
     setLoadingMore(false);
   };
 
-  // ── Derived view data ────────────────────────────────────────
   const currentList   = viewIsSwaps ? instructors : jobs;
   const currentStatus = viewIsSwaps ? swapsStatus : jobsStatus;
   const currentMeta   = viewIsSwaps ? instructorsMeta : jobsMeta;
@@ -154,18 +147,14 @@ export default function FindWork() {
     setSort('recent');
   };
 
-  // ── UI ───────────────────────────────────────────────────────
   return (
-    // Find Work uses a full-bleed GREEN page background (white boxes inside).
     <div className="-m-4 lg:-m-6 p-4 lg:p-6 min-h-full bg-[#B4FF5A]">
     <div className="max-w-5xl mx-auto space-y-4 sm:space-y-5">
 
-      {/* ── Hero tagline ───────────────────────────────────── */}
       <h2 className="font-unbounded text-2xl sm:text-3xl lg:text-4xl font-black text-[#1A1A1A] leading-tight">
         Find work wherever you wander
       </h2>
 
-      {/* ── Header ─────────────────────────────────────────── */}
       <div>
         <p className="text-[#1A1A1A] text-[10px] sm:text-xs font-semibold tracking-widest uppercase mb-1.5">
           Find Work
@@ -180,7 +169,6 @@ export default function FindWork() {
         </p>
       </div>
 
-      {/* ── View toggle (segmented control) ────────────────── */}
       {iOfferSwap && (
         <div className="bg-white border border-[#E5E0D8] rounded-2xl p-1 inline-flex w-full sm:w-auto">
           <button
@@ -206,7 +194,6 @@ export default function FindWork() {
         </div>
       )}
 
-      {/* ── Search + filter toggle ─────────────────────────── */}
       <div className="bg-white rounded-2xl border border-[#E5E0D8] p-3 sm:p-4 space-y-3">
         <div className="flex items-center gap-2">
           <div className="flex-1 flex items-center gap-2 bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl px-3 py-2.5 min-w-0">
@@ -239,7 +226,6 @@ export default function FindWork() {
           </Button>
         </div>
 
-        {/* Active filter chips — visible at all times */}
         {hasFilters && (
           <div className="flex flex-wrap items-center gap-1.5 pt-1">
             <span className="text-[10px] text-[#9A9A94] font-semibold uppercase tracking-wider">
@@ -277,7 +263,6 @@ export default function FindWork() {
           </div>
         )}
 
-        {/* Expanded filter panel */}
         {showFilters && (
           <div className="border-t border-[#E5E0D8] pt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <SelectField
@@ -312,7 +297,6 @@ export default function FindWork() {
         )}
       </div>
 
-      {/* ── Type tabs (jobs only) + Sort ───────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3">
         {!viewIsSwaps && (
           <div className="flex-1 min-w-0 overflow-x-auto -mx-1 px-1">
@@ -339,7 +323,6 @@ export default function FindWork() {
         </div>
       </div>
 
-      {/* ── Feed ───────────────────────────────────────────── */}
       {initialLoading && <CardSkeleton count={4} />}
 
       {!initialLoading && currentList.length === 0 && (
@@ -412,9 +395,6 @@ export default function FindWork() {
   );
 }
 
-// ── Inline tiny removable filter chip ──
-// Kept inline (not a separate file) because it's purely a visual primitive
-// for this page — uses existing Chip styling but adds a ✕ remove handler.
 function FilterChip({ children, onRemove }) {
   return (
     <Chip size="xs" tone="blue" className="!pr-1.5">

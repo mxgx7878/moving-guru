@@ -24,7 +24,6 @@ import { toast } from "sonner";
 import MessageActionsMenu from "../../features/chat/MessageActionsMenu";
 import ReportModal from "../../features/chat/ReportModal";
 
-// "14:32" today, "Tue" within the week, "12 May" beyond that.
 const formatStamp = (iso) => {
   if (!iso) return "";
   const d = new Date(iso);
@@ -44,8 +43,6 @@ export default function Messages() {
   const location = useLocation();
   const { user } = useSelector((s) => s.auth);
   const [report, setReport] = useState(null);
-  // Real users.id — flattenUser detail.id se user.id ko override kar
-  // deta hai, isliye user_id pehle (admin ke liye id fallback).
   const myId = user?.user_id ?? user?.id;
   const { conversations, messages, status, messagesStatus, sendStatus } =
     useSelector((s) => s.message);
@@ -55,16 +52,11 @@ export default function Messages() {
   const [activeId, setActiveId] = useState(null);
   const [msgText, setMsgText] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  // Mobile: controls whether we're showing the conversation list or the chat
-  const [mobileView, setMobileView] = useState("list"); // 'list' | 'chat'
-  // Draft thread — jab kisi ke profile/card se "Chat" dabate hain aur in
-  // dono ke beech abhi koi conversation nahi hai. Pehla message bhejte hi
-  // real conversation ban jati hai.
-  const [draftRecipient, setDraftRecipient] = useState(null); // { id, name, avatarUrl }
+  const [mobileView, setMobileView] = useState("list");
+  const [draftRecipient, setDraftRecipient] = useState(null);
   const [creating, setCreating] = useState(false);
 
   const scrollRef = useRef(null);
-  // Deep-link target (kisi page se navigate hua to) — sirf ek baar consume.
   const deepLinkRef = useRef(false);
 
   const activeConvo =
@@ -73,8 +65,6 @@ export default function Messages() {
       : conversations.find((c) => c.id === activeId) || null;
   const sending = sendStatus === STATUS.LOADING || creating;
 
-  // Load inbox; reset active conversation state on unmount so inbox events
-  // bump unread badges again once we leave this page.
   useEffect(() => {
     dispatch(fetchConversations());
     return () => {
@@ -83,8 +73,6 @@ export default function Messages() {
     };
   }, [dispatch]);
 
-  // On desktop only: auto-select first conversation. On mobile we wait for tap.
-  // (Skip when arriving with a recipient to open, or a draft is pending.)
   useEffect(() => {
     if (location.state?.recipientId && !deepLinkRef.current) return;
     if (draftRecipient) return;
@@ -93,14 +81,10 @@ export default function Messages() {
     }
   }, [conversations, activeId, location.state, draftRecipient]);
 
-  // Deep-link: a "Chat" button elsewhere navigates here with
-  // { state: { recipientId, recipientName, recipientAvatar } }. If a thread
-  // with that user already exists we open it; otherwise we open a DRAFT
-  // thread — the real conversation is created on the first send.
   useEffect(() => {
     const recipientId = location.state?.recipientId;
     if (!recipientId || deepLinkRef.current) return;
-    if (status !== STATUS.SUCCEEDED) return; // wait for the inbox to load first
+    if (status !== STATUS.SUCCEEDED) return;
     deepLinkRef.current = true;
 
     const existing = conversations.find(
@@ -122,8 +106,6 @@ export default function Messages() {
     setMobileView("chat");
   }, [location.state, conversations, status, dispatch]);
 
-  // Opening a thread: clear the previous one, mark it active (zeroes its
-  // unread badge) and fetch — the backend marks incoming messages read.
   useEffect(() => {
     if (!activeId) return;
     dispatch(clearMessages());
@@ -131,7 +113,6 @@ export default function Messages() {
     dispatch(fetchMessages(activeId));
   }, [activeId, dispatch]);
 
-  // Live thread: subscribe to conversation.{id} while it's open.
   useEffect(() => {
     const echo = getEcho();
     if (!echo || !activeId) return undefined;
@@ -139,10 +120,8 @@ export default function Messages() {
     const channelName = `conversation.${activeId}`;
     echo.private(channelName).listen(".message.sent", (payload) => {
       const msg = payload?.message;
-      // Own messages already arrive via the send response — skip the echo.
       if (!msg || msg.senderId === myId) return;
       dispatch(chatMessageReceived(payload));
-      // It was read on screen — keep the server's unread counter in sync.
       dispatch(markConversationRead(activeId));
     });
 
@@ -151,7 +130,6 @@ export default function Messages() {
     };
   }, [activeId, myId, dispatch]);
 
-  // Pin the thread to the newest message.
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -170,7 +148,6 @@ export default function Messages() {
 
   const convoDisplayName = (convo) => {
     const r = convo?.participant?.role;
-    // Platform admin messages always appear from "GURU" in the inbox.
     if (r === "admin") return "GURU";
     return convo?.participant?.name || "Unknown";
   };
@@ -186,8 +163,6 @@ export default function Messages() {
       return;
     }
 
-    // Draft → create the conversation with this first message, then switch to
-    // the real thread so live updates + read state work normally.
     setCreating(true);
     dispatch(
       createConversation({ recipientId: draftRecipient.id, message: text }),
@@ -201,7 +176,7 @@ export default function Messages() {
         }
       })
       .catch((err) => {
-        setMsgText(text); // restore so the message isn't lost
+        setMsgText(text);
         toast.error(
           err?.message ||
             (typeof err === "string" ? err : "Failed to send message"),
@@ -244,9 +219,6 @@ export default function Messages() {
         <p className="text-[#9A9A94] text-sm mt-1">{subtitle}</p>
       </div>
 
-      {/* Container — responsive height that respects the mobile viewport.
-          On mobile this fills the available area below the top bar so messages
-          aren't cut off. Use dvh (dynamic viewport height) for iOS Safari. */}
       <div
         className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden"
         style={{
@@ -255,16 +227,12 @@ export default function Messages() {
         }}
       >
         <div className="flex h-full relative">
-          {/* ── Conversation list ──
-              Mobile: full-width slide panel, hidden when chat is open.
-              Desktop (md+): always visible left column. */}
           <div
             className={`
               ${mobileView === "list" ? "flex" : "hidden"} md:flex
               w-full md:w-80 border-r border-[#E5E0D8] flex-col flex-shrink-0
             `}
           >
-            {/* Mobile header inside list */}
             <div className="md:hidden px-4 pt-3 pb-1">
               <h1 className="font-unbounded text-lg font-black text-[#3E3D38]">
                 Messages
@@ -328,9 +296,6 @@ export default function Messages() {
             </div>
           </div>
 
-          {/* ── Chat panel ──
-              Mobile: slides in over the list when a conversation is open.
-              Desktop: always visible right column. */}
           <div
             className={`
               ${mobileView === "chat" ? "flex" : "hidden"} md:flex
@@ -341,9 +306,7 @@ export default function Messages() {
           >
             {activeConvo ? (
               <>
-                {/* Chat header */}
                 <div className="px-4 sm:px-5 py-3 sm:py-3.5 border-b border-[#E5E0D8] flex items-center gap-3">
-                  {/* Mobile back arrow */}
                   <button
                     onClick={handleBackToList}
                     className="md:hidden -ml-1 p-1.5 rounded-lg hover:bg-[#FFFFFF] transition-colors text-[#3E3D38] flex-shrink-0"
@@ -351,9 +314,6 @@ export default function Messages() {
                   >
                     <ArrowLeft size={20} />
                   </button>
-                  {
-                    // Link to participant profile based on role
-                  }
                   <Link
                     to={(() => {
                       const p = activeConvo.participant;
@@ -389,7 +349,6 @@ export default function Messages() {
                   </Link>
                 </div>
 
-                {/* Messages */}
                 <div
                   ref={scrollRef}
                   className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4"
@@ -435,7 +394,6 @@ export default function Messages() {
                             </p>
                           </div>
 
-                          {/* Report menu — incoming messages only */}
                           {!isMine && (
                             <div className="pt-1.5">
                               <MessageActionsMenu
@@ -465,7 +423,6 @@ export default function Messages() {
                   )}
                 </div>
 
-                {/* Input */}
                 <div className="p-3 sm:p-4 border-t border-[#E5E0D8] flex items-end gap-2 sm:gap-3">
                   <input
                     type="text"
