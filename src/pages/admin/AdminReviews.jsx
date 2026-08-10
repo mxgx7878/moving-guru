@@ -68,7 +68,6 @@ export default function AdminReviews() {
     return p;
   }, [direction, rating, sort, query]);
 
-  // Debounced search; immediate on filter changes
   useEffect(() => {
     const debounce = query ? 350 : 0;
     const handle = setTimeout(() => {

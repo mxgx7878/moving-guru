@@ -5,10 +5,6 @@ import { Avatar, Button, Chip, IconButton } from '../../components/ui';
 import { ButtonLoader } from '../../components/feedback';
 import { OPEN_TO_TONES } from '../../constants/theme';
 
-// Studio-facing card used on the Favourites list. Shows enough of an
-// instructor's profile to decide whether to message them. All action
-// callbacks are optional — parent owns save/unsave/message routing.
-
 export default function SavedInstructorCard({
   instructor,
   unsaving = false,

@@ -4,8 +4,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Modal, Button, RHFInput } from '../../components/ui';
 import { reasonSchema } from '../forms';
 
-// Dialog used by AdminUsers to capture a rejection reason when rejecting a
-// pending signup. Pairs with SuspendUserModal — same pattern, different verb.
 export default function RejectUserModal({ onCancel, onConfirm, busy = false }) {
   const { control, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(reasonSchema),

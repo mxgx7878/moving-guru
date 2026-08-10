@@ -1,27 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-/**
- * useFileUploadPreview
- * ─────────────────────────────────────────────────────────────
- * Unified handling for image uploads across every profile form:
- *   - Single-file mode (avatar, cover image): hook returns a `preview`
- *     string and a `file` to hand to FormData on submit.
- *   - Multi-file mode (gallery, up to `max`): returns `previews[]`
- *     (mix of existing URLs + freshly-created object URLs) and the
- *     matching `files[]` of raw File handles to upload.
- *
- * Existing values (e.g. the profile picture already on the server) can
- * be seeded via `initial` so the UI can start with a rendered preview
- * on mount without the user re-uploading.
- *
- * The hook revokes its own object URLs on unmount / replacement so
- * long-lived forms don't leak memory.
- *
- * @param {object}  opts
- * @param {boolean} [opts.multiple=false]
- * @param {number}  [opts.max=4]     — only used in multiple mode
- * @param {string | string[]} [opts.initial]
- */
 export default function useFileUploadPreview({
   multiple = false,
   max = 4,
@@ -29,7 +7,6 @@ export default function useFileUploadPreview({
 } = {}) {
   const inputRef = useRef(null);
 
-  // Track every blob: URL we create so we can revoke on teardown.
   const createdUrlsRef = useRef([]);
 
   const [preview, setPreview] = useState(() => {
@@ -38,8 +15,6 @@ export default function useFileUploadPreview({
   });
   const [files, setFiles] = useState(() => (multiple ? [] : null));
 
-  // Sync initial → preview when it changes (e.g. after updateProfile
-  // returns a new URL from the server).
   useEffect(() => {
     if (multiple) {
       setPreview(Array.isArray(initial) ? initial : []);
@@ -48,7 +23,6 @@ export default function useFileUploadPreview({
     }
   }, [initial, multiple]);
 
-  // Revoke blob URLs on unmount.
   useEffect(() => {
     return () => {
       createdUrlsRef.current.forEach((u) => URL.revokeObjectURL(u));
@@ -79,7 +53,6 @@ export default function useFileUploadPreview({
       setFiles((curr) => [...(curr || []), ...accepted]);
       return [...prev, ...accepted.map((f) => trackUrl(URL.createObjectURL(f)))];
     });
-    // Reset the input so selecting the same file again still triggers onChange.
     event.target.value = '';
   }, [multiple, max]);
 

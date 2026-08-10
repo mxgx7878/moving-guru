@@ -8,9 +8,6 @@ import { CardSkeleton } from '../../components/feedback';
 import { Button, SearchBar } from '../../components/ui';
 import { SavedInstructorCard } from '../../features/instructors';
 
-// Saved instructors grid. "View Profile" routes studios to the dedicated
-// instructor detail page — modals are reserved for quick, short interactions
-// and this view has enough information to be a full page.
 export default function Favourites() {
   const dispatch = useDispatch();
   const navigate = useNavigate();

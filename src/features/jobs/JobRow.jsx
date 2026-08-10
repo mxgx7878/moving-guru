@@ -5,8 +5,6 @@ import { StatusPill, IconButton } from '../../components/ui';
 import { TYPE_STYLES, ROLE_TYPE_LABELS, JOB_STATUS_CONFIG, getJobTypes, isOpenToEnergyExchange, getDisplayableJobTypes, } from '../../constants/jobConstants';
 import { resolveJobStatus } from './jobStatus';
 
-// One row in the admin job listings table. All mutation callbacks are
-// optional — the parent decides which actions are live for the row.
 export default function JobRow({ job, busy = false, onPreview, onActivate, onDeactivate, onDelete }) {
  const typesIds    = getDisplayableJobTypes(job);
   const typesInfo   = typesIds.map((id) => TYPE_STYLES[id]).filter(Boolean);

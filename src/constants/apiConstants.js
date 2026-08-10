@@ -1,10 +1,6 @@
-// Base URL
-// export const BASE_URL = "http://localhost:8000/api";
 export const BASE_URL = 'https://movingguru.co/moving-guru-backend/public/api';
 
-// API Endpoints
 export const API_ENDPOINTS = {
-  // Auth
   REGISTER: "/register",
   LOGIN: "/login",
   ME: "/me",
@@ -15,57 +11,50 @@ export const API_ENDPOINTS = {
   RESET_PASSWORD: "/password/reset",
   CHANGE_PASSWORD: "/password/change",
 
-  // Instructors (studio search)
   INSTRUCTORS: "/instructors",
-  ME_INSTRUCTORS: "/me/instructors", // GET (studio's own profile), PUT (update)
-  INSTRUCTOR_DETAIL: "/instructors", // append /:id
-  SAVE_INSTRUCTOR: "/instructors/save", // POST with instructor_id
-  UNSAVE_INSTRUCTOR: "/instructors/unsave", // POST with instructor_id
+  ME_INSTRUCTORS: "/me/instructors",
+  INSTRUCTOR_DETAIL: "/instructors",
+  SAVE_INSTRUCTOR: "/instructors/save",
+  UNSAVE_INSTRUCTOR: "/instructors/unsave",
   SAVED_INSTRUCTORS: "/instructors/saved",
 
   DASHBOARD_INSTRUCTOR: "/dashboard/instructor",
 
-  // Studios (instructor-side discovery)
   STUDIOS: "/studios",
-  STUDIO_DETAIL: "/studios", // append /:id
+  STUDIO_DETAIL: "/studios",
   DASHBOARD_STUDIO: "/dashboard/studio",
 
-  // Messages
   CONVERSATIONS: "/conversations",
-  MESSAGES: "/conversations", // append /:id/messages
+  MESSAGES: "/conversations",
   SEND_MESSAGE: "/conversations",
 
-  // Subscriptions
   PLANS: "/plans",
   CHANGE_PLAN: "/subscription/change",
   CURRENT_SUBSCRIPTION: "/subscription",
 
-  // Payments
   PAYMENTS: "/payments",
-  DOWNLOAD_INVOICE: "/payments", // append /:id/invoice
+  DOWNLOAD_INVOICE: "/payments",
 
-  // Jobs / Listings
-  JOBS: "/jobs", // GET browse (all roles) | POST create (studio)
-  JOBS_MINE: "/jobs/mine", // GET studio's own listings (active + inactive)
-  JOB_DETAIL: "/jobs", // GET /:id | PATCH /:id | DELETE /:id
-  JOB_APPLY: "/jobs", // POST /:id/apply (instructor)
-  JOB_APPLICANTS: "/jobs", // GET /:id/applicants (studio)
+  JOBS: "/jobs",
+  JOBS_MINE: "/jobs/mine",
+  JOB_DETAIL: "/jobs",
+  JOB_APPLY: "/jobs",
+  JOB_APPLICANTS: "/jobs",
 
-  APPLICATIONS: "/applications", // DELETE /:id (instructor withdraws)
-  APPLICATIONS_MINE: "/applications/mine", // GET instructor's own applications
-  APPLICATION_STATUS: "/applications", // PATCH /:id/status  (studio accept/reject)
+  APPLICATIONS: "/applications",
+  APPLICATIONS_MINE: "/applications/mine",
+  APPLICATION_STATUS: "/applications",
 
-  REVIEWS: "/reviews", // POST create
-  REVIEWS_MINE: "/reviews/mine", // GET my reviews
-  REVIEWS_ELIGIBLE: "/reviews/eligible", // GET pairs I can still review
+  REVIEWS: "/reviews",
+  REVIEWS_MINE: "/reviews/mine",
+  REVIEWS_ELIGIBLE: "/reviews/eligible",
   USER_REVIEWS: "/users",
 
-  // ── Grow Board ────────────────────────────────────────────
-  GROW_POSTS: "/grow-posts", // GET (public list), POST (create)
-  GROW_POST_DETAIL: "/grow-posts", // GET /:id
-  GROW_POSTS_MY: "/grow-posts/my", // GET (own posts)
-  GROW_POST_UPDATE: "/grow-posts", // PUT /:id
-  GROW_POST_DELETE: "/grow-posts", // DELETE /:id
+  GROW_POSTS: "/grow-posts",
+  GROW_POST_DETAIL: "/grow-posts",
+  GROW_POSTS_MY: "/grow-posts/my",
+  GROW_POST_UPDATE: "/grow-posts",
+  GROW_POST_DELETE: "/grow-posts",
   GROW_PAYMENT_INTENTS: "/grow-payments/intents",
   GROW_PAYMENT_COMPLETE: "/grow-payments/complete",
   GROW_POST_TIERS: "/grow-post-tiers",
@@ -73,49 +62,43 @@ export const API_ENDPOINTS = {
   PUBLIC_GROW_PAYMENT_COMPLETE: "/public/grow-payments/complete",
   PUBLIC_GROW_POSTS: "/public/grow-posts",
 
-  // Admin grow endpoints
   ADMIN_GROW_POSTS: "/admin/grow-posts",
-  ADMIN_GROW_APPROVE: "/admin/grow-posts", // PATCH /:id/approve
-  ADMIN_GROW_REJECT: "/admin/grow-posts", // PATCH /:id/reject
-  ADMIN_GROW_BOOST: "/admin/grow-posts", // PATCH /:id/boost
+  ADMIN_GROW_APPROVE: "/admin/grow-posts",
+  ADMIN_GROW_REJECT: "/admin/grow-posts",
+  ADMIN_GROW_BOOST: "/admin/grow-posts",
   ADMIN_GROW_POST_TIERS: "/admin/grow-post-tiers",
 
-  // ── Admin: Dashboard ─────────────────────────────────────
-  ADMIN_DASHBOARD_STATS: "/admin/dashboard/stats", // GET — overview counters + trends
-  ADMIN_DASHBOARD_ACTIVITY: "/admin/dashboard/activity", // GET — recent signups, posts, jobs
+  ADMIN_DASHBOARD_STATS: "/admin/dashboard/stats",
+  ADMIN_DASHBOARD_ACTIVITY: "/admin/dashboard/activity",
   ADMIN_DASHBOARD_REVENUE: "/admin/dashboard/revenue",
 
-  // ── Admin: Users (instructors + studios) ─────────────────
-  // Filterable list: ?role=instructor|studio&status=active|suspended|pending&q=...&page=
   ADMIN_USERS: "/admin/users",
   ADMIN_USER_CREATE: "/admin/users",
-  ADMIN_USER_DETAIL: "/admin/users", // GET /:id
-  ADMIN_USER_UPDATE: "/admin/users", // PATCH /:id  body: { is_active, is_verified, role, ... }
-  ADMIN_USER_SUSPEND: "/admin/users", // PATCH /:id/suspend  body: { reason }
-  ADMIN_USER_ACTIVATE: "/admin/users", // PATCH /:id/activate
-  ADMIN_USER_APPROVE: "/admin/users", // PATCH /:id/approve
+  ADMIN_USER_DETAIL: "/admin/users",
+  ADMIN_USER_UPDATE: "/admin/users",
+  ADMIN_USER_SUSPEND: "/admin/users",
+  ADMIN_USER_ACTIVATE: "/admin/users",
+  ADMIN_USER_APPROVE: "/admin/users",
   ADMIN_USER_REJECT: "/admin/users",
-  ADMIN_USER_VERIFY: "/admin/users", // PATCH /:id/verify   (studios)
-  ADMIN_USER_DELETE: "/admin/users", // DELETE /:id
+  ADMIN_USER_VERIFY: "/admin/users",
+  ADMIN_USER_DELETE: "/admin/users",
 
-  // ── Admin: Platform posts / events (broadcast announcements) ─
-  ADMIN_POSTS: "/admin/posts", // GET, POST
-  ADMIN_POST_DETAIL: "/admin/posts", // GET /:id
-  ADMIN_POST_UPDATE: "/admin/posts", // PUT /:id
-  ADMIN_POST_DELETE: "/admin/posts", // DELETE /:id
-  ADMIN_POST_PUBLISH: "/admin/posts", // PATCH /:id/publish
-  ADMIN_POST_UNPUBLISH: "/admin/posts", // PATCH /:id/unpublish
+  ADMIN_POSTS: "/admin/posts",
+  ADMIN_POST_DETAIL: "/admin/posts",
+  ADMIN_POST_UPDATE: "/admin/posts",
+  ADMIN_POST_DELETE: "/admin/posts",
+  ADMIN_POST_PUBLISH: "/admin/posts",
+  ADMIN_POST_UNPUBLISH: "/admin/posts",
 
-  // ── Admin: Job management ────────────────────────────────
-  ADMIN_JOBS: "/admin/jobs", // GET list with filters
-  ADMIN_JOB_DETAIL: "/admin/jobs", // GET /:id (includes applicants)
-  ADMIN_JOB_APPLICANTS: "/admin/jobs", // GET /:id/applicants
-  ADMIN_JOB_DEACTIVATE: "/admin/jobs", // PATCH /:id/deactivate
-  ADMIN_JOB_ACTIVATE: "/admin/jobs", // PATCH /:id/activate
+  ADMIN_JOBS: "/admin/jobs",
+  ADMIN_JOB_DETAIL: "/admin/jobs",
+  ADMIN_JOB_APPLICANTS: "/admin/jobs",
+  ADMIN_JOB_DEACTIVATE: "/admin/jobs",
+  ADMIN_JOB_ACTIVATE: "/admin/jobs",
   ADMIN_JOB_DELETE: "/admin/jobs",
 
   ADMIN_REVIEWS: "/admin/reviews",
-  ADMIN_REVIEW_DELETE: "/reviews", // DELETE /:id
+  ADMIN_REVIEW_DELETE: "/reviews",
   ADMIN_USER_PLAN: "/admin/users",
   ADMIN_USERS_STALE_SWEEP: "/admin/users/run-stale-sweep",
 
@@ -132,11 +115,10 @@ export const API_ENDPOINTS = {
   ADMIN_PLANS: "/admin/plans",
   ADMIN_PLAN_DETAIL: "/admin/plans",
 
-  // Payments
   PAYMENTS: "/payments",
-  DOWNLOAD_INVOICE: "/payments", // append /:id/invoice
+  DOWNLOAD_INVOICE: "/payments",
 
-  POSTS: "/posts", // GET list
+  POSTS: "/posts",
   POST_DETAIL: "/posts",
 
   ADMIN_FEATURES: "/admin/features",
@@ -144,25 +126,22 @@ export const API_ENDPOINTS = {
   REPORTS: "/reports",
   ADMIN_REPORTS: "/admin/reports",
 
-    // ── Promo codes ──────────────────────────────────────────
-  ADMIN_PROMO_CODES:       "/admin/promo-codes",   // GET, POST
-  ADMIN_PROMO_CODE_DETAIL: "/admin/promo-codes",   // PATCH /:id, DELETE /:id
-  PROMO_VALIDATE:          "/promo-codes/validate", // POST { code, planId? }
-  ADMIN_GROW_PROMO_CODES:       "/admin/grow-promo-codes",   // GET, POST
-  ADMIN_GROW_PROMO_CODE_DETAIL: "/admin/grow-promo-codes",   // PATCH /:id, DELETE /:id
-  GROW_PROMO_VALIDATE:          "/grow-promo-codes/validate", // POST { code, pricingTierId }
+  ADMIN_PROMO_CODES:       "/admin/promo-codes",
+  ADMIN_PROMO_CODE_DETAIL: "/admin/promo-codes",
+  PROMO_VALIDATE:          "/promo-codes/validate",
+  ADMIN_GROW_PROMO_CODES:       "/admin/grow-promo-codes",
+  ADMIN_GROW_PROMO_CODE_DETAIL: "/admin/grow-promo-codes",
+  GROW_PROMO_VALIDATE:          "/grow-promo-codes/validate",
   RETRY_SUBSCRIPTION_PAYMENT:
     '/subscription/retry-payment',
 };
 
-// Roles
 export const ROLES = {
   INSTRUCTOR: "instructor",
   STUDIO: "studio",
   ADMIN: "admin",
 };
 
-// Async action status
 export const STATUS = {
   IDLE: "idle",
   LOADING: "loading",

@@ -3,13 +3,6 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-/**
- * RevenueCumulativeChart
- * ─────────────────────────────────────────────────────────────
- * Lifetime running-total chart. Each point is "total revenue
- * earned through this month." Better story for "we've made $X
- * to date" than the per-month bars, which require mental addition.
- */
 export default function RevenueCumulativeChart({ data = [], loading = false }) {
   if (loading) {
     return <div className="h-48 bg-[#F0EBE3] animate-pulse rounded-lg" />;

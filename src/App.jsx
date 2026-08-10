@@ -10,20 +10,17 @@ import { ROLE_THEME } from './config/portalConfig';
 import { STATUS } from './constants/apiConstants';
 import { getMe } from './store/actions/authAction';
 
-// Public
 import Login          from './pages/public/Login';
 import Register       from './pages/public/Register';
 import ForgotPassword from './pages/public/ForgotPassword';
 import ResetPassword  from './pages/public/ResetPassword';
 
-// Instructor portal
 import Dashboard      from './pages/instructor/Dashboard';
 import ProfilePage    from './pages/instructor/ProfilePage';
 import FindWork       from './pages/instructor/FindWork';
 import SavedJobs      from './pages/instructor/SavedJobs';
 import MyApplications from './pages/instructor/MyApplications';
 
-// Common (shared between portals)
 import Messages       from './pages/common/Messages';
 import Subscription   from './pages/common/Subscription';
 import Payments       from './pages/common/Payments';
@@ -32,7 +29,6 @@ import GrowPostForm   from './pages/common/GrowPostForm';
 import Announcements  from './pages/common/Announcements';
 import NotFound       from './pages/common/NotFound';
 
-// Studio portal
 import StudioDashboard   from './pages/studio/StudioDashboard';
 import StudioProfile     from './pages/studio/StudioProfile';
 import SearchInstructors from './pages/studio/SearchInstructors';
@@ -40,7 +36,6 @@ import Favourites        from './pages/studio/Favourites';
 import JobListings       from './pages/studio/JobListings';
 import InstructorDetail  from './pages/studio/InstructorDetail';
 
-// Admin portal
 import AdminDashboard      from './pages/admin/AdminDashboard';
 import AdminGrowPosts      from './pages/admin/AdminGrowPosts';
 import AdminUsers          from './pages/admin/AdminUsers';
@@ -54,16 +49,10 @@ import AdminGrowPromoCodes from './pages/admin/AdminGrowPromoCodes'
 import AdminReports         from './pages/admin/AdminReports';
 import './styles/dashboard-bg.css';
 
-// StudioDetail lives in `pages/public/` because the view itself is
-// read-only and has no role-specific affordances.
 import StudioDetail from './pages/public/StudioDetail';
 import AdminPromoCodes from './pages/admin/AdminPromoCodes';
 import SubscriptionCheckout from './pages/common/SubscriptionCheckout';
 
-// ─── Feature key constants ────────────────────────────────────────
-// Must match the `key` column in the `features` DB table.
-// Kept here (not imported from a separate file) because they're route-level
-// only — admin matrix loads the same list from /api/admin/features.
 const FK = {
   MESSAGING:          'messaging',
   JOB_APPLICATIONS:   'job_applications',
@@ -80,9 +69,6 @@ function RoleRedirect() {
   const dispatch = useDispatch();
   const { token, user, status } = useSelector((s) => s.auth);
 
-  // If a token exists (possibly stale from a different app) but no user has
-  // been loaded yet, validate it once. If the token is invalid the slice
-  // will clear it and this component re-renders into the login redirect.
   useEffect(() => {
     if (token && !user && status === STATUS.IDLE) {
       dispatch(getMe());
@@ -121,7 +107,6 @@ export default function App() {
       <ToastListener />
 
       <Routes>
-        {/* ── Public ─────────────────────────────────────────── */}
         <Route path="/login"           element={<Login />} />
         <Route path="/register"        element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -137,14 +122,6 @@ export default function App() {
   }
 />
 
-        {/* ═══════════════════════════════════════════════════════════
-            Instructor portal
-            Gates:
-              RequireApproved  → admin must approve the user first
-              RequireFeature   → user's plan must include the feature
-            Always-accessible (NEVER feature-gated): dashboard, profile,
-            subscription, payments — users need these to upgrade.
-        ═══════════════════════════════════════════════════════════ */}
         <Route path="/portal" element={
           <ProtectedRoute allowedRoles={['instructor']}>
             <PortalLayout />
@@ -152,14 +129,12 @@ export default function App() {
         }>
           <Route index             element={<Navigate to="dashboard" replace />} />
 
-          {/* Always accessible */}
           <Route path="dashboard"       element={<Dashboard />} />
           <Route path="profile"         element={<ProfilePage />} />
           <Route path="subscription"    element={<Subscription />} />
           <Route path="payments"        element={<Payments />} />
           <Route path="instructors/:id" element={<InstructorDetail />} />
 
-          {/* Approval-gated + feature-gated */}
           <Route path="find-work" element={
             <RequireApproved>
               <RequireFeature feature={FK.JOB_APPLICATIONS}><FindWork /></RequireFeature>
@@ -199,13 +174,9 @@ export default function App() {
             </RequireApproved>
           } />
 
-          {/* No subscription gate — announcements are platform-wide */}
           <Route path="announcements" element={<Announcements />} />
         </Route>
 
-        {/* ═══════════════════════════════════════════════════════════
-            Studio portal
-        ═══════════════════════════════════════════════════════════ */}
         <Route path="/studio" element={
           <ProtectedRoute allowedRoles={['studio']}>
             <PortalLayout />
@@ -213,13 +184,11 @@ export default function App() {
         }>
           <Route index               element={<Navigate to="dashboard" replace />} />
 
-          {/* Always accessible */}
           <Route path="dashboard"    element={<StudioDashboard />} />
           <Route path="profile"      element={<StudioProfile />} />
           <Route path="subscription" element={<Subscription />} />
           <Route path="payments"     element={<Payments />} />
 
-          {/* Approval-gated + feature-gated */}
           <Route path="search" element={
             <RequireApproved>
               <RequireFeature feature={FK.SEARCH_INSTRUCTORS}><SearchInstructors /></RequireFeature>
@@ -266,9 +235,6 @@ export default function App() {
           <Route path="announcements" element={<Announcements />} />
         </Route>
 
-        {/* ═══════════════════════════════════════════════════════════
-            Admin portal — admins bypass ALL gating (approval + feature)
-        ═══════════════════════════════════════════════════════════ */}
         <Route path="/admin" element={
           <ProtectedRoute allowedRoles={['admin']}>
             <PortalLayout />
@@ -291,10 +257,8 @@ export default function App() {
           <Route path="grow-promo-codes" element={<AdminGrowPromoCodes />} />
         </Route>
 
-        {/* ── Root → role home ──────────────────────────────── */}
         <Route path="/" element={<RoleRedirect />} />
 
-        {/* ── 404 ────────────────────────────────────────────── */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

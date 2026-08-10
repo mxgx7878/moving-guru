@@ -9,7 +9,6 @@ const APPLICATION_STATUS = {
   withdrawn: { label: 'Withdrawn', cls: 'bg-gray-100 text-gray-500'      },
 };
 
-// Row shown in the Applicants list inside JobDetailDrawer.
 export default function ApplicantRow({ app }) {
   const user = app.instructor || app.user || {};
   const name = user.name || 'Unknown';

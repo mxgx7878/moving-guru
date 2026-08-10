@@ -1,23 +1,6 @@
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 
-// Single reusable text input used across every form.
-//
-// Error contract
-// ──────────────────────────────────────────────────────────────
-// Parent provides the error in ONE of two ways — never mix both:
-//   • `error`            — string already resolved for THIS field.
-//                          `<Input name="email" error={formErrors.email} />`
-//   • `errors` + `name`  — map keyed by field name; component looks up
-//                          `errors[name]`. Useful with RHF's
-//                          `formState.errors` bag.
-// If both are supplied `error` wins.
-//
-// Styling
-// ──────────────────────────────────────────────────────────────
-// Focus state is driven entirely by Tailwind `focus:` variants — we
-// don't mutate style.borderColor on focus/blur. The accent colour is
-// exposed as a CSS custom property so callers can still theme the ring.
 export default function Input({
   label,
   name,
@@ -61,8 +44,6 @@ export default function Input({
     isPassword ? 'pr-10' : '',
   ].filter(Boolean).join(' ');
 
-  // Expose the accent through a CSS variable so the `focus:border-[var(--focus)]`
-  // arbitrary class can pick it up — no runtime style mutation needed.
   const styleVars = { '--focus': accent };
 
   return (

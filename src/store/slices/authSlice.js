@@ -2,15 +2,11 @@ import { createSlice } from '@reduxjs/toolkit';
 import { STATUS } from '../../constants/apiConstants';
 import { changePassword, forgotPassword, getMe, loginUser, logoutUser, refreshToken, registerUser, resetPassword, updateProfile } from '../actions/authAction';
 
-// Helper — flatten nested `detail` into the user object so the rest
-// of the app can access profile fields directly (e.g. user.bio).
 const flattenUser = (raw) => {
   if (!raw) return null;
   const { detail, ...rest } = raw;
   return detail ? { ...rest, ...detail } : rest;
 };
-
-// ─── Slice ────────────────────────────────────────────────────────
 
 const initialState = {
   user: null,
@@ -40,7 +36,6 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // ── Register ──
       .addCase(registerUser.pending, (state) => {
         state.status = STATUS.LOADING;
         state.error = null;
@@ -57,7 +52,6 @@ const authSlice = createSlice({
         state.error = payload;
       })
 
-      // ── Login ──
       .addCase(loginUser.pending, (state) => {
         state.status = STATUS.LOADING;
         state.error = null;
@@ -74,7 +68,6 @@ const authSlice = createSlice({
         state.error = payload;
       })
 
-      // ── Get Me ──
       .addCase(getMe.pending, (state) => {
         state.status = STATUS.LOADING;
         state.error = null;
@@ -86,13 +79,11 @@ const authSlice = createSlice({
       .addCase(getMe.rejected, (state, { payload }) => {
         state.status = STATUS.FAILED;
         state.error = payload;
-        // Token is invalid/expired — clear auth so ProtectedRoute redirects
         state.token = null;
         state.user = null;
         localStorage.removeItem('access_token');
       })
 
-      // ── Logout ──
       .addCase(logoutUser.pending, (state) => {
         state.status = STATUS.LOADING;
       })
@@ -103,12 +94,10 @@ const authSlice = createSlice({
         return { ...initialState, token: null };
       })
 
-      // ── Refresh ──
       .addCase(refreshToken.fulfilled, (state, { payload }) => {
         state.token = payload.data?.token || state.token;
       })
 
-      // ── Update Profile ──
       .addCase(updateProfile.pending, (state) => {
         state.status = STATUS.LOADING;
         state.error = null;
@@ -123,7 +112,6 @@ const authSlice = createSlice({
         state.error = payload;
       })
 
-      // ── Forgot Password ──
       .addCase(forgotPassword.pending, (state) => {
         state.status = STATUS.LOADING;
         state.error = null;
@@ -137,7 +125,6 @@ const authSlice = createSlice({
         state.error = payload;
       })
 
-      // ── Reset Password ──
       .addCase(resetPassword.pending, (state) => {
         state.status = STATUS.LOADING;
         state.error = null;
@@ -151,7 +138,6 @@ const authSlice = createSlice({
         state.error = payload;
       })
 
-      // ── Change Password ──
       .addCase(changePassword.pending, (state) => {
         state.status = STATUS.LOADING;
         state.error = null;

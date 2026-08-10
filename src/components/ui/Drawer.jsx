@@ -2,12 +2,6 @@ import { useEffect } from 'react';
 import { X } from 'lucide-react';
 import IconButton from './IconButton';
 
-// Detail drawer used by every admin "preview X" modal (UserDetailDrawer,
-// JobDetailDrawer, PostDetailDrawer). Behaves like Modal but exposes
-// separate `header`, body (children) and `footer` slots so pages can
-// render a rich header (avatar + status pills) instead of plain text.
-// Escape and backdrop-click close. If `loading` is true it renders a
-// centred spinner instead of the drawer body.
 const SIZE = {
   md: 'max-w-lg',
   lg: 'max-w-2xl',

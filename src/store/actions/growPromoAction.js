@@ -3,7 +3,6 @@ import axiosInstance from '../../config/axiosInstance';
 import { API_ENDPOINTS } from '../../constants/apiConstants';
 import { getErrorMessage } from '../../utils/errorUtils';
 
-// ── Admin ──────────────────────────────────────────────────────
 export const fetchGrowPromoCodes = createAsyncThunk(
   'growPromo/fetchAll',
   async (_, { rejectWithValue }) => {
@@ -47,14 +46,11 @@ export const deleteGrowPromoCode = createAsyncThunk(
   },
 );
 
-// ── Public / checkout ──────────────────────────────────────────
-// Validate a Grow promo code against a pricing tier and get a price preview.
 export const validateGrowPromoCode = createAsyncThunk(
   'growPromo/validate',
   async ({ code, pricingTierId }, { rejectWithValue }) => {
     try {
       const { data } = await axiosInstance.post(API_ENDPOINTS.GROW_PROMO_VALIDATE, { code, pricingTierId });
-      // { code, discountType, discountValue, originalAmount, discountAmount, finalAmount, currency }
       return data.data;
     } catch (e) { return rejectWithValue(getErrorMessage(e)); }
   },

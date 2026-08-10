@@ -1,22 +1,3 @@
-// src/components/gates/FeatureGate.jsx
-//
-// Wrap any content with <FeatureGate feature={FEATURE_KEYS.MESSAGING}>.
-// If the user's plan includes the feature → renders children as-is.
-// If not → renders a subscription gate overlay instead.
-//
-// Usage:
-//   import FeatureGate from '../../components/gates/FeatureGate';
-//   import { FEATURE_KEYS } from '../../constants/featureConstants';
-//
-//   <FeatureGate feature={FEATURE_KEYS.MESSAGING}>
-//     <MessagesPage />
-//   </FeatureGate>
-//
-//   // Inline variant (inside a card or button area)
-//   <FeatureGate feature={FEATURE_KEYS.JOB_APPLICATIONS} inline>
-//     <ApplyButton />
-//   </FeatureGate>
-
 import { useNavigate } from 'react-router-dom';
 import { Lock, Sparkles } from 'lucide-react';
 import { useSelector } from 'react-redux';
@@ -27,8 +8,6 @@ import { ROLE_THEME } from '../../config/portalConfig';
 export default function FeatureGate({ feature, children, inline = false }) {
   const { allowed, loading } = useFeatureGate(feature);
 
-  // While subscription is loading, render children optimistically
-  // (avoids flicker for users who do have access)
   if (loading) return children;
   if (allowed) return children;
 
@@ -36,8 +15,6 @@ export default function FeatureGate({ feature, children, inline = false }) {
     ? <InlineGate featureKey={feature} />
     : <PageGate featureKey={feature} />;
 }
-
-// ─── Page-level gate (full section replacement) ───────────────────
 
 function PageGate({ featureKey }) {
   const navigate  = useNavigate();
@@ -49,7 +26,6 @@ function PageGate({ featureKey }) {
 
   return (
     <div className="max-w-2xl mx-auto py-16 px-4 flex flex-col items-center text-center space-y-6">
-      {/* Icon */}
       <div
         className="w-20 h-20 rounded-3xl flex items-center justify-center"
         style={{ backgroundColor: `${theme.accent}18` }}
@@ -57,7 +33,6 @@ function PageGate({ featureKey }) {
         <Lock size={32} style={{ color: theme.accent }} />
       </div>
 
-      {/* Text */}
       <div className="space-y-2">
         <h2 className="font-unbounded text-xl font-black text-[#3E3D38]">
           {meta?.label ?? 'Feature'} requires an upgrade
@@ -70,7 +45,6 @@ function PageGate({ featureKey }) {
         </p>
       </div>
 
-      {/* CTA */}
       <button
         onClick={() => navigate(subPath)}
         className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-white transition-opacity hover:opacity-90"
@@ -82,8 +56,6 @@ function PageGate({ featureKey }) {
     </div>
   );
 }
-
-// ─── Inline gate (inside a card, button area, etc.) ───────────────
 
 function InlineGate({ featureKey }) {
   const navigate = useNavigate();

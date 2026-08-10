@@ -5,9 +5,6 @@ import { MessageCircle } from 'lucide-react';
 import { Modal, Button, RHFInput } from '../../components/ui';
 import { applyJobSchema } from '../forms';
 
-// Apply / "Express Interest" modal used by instructors on Find Work
-// and Saved Jobs. Message is optional but should be meaningful when
-// provided (see applyJobSchema).
 export default function ApplyJobModal({ job, submitting, onClose, onSubmit }) {
   const { control, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(applyJobSchema),

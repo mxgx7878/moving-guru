@@ -1,6 +1,3 @@
-// Compact stat tile used inside detail drawers — small bordered card
-// with a big value and a caption. Different from StatCard which is the
-// larger dashboard-style card with an icon.
 export default function StatTile({ label, value, icon: Icon, className = '' }) {
   return (
     <div className={`bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl p-3 ${Icon ? '' : 'text-center'} ${className}`}>

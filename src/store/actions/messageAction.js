@@ -39,9 +39,6 @@ export const sendMessage = createAsyncThunk(
   },
 );
 
-// camelCase end-to-end — backend validates { recipientId, body }.
-// Thunk arg shape ({ recipientId, message }) is unchanged so existing
-// callers (e.g. AdminGrowPosts reject flow) keep working as-is.
 export const createConversation = createAsyncThunk(
   'message/createConversation',
   async ({ recipientId, message }, { rejectWithValue }) => {
@@ -57,8 +54,6 @@ export const createConversation = createAsyncThunk(
   },
 );
 
-// Marks all incoming messages in a conversation as read — used when a
-// realtime message lands while the thread is already open on screen.
 export const markConversationRead = createAsyncThunk(
   'message/markConversationRead',
   async (conversationId, { rejectWithValue }) => {

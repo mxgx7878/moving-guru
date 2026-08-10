@@ -49,8 +49,6 @@ const COLORS = {
   linkedin:  '#1A1A1A',
 };
 
-// Renders a tidy row of social icon chips for whatever platforms are set.
-// `social` may be the raw array from the API or a flat object.
 export default function SocialLinksRow({ social, size = 'sm', className = '' }) {
   const map = normalizeSocialLinks(social);
   const entries = SOCIAL_PLATFORM_ORDER

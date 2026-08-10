@@ -29,7 +29,6 @@ const initialState = {
   message: null,
 };
 
-// Helper: replace a post everywhere it appears in state
 const replacePost = (state, updated) => {
   if (!updated) return;
   const tryReplace = (arr) => {
@@ -61,7 +60,6 @@ const growSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
-      // ── Fetch all posts ──────────────────────────────────────
       .addCase(fetchGrowPosts.pending, (state) => {
         state.status = STATUS.LOADING;
         state.error = null;
@@ -83,7 +81,6 @@ const growSlice = createSlice({
         state.error = payload;
       })
 
-      // ── Create post ──────────────────────────────────────────
       .addCase(createGrowPost.pending, (state) => {
         state.submitStatus = STATUS.LOADING;
         state.submitError = null;
@@ -104,7 +101,6 @@ const growSlice = createSlice({
         state.submitError = payload;
       })
 
-      // ── Update post ──────────────────────────────────────────
       .addCase(updateGrowPost.pending, (state) => {
         state.submitStatus = STATUS.LOADING;
         state.submitError = null;
@@ -119,7 +115,6 @@ const growSlice = createSlice({
         state.submitError = payload;
       })
 
-      // ── Delete post (owner) ──────────────────────────────────
       .addCase(deleteGrowPost.fulfilled, (state, { payload: id }) => {
         state.myPosts    = state.myPosts.filter((p) => p.id !== id);
         state.posts      = state.posts.filter((p) => p.id !== id);
@@ -130,11 +125,6 @@ const growSlice = createSlice({
         state.error = payload;
       })
 
-      // ═══════════════════════════════════════════════════════
-      //  Admin
-      // ═══════════════════════════════════════════════════════
-
-      // ── Admin: list all posts ────────────────────────────────
       .addCase(fetchAdminGrowPosts.pending, (state) => {
         state.adminStatus = STATUS.LOADING;
         state.adminError = null;
@@ -149,7 +139,6 @@ const growSlice = createSlice({
         state.adminError = payload;
       })
 
-      // ── Admin: approve ───────────────────────────────────────
       .addCase(approveGrowPost.pending, (state) => {
         state.moderationStatus = STATUS.LOADING;
       })
@@ -163,7 +152,6 @@ const growSlice = createSlice({
         state.adminError = payload;
       })
 
-      // ── Admin: reject ────────────────────────────────────────
       .addCase(rejectGrowPost.pending, (state) => {
         state.moderationStatus = STATUS.LOADING;
       })
@@ -177,7 +165,6 @@ const growSlice = createSlice({
         state.adminError = payload;
       })
 
-      // ── Admin: boost / feature ───────────────────────────────
       .addCase(boostGrowPost.fulfilled, (state, { payload }) => {
         replacePost(state, payload.data);
         state.message = payload.message || 'Post updated.';
@@ -186,7 +173,6 @@ const growSlice = createSlice({
         state.adminError = payload;
       })
 
-      // ── Admin: delete any post ───────────────────────────────
       .addCase(adminDeleteGrowPost.fulfilled, (state, { payload: id }) => {
         state.adminPosts = state.adminPosts.filter((p) => p.id !== id);
         state.posts      = state.posts.filter((p) => p.id !== id);

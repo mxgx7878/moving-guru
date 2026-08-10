@@ -91,12 +91,6 @@ export default function AdminUsers() {
   const [activityFilter, setActivityFilter] = useState("");
   const [sweeping, setSweeping] = useState(false);
 
-  // Sync ?role=… to the active tab. Deliberately reads `searchParams`
-  // through `setSearchParams`' functional form so we don't have to
-  // depend on `searchParams` (which would re-trigger this effect every
-  // time we update it — an infinite loop). `setSearchParams` has a
-  // stable identity per-location from react-router, so leaving it out
-  // of deps is safe.
   useEffect(() => {
     setSearchParams(
       (prev) => {
