@@ -1,9 +1,7 @@
 import * as yup from 'yup';
 
-// Shared building blocks.
 const email = yup.string().trim().email('Enter a valid email');
 
-// ── Job listing (studio creates / edits) ─────────────────────────
 export const jobSchema = yup.object({
   title: yup.string().trim().required('Title is required').max(120),
   types:  yup
@@ -27,9 +25,6 @@ export const jobSchema = yup.object({
   requirements: yup.string().max(4000, 'Keep requirements under 4000 characters').nullable(),
 });
 
-// ── Admin "create / edit user" ───────────────────────────────────
-// Password is required on create, optional on edit. Consumers pass
-// { isEdit: true } via the `context` option when calling `.validate()`.
 export const userSchema = yup.object({
   name:    yup.string().trim().required('Name is required').max(120),
   email:   email.required('Email is required'),
@@ -42,7 +37,6 @@ export const userSchema = yup.object({
   }),
 });
 
-// ── Admin announcement / platform post ───────────────────────────
 export const adminPostSchema = yup.object({
   title: yup.string().trim().required('Title is required').max(200),
   body:  yup.string().trim().required('Post body is required').max(4000),

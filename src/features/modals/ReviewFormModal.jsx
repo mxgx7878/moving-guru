@@ -8,8 +8,6 @@ import { createReview } from '../../store/actions/reviewAction';
 import { Modal, Button, Avatar, RHFInput, StarRating } from '../../components/ui';
 import { reviewSchema } from '../forms';
 
-// Reusable review-posting modal. Used by JobApplicantsModal after a hire
-// and any future place where studios/instructors leave feedback.
 export default function ReviewFormModal({
   reviewee,
   jobListingId,

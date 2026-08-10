@@ -1,8 +1,5 @@
 import { Search, X } from 'lucide-react';
 
-// Pill-shaped search input with a leading icon and a clear button.
-// Drop-in replacement for the ad-hoc search rows that each admin/listing
-// page wrote themselves.
 export default function SearchBar({
   value,
   onChange,

@@ -199,7 +199,6 @@ export default function SubscriptionCheckout() {
         if (cancelled) return;
 
         if (defaultPaymentMethodId) {
-          // The saved ID is still enough for the backend to attempt checkout.
           setPaymentMethods([{ id: defaultPaymentMethodId, isDefault: true }]);
           setSelectedPaymentMethodId(defaultPaymentMethodId);
           setUseNewCard(false);
@@ -315,7 +314,6 @@ const completeCheckout = async (
     return;
   }
 
-  // A normal signup needs a selected plan.
   if (!isPastDue && !selectedPlan) {
     toast.error('Please select a plan.');
     return;
@@ -324,8 +322,6 @@ const completeCheckout = async (
   setProcessing(true);
 
   try {
-    // Renewal recovery:
-    // retry the unpaid invoice instead of creating/changing a plan.
     if (isPastDue) {
       await retryPastDuePayment(
         paymentMethodId,
@@ -334,7 +330,6 @@ const completeCheckout = async (
       return;
     }
 
-    // Normal new-subscription checkout.
     const payload = {
       planId: selectedPlan.id,
       paymentMethodId,
@@ -403,8 +398,6 @@ const completeCheckout = async (
   }
 };
 
-  
-
   const symbol = CURRENCY_SYMBOLS[selectedPlan?.currency] || '$';
   const dueToday = selectedPlan?.trialPeriodDays > 0 ? 0 : priceView.final;
 
@@ -453,12 +446,6 @@ const completeCheckout = async (
       <header className="border-b border-[#E6E1D8] bg-white/90 backdrop-blur">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            {/* <div className="w-9 h-9 rounded-xl bg-[#F5FDA6] flex items-center justify-center">
-              <Globe size={18} />
-            </div>
-            <span className="font-unbounded text-sm sm:text-base font-black tracking-wide">
-              MOVING <span className="text-coral">GURU</span>
-            </span> */}
 
             <img src={logo} alt="Moving Guru" className="h-8 sm:h-10" />
           </div>
@@ -533,7 +520,6 @@ const completeCheckout = async (
                     onClick={() => {
                       setSelectedPlanId(String(plan.id));
                       sessionStorage.setItem('pending_subscription_plan_id', String(plan.id));
-                      // setPromo(null);
                     }}
                     className={`w-full text-left rounded-2xl border-2 p-4 transition-all ${selected ? 'border-[#302F2A] bg-[#FAF9F6] shadow-sm' : 'border-[#E8E3DA] hover:border-[#BBB4A9]'}`}
                   >

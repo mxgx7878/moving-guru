@@ -2,13 +2,6 @@ import { Trash2, Briefcase, MessageSquare } from 'lucide-react';
 import { Avatar, IconButton, Chip } from '../../components/ui';
 import StarRating from '../../components/ui/StarRating';
 
-/**
- * AdminReviewRow
- * ─────────────────────────────────────────────────────────────
- * Single row in the admin Reviews moderation table. Both reviewer
- * and reviewee are shown (name + role chip + avatar) so the admin
- * can quickly see who-said-what-about-whom without opening a drawer.
- */
 export default function AdminReviewRow({ review, busy = false, onDelete }) {
   const reviewer       = review.reviewer || {};
   const reviewee       = review.reviewee || {};
@@ -25,7 +18,6 @@ export default function AdminReviewRow({ review, busy = false, onDelete }) {
 
   return (
     <tr className="border-t border-[#F0EBE3] hover:bg-[#FFFFFF]">
-      {/* Reviewer */}
       <td className="py-3 px-4 min-w-[200px]">
         <div className="flex items-center gap-2.5">
           <Avatar name={reviewer.name} src={reviewerPic} size="sm"
@@ -39,7 +31,6 @@ export default function AdminReviewRow({ review, busy = false, onDelete }) {
         </div>
       </td>
 
-      {/* Reviewee */}
       <td className="py-3 px-4 min-w-[200px]">
         <div className="flex items-center gap-2.5">
           <Avatar name={reviewee.name} src={revieweePic} size="sm"
@@ -53,12 +44,10 @@ export default function AdminReviewRow({ review, busy = false, onDelete }) {
         </div>
       </td>
 
-      {/* Rating */}
       <td className="py-3 px-4">
         <StarRating value={review.rating} size={14} readOnly />
       </td>
 
-      {/* Comment preview */}
       <td className="py-3 px-4 max-w-[280px]">
         {review.comment ? (
           <p className="text-xs text-[#6B6B66] line-clamp-2 italic">
@@ -69,7 +58,6 @@ export default function AdminReviewRow({ review, busy = false, onDelete }) {
         )}
       </td>
 
-      {/* Listing context */}
       <td className="py-3 px-4">
         {job ? (
           <span className="flex items-center gap-1 text-[10px] text-[#6B6B66]">
@@ -79,12 +67,10 @@ export default function AdminReviewRow({ review, busy = false, onDelete }) {
         ) : <span className="text-[10px] text-[#C4BCB4]">—</span>}
       </td>
 
-      {/* Date */}
       <td className="py-3 px-4">
         <span className="text-xs text-[#6B6B66]">{created}</span>
       </td>
 
-      {/* Action */}
       <td className="py-3 px-4">
         <div className="flex items-center justify-end">
           <IconButton title="Remove review" onClick={() => onDelete?.(review)} tone="red" disabled={busy}>

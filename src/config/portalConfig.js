@@ -8,16 +8,6 @@ import {
   Ticket,
 } from 'lucide-react';
 
-// ── Per-role theme tokens ────────────────────────────────────────
-// `accent` is the dominant brand colour for the portal — used by the
-// Sidebar active-state, PageHeader gradient banner, SubscriptionGate
-// lock icon, FeatureGate upgrade CTA, etc.
-//
-// Instructor portal moved from coral (#4E7A1B) to mint green (#B4FF5A)
-// to match the public site's refreshed brand. The Login page's left
-// hero panel still renders in coral on purpose — see Login.jsx.
-//
-// Studio (sky blue) and Admin (purple) are unchanged.
 export const ROLE_THEME = {
   instructor: {
     accent: '#B4FF5A',

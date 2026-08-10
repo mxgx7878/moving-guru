@@ -1,18 +1,5 @@
 import { Zap } from 'lucide-react';
 
-/**
- * EnergyExchangeBadge
- * ─────────────────────────────────────────────────────────────
- * Small subtle badge shown on profiles and job posts when the
- * user / listing is open to energy-exchange arrangements.
- *
- * Per client direction this is intentionally low-emphasis (small
- * text, single icon, neutral colour) — energy exchange is a
- * fallback option, not a headline feature.
- *
- * Renders nothing when `open` is false, so callers can drop it
- * inline without a wrapping conditional.
- */
 export default function EnergyExchangeBadge({ open, className = '' }) {
   if (!open) return null;
   return (

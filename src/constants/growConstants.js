@@ -3,7 +3,6 @@ import {
   User,
 } from 'lucide-react';
 
-// ── Grow post types ───────────────────────────────────────────────
 export const GROW_TYPES = [
   { id: 'training', label: 'Teacher Training', icon: BookOpen, color: '#4E7A1B' },
   { id: 'retreat',  label: 'Retreats',         icon: Palmtree, color: '#4E7A1B' },
@@ -14,9 +13,6 @@ export const GROW_TYPE_META = GROW_TYPES.reduce(
   (acc, t) => ({ ...acc, [t.id]: t }), {},
 );
 
-// Public filter tabs — now includes "My Posts" so authors can flip to their
-// own listings without leaving the page. Grow.jsx treats 'my' as a source
-// switch (shows myPosts instead of the public feed).
 export const GROW_FILTER_TABS = [
   { id: 'all', label: 'All Posts' },
   ...GROW_TYPES,
@@ -29,7 +25,6 @@ export const GROW_TYPE_BG = {
   event:    'bg-[#9BE63D]/15 text-[#3E3D38]',
 };
 
-// ── Moderation status ─────────────────────────────────────────────
 export const GROW_STATUS_CONFIG = {
   pending:  { label: 'Pending',  icon: Clock,        cls: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
   approved: { label: 'Approved', icon: CheckCircle2, cls: 'bg-green-50 text-green-700 border-green-200' },
@@ -56,10 +51,6 @@ export const GROW_TYPE_OPTIONS = [
   { id: 'event',    label: 'Event'     },
 ];
 
-// Grow listing tiers are loaded from /api/grow-post-tiers. The backend is
-// the single source of truth for listing prices and live durations.
-
-// One-off boost: keeps the post pinned to the top of the feed for 7 days.
 export const BOOST_CONFIG = {
   price:    10,
   days:     7,
@@ -67,10 +58,6 @@ export const BOOST_CONFIG = {
   blurb:    'Pin your post to the top of the Grow feed for 7 days.',
 };
 
-// ── Create/edit form defaults ─────────────────────────────────────
-// `show_spots` toggles the spots/spots_left inputs in the UI. When false,
-// both are sent as null so the post renders without any spots line.
-// `cover_image` is the base64 string (new upload) or existing URL.
 export const EMPTY_GROW_FORM = {
   type:         'training',
   title:        '',
@@ -88,10 +75,6 @@ export const EMPTY_GROW_FORM = {
   tags_raw:     '',
   cover_image:  null,
   cover_image_file: null,
-  // expiry_date is no longer free-text on the form — it's derived from the
-  // chosen pricing tier on the payment modal. Kept for backwards compat with
-  // older records and to let the edit flow echo back the current value.
   expiry_date:  '',
-  // Tier selected at submit time (ignored on edit).
   pricing_tier: null,
 };

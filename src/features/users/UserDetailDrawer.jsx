@@ -16,8 +16,6 @@ const HEADER_BG = {
   instructor: 'bg-coral-soft',
 };
 
-// Full detail/moderation drawer for a user. Takes callbacks for each
-// admin action; renders a status-specific callout + footer actions.
 export default function UserDetailDrawer({
   user,
   busy = false,

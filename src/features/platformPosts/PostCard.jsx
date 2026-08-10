@@ -6,8 +6,6 @@ import { POST_TYPES } from '../../constants/postConstants';
 import PublishPill from './PublishPill';
 import AudiencePill from './AudiencePill';
 
-// Card used in the admin announcements grid. All action callbacks are
-// optional; callers typically set up preview / edit / delete / toggle.
 export default function PostCard({
   post,
   onPreview,

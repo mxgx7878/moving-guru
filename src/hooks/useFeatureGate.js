@@ -1,9 +1,3 @@
-// src/hooks/useFeatureGate.js
-//
-// Returns whether the current user's plan allows a given feature.
-// Defensive: works even if the slice hasn't been updated yet (no
-// allowedFeatures key in state) — treats missing array as empty.
-
 import { useSelector } from 'react-redux';
 
 export function useFeatureGate(featureKey) {

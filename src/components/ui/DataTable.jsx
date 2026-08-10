@@ -1,32 +1,5 @@
 import EmptyState from './EmptyState';
 
-// Universal data table. Columns are described declaratively so every
-// admin table renders the same thead/tbody/padding/hover. Rows are
-// passed as an array; `render` on a column lets callers project row
-// data however they need (avatars, pill badges, action buttons, ...).
-//
-// columns: [
-//   {
-//     key:   'title',                 // used to pull row[key] when no render()
-//     label: 'Title',                 // thead label
-//     align: 'left' | 'right',        // default 'left'
-//     width: string,                  // optional minWidth for the cell
-//     render: (row) => <ReactNode>,   // full custom cell
-//   },
-// ]
-//
-// rows: any[]
-// rowKey: (row) => string | number   — defaults to row.id
-//
-// loading / loadingContent — renders a spinner area instead of the tbody.
-// empty / emptyState        — renders an EmptyState instead of tbody when rows is empty.
-// onRowClick                — optional; makes rows hover+clickable.
-//
-// renderRow (escape hatch)  — if provided, DataTable stops rendering
-//   <td>'s from columns[].render and instead calls renderRow(row) for
-//   each row. Useful when an existing feature component (UserRow, JobRow)
-//   already returns a full <tr>. In this mode `columns` is used only for
-//   the thead labels.
 export default function DataTable({
   columns,
   rows,
@@ -97,6 +70,4 @@ export default function DataTable({
   );
 }
 
-// renderRow returns its own <tr>, so we just pass it through. This
-// wrapper exists only to give the map a stable key location.
 function RowWrapper({ children }) { return children; }

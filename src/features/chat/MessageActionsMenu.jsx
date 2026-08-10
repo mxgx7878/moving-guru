@@ -1,10 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { MoreVertical, Flag, ShieldAlert } from 'lucide-react';
 
-/**
- * MessageActionsMenu — the (⋯) on a chat bubble. Sirf incoming
- * (doosre bande ke) messages par dikhana hai.
- */
 export default function MessageActionsMenu({ onReportMessage, onReportProfile }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);

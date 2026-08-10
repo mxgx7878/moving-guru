@@ -6,9 +6,6 @@ import {
   GROW_TYPE_META, GROW_TYPE_BG, GROW_STATUS_PUBLIC_CONFIG,
 } from '../../constants/growConstants';
 
-// Card shown on the public Grow feed and the "My Posts" tab. When
-// `ownerActions` is true, Edit + Delete + Boost appear (Boost only when
-// onBoost is passed in).
 export default function GrowPostCard({
   post,
   showStatus = false,
@@ -29,7 +26,6 @@ export default function GrowPostCard({
   return (
     <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden hover:shadow-md transition-shadow flex flex-col">
 
-      {/* Cover image — new: sits above everything else */}
       {coverImage && (
         <div className="w-full h-40 bg-[#F5F0E8] overflow-hidden">
           <img
@@ -41,7 +37,6 @@ export default function GrowPostCard({
         </div>
       )}
 
-      {/* Type colour strip (kept for posts without an image) */}
       <div className="h-1 w-full bg-[#F5FDA6]" />
 
       <div className="p-5 flex-1 flex flex-col">
@@ -67,7 +62,6 @@ export default function GrowPostCard({
           </div>
         </div>
 
-        {/* Meta pills */}
         <div className="flex flex-wrap gap-2 mb-3">
           {post.location && (
             <span className="flex items-center gap-1 text-xs text-[#6B6B66]">
@@ -80,7 +74,6 @@ export default function GrowPostCard({
               {post.date_label || post.dates || `${post.date_from} – ${post.date_to || ''}`}
             </span>
           )}
-          {/* Spots only render when the author opted in AND actually set a value. */}
           {(post.spots_left ?? post.spotsLeft) != null && (post.spots_left ?? post.spotsLeft) !== '' && (
             <span className="flex items-center gap-1 text-xs text-[#6B6B66]">
               <Users size={11} className="text-[#9A9A94]" />
@@ -99,7 +92,6 @@ export default function GrowPostCard({
           </div>
         )}
 
-        {/* Footer */}
         <div className="flex items-center justify-between pt-3 border-t border-[#F0EBE3] gap-3 flex-wrap">
           <div className="min-w-0">
             <p className="text-[10px] text-[#9A9A94] uppercase tracking-wide">Posted by</p>

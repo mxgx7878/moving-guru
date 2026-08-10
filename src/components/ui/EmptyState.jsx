@@ -1,6 +1,3 @@
-// Centered empty state block — icon + title + message. Optional `action`
-// slot for a primary button beneath the message. Replaces every ad-hoc
-// "No results" card across listing pages.
 export default function EmptyState({
   icon: Icon,
   title,

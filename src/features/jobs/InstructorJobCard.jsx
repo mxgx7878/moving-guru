@@ -32,9 +32,6 @@ import {
 import { formatShortDate } from "../../utils/formatters";
 import { getApplyState } from "../../utils/jobHelpers";
 
-// Job card rendered on the instructor-side feeds (Find Work + Saved Jobs).
-// Renders the job description, metadata, discipline tags, and the apply
-// CTA (whose state is computed from the current user's application).
 export default function InstructorJobCard({
   job,
   user,
@@ -43,7 +40,7 @@ export default function InstructorJobCard({
   onToggleSave,
   onApply,
 }) {
-  const typesIds = getDisplayableJobTypes(job); // ← excludes 'energy_exchange'
+  const typesIds = getDisplayableJobTypes(job);
   const typesInfo = typesIds.map((id) => TYPE_STYLES[id]).filter(Boolean);
   const primary = typesInfo[0] || TYPE_STYLES.hire;
   const PrimaryIcon = primary.icon;
@@ -268,10 +265,6 @@ function JobMetaRow({ job }) {
   );
 }
 
-// Apply CTA — one of seven states driven by getApplyState(job):
-// none | pending | viewed | accepted | rejected_open | rejected_locked | full.
-// Each state maps to a Button variant; `state="static"` turns the button
-// into a result badge (full opacity, no cursor change).
 function ApplyButton({ state, application, isApplying, onApply }) {
   if (isApplying) {
     return (

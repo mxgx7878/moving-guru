@@ -1,5 +1,3 @@
-// Central export for every feature-specific modal. Pages import from here so
-// the folder structure can evolve without touching every importer.
 export { default as ApplyJobModal }          from './ApplyJobModal';
 export { default as InstructorProfileModal } from './InstructorProfileModal';
 export { default as JobApplicantsModal }     from './JobApplicantsModal';

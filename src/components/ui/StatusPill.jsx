@@ -1,11 +1,5 @@
 import { AlertCircle } from 'lucide-react';
 
-// Generic status pill driven by a config map:
-//   <StatusPill status="active" config={USER_STATUS} />
-// The config entry shape is { label, icon, cls } where `cls` is the
-// Tailwind background/text/border classes. If the status isn't in the
-// config an "Unknown" fallback is used. Keeps every page's pill rendering
-// identical while still letting each domain own its own status vocabulary.
 export default function StatusPill({ status, config, size = 'sm', className = '' }) {
   const cfg = (config && config[status]) || {
     label: status || 'Unknown',
