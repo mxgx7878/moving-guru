@@ -1,26 +1,3 @@
-// Horizontal tab bar used for role / type / status filters across pages.
-//
-// tabs: [{ id, label, icon?, color?, activeText?, count? }]
-// counts: optional map keyed by tab id (merges with tab.count)
-//
-// variant:
-//   'default' — pill with rounded-xl, bold text, icon + right-side count
-//               badge. Active tab uses tab.color as solid background.
-//               (Admin pages, studio job-type filter, form-style pickers.)
-//   'pill'    — rounded-full, cream inactive bg, inline "(count)" in the
-//               label. Active tab uses tab.color as bg and tab.activeText
-//               as text colour (supports bright accents like lime).
-//
-// layout:
-//   'wrap'    — default; flex-wrap row
-//   'stretch' — equal-width tabs (`flex-1`) for form-like type pickers.
-//
-// inactiveBg: Tailwind class override for the inactive background
-//             (defaults differ per variant). Lets a page brand its
-//             resting state without changing the variant.
-//
-// size: 'sm' (default) | 'md' — 'md' bumps vertical padding for form
-//       usage where the tab sits in a field.
 export default function TabBar({
   tabs,
   activeId,
@@ -54,8 +31,6 @@ export default function TabBar({
         const active = activeId === t.id;
         const count  = counts ? counts[t.id] : t.count;
 
-        // Active state paints the tab with tab.color for both bg and
-        // (in the default variant) border so the tab reads as solid.
         const activeStyle = active && t.color
           ? {
               backgroundColor: t.color,

@@ -8,9 +8,6 @@ import { ROLE_AVATAR_TONE } from '../../constants/theme';
 import { resolveUserStatus } from './userStatus';
 import RolePill from './RolePill';
 
-// Row rendered in the admin users table. All action callbacks are
-// optional — the parent wires each up to its dispatch/handler. The row
-// decides which icons to show based on the user's normalised status.
 export default function UserRow({
   user,
   busy = false,
@@ -61,8 +58,6 @@ export default function UserRow({
       <td className="py-3 px-4">
         <RolePill role={user.role} />
       </td>
-
-      
 
       <td className="py-3 px-4">
         {user.location ? (

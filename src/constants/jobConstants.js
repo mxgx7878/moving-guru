@@ -35,30 +35,23 @@ export const DURATION_OPTIONS = [
   '1 week', '2 weeks', '1 month', '2 months', '3 months', '6 months', 'Ongoing',
 ];
 
-// Listing types used in the studio create form (no "All" option)
 export const JOB_TYPES = [
   { id: 'hire',            label: 'Direct Hire',     icon: Briefcase, color: '#4E7A1B', bg: 'bg-coral/10' },
   { id: 'swap',            label: 'Instructor Swap', icon: RefreshCw, color: '#9BE63D', bg: 'bg-[#9BE63D]/10' },
 ];
 
-// Filter tabs shown on the instructor Find Work page (includes "All")
 export const JOB_FILTER_TABS = [
   { id: 'all',             label: 'All Listings',    color: '#B4FF5A', bg: 'bg-[#B4FF5A]', activeText: '#3E3D38' },
   { id: 'hire',            label: 'Direct Hire',     color: '#4E7A1B', bg: 'bg-coral', activeText: '#FFFFFF' },
   { id: 'swap',            label: 'Instructor Swap', color: '#9BE63D', bg: 'bg-[#9BE63D]', activeText: '#FFFFFF' },
 ];
 
-// Display styling for job cards on the instructor Find Work feed
 export const TYPE_STYLES = {
   hire:            { icon: Briefcase, color: '#4E7A1B', bg: 'bg-coral/10', text: 'text-coral', label: 'Direct Hire'     },
   swap:            { icon: RefreshCw, color: '#9BE63D', bg: 'bg-[#9BE63D]/15', text: 'text-[#9BE63D]', label: 'Instructor Swap' },
   energy_exchange: { icon: Zap,       color: '#B4FF5A', bg: 'bg-[#B4FF5A]/20', text: 'text-[#3E3D38]', label: 'Energy Exchange' },
 };
 
-// Status vocabulary shown on the admin job table and drawer. Jobs don't
-// have a single `status` field — `resolveJobStatus` (in features/jobs)
-// normalises `is_active` + `positions_filled/vacancies` into one of
-// these keys. Shape matches the StatusPill `config` prop.
 export const JOB_STATUS_CONFIG = {
   active:   { label: 'Active',        icon: CheckCircle2, cls: 'bg-green-50 text-green-700 border-green-200'     },
   inactive: { label: 'Deactivated',   icon: Ban,          cls: 'bg-red-50 text-red-700 border-red-200'           },
@@ -68,7 +61,6 @@ export const JOB_STATUS_CONFIG = {
 export const isOpenToEnergyExchange = (job) =>
   getJobTypes(job).includes('energy_exchange');
 
-/** Job types as an array WITHOUT energy_exchange — for pill rendering. */
 export const getDisplayableJobTypes = (job) =>
   getJobTypes(job).filter((t) => t !== 'energy_exchange');
 

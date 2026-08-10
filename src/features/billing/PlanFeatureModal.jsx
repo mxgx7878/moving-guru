@@ -1,9 +1,3 @@
-// src/features/billing/PlanFeaturesModal.jsx
-//
-// Admin modal — checklist of features for a single plan.
-// Loads features dynamically from /api/admin/features (single source of truth — DB).
-// Saves enabled feature IDs via PATCH /api/admin/plans/{id}/features.
-
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Check, Loader2 } from 'lucide-react';
@@ -32,17 +26,14 @@ export default function PlanFeaturesModal({ plan, onClose }) {
     allFeatures, planFeatureIdsMap, planFeaturesMutating, message, error,
   } = useSelector((s) => s.subscription);
 
-  // draft = array of enabled feature IDs (numbers)
   const [draft, setDraft] = useState(null);
 
-  // 1. Load full features list (cached after first fetch)
   useEffect(() => {
     if (!allFeatures || allFeatures.length === 0) {
       dispatch(fetchAllFeatures());
     }
   }, [dispatch]);
 
-  // 2. Load this plan's enabled feature IDs
   useEffect(() => {
     if (!plan) return;
     if (planFeatureIdsMap[plan.id]) {
@@ -52,7 +43,6 @@ export default function PlanFeaturesModal({ plan, onClose }) {
     }
   }, [plan?.id]);
 
-  // 3. Sync draft when planFeatureIdsMap updates from the fetch
   useEffect(() => {
     if (plan && planFeatureIdsMap[plan.id] && draft === null) {
       setDraft([...planFeatureIdsMap[plan.id]]);
@@ -83,7 +73,6 @@ export default function PlanFeaturesModal({ plan, onClose }) {
 
   const isLoading = draft === null || !allFeatures || allFeatures.length === 0;
 
-  // Group features by role for display
   const grouped = ['instructor', 'studio', 'both'].map((role) => ({
     role,
     label: ROLE_LABELS[role],

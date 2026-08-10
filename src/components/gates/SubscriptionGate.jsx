@@ -1,8 +1,3 @@
-// src/components/gates/SubscriptionGate.jsx
-//
-// The locked-feature UI. Used by RequireFeature (route guard) and
-// FeatureGate (inline component). Single component → single look.
-
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Lock, Sparkles, ArrowRight } from 'lucide-react';
@@ -10,8 +5,6 @@ import { Lock, Sparkles, ArrowRight } from 'lucide-react';
 import { ROLE_THEME } from '../../config/portalConfig';
 import { Button } from '../../components/ui';
 
-// Map of feature keys to friendly labels for the message.
-// Lives here (not in featureConstants) because it's a UI-only concern.
 const FEATURE_LABELS = {
   messaging:          'Messaging',
   job_applications:   'Job Applications',

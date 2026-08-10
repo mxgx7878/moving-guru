@@ -2,9 +2,6 @@ import { MapPin, Calendar, Users, ExternalLink } from 'lucide-react';
 import { Modal, Chip, StatusPill, LabeledBlock } from '../../components/ui';
 import { GROW_TYPE_META, GROW_STATUS_CONFIG } from '../../constants/growConstants';
 
-// Read-only preview modal for a grow post — used by admins to vet a
-// submission before approving/rejecting. Uses the shared Modal shell
-// for consistent backdrop/escape/close behaviour.
 export default function GrowPostPreviewModal({ post, onClose }) {
   if (!post) return null;
 
@@ -31,7 +28,6 @@ export default function GrowPostPreviewModal({ post, onClose }) {
 
   return (
     <Modal open size="lg" onClose={onClose} headerClassName="px-6 py-4" title={null}>
-      {/* Custom thin accent bar — visually ties preview to post type */}
       <div
         className="-mx-6 -mt-6 mb-4 h-1 rounded-t-2xl"
         style={{ backgroundColor: post.color || meta.color }}

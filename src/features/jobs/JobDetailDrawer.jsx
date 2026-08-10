@@ -14,8 +14,6 @@ import { STATUS } from '../../constants/apiConstants';
 import { resolveJobStatus } from './jobStatus';
 import ApplicantRow from './ApplicantRow';
 
-// Full-screen drawer for the admin job view. Lists applicants, shows
-// type + status, and exposes activate/deactivate/delete actions.
 export default function JobDetailDrawer({
   job,
   applicants = [],
@@ -115,11 +113,8 @@ export default function JobDetailDrawer({
       size="xl"
       header={header}
       headerClassName=""
-      /* The original drawer tinted the header with type.color; keep that look */
       footer={footer}
     >
-      {/* Tint strip — keeps the drawer's type-colour association now that
-          the Drawer shell uses a white header by default. */}
       <div
         className="-mx-6 -mt-6 mb-6 h-1"
         style={{ backgroundColor:primary.color }}

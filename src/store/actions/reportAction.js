@@ -3,7 +3,6 @@ import axiosInstance from '../../config/axiosInstance';
 import { API_ENDPOINTS } from '../../constants/apiConstants';
 import { getErrorMessage } from '../../utils/errorUtils';
 
-// User: file a report (message or profile)
 export const submitReport = createAsyncThunk(
   'report/submit',
   async (payload, { rejectWithValue }) => {
@@ -15,7 +14,6 @@ export const submitReport = createAsyncThunk(
     }
   },
 );
-
 
 export const fetchAdminReports = createAsyncThunk(
   'report/adminFetchAll',
@@ -29,7 +27,6 @@ export const fetchAdminReports = createAsyncThunk(
   },
 );
 
-/* ─── Admin: update a report's status ─── */
 export const updateReportStatus = createAsyncThunk(
   'report/updateStatus',
   async ({ id, status }, { rejectWithValue }) => {

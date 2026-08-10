@@ -3,10 +3,6 @@ import axiosInstance from '../../config/axiosInstance';
 import { API_ENDPOINTS } from '../../constants/apiConstants';
 import { getErrorMessage } from '../../utils/errorUtils';
 
-// ═══════════════════════════════════════════════════════════════════
-//  USER-FACING — plans + subscription
-// ═══════════════════════════════════════════════════════════════════
-
 export const fetchPlans = createAsyncThunk(
   'subscription/fetchPlans',
   async (_, { rejectWithValue }) => {
@@ -34,7 +30,6 @@ export const fetchCurrentSubscription = createAsyncThunk(
 export const changePlan = createAsyncThunk(
   'subscription/changePlan',
   async (payload, { rejectWithValue }) => {
-    // payload = { planId } OR { planId, paymentMethodId }
     try {
       const { data } = await axiosInstance.post(API_ENDPOINTS.CHANGE_PLAN, payload);
       return data;
@@ -49,7 +44,7 @@ export const createSetupIntent = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await axiosInstance.post(API_ENDPOINTS.SETUP_INTENT);
-      return data.data; // { clientSecret, customerId }
+      return data.data;
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));
     }
@@ -94,10 +89,6 @@ export const resumeSubscription = createAsyncThunk(
     }
   },
 );
-
-// ═══════════════════════════════════════════════════════════════════
-//  ADMIN — plan catalog management (Stripe-synced)
-// ═══════════════════════════════════════════════════════════════════
 
 export const fetchAdminPlans = createAsyncThunk(
   'subscription/fetchAdminPlans',
@@ -161,8 +152,6 @@ export const syncAdminPlansFromStripe = createAsyncThunk(
   },
 );
 
-
-/** Fetch ALL features (for admin matrix UI). Single source of truth: DB. */
 export const fetchAllFeatures = createAsyncThunk(
   'subscription/fetchAllFeatures',
   async (_, { rejectWithValue }) => {
@@ -173,7 +162,6 @@ export const fetchAllFeatures = createAsyncThunk(
   },
 );
  
-/** Fetch enabled feature IDs for a specific plan. */
 export const fetchPlanFeatures = createAsyncThunk(
   'subscription/fetchPlanFeatures',
   async (planId, { rejectWithValue }) => {
@@ -188,7 +176,6 @@ export const fetchPlanFeatures = createAsyncThunk(
   },
 );
  
-/** Update enabled features for a plan. Body: { featureIds: [1, 3, 5] } */
 export const updatePlanFeatures = createAsyncThunk(
   'subscription/updatePlanFeatures',
   async ({ planId, featureIds }, { rejectWithValue }) => {

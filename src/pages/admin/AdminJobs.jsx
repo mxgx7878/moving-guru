@@ -104,7 +104,6 @@ export default function AdminJobs() {
     };
   }, [adminJobs]);
 
-  // Client-side filter as a safety net in case the backend ignores params
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
     return adminJobs.filter((j) => {

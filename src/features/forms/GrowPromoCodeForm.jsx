@@ -42,11 +42,6 @@ const EMPTY = {
   maxRedemptions: '', expiresAt: '', isActive: true,
 };
 
-/**
- * Create form for a Grow-only promo code. Unlike subscription promo codes,
- * these have no Stripe coupon and no "duration" (a Grow listing is a single
- * one-off charge), so the form is intentionally simpler.
- */
 export default function GrowPromoCodeForm({ saving = false, onCancel, onSubmit }) {
   const resolver = useMemo(() => yupResolver(schema), []);
   const { control, handleSubmit, watch, formState: { errors } } = useForm({

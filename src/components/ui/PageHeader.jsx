@@ -1,38 +1,22 @@
-// Universal page header used by every top-level page in the app.
-// Shape is card + icon badge + eyebrow + title + description, with a
-// right-side `actions` slot for page-level buttons (e.g. "New User").
-//
-// Every visible text element is optional, so the same component covers:
-//   - admin pages (icon + eyebrow + title + description + action button)
-//   - portal pages (gradient banner, no eyebrow)
-//   - simple pages (just title + subtitle)
-//
-// Pass `variant="gradient"` and `gradientFrom`/`gradientTo` to render the
-// instructor-portal style banner. Default variant is the white bordered
-// card that the admin pages use.
 export default function PageHeader({
-  // Icon block (left side)
   icon: Icon,
-  iconBg = '#E5E0D8',   // tint of the icon square background
+  iconBg = '#E5E0D8',
   iconColor = '#3E3D38',
 
-  // Text block
-  eyebrow,              // tiny uppercase label above the title
-  eyebrowColor,         // overrides the default #9A9A94 — usually matches the icon colour
+  eyebrow,
+  eyebrowColor,
   title,
   description,
 
-  // Right-side slot for buttons, stat chips, etc.
   actions,
 
-  // Visual variant
-  variant = 'card',     // 'card' | 'gradient'
+  variant = 'card',
   gradientFrom,
   gradientTo,
-  gradientAccent,       // colour for the subtle radial spotlight (gradient only)
+  gradientAccent,
 
   className = '',
-  children,             // optional extra content below the header row
+  children,
 }) {
   const base = 'rounded-2xl p-6 flex items-start justify-between gap-4 flex-wrap relative overflow-hidden';
 
@@ -66,7 +50,6 @@ export default function PageHeader({
     );
   }
 
-  // Default "card" variant (admin look)
   return (
     <div className={`bg-white border border-[#E5E0D8] ${base} ${className}`}>
       <div className="flex items-center gap-4 min-w-0 md:flex-1">

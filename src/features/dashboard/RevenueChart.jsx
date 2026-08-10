@@ -3,13 +3,6 @@ import {
   ResponsiveContainer, Cell,
 } from 'recharts';
 
-/**
- * RevenueChart
- * ─────────────────────────────────────────────────────────────
- * Bar chart of monthly revenue. Latest month is emphasised with
- * a fully-saturated green fill; prior months are tinted lighter
- * so the eye lands on "current month performance" first.
- */
 export default function RevenueChart({ data = [], loading = false }) {
   if (loading) {
     return <div className="h-48 bg-[#F0EBE3] animate-pulse rounded-lg" />;

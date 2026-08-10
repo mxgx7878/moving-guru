@@ -9,7 +9,6 @@ export { default as BarChart } from './BarChart';
 export { default as Toggle } from './Toggle';
 export { default as StarRating } from './StarRating';
 
-// Shared primitives extracted from inline page helpers.
 export { default as StatusPill } from './StatusPill';
 export { default as IconButton } from './IconButton';
 export { default as Avatar } from './Avatar';
@@ -29,7 +28,6 @@ export { default as InfoTile } from './InfoTile';
 export { default as LabeledBlock } from './LabeledBlock';
 export { default as InfoRow } from './InfoRow';
 
-// Universal page-level components — one shape per page concern.
 export { default as PageHeader } from './PageHeader';
 export { default as Toolbar } from './Toolbar';
 export { default as DataTable } from './DataTable';
@@ -37,4 +35,3 @@ export { default as StatTileGroup } from './StatTileGroup';
 export { default as DashboardStatCard } from './DashboardStatCard';
 export { default as LazyVisible } from './LazyVisible';
 export { default as EnergyExchangeBadge } from './EnergyExchangeBadge';
-

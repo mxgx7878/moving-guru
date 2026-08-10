@@ -1,9 +1,5 @@
 import { ChevronDown } from 'lucide-react';
 
-// Styled <select> matching the app's Input look. Consolidates the
-// SelectField / SelectInput helpers that were defined inline on
-// ProfilePage and Register. `options` accepts plain strings or
-// { value, label } objects so both form shapes keep working.
 export default function SelectField({
   value,
   onChange,
