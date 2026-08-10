@@ -34,7 +34,6 @@ export default function Dashboard() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
 
-      {/* Welcome header — keeps original gradient */}
       <PageHeader
         variant="gradient"
         gradientFrom="#FFFFFF"
@@ -63,7 +62,6 @@ export default function Dashboard() {
         )}
       />
 
-      {/* KPI grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiTile icon={Eye}           label="Profile Views" value={kpis.profile_views_this_month ?? 0}
           sub={`${kpis.profile_views_total ?? 0} all time`} color="#B4FF5A" loading={loading} />
@@ -76,7 +74,6 @@ export default function Dashboard() {
           sub={`${kpis.rating_count ?? 0} reviews`}         color="#B4FF5A" loading={loading} />
       </div>
 
-      {/* Charts row */}
       <div className="grid lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 bg-white rounded-2xl p-5 border border-[#E5E0D8]">
           <div className="flex items-center justify-between mb-4">
@@ -98,7 +95,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Recent activity */}
       <div className="grid lg:grid-cols-2 gap-4">
         <ActivityList
           title="Recent Applications"
@@ -145,9 +141,6 @@ export default function Dashboard() {
   );
 }
 
-// ── Inline tile primitives ────────────────────────────────────
-// Kept inline (not subcomponents in their own files) because they're
-// used only on this page and have no reusability beyond it.
 function KpiTile({ icon: Icon, label, value, sub, color, loading }) {
   if (loading) return <CardSkeleton count={1} height={120} />;
   return (

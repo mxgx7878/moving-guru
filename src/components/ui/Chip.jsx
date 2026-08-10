@@ -1,7 +1,3 @@
-// Tiny rounded tag used for disciplines, languages, amenities, role labels,
-// verified badges — anything that's a single word/phrase in a pill.
-// `tone` picks one of the brand colour families; pass an `icon` component
-// to render it inline with the label.
 const TONE = {
   neutral: 'bg-[#F5F0E8] text-[#6B6B66]',
   coral:   'bg-coral/15 text-coral',

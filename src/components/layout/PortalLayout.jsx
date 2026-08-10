@@ -23,14 +23,11 @@ export default function PortalLayout() {
 
   return (
     <div className="flex h-screen dashboard-bg font-['DM_Sans'] overflow-hidden">
-      {/* Single Pusher subscription for the whole authed portal —
-          chat inbox events + toasts. Renders nothing. */}
       <RealtimeListener />
 
       <Sidebar mobileOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Top bar */}
         <header className="h-14 bg-white border-b border-[#E5E0D8] flex items-center px-4 lg:px-6 gap-4 flex-shrink-0">
           <IconButton
             variant="plain"
@@ -42,7 +39,6 @@ export default function PortalLayout() {
             <Menu size={20} className="text-ink-muted" />
           </IconButton>
 
-          {/* Role badge */}
           <span
             className="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white"
             style={{ backgroundColor: theme.accent }}
@@ -53,12 +49,6 @@ export default function PortalLayout() {
           <div className="flex-1" />
 
           <div className="flex items-center gap-3">
-            {/* Static for now — notifications phase me NotificationBell
-                component se replace hoga */}
-            {/* <IconButton variant="plain" aria-label="Notifications" title="Notifications" className="relative">
-              <Bell size={18} className="text-ink-muted" />
-              <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-coral rounded-full" />
-            </IconButton> */}
             <Link
               to={theme.profilePath}
               className="flex items-center gap-2 text-sm hover:bg-[#FAFEE0] rounded-lg px-2 py-1 -mx-2 -my-1 transition-colors"
@@ -78,7 +68,6 @@ export default function PortalLayout() {
 
          <AccessBanner />
 
-        {/* Page content */}
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
           <Outlet />
         </main>

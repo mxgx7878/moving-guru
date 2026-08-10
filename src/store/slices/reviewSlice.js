@@ -9,21 +9,6 @@ import {
   fetchAdminReviews, adminDeleteReview
 } from '../actions/reviewAction';
 
-/**
- * Review slice
- * -----------------------------------------------------------------
- * State shape:
- *   byUserId: {
- *     [userId]: { reviews: [], summary: {...}, status }
- *   }
- *   myReviews: reviews I have written (array)
- *   eligible: counterparties I can still review (array)
- *
- * We key review lists by userId so we can cache per-profile without a
- * cross-contamination bug when a studio opens the applicant modal,
- * closes it, and opens a different instructor.
- */
-
 const initialState = {
   byUserId: {},
   myReviews: [],
@@ -60,7 +45,6 @@ const reviewSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // ── Fetch reviews for a user ───────────────────────────
       .addCase(fetchUserReviews.pending, (state, { meta }) => {
         const { userId } = meta.arg;
         state.byUserId[userId] = {
@@ -85,7 +69,6 @@ const reviewSlice = createSlice({
         state.error = payload;
       })
 
-      // ── Create review ──────────────────────────────────────
       .addCase(createReview.pending, (state) => {
         state.submitting = true;
         state.error = null;
@@ -95,11 +78,9 @@ const reviewSlice = createSlice({
         const { revieweeId, payload: resp } = payload;
         const newReview = resp?.data?.review;
         if (newReview) {
-          // Prepend into cached list for the reviewee if we have one
           const bucket = state.byUserId[revieweeId];
           if (bucket) {
             bucket.reviews = [newReview, ...bucket.reviews];
-            // Recompute summary locally so UI updates immediately
             const count = bucket.reviews.length;
             const avg = count > 0
               ? Math.round((bucket.reviews.reduce((s, r) => s + r.rating, 0) / count) * 10) / 10
@@ -109,7 +90,6 @@ const reviewSlice = createSlice({
             bucket.summary = { count, average: avg, distribution: dist };
           }
           state.myReviews.unshift(newReview);
-          // Drop from eligible list — they just fulfilled it
           state.eligible = state.eligible.filter(
             (e) => !(
               e.counterparty?.id === revieweeId &&
@@ -124,15 +104,12 @@ const reviewSlice = createSlice({
         state.error = payload;
       })
 
-      // ── Delete review ──────────────────────────────────────
       .addCase(deleteReview.pending, (state, { meta }) => {
         state.deletingId = meta.arg;
       })
       .addCase(deleteReview.fulfilled, (state, { payload: id }) => {
         state.deletingId = null;
-        // Remove from myReviews
         state.myReviews = state.myReviews.filter((r) => r.id !== id);
-        // Remove from any cached reviewee bucket
         Object.keys(state.byUserId).forEach((uid) => {
           const b = state.byUserId[uid];
           if (!b) return;
@@ -153,7 +130,6 @@ const reviewSlice = createSlice({
         state.error = payload;
       })
 
-      // ── My reviews ─────────────────────────────────────────
       .addCase(fetchMyReviews.pending, (state) => {
         state.myReviewsStatus = STATUS.LOADING;
       })
@@ -166,7 +142,6 @@ const reviewSlice = createSlice({
         state.error = payload;
       })
 
-      // ── Eligible reviews ───────────────────────────────────
       .addCase(fetchEligibleReviews.pending, (state) => {
         state.eligibleStatus = STATUS.LOADING;
       })
@@ -179,7 +154,6 @@ const reviewSlice = createSlice({
         state.error = payload;
       })
 
-      // ── Admin reviews ─────────────────────────────────────
       .addCase(fetchAdminReviews.pending, (state) => {
         state.adminReviewsStatus = STATUS.LOADING;
       })

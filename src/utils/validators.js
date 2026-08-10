@@ -1,5 +1,3 @@
-// Shared form validation helpers. Each validator returns an errors object
-// keyed by field name; callers treat an empty object as "valid".
 export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const isEmail    = (v) => EMAIL_RE.test(String(v || '').trim());
@@ -40,7 +38,6 @@ export const validateGrowForm = (form) => {
 
 export const validateApplyMessage = (message) => {
   const errors = {};
-  // Message is optional but if entered must not be only whitespace.
   if (message && !message.trim()) errors.message = 'Message cannot be blank';
   if (message && message.length > 2000) errors.message = 'Message is too long (max 2000)';
   return errors;

@@ -4,17 +4,6 @@ import { CheckCircle2, X } from 'lucide-react';
 import { validateGrowPromoCode } from '../../store/actions/growPromoAction';
 import { Button } from '../../components/ui';
 
-/**
- * Promo-code input for the Grow LISTING checkout.
- *
- * Validates a Grow-only promo code against the selected pricing tier and
- * reports the server's price preview back up via `onApplied`. The parent
- * passes `applied.code` to the payment intent; the backend re-computes the
- * authoritative discount, so this is display-only.
- *
- * Re-validates automatically if the selected tier changes while a code is
- * applied, and clears the code if it becomes invalid for the new tier.
- */
 export default function GrowPromoField({ pricingTierId, onApplied, className = '' }) {
   const dispatch = useDispatch();
   const [code,    setCode]    = useState('');
@@ -40,13 +29,11 @@ export default function GrowPromoField({ pricingTierId, onApplied, className = '
 
   const apply = () => runValidate(code, pricingTierId);
 
-  // If the tier changes while a code is applied, re-check it against the new tier.
   useEffect(() => {
     if (!applied) return;
     runValidate(applied.code, pricingTierId).then((data) => {
       if (!data) { setApplied(null); onApplied?.(null); }
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pricingTierId]);
 
   const clear = () => { setApplied(null); setCode(''); setErr(null); onApplied?.(null); };

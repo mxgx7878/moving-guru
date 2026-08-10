@@ -3,10 +3,6 @@ import axiosInstance from '../../config/axiosInstance';
 import { API_ENDPOINTS } from '../../constants/apiConstants';
 import { getErrorMessage } from '../../utils/errorUtils';
 
-/**
- * Fetch audience counts so the form can show "this will send to X users"
- * before the admin pulls the trigger.
- */
 export const fetchAudienceCounts = createAsyncThunk(
   'email/audienceCounts',
   async (_, { rejectWithValue }) => {
@@ -19,9 +15,6 @@ export const fetchAudienceCounts = createAsyncThunk(
   },
 );
 
-/**
- * Send a broadcast — or a test, when payload.send_test is true.
- */
 export const sendBroadcast = createAsyncThunk(
   'email/sendBroadcast',
   async (payload, { rejectWithValue }) => {

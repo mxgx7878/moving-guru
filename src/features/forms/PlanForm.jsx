@@ -1,9 +1,3 @@
-// src/features/forms/PlanForm.jsx
-//
-// CHANGE: Added "Trial period (days)" input — admin can set per-plan
-// trial length. 0 = no trial. Value is stored on the plan row; trial
-// is applied at subscription creation time in StripeService.
-
 import { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -54,7 +48,6 @@ const buildSchema = (isEdit) => yup.object({
   name:            yup.string().trim().required('Name is required').max(64),
   description:     yup.string().nullable().max(255),
   price:           yup.number().typeError('Must be a number').required('Price is required').min(0),
-  // currency:        yup.string().required('Currency is required').length(3),
   billingCycle:    yup.string().required().oneOf(BILLING_CYCLES.map((c) => c.value)),
   trialPeriodDays: yup.number()
     .typeError('Must be a number')
@@ -124,8 +117,6 @@ export default function PlanForm({ plan, saving = false, onCancel, onSubmit }) {
   const removeFeature = (i) =>
     setValue('features', features.filter((_, idx) => idx !== i), { shouldValidate: true });
 
-
-
   const submit = (values) => {
     const cycle = BILLING_CYCLES.find((c) => c.value === values.billingCycle) || BILLING_CYCLES[0];
 
@@ -175,7 +166,6 @@ export default function PlanForm({ plan, saving = false, onCancel, onSubmit }) {
     >
       <form onSubmit={handleSubmit(submit)} className="space-y-5">
 
-        {/* Identity */}
         <div className="grid sm:grid-cols-2 gap-4">
           <RHFInput
             control={control} errors={errors}
@@ -198,22 +188,11 @@ export default function PlanForm({ plan, saving = false, onCancel, onSubmit }) {
           textarea rows={2}
         />
 
-        {/* Pricing */}
         <div className="grid sm:grid-cols-3 gap-4">
           <RHFInput
             control={control} errors={errors}
             name="price" label="Price" type="number" step="0.01"
           />
-          {/* <Controller
-            control={control} name="currency"
-            render={({ field }) => (
-              <SelectField
-                label="Currency" options={CURRENCY_OPTIONS}
-                value={field.value} onChange={field.onChange}
-                error={errors.currency?.message}
-              />
-            )}
-          /> */}
           <Controller
             control={control} name="billingCycle"
             render={({ field }) => (
@@ -277,7 +256,6 @@ export default function PlanForm({ plan, saving = false, onCancel, onSubmit }) {
               )}
         </div>
 
-        {/* Trial — set once at plan level, applied per-subscription */}
         <div className="grid sm:grid-cols-3 gap-4">
           <div className="sm:col-span-1">
             <RHFInput
@@ -303,7 +281,6 @@ export default function PlanForm({ plan, saving = false, onCancel, onSubmit }) {
           </div>
         </div>
 
-        {/* Features list */}
         <div>
           <div className="flex items-center justify-between mb-2">
             <label className="text-xs font-bold text-[#3E3D38] uppercase tracking-wider">Features</label>
@@ -330,7 +307,6 @@ export default function PlanForm({ plan, saving = false, onCancel, onSubmit }) {
           )}
         </div>
 
-        {/* Status + sort order */}
         <div className="pt-2 border-t border-[#E5E0D8] grid sm:grid-cols-2 gap-4 items-start">
           <Controller
             control={control} name="isActive"

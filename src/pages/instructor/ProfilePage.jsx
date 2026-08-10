@@ -15,7 +15,6 @@ import {
   Edit3, Eye, EyeOff, MessageCircle, Heart, Star, Image,
 } from 'lucide-react';
 
-// ─── Constants ──────────────────────────────────────────────────
 const SOCIAL_PLATFORMS = [
   { key: 'instagram', label: 'Instagram', color: '#1A1A1A',
     icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg> },
@@ -35,7 +34,6 @@ const PRONOUNS = ['He/Him', 'She/Her', 'They/Them', 'He/They', 'She/They', 'Pref
 const LANGUAGES = ['English','Spanish','French','Portuguese','Italian','German','Japanese','Mandarin','Arabic','Hindi','Korean','Indonesian','Russian','Polish','Cantonese','Ukrainian','Nigerian','Thai'];
 const OPEN_TO = ['Direct Hire', 'Swaps'];
 
-// ─── Main component ──────────────────────────────────────────────
 export default function ProfilePage() {
   const dispatch = useDispatch();
   const { user } = useSelector((s) => s.auth);
@@ -93,12 +91,7 @@ export default function ProfilePage() {
     }
   };
 
-  // ─── Save ──────────────────────────────────────────────────────
-  // Wrapped in useCallback + `form` dependency so the closure doesn't
-  // capture stale state on re-renders (flagged by react-hooks/exhaustive-deps).
   const handleSave = useCallback(async () => {
-    // 1. Client-side validation via yup — surface field-level errors so
-    //    the user sees them inline instead of a generic 422 toast.
     try {
       await instructorProfileSchema.validate(form, { abortEarly: false });
       setErrors({});
@@ -195,21 +188,15 @@ export default function ProfilePage() {
   return (
     <div className="max-w-6xl mx-auto">
 
-      {/* ── Header ── */}
       <div className="mb-6">
         <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Edit Profile</h1>
         <p className="text-[#9A9A94] text-sm mt-1">Manage how studios and instructors find you</p>
       </div>
 
-      {/* ══════════════════════════════════════
-           2-COLUMN LAYOUT
-         ══════════════════════════════════════ */}
       <div className="grid lg:grid-cols-3 gap-6">
 
-        {/* ─────── LEFT COLUMN — Form sections ─────── */}
         <div className="lg:col-span-2 space-y-6">
 
-          {/* ── Profile Preview Card (optional, toggled from sidebar) ── */}
           {showPreview && (
             <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
               <div className="px-6 py-4 border-b border-[#E5E0D8] flex items-center gap-2">
@@ -219,7 +206,6 @@ export default function ProfilePage() {
               </div>
               <div className="p-6">
                 <div className="max-w-sm mx-auto bg-gradient-to-br from-[#FFFFFF] to-[#F5FDA6]/30 rounded-2xl border border-[#E5E0D8]">
-                  {/* Cover */}
                   <div className="relative">
                     <div className="h-28 rounded-t-2xl overflow-hidden"
                       style={{ background: form.coverImage ? `url(${form.coverImage}) center/cover` : 'linear-gradient(135deg, #4E7A1B, #9BE63D, #F5FDA6, #B4FF5A)' }}>
@@ -306,12 +292,8 @@ export default function ProfilePage() {
             </div>
           )}
 
-          {/* ══════════════════════════════════════
-               SECTION 1 — IDENTITY
-             ══════════════════════════════════════ */}
           <Section title="Profile Identity" icon={User}>
             <div className="flex flex-col sm:flex-row gap-6">
-              {/* Avatar */}
               <div className="flex flex-col items-center flex-shrink-0">
                 <div className="cursor-pointer group" onClick={() => fileRef.current?.click()}>
                   <ScallopedFrame size={96} borderWidth={2}>
@@ -367,7 +349,6 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Cover Image */}
             <div className="mt-5 pt-5 border-t border-[#E5E0D8]">
               <Field label="Cover Image" hint="Appears at the top of your public profile">
                 <div
@@ -386,7 +367,6 @@ export default function ProfilePage() {
               </Field>
             </div>
 
-            {/* Social Links */}
             <div className="mt-5 pt-5 border-t border-[#E5E0D8]">
               <Field label="Social Links">
                 <div className="grid  grid-col-1 md:grid-cols-2 gap-3 mt-2">
@@ -407,9 +387,6 @@ export default function ProfilePage() {
             </div>
           </Section>
 
-          {/* ══════════════════════════════════════
-               SECTION 2 — BIO
-             ══════════════════════════════════════ */}
           <Section title="Bio" icon={Edit3}>
             <Input
               textarea
@@ -436,13 +413,9 @@ export default function ProfilePage() {
             </div>
           </Section>
 
-          {/* ══════════════════════════════════════
-               SECTION 3 — LOCATION & TRAVEL
-             ══════════════════════════════════════ */}
           <Section title="Location & Travel" icon={MapPin}>
             <div className="space-y-4">
 
-              {/* Current location */}
               <Input
                 label="Current Location"
                 hint="City and country where you currently live"
@@ -452,7 +425,6 @@ export default function ProfilePage() {
                 error={errors.location}
               />
 
-              {/* Country From → Traveling To */}
               <div className="grid grid-cols-2 gap-4">
                 <Field label="Country From">
                   <SelectField size="sm"
@@ -479,7 +451,6 @@ export default function ProfilePage() {
                 </Field>
               </div>
 
-              {/* Availability — date range picker */}
               <div>
                 <label className="block text-[10px] font-bold text-ink-soft tracking-widest uppercase mb-2">
                   Availability Dates
@@ -510,7 +481,6 @@ export default function ProfilePage() {
                 )}
               </div>
 
-              {/* Flexible dates note */}
               <div className="flex items-center gap-2">
                 <input type="checkbox" id="flexible" checked={!!form.flexibleDates}
                   onChange={e => set('flexibleDates', e.target.checked)}
@@ -520,13 +490,11 @@ export default function ProfilePage() {
                 </label>
               </div>
 
-              {/* Open To */}
               <Field label="Open To" hint="What type of arrangement are you looking for?">
                 <ChipGroup
                   options={OPEN_TO}
                   value={(form.openTo || []).filter((o) => o !== 'Energy Exchange')}
                   onChange={(next) => {
-                    // Preserve the EE flag while the chip group only edits hire/swap
                     const ee = (form.openTo || []).includes('Energy Exchange');
                     set('openTo', ee ? [...next, 'Energy Exchange'] : next);
                   }}
@@ -556,9 +524,6 @@ export default function ProfilePage() {
             </div>
           </Section>
 
-          {/* ══════════════════════════════════════
-               SECTION 4 — LANGUAGES
-             ══════════════════════════════════════ */}
           <Section title="Languages" icon={Globe}>
             <p className="text-xs text-ink-soft mb-3">Select all languages you speak or are learning</p>
             <ChipGroup
@@ -571,11 +536,7 @@ export default function ProfilePage() {
             />
           </Section>
 
-          {/* ══════════════════════════════════════
-               SECTION 5 — DISCIPLINES
-             ══════════════════════════════════════ */}
           <Section title="Disciplines" icon={Star}>
-            {/* Selected tags */}
             {(form.disciplines || []).length > 0 && (
               <div className="flex flex-wrap gap-2 mb-4 p-3 bg-sky-soft rounded-xl border border-sky-mg/20">
                 <p className="w-full text-[10px] text-sky-mg font-bold uppercase tracking-wider mb-1">
@@ -596,7 +557,6 @@ export default function ProfilePage() {
               </div>
             )}
 
-            {/* Search */}
             <div className="flex items-center gap-2 bg-warm-bg border border-edge rounded-xl px-3 py-2 mb-4">
               <Star size={14} className="text-ink-soft" />
               <input type="text" value={discSearch} onChange={(e) => setDiscSearch(e.target.value)}
@@ -609,7 +569,6 @@ export default function ProfilePage() {
               )}
             </div>
 
-            {/* Category list */}
             <div className="space-y-5 max-h-80 overflow-y-auto pr-1">
               {filteredCats.map((cat) => {
                 const allSel = cat.items.every((d) => (form.disciplines || []).includes(d));
@@ -646,9 +605,6 @@ export default function ProfilePage() {
             </div>
           </Section>
 
-          {/* ══════════════════════════════════════
-               SECTION 6 — GALLERY PHOTOS
-             ══════════════════════════════════════ */}
           <Section title="Gallery Photos" icon={Upload}>
             <p className="text-xs text-[#9A9A94] mb-3">Add up to 4 photos showing your teaching, studio, or travels</p>
             <div className="grid grid-cols-4 gap-3 mb-3">
@@ -677,9 +633,6 @@ export default function ProfilePage() {
             <p className="text-[10px] text-[#9A9A94] text-center">Up to 4 gallery photos + 1 main profile photo</p>
           </Section>
 
-          {/* ══════════════════════════════════════
-               SECTION 7 — REVIEWS FROM STUDIOS
-             ══════════════════════════════════════ */}
           <Section title="Reviews from Studios" icon={Star}>
             <p className="text-xs text-[#9A9A94] mb-4">
               Feedback from studios who've hired you. Studios can review you after an accepted job application.
@@ -693,11 +646,9 @@ export default function ProfilePage() {
 
         </div>
 
-        {/* ─────── RIGHT COLUMN — Sticky sidebar ─────── */}
         <aside className="lg:col-span-1">
           <div className="lg:sticky lg:top-6 space-y-5">
 
-            {/* Avatar card */}
             <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
               <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-3">
                 Profile Photo
@@ -727,7 +678,6 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Status toggle */}
             <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
               <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-3">
                 Profile Status
@@ -762,7 +712,6 @@ export default function ProfilePage() {
               </p>
             </div>
 
-            {/* Gallery mini-grid */}
             <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
               <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-3">
                 Gallery ({(form.photos || []).length}/4)
@@ -793,7 +742,6 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Action buttons — sticky Save */}
             <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5 space-y-2">
               {Object.keys(errors).length > 0 && (
                 <div className="mb-2 bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700 space-y-0.5" role="alert">
@@ -831,7 +779,6 @@ export default function ProfilePage() {
         </aside>
       </div>
 
-      {/* Avatar full preview modal */}
       {showAvatarModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#3E3D38]/70 backdrop-blur-sm"
           onClick={() => setShowAvatarModal(false)}>

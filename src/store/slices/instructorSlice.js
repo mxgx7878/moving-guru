@@ -137,7 +137,6 @@ const instructorSlice = createSlice({
         list.forEach((inst) => upsertInstructor(state, inst));
       })
 
-      // ═══ Admin user management ═════════════════════════════
       .addCase(fetchAdminUsers.pending, (state) => {
         state.usersStatus = STATUS.LOADING;
       })

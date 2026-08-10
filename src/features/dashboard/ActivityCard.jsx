@@ -1,9 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Loader2, CheckCircle2, ArrowRight } from 'lucide-react';
 
-// Activity feed card used on admin (and soon portal) dashboards.
-// Renders a header (icon + title + "view all" link) and a list of up to
-// 5 items via a render-prop. Handles loading / empty states too.
 export default function ActivityCard({
   title,
   subtitle,

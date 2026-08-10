@@ -25,8 +25,6 @@ export const STUDIO_SIZES = [
   '30+ instructors',
 ];
 
-// Mirrors ROLE_TYPE_OPTIONS from jobConstants but spelled to match the
-// studio-profile form field names. Kept separate so renaming stays safe.
 export const POSITION_TYPES = [
   { id: 'permanent',     label: 'Permanent'                  },
   { id: 'temporary',     label: 'Temporary'                  },

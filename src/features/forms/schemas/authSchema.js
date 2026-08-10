@@ -1,6 +1,5 @@
 import * as yup from 'yup';
 
-// Shared rules — keep in one place so password policy stays in sync.
 const password = yup
   .string()
   .required('Password is required')

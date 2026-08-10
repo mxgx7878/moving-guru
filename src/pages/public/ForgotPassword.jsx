@@ -39,7 +39,6 @@ export default function ForgotPassword() {
   return (
     <div className="min-h-screen bg-warm-bg flex items-center justify-center font-dm p-6">
       <div className="w-full max-w-sm">
-        {/* Logo */}
         <div className="flex items-center gap-2 mb-8">
           <Globe size={18} className="text-coral" />
           <span className="font-unbounded text-sm font-bold text-ink tracking-wider">

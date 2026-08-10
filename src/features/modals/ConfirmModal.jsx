@@ -1,8 +1,6 @@
 import { AlertTriangle } from 'lucide-react';
 import { Modal, Button } from '../../components/ui';
 
-// Generic confirm dialog to replace window.confirm across the app. Plays nicer
-// on mobile, can be branded, and keeps the danger/primary styling consistent.
 export default function ConfirmModal({
   title = 'Are you sure?',
   message,

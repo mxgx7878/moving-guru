@@ -2,8 +2,6 @@ import { MapPin, Lock, X } from 'lucide-react';
 import { Modal, IconButton } from '../../components/ui';
 import { POST_TYPES, POST_AUDIENCE_OPTIONS as AUDIENCE_OPTIONS } from '../../constants/postConstants';
 
-// Read-only preview of a broadcast post — shown from the admin moderation
-// page so admins can see what recipients will actually see.
 export default function PostPreviewModal({ post, onClose }) {
   const typeMeta = POST_TYPES.find((t) => t.id === post.type) || POST_TYPES[0];
   const TypeIcon = typeMeta.icon;

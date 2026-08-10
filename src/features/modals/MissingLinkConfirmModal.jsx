@@ -1,13 +1,10 @@
 import { Link2Off } from 'lucide-react';
 import { Modal, Button } from '../../components/ui';
 
-// Shown on Grow post submit when the author left `external_url` empty.
-// The copy is the exact wording the client asked for — do not paraphrase
-// without client sign-off.
 export default function MissingLinkConfirmModal({
   open,
-  onCancel,       // "Go back" — let me add a link
-  onConfirm,      // "Submit without link" — proceed anyway
+  onCancel,
+  onConfirm,
 }) {
   if (!open) return null;
 

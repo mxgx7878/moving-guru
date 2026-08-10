@@ -2,16 +2,6 @@ import { Link } from 'react-router-dom';
 import { MapPin, MessageCircle, RefreshCw, Eye } from 'lucide-react';
 import { Avatar, Button, Chip } from '../../components/ui';
 
-/**
- * InstructorSwapCard
- * ─────────────────────────────────────────────────────────────
- * Card rendered on the instructor Find Work feed for peers who are
- * open to a swap. Sibling to the studio-side SavedInstructorCard but
- * stripped of save/unsave (instructors don't have a favourites list).
- *
- * `onMessage` is supplied by the parent so messaging stays a parent
- * concern (matches how InstructorJobCard.onApply works).
- */
 export default function InstructorSwapCard({ instructor, onMessage }) {
   const inst        = instructor;
   const detail      = inst.detail || inst;

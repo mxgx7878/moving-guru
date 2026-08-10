@@ -1,10 +1,5 @@
 import { useId } from 'react';
 
-// SVG scalloped frame used around the instructor profile avatar.
-// Pure presentational wrapper — anything passed as `children` is clipped
-// to the scalloped path. Configurable size + border width so the same
-// component works for the profile edit page, the preview modal, and
-// anywhere else a yoga-style avatar frame is needed.
 export default function ScallopedFrame({
   size = 200,
   borderWidth = 2,

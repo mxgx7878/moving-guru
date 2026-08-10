@@ -1,8 +1,3 @@
-// src/pages/admin/AdminSubscriptions.jsx
-//
-// CHANGE: Added "Trial" column showing trialPeriodDays per plan.
-// Shows "—" when 0, else "X days" with a Gift icon for visual reference.
-
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'sonner';
@@ -213,7 +208,6 @@ export default function AdminSubscriptions() {
                 <span className="text-xs text-[#9A9A94] ml-1">{p.currency}</span>
               </td>
 
-              
               <td className="px-4 py-3 text-sm text-[#3E3D38]">
                 {p.intervalCount > 1 ? `Every ${p.intervalCount} ${p.interval}s` : `Per ${p.interval}`}
               </td>

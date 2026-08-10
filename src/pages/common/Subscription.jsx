@@ -1,18 +1,3 @@
-// src/pages/common/Subscription.jsx
-//
-// CHANGES from previous version:
-// 1. Plan grid cards now show a "X-day free trial" badge when plan.trialPeriodDays > 0
-// 2. Current plan card shows "Free Trial" pill + trial-end info when status is 'trialing'
-// 3. Cancel button label adapts: "Cancel trial" vs "Cancel at period end"
-// 4. ConfirmModal shows different copy for trial vs paid cancellation
-// 5. livePlans mapper includes trialPeriodDays from API
-//
-// All imports match the file's existing conventions:
-// - CheckoutModal: default import from direct path
-// - useFetchSetupIntent: named import from useStripeCheckout
-// - ConfirmModal: named import from features/modals barrel
-// - formatDate + SubscriptionSkeleton: kept as inline helpers (existing pattern)
-
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -57,9 +42,6 @@ const CARD_BRANDS = {
   visa: 'Visa',
 };
 
-// ─── Date formatting helper ───────────────────────────────────────
-// Backend stores dates as UTC strings. Convert to user's locale + readable format.
-// Returns null if the value can't be parsed so callers can fall back.
 const formatDate = (iso) => {
   if (!iso) return null;
   try {
@@ -135,8 +117,6 @@ export default function Subscription() {
       setPaymentMethods(methods);
       return methods;
     } catch {
-      // Keep the stored ID usable for plan changes even when masked card
-      // details cannot be loaded from Stripe.
       setPaymentMethods(
         defaultPaymentMethodId
           ? [{ id: defaultPaymentMethodId, isDefault: true }]
@@ -159,8 +139,6 @@ export default function Subscription() {
 
   useEffect(() => {
     if (message) {
-      // An incomplete subscription still needs browser payment confirmation;
-      // do not announce success before Stripe has completed that step.
       if (!subscribing && currentSubscription?.status !== 'incomplete') toast.success(message);
       dispatch(clearSubscriptionMessage());
     }
@@ -175,8 +153,6 @@ export default function Subscription() {
 
   const CURRENCY_SYMBOLS = { USD: '$', AUD: '$', CAD: '$', NZD: '$', GBP: '£', EUR: '€', INR: '₹', AED: 'د.إ' };
 
-  // Map API plans → flat shape used by the card grid.
-  // Includes trialPeriodDays so the trial badge can render per-card.
   const livePlans = (plans || []).map((p) => ({
     id:              p.id ?? p.slug ?? p.code,
     name:            p.name || p.label || p.id,
@@ -202,10 +178,8 @@ export default function Subscription() {
 const priceFor = (p) => {
     const original = Number(p.price) || 0;
 
-    // Step 1: plan's own discount.
     let final = p.hasDiscount ? (Number(p.discountedPrice) || original) : original;
 
-    // Step 2: stack the promo on top.
     if (promo) {
       final = promo.discountType === 'percent'
         ? final * (1 - Number(promo.discountValue) / 100)
@@ -220,9 +194,6 @@ const priceFor = (p) => {
     return { original, final, discounted: final < original, badge };
   };
 
-  // A plan is "current" only when it belongs to a real usable subscription.
-  // user.plan is registration/profile data and must never be treated as proof
-  // that Stripe checkout has completed.
   const hasUsableSubscription = ['active', 'trialing'].includes(
     currentSubscription?.status,
   );
@@ -240,18 +211,15 @@ const priceFor = (p) => {
     (p) => String(p.id).toLowerCase() === currentPlanId,
   );
 
-  // Subscription state derived flags
   const subStatus          = currentSubscription?.status;
   const isTrialing         = subStatus === 'trialing';
   const cancelsAtPeriodEnd = Boolean(currentSubscription?.cancelAtPeriodEnd);
 
-  // Trial end date — used for "Trialing until X" pill on the current plan card
   const trialEndsAtRaw =
     currentSubscription?.trialEndsAt
     || currentSubscription?.trial_ends_at;
   const trialEndDate = formatDate(trialEndsAtRaw);
 
-  // Renewal date — for non-trialing subs, shown on the card
   const renewalDateRaw =
     currentSubscription?.currentPeriodEnd
     || currentSubscription?.current_period_end
@@ -263,8 +231,6 @@ const priceFor = (p) => {
   );
 
   const waitForSubscriptionAccess = async () => {
-    // Webhooks are asynchronous. Poll briefly so we redirect only after the
-    // backend has made Stripe's active/trialing status authoritative.
     for (let attempt = 0; attempt < 12; attempt += 1) {
       const result = await dispatch(getMe());
       if (getMe.fulfilled.match(result)) {
@@ -334,8 +300,6 @@ const priceFor = (p) => {
       return;
     }
 
-    // No pending plan means the user opened the standalone "Add another
-    // card" action. Save it as the new default without changing their plan.
     if (!planId) {
       setSavingCard(true);
       const result = await dispatch(attachPaymentMethod(paymentMethodId));
@@ -419,7 +383,6 @@ const priceFor = (p) => {
         </Link>
       </div>
 
-      {/* ── Current plan card ─────────────────────────────────── */}
       <div
         className="rounded-2xl p-6 text-black"
         style={{ background: `linear-gradient(135deg, ${theme.accent}, ${theme.accent}dd)` }}
@@ -451,7 +414,6 @@ const priceFor = (p) => {
           </div>
         </div>
 
-        {/* ── Renewal info / trial info / cancel notice ── */}
         {currentPlan && (
           <div className="mt-5 pt-5 border-t border-white/20">
             {cancelsAtPeriodEnd && renewalDate ? (
@@ -486,7 +448,6 @@ const priceFor = (p) => {
           </div>
         )}
 
-        {/* ── Action button (Resume vs Cancel) ── */}
         {currentPlan && (
           cancelsAtPeriodEnd ? (
             <Button
@@ -511,7 +472,6 @@ const priceFor = (p) => {
         )}
       </div>
 
-      {/* ── Saved payment method ─────────────────────────────── */}
       <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5 sm:p-6">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
@@ -608,7 +568,6 @@ const priceFor = (p) => {
         </div>
       </div>
 
-      {/* ── Plan switcher ─────────────────────────────────────── */}
       <div>
         <h2 className="font-unbounded text-xs font-bold text-[#3E3D38] tracking-wider uppercase mb-3">
           {currentPlan ? 'Change Plan' : 'Choose a Plan'}
@@ -646,7 +605,6 @@ const priceFor = (p) => {
                   key={p.id}
                   className={`bg-white rounded-2xl p-5 border-2 transition-all flex flex-col ${borderCls}`}
                 >
-                  {/* Top badges row */}
                   {(isCurrent || p.highlighted || hasTrial) && (
                     <div className="flex justify-end gap-1.5 mb-2 flex-wrap">
                       {hasTrial && !isCurrent && (
@@ -667,9 +625,6 @@ const priceFor = (p) => {
                     </div>
                   )}
 
-
-
-                  {/* Plan name + price */}
                   <div>
                     <p className="font-unbounded text-lg font-black text-[#3E3D38]">
                       {p.name}
@@ -695,7 +650,6 @@ const priceFor = (p) => {
               <PromoCodeField onApplied={setPromo} />
             </div>
 
-                    {/* Trial subtitle — only for cards with trial */}
                     {hasTrial && !isCurrent && (
                       <p className="text-[11px] text-emerald-700 font-semibold mt-1">
                         Start with {p.trialPeriodDays} days free
@@ -709,7 +663,6 @@ const priceFor = (p) => {
                     )}
                   </div>
 
-                  {/* Features list */}
                   {p.features.length > 0 && (
                     <ul className="mt-4 space-y-1.5 flex-1">
                       {p.features.map((f, i) => (
@@ -721,9 +674,6 @@ const priceFor = (p) => {
                     </ul>
                   )}
 
-
-
-                  {/* Action buttons */}
                   <div className="mt-5 space-y-2">
                     <Button
                       variant={isCurrent ? 'secondary' : 'primary'}
@@ -784,12 +734,6 @@ const priceFor = (p) => {
         onSuccess={handleCardSaved}
       />
 
-      {/*
-        Cancel confirmation — copy adapts to trial vs paid state.
-        - Trialing: immediate cancellation, warn about losing trial
-        - Active:   period-end cancellation, reassure about access until then
-        Uses ConfirmModal's `variant` prop (defaults to 'danger', exactly what we want).
-      */}
       {confirmingCancel && (
         <ConfirmModal
           title={isTrialing ? 'Cancel your free trial?' : 'Cancel subscription?'}

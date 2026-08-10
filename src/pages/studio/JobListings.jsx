@@ -68,7 +68,6 @@ const handleSubmit = async (payload) => {
       await dispatch(updateJob({ id: editingJob._id, ...payload }));
     }
   } else {
-    // create accepts FormData or plain object directly
     await dispatch(createJob(payload));
   }
   setSaving(false);

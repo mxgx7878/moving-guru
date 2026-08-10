@@ -26,7 +26,6 @@ export default function SearchInstructors() {
   const [chatTarget, setChatTarget] = useState(null);
   const debounceTimer = useRef(null);
 
-  // Debounce search and filters
   useEffect(() => {
     if (debounceTimer.current) {
       clearTimeout(debounceTimer.current);
@@ -40,7 +39,6 @@ export default function SearchInstructors() {
     return () => clearTimeout(debounceTimer.current);
   }, [query, filters]);
 
-  // Fetch instructors with debounced params
   useEffect(() => {
     const params = {
       status: 'active' ,
@@ -52,7 +50,6 @@ export default function SearchInstructors() {
     if (debouncedFilters.location) params.location = debouncedFilters.location;
     
     dispatch(fetchInstructors(params));
-    // dispatch(fetchSavedInstructors());
   }, [dispatch, debouncedQuery, debouncedFilters]);
 
   const toggleSave = async (id, e) => {
@@ -74,7 +71,6 @@ export default function SearchInstructors() {
     [...new Set(instructors.flatMap(i => i.disciplines || []))].sort()
   ), [instructors]);
 
-  // Use server-filtered results directly (no client-side filtering needed)
   const filtered = instructors;
 
   const clearFilters = () => { setFilters({ discipline: '', openTo: '', location: '' }); setQuery(''); };
@@ -84,13 +80,11 @@ export default function SearchInstructors() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      {/* Header */}
       <div>
         <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Find Instructors</h1>
         <p className="text-[#9A9A94] text-sm mt-1">Browse {instructors.length} active instructors seeking opportunities</p>
       </div>
 
-      {/* Search + filter bar */}
       <div className="bg-white rounded-2xl border border-[#E5E0D8] p-4 space-y-4">
         <div className="flex gap-3">
           <div className="flex-1 flex items-center gap-2 bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl px-4 py-2.5">
@@ -165,10 +159,8 @@ export default function SearchInstructors() {
         )}
       </div>
 
-      {/* Loading */}
       {loading && <CardSkeleton count={6} />}
 
-      {/* Empty */}
       {!loading && filtered.length === 0 && (
         <div className="bg-white rounded-2xl border border-[#E5E0D8] p-12 text-center">
           <Search size={32} className="text-[#C4BCB4] mx-auto mb-3" />
@@ -180,7 +172,6 @@ export default function SearchInstructors() {
         </div>
       )}
 
-      {/* Results grid */}
       {!loading && filtered.length > 0 && (
         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
           {filtered.map(inst => {
@@ -291,7 +282,6 @@ export default function SearchInstructors() {
         </div>
       )}
 
-      {/* Instructor Profile Modal */}
       {selectedInstructor && (
         <InstructorProfileModal
           instructor={selectedInstructor}

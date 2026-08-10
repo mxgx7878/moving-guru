@@ -23,8 +23,6 @@ const PLAN_OPTIONS = [
   { id: "annual", label: "12 Months — $60/yr (best value)" },
 ];
 
-// Schema lives here (not in entitySchema.js) because it conditions on
-// `role` + `isEdit`, which are UserForm-specific.
 const buildSchema = (isEdit) =>
   yup.object({
     role: yup.string().required().oneOf(["instructor", "studio", "admin"]),
@@ -95,11 +93,6 @@ const userToForm = (u) => ({
   plan: (u.plan || "monthly").toLowerCase(),
 });
 
-/**
- * UserForm — admin create/edit dialog for instructors, studios and admins.
- *   - `user` null → create mode (role picker + password)
- *   - `user` object → edit mode (role locked, password hidden)
- */
 export default function UserForm({ user, saving = false, onCancel, onSubmit }) {
   const isEditing = Boolean(user);
 
@@ -123,8 +116,6 @@ export default function UserForm({ user, saving = false, onCancel, onSubmit }) {
     [role],
   );
 
-  // Clear the opposite name field so validation doesn't trip when
-  // switching role while creating.
   useEffect(() => {
     if (isStudio) setValue("name", "");
     else setValue("studio_name", "");
@@ -178,7 +169,6 @@ export default function UserForm({ user, saving = false, onCancel, onSubmit }) {
       }
     >
       <form onSubmit={handleSubmit(submit)} className="space-y-5">
-        {/* Role picker — create mode only */}
         {!isEditing && (
           <div>
             <label className="block text-[10px] font-bold text-ink-soft tracking-widest uppercase mb-2">

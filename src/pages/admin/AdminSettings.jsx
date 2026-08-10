@@ -5,9 +5,6 @@ import { Settings, Lock, Mail, Check } from 'lucide-react';
 import { changePassword, forgotPassword } from '../../store/actions/authAction';
 import { Input, Button } from '../../components/ui';
 
-// Admin personal settings: change password, reset password email. Kept
-// minimal — platform-level configuration (feature flags, global limits)
-// can be added here later when the backend exposes those endpoints.
 export default function AdminSettings() {
   const dispatch = useDispatch();
   const { user } = useSelector((s) => s.auth);

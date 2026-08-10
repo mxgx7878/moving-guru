@@ -35,7 +35,6 @@ export const DISCIPLINE_CATEGORIES = [
     items: [
       'Spinning / Indoor Cycling', 'HIIT', 'Bootcamp',
       'Dance Cardio (e.g., Zumba, Jungle Body)',
-      // ── Added per client revision ──
       'Personal Trainer', 'Aerobics',
     ],
   },
