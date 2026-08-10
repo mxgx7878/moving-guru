@@ -8,9 +8,6 @@ import { Button, RHFInput } from '../../components/ui';
 import { changePassword } from '../../store/actions/authAction';
 import { changePasswordSchema } from '../forms';
 
-// Shared "Change password" card used by both the instructor and studio
-// dashboards (previously duplicated in full). Uses yup + RHF for
-// validation so the caller only wires the card into its settings grid.
 export default function ChangePasswordCard() {
   const dispatch = useDispatch();
   const [success, setSuccess] = useState(false);

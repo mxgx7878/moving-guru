@@ -19,22 +19,17 @@ import {
 } from '../actions/jobAction';
 
 const initialState = {
-  // Public / instructor browse — only ever active listings
   jobs: [],
   status: STATUS.IDLE,
 
-  // Studio's own listings (active + inactive)
   myJobs: [],
   myJobsStatus: STATUS.IDLE,
 
-  // Applicants by jobId: { [jobId]: { job, applicants, status } }
   applicantsByJobId: {},
 
-  // Instructor's own applications
   myApplications: [],
   myApplicationsStatus: STATUS.IDLE,
 
-  // Per-action mutation state for apply button etc.
   applyingJobId: null,
   mutatingApplicationId: null,
 
@@ -49,7 +44,6 @@ const initialState = {
   jobsMeta: { page: 1, per_page: 10, total: 0, last_page: 1 },
 };
 
-// Helpers — unwrap backend envelope { status, data: { jobs } } or legacy
 const unwrapJobs = (payload) =>
   payload?.data?.jobs || payload?.data || [];
 
@@ -62,7 +56,6 @@ const unwrapApplicants = (payload) =>
 const unwrapApplication = (payload) =>
   payload?.data?.application || payload?.application || null;
 
-// Replace a job in an array (in-place), or return unchanged
 const replaceInArr = (arr, updated) => {
   if (!updated) return;
   const idx = arr.findIndex((j) => j.id === updated.id);
@@ -81,7 +74,6 @@ const jobSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // ═══ Browse (public / instructor) ═══════════════════════
       .addCase(fetchJobs.pending, (state) => {
         state.status = STATUS.LOADING;
         state.error = null;
@@ -110,7 +102,6 @@ const jobSlice = createSlice({
         state.error = payload;
       })
 
-      // ═══ Studio: my listings ═══════════════════════════════
       .addCase(fetchMyJobs.pending, (state) => {
         state.myJobsStatus = STATUS.LOADING;
         state.error = null;
@@ -125,7 +116,6 @@ const jobSlice = createSlice({
         state.error = payload;
       })
 
-      // ═══ Studio: create ════════════════════════════════════
       .addCase(createJob.pending, (state) => {
         state.myJobsStatus = STATUS.LOADING;
       })
@@ -134,7 +124,6 @@ const jobSlice = createSlice({
         const newJob = unwrapJob(payload);
         if (newJob) {
           state.myJobs.unshift(newJob);
-          // If the new listing is active, mirror into public list
           if (newJob.is_active !== false) state.jobs.unshift(newJob);
         }
         state.message = payload?.message || 'Listing created successfully';
@@ -144,13 +133,11 @@ const jobSlice = createSlice({
         state.error = payload;
       })
 
-      // ═══ Studio: update ════════════════════════════════════
       .addCase(updateJob.fulfilled, (state, { payload }) => {
         const updated = unwrapJob(payload);
         if (updated) {
           replaceInArr(state.myJobs, updated);
           replaceInArr(state.jobs, updated);
-          // If toggled inactive, drop it from the public list
           if (updated.is_active === false) {
             state.jobs = state.jobs.filter((j) => j.id !== updated.id);
           }
@@ -161,7 +148,6 @@ const jobSlice = createSlice({
         state.error = payload;
       })
 
-      // ═══ Studio: delete ════════════════════════════════════
       .addCase(deleteJob.fulfilled, (state, { payload: id }) => {
         state.myJobs = state.myJobs.filter((j) => j.id !== id);
         state.jobs   = state.jobs.filter((j)   => j.id !== id);
@@ -172,7 +158,6 @@ const jobSlice = createSlice({
         state.error = payload;
       })
 
-      // ═══ Studio: applicants ════════════════════════════════
       .addCase(fetchJobApplicants.pending, (state, { meta }) => {
         const jobId = meta.arg;
         state.applicantsByJobId[jobId] = {
@@ -188,9 +173,6 @@ const jobSlice = createSlice({
           job: resp?.data?.job || null,
           status: STATUS.SUCCEEDED,
         };
-        // Keep the studio's job card count in sync — any pending applicants
-        // got auto-marked "viewed" on the backend, but the overall count
-        // shouldn't change. Just align applicants_count to the real list.
         replaceInArr(state.myJobs, { id: jobId, applicants_count: applicants.length });
       })
       .addCase(fetchJobApplicants.rejected, (state, { meta, payload }) => {
@@ -202,7 +184,6 @@ const jobSlice = createSlice({
         state.error = payload;
       })
 
-      // ═══ Studio: accept / reject an applicant ══════════════
       .addCase(updateApplicationStatus.pending, (state, { meta }) => {
         state.mutatingApplicationId = meta.arg.applicationId;
       })
@@ -222,7 +203,6 @@ const jobSlice = createSlice({
         state.error = payload;
       })
 
-      // ═══ Instructor: apply ═════════════════════════════════
       .addCase(applyToJob.pending, (state, { meta }) => {
         state.applyingJobId = meta.arg.jobId;
       })
@@ -231,15 +211,12 @@ const jobSlice = createSlice({
         const { jobId, payload: resp } = payload;
         const app = unwrapApplication(resp);
         if (app) {
-          // Deduplicate — if instructor re-applied after withdrawing,
-          // replace the old entry instead of adding a duplicate.
           const existing = state.myApplications.findIndex(
             (a) => a.job_listing_id === app.job_listing_id,
           );
           if (existing !== -1) state.myApplications[existing] = app;
           else state.myApplications.unshift(app);
         }
-        // Mark job as applied so the Apply button flips state
         replaceInArr(state.jobs, { id: jobId, has_applied: true });
         state.message = resp?.message || 'Application submitted';
       })
@@ -248,7 +225,6 @@ const jobSlice = createSlice({
         state.error = payload;
       })
 
-      // ═══ Instructor: withdraw ══════════════════════════════
       .addCase(withdrawApplication.pending, (state, { meta }) => {
         state.mutatingApplicationId = meta.arg;
       })
@@ -256,7 +232,6 @@ const jobSlice = createSlice({
         state.mutatingApplicationId = null;
         const app = state.myApplications.find((a) => a.id === appId);
         state.myApplications = state.myApplications.filter((a) => a.id !== appId);
-        // Flip has_applied back off in the public list so the button resets
         if (app?.job_listing_id) {
           replaceInArr(state.jobs, { id: app.job_listing_id, has_applied: false });
         }
@@ -267,7 +242,6 @@ const jobSlice = createSlice({
         state.error = payload;
       })
 
-      // ═══ Instructor: my applications ═══════════════════════
       .addCase(fetchMyApplications.pending, (state) => {
         state.myApplicationsStatus = STATUS.LOADING;
       })
@@ -293,19 +267,15 @@ const jobSlice = createSlice({
         state.error = payload;
       })
 
-      // ═══ Admin: fetch job detail — reuses selectedJob ──────
       .addCase(fetchAdminJobDetail.fulfilled, (state, { payload }) => {
         state.selectedJob = unwrapJob(payload);
       })
       .addCase(fetchAdminJobDetail.rejected, (state, { meta, payload }) => {
-        // Fall back to list entry so the drawer renders something
         const found = state.adminJobs.find((j) => j.id === meta.arg);
         if (found) state.selectedJob = found;
         state.error = payload;
       })
 
-      // ═══ Admin: activate / deactivate / delete ─────────────
-      // These reuse replaceInArr but target adminJobs list
       .addCase(activateAdminJob.fulfilled, (state, { payload, meta }) => {
         const updated = unwrapJob(payload) || { id: meta.arg, is_active: true };
         replaceInArr(state.adminJobs, updated);

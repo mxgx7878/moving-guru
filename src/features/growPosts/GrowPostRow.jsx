@@ -6,45 +6,27 @@ import { StatusPill, IconButton } from '../../components/ui';
 import { STATUS } from '../../constants/apiConstants';
 import { GROW_TYPE_META, GROW_STATUS_CONFIG } from '../../constants/growConstants';
 
-// Reusing the shared IconButton — the "yellow-active" tone used by the
-// feature button doesn't exist in the shared component, so we hand it a
-// className override for the pressed look.
 const FEATURED_ACTIVE_CLS =
   'border-[#C9A227] text-[#C9A227] bg-[#C9A227]/10 hover:bg-[#C9A227]/10';
 
-// ── Helpers ────────────────────────────────────────────────────────
-
-/**
- * Returns a Date if the value is parseable; null otherwise. Handles
- * both ISO strings ('2026-04-26T00:00:00.000000Z') and bare 'YYYY-MM-DD'.
- */
 const toDate = (val) => {
   if (!val) return null;
   const d = new Date(val);
   return isNaN(d.getTime()) ? null : d;
 };
 
-/** Format a date for compact table display: "Apr 26, 2026". */
 const formatShortDate = (val) => {
   const d = toDate(val);
   if (!d) return '';
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 };
 
-/**
- * Compute the post lifecycle flags. Lives in the row component because
- * it's purely a presentation concern — backend exposes the raw fields
- * (expires_at, is_featured, boost_until) and the API-appended
- * is_currently_featured boolean.
- */
 function getLifecycle(post) {
   const now = Date.now();
   const expiresAt = toDate(post.expires_at);
   const boostUntil = toDate(post.boost_until);
 
   const isExpired = expiresAt ? expiresAt.getTime() < now : false;
-  // Prefer backend's computed flag (boost-window-aware); fall back to a
-  // local computation in case an older API response is in flight.
   const isCurrentlyFeatured = (typeof post.is_currently_featured === 'boolean')
     ? post.is_currently_featured
     : (post.is_featured && (!boostUntil || boostUntil.getTime() > now));
@@ -61,9 +43,6 @@ function getLifecycle(post) {
   };
 }
 
-// One row in the admin grow-post moderation table. `actingId` and
-// `moderationStatus` come from the redux slice so the row can show a
-// spinner while that specific post is being mutated.
 export default function GrowPostRow({
   post,
   actingId,
@@ -102,7 +81,6 @@ export default function GrowPostRow({
               </p>
             )}
 
-            {/* Expiry information — shown when expires_at is set */}
             {expiresAt && (
               <p
                 className={`flex items-center gap-1 text-[10px] mt-1 font-semibold ${
@@ -117,7 +95,6 @@ export default function GrowPostRow({
               </p>
             )}
 
-            {/* Badge row — keeps order consistent: status badges first, then feature */}
             <div className="flex flex-wrap items-center gap-1 mt-1.5">
               {isExpired && (
                 <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#F4F4F4] text-[#1A1A1A] uppercase tracking-wider">
@@ -131,8 +108,6 @@ export default function GrowPostRow({
                 </span>
               )}
 
-              {/* Boost was on at some point, but expired without admin un-boosting.
-                  Helps admin spot stale boosts that need cleanup. */}
               {hasExpiredBoost && !isCurrentlyFeatured && (
                 <span
                   className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#F3F0EA] text-[#9A9A94] uppercase tracking-wider"

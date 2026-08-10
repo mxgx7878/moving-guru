@@ -17,22 +17,6 @@ const REASONS = [
   { value: 'other',            label: 'Other' },
 ];
 
-/**
- * ReportModal — parent mounts it conditionally (StartChatModal jaisa):
- *
- *   {report && (
- *     <ReportModal
- *       type={report.type}                  // 'message' | 'profile'
- *       reportedUserId={report.reportedUserId}
- *       conversationId={report.conversationId}
- *       messageId={report.messageId}         // null for profile reports
- *       onClose={() => setReport(null)}
- *     />
- *   )}
- *
- * Last 10 messages backend khud snapshot karta hai — frontend sirf ids
- * bhejta hai, message content nahi.
- */
 export default function ReportModal({
   type,
   reportedUserId,

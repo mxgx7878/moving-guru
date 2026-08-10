@@ -1,10 +1,3 @@
-// Small cream-tinted info tile used on public / instructor / studio
-// detail pages. Shape is compact: uppercase label on top, then a row of
-// "icon + value" below. Used anywhere a tiny "stat with icon" needs to
-// sit in a grid (date, location, experience, languages, etc).
-//
-// Distinct from StatTile (drawer tile, bigger number) and StatCard
-// (full card with trend badge). InfoTile's vibe is "labelled detail".
 export default function InfoTile({ icon, label, value, className = '' }) {
   return (
     <div className={`bg-[#FAFEE0]/50 rounded-xl p-3 ${className}`}>

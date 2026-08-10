@@ -16,14 +16,10 @@ export default function Sidebar({ mobileOpen, onClose }) {
   const theme = ROLE_THEME[role] || ROLE_THEME.instructor;
   const navItems = NAV_CONFIG[role] || NAV_CONFIG.instructor;
 
-  // App-level unread message count = sum of per-conversation unread.
-  // The inbox is fetched once at portal load (RealtimeListener) and kept
-  // live by realtime inbox events, so this badge stays current on every page.
   const messageUnread = useSelector((s) =>
     (s.message?.conversations || []).reduce((n, c) => n + (c.unreadCount || 0), 0),
   );
 
-  // Display name: studios show studio_name, others show name
   const displayName = role === 'studio'
     ? (user?.studio_name || user?.studioName || user?.name || 'Studio')
     : (user?.name || 'Member');
@@ -36,7 +32,6 @@ export default function Sidebar({ mobileOpen, onClose }) {
 
   return (
     <>
-      {/* Mobile overlay */}
       {mobileOpen && (
         <div className="fixed inset-0 bg-black/40 z-30 lg:hidden" onClick={onClose} />
       )}
@@ -48,19 +43,13 @@ export default function Sidebar({ mobileOpen, onClose }) {
         ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0 lg:static lg:z-auto
       `}>
-        {/* Logo */}
         <div className="px-6 py-6 border-b border-[#E5E0D8]">
           <a href="/" className="flex items-center justify-center gap-1">
             <img src={logo} alt="Moving Guru" height={100} width={100} />
-            {/* <span className="font-unbounded text-sm font-bold text-[#3E3D38] tracking-wider">
-              MOVING{' '}
-              <em className="not-italic" style={{ color: theme.accent }}>GURU</em>
-            </span> */}
           </a>
           <p className="text-[10px] text-[#9A9A94] mt-1 tracking-widest uppercase">{theme.label}</p>
         </div>
 
-        {/* User / Studio card */}
         <Link to={theme.profilePath} className="px-4 py-4 border-b border-[#E5E0D8]">
           <div className="flex items-center gap-3 bg-[#F5FDA6]/25 rounded-xl p-3">
             <Avatar
@@ -79,7 +68,6 @@ export default function Sidebar({ mobileOpen, onClose }) {
           </div>
         </Link>
 
-        {/* Navigation */}
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
           {navItems.map(({ to, icon: Icon, label }) => {
             const isMessages = to.includes('/messages');
@@ -116,7 +104,6 @@ export default function Sidebar({ mobileOpen, onClose }) {
           })}
         </nav>
 
-        {/* Logout */}
         <div className="px-3 py-4 border-t border-edge">
           <Button
             variant="ghost"

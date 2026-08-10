@@ -1,21 +1,5 @@
 import * as yup from 'yup';
 
-// Yup schema for the instructor profile form.
-//
-// The server-side is forgiving — almost every field is nullable — so we
-// only validate what the UI actually cares about:
-//   1. Name is required (can't save an empty profile)
-//   2. Age is numeric within the reasonable 16..99 window
-//   3. Bio stays within its character cap (500)
-//   4. "What I'm looking for" stays within its cap (2500)
-//   5. Social link URLs, when supplied, are syntactically valid
-//   6. availableTo is on or after availableFrom
-//
-// Returns a yup.ObjectSchema — use `await schema.validate(form, { abortEarly: false })`
-// in the component so every field reports simultaneously, then map any
-// ValidationError.inner into a { [path]: message } bag for the Input
-// component's `errors` prop.
-
 const optionalUrl = yup
   .string()
   .trim()
@@ -79,8 +63,6 @@ export const studioProfileSchema = yup.object({
   linkedin:    optionalUrl,
 });
 
-// Resolve a yup ValidationError (or a caught exception) into a flat
-// `{ fieldPath: message }` map matching what <Input errors={…} /> expects.
 export function flattenYupErrors(err) {
   const out = {};
   if (!err || !err.inner) return out;

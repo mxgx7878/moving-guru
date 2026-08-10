@@ -9,13 +9,6 @@ const removeReviewSchema = yup.object({
   reason: yup.string().trim().max(1000, 'Reason must be 1000 characters or less'),
 });
 
-/**
- * RemoveReviewModal
- * ─────────────────────────────────────────────────────────────
- * Confirms the destructive removal of a review with a brief
- * preview of what's being deleted (rating + comment + reviewer
- * → reviewee) and an optional reason captured for audit.
- */
 export default function RemoveReviewModal({ review, busy = false, onCancel, onConfirm }) {
   const { control, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(removeReviewSchema),

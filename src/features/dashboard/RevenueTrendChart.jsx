@@ -3,12 +3,6 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-/**
- * RevenueTrendChart
- * ─────────────────────────────────────────────────────────────
- * Smooth area chart of monthly revenue. Shows the trend shape —
- * is the platform growing? Stable? Declining? — in a single read.
- */
 export default function RevenueTrendChart({ data = [], loading = false }) {
   if (loading) {
     return <div className="h-48 bg-[#F0EBE3] animate-pulse rounded-lg" />;

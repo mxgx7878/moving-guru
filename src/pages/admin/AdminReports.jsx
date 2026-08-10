@@ -9,7 +9,6 @@ import {
   PageHeader, TabBar, Toolbar, DataTable, EmptyState, Modal, Button, Avatar,
 } from '../../components/ui';
 
-/* ── Meta maps ─────────────────────────────────────────────── */
 const REASON_META = {
   harassment:       { label: 'Harassment',     cls: 'bg-amber-100 text-amber-700'  },
   spam:             { label: 'Spam',           cls: 'bg-gray-100 text-gray-600'    },
@@ -56,7 +55,6 @@ const REPORT_COLUMNS = [
   { key: 'actions',  label: '', align: 'right' },
 ];
 
-/* ── Helpers ───────────────────────────────────────────────── */
 const personName = (u) => {
   console.log('personName u:', u);
   if (!u) return 'Unknown';
@@ -81,7 +79,6 @@ const timeAgo = (iso) => {
 };
 const fmtFull = (iso) => (iso ? new Date(iso).toLocaleString() : '—');
 
-/* ════════════════════════════════════════════════════════════ */
 export default function AdminReports() {
   const dispatch = useDispatch();
   const adminReports   = useSelector((s) => s.report.adminReports);
@@ -98,7 +95,6 @@ export default function AdminReports() {
 
   useEffect(() => {
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusTab]);
 
   const filtered = useMemo(() => {
@@ -125,8 +121,6 @@ export default function AdminReports() {
     try {
       await dispatch(updateReportStatus({ id, status })).unwrap();
       toast.success(`Marked as ${status}.`);
-      // On a filtered tab the row no longer belongs here — refetch so it
-      // drops off (and the detail modal closes, since detail = find-by-id).
       if (statusTab !== 'all') load();
     } catch (err) {
       toast.error(err?.message || (typeof err === 'string' ? err : 'Could not update status'));
@@ -249,7 +243,6 @@ export default function AdminReports() {
   );
 }
 
-/* ── Detail modal ──────────────────────────────────────────── */
 function ReportDetailModal({ report, busy, onUpdateStatus, onClose }) {
   const reason = REASON_META[report.reason] || REASON_META.other;
   const st = STATUS_META[report.status] || STATUS_META.pending;
@@ -288,7 +281,6 @@ function ReportDetailModal({ report, busy, onUpdateStatus, onClose }) {
       }
     >
       <div className="max-h-[65vh] overflow-y-auto space-y-5 pr-1">
-        {/* Parties */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[
             { tag: 'Reported user', u: report.reported_user },
@@ -308,7 +300,6 @@ function ReportDetailModal({ report, busy, onUpdateStatus, onClose }) {
           ))}
         </div>
 
-        {/* Reason + details */}
         <div>
           <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-1.5">Reason</p>
           <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${reason.cls}`}>
@@ -321,7 +312,6 @@ function ReportDetailModal({ report, busy, onUpdateStatus, onClose }) {
           )}
         </div>
 
-        {/* Reported message */}
         {report.reportedMessage && (
           <div>
             <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-1.5">Reported message</p>
@@ -332,7 +322,6 @@ function ReportDetailModal({ report, busy, onUpdateStatus, onClose }) {
           </div>
         )}
 
-        {/* Conversation context */}
         {ctx.length > 0 && (
           <div>
             <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">

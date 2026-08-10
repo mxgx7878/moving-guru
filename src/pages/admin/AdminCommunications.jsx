@@ -75,7 +75,6 @@ export default function AdminCommunications() {
     }
   };
 
-  // First step — form submit just opens the confirm modal
   const onPrepareBroadcast = (values) => {
     setPendingPayload({ ...values, audience });
     setConfirming(true);
@@ -113,7 +112,6 @@ export default function AdminCommunications() {
 
       <form onSubmit={handleSubmit(onPrepareBroadcast)} className="space-y-5">
 
-        {/* Audience picker */}
         <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5 space-y-4">
           <div>
             <label className="block text-[10px] font-bold text-[#3E3D38] tracking-widest uppercase mb-2">
@@ -138,7 +136,6 @@ export default function AdminCommunications() {
           )}
         </div>
 
-        {/* Compose */}
         <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5 space-y-4">
           <RHFInput
             control={control}
@@ -166,7 +163,6 @@ export default function AdminCommunications() {
           </p>
         </div>
 
-        {/* Actions */}
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <Button
             type="button"
@@ -194,7 +190,6 @@ export default function AdminCommunications() {
         </div>
       </form>
 
-      {/* Confirm modal — final guard before broadcasting */}
       {confirming && (
         <Modal
           open

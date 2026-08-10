@@ -5,8 +5,6 @@ import { Check, Settings } from 'lucide-react';
 import { Button } from '../../components/ui';
 import { forgotPassword } from '../../store/actions/authAction';
 
-// Simple single-action card that fires a password-reset email to the
-// signed-in user. No form fields, so it doesn't need RHF.
 export default function PasswordResetCard() {
   const dispatch = useDispatch();
   const { user } = useSelector((s) => s.auth);
