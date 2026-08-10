@@ -1,10 +1,3 @@
-// src/features/subscriptions/SubscriptionRow.jsx
-//
-// CHANGE: Trialing status now displays the trial-end date inline as
-// a secondary timestamp, and the next-renewal column shows "Trial
-// ends" instead of "Renews" while in trial. Both make it obvious at
-// a glance which subscriptions are mid-trial.
-
 import { Calendar, Gift } from 'lucide-react';
 import { formatShortDate } from '../../utils/formatters';
 
@@ -23,9 +16,6 @@ export default function SubscriptionRow({ sub }) {
   const statusCls = STATUS_CLS[sub.status] || 'bg-gray-50 text-gray-600';
   const isTrialing = sub.status === 'trialing';
 
-  // For trialing subs, the meaningful "next date" is the trial end —
-  // that's when the user will actually be charged. For everyone else
-  // it's the period end (next renewal or cancellation date).
   const dateLabel = isTrialing ? 'Trial ends' : 'Renews';
   const dateValue = isTrialing
     ? (sub.trialEndsAt || sub.trial_ends_at || sub.current_period_end)

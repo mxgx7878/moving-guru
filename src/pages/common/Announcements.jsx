@@ -46,8 +46,6 @@ export default function Announcements() {
     return { pinned: p, others: o };
   }, [announcements]);
 
-
-  // Tint tabs with the viewer's role accent so portal brand stays consistent.
   const tabs = TYPE_TABS.map((t) => ({ ...t, color: theme.accent }));
 
   const isLoading = announcementsStatus === STATUS.LOADING && announcements.length === 0;

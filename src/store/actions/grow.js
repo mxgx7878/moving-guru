@@ -4,7 +4,6 @@ import { API_ENDPOINTS } from '../../constants/apiConstants';
 import { getErrorMessage } from '../../utils/errorUtils';
 import { fileConfig, MULTIPART, withMethodOverride } from '../../utils/uploadUtils';
 
-// ── Public: fetch all approved posts (with optional filters) ──
 export const fetchGrowPosts = createAsyncThunk(
   'grow/fetchAll',
   async (params = {}, { rejectWithValue }) => {
@@ -17,7 +16,6 @@ export const fetchGrowPosts = createAsyncThunk(
   },
 );
 
-// ── Public: fetch single post detail ──
 export const fetchGrowPostDetail = createAsyncThunk(
   'grow/fetchDetail',
   async (id, { rejectWithValue }) => {
@@ -30,7 +28,6 @@ export const fetchGrowPostDetail = createAsyncThunk(
   },
 );
 
-// ── Auth: fetch my own posts ──
 export const fetchMyGrowPosts = createAsyncThunk(
   'grow/fetchMy',
   async (_, { rejectWithValue }) => {
@@ -43,7 +40,6 @@ export const fetchMyGrowPosts = createAsyncThunk(
   },
 );
 
-// ── Auth: create a new post — accepts FormData (with cover_image file) or plain JSON ──
 export const createGrowPost = createAsyncThunk(
   'grow/create',
   async (payload, { rejectWithValue }) => {
@@ -60,8 +56,6 @@ export const createGrowPost = createAsyncThunk(
   },
 );
 
-// ── Auth: update own post — also accepts FormData; uses POST+_method=PUT ──
-// for multipart (Laravel can't read PUT body as multipart) and real PUT for JSON.
 export const updateGrowPost = createAsyncThunk(
   'grow/update',
   async (arg, { rejectWithValue }) => {
@@ -87,7 +81,6 @@ export const updateGrowPost = createAsyncThunk(
   },
 );
 
-// ── Auth: delete own post ──
 export const deleteGrowPost = createAsyncThunk(
   'grow/delete',
   async (id, { rejectWithValue }) => {
@@ -99,10 +92,6 @@ export const deleteGrowPost = createAsyncThunk(
     }
   },
 );
-
-// ═══════════════════════════════════════════════════════════════
-//  Admin actions — unchanged
-// ═══════════════════════════════════════════════════════════════
 
 export const fetchAdminGrowPosts = createAsyncThunk(
   'grow/adminFetchAll',

@@ -10,8 +10,6 @@ const OPEN_TO_COLORS = {
   'Energy Exchange': { bg: 'bg-[#B4FF5A]/20', text: 'text-[#3E3D38]' },
 };
 
-// Preview modal shown from the Studio Profile editor — renders exactly what
-// instructors will see, so studios can verify their details before saving.
 export default function StudioPreviewModal({
   form,
   positionLabels = {},

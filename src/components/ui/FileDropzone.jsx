@@ -1,10 +1,6 @@
 import { useRef } from 'react';
 import { Image as ImageIcon } from 'lucide-react';
 
-// Dashed-border file upload zone used for avatars, cover images and
-// gallery uploads across profile/register pages. Click-to-open file
-// picker; pass `preview` to render the selected image, or `children`
-// to render your own preview.
 export default function FileDropzone({
   onFiles,
   accept = 'image/*',

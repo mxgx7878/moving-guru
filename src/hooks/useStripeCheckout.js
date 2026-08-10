@@ -6,7 +6,6 @@ import { toast } from 'sonner';
 import { createSetupIntent } from '../store/actions/subscriptionAction';
 import { loadStripeOnce } from '../services/stripe';
 
-/** Save and authenticate a card for future/off-session subscription charges. */
 export function useStripeCheckout() {
   const stripe = useStripe();
   const elements = useElements();
@@ -20,17 +19,11 @@ export function useStripeCheckout() {
       return { ok: false };
     }
 
-    // Reuse the payment method if this SetupIntent already succeeded. This is
-    // important when card setup completed but the following subscription API
-    // request failed and the user clicks Retry.
     const cachedPaymentMethodId = confirmedSetupsRef.current.get(clientSecret);
     if (cachedPaymentMethodId) {
       return { ok: true, paymentMethodId: cachedPaymentMethodId };
     }
 
-    // React state does not update synchronously. Two very fast clicks can reach
-    // this function before `busy` disables the button, so both callers must
-    // share one Stripe confirmation promise.
     if (activeConfirmationRef.current?.clientSecret === clientSecret) {
       return activeConfirmationRef.current.promise;
     }
@@ -38,8 +31,6 @@ export function useStripeCheckout() {
     const confirmationPromise = (async () => {
       setBusy(true);
       try {
-        // A SetupIntent can also have succeeded before this component was
-        // remounted. Retrieve it first instead of confirming it a second time.
         const {
           setupIntent: existingSetupIntent,
           error: retrieveError,
@@ -109,10 +100,6 @@ export function useStripeCheckout() {
   return { confirmCard, busy };
 }
 
-/**
- * Complete the first paid invoice. Stripe displays its own 3DS challenge when
- * the issuing bank requires it; ordinary cards complete without a popup.
- */
 export async function confirmSubscriptionPayment(
   clientSecret,
   paymentMethodId = null,
@@ -151,7 +138,6 @@ export async function confirmSubscriptionPayment(
   };
 }
 
-/** Fetch a SetupIntent before mounting the CardElement modal. */
 export function useFetchSetupIntent() {
   const dispatch = useDispatch();
   const [clientSecret, setClientSecret] = useState(null);

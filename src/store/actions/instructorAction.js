@@ -22,8 +22,6 @@ export const fetchInstructors = createAsyncThunk(
   },
 );
 
-
-
 export const fetchInstructorDetail = createAsyncThunk(
   'instructor/fetchDetail',
   async (id, { rejectWithValue }) => {
@@ -72,10 +70,6 @@ export const fetchSavedInstructors = createAsyncThunk(
     }
   },
 );
-
-// ═══════════════════════════════════════════════════════════════
-//  Admin user management (instructors + studios)
-// ═══════════════════════════════════════════════════════════════
 
 export const fetchAdminUsers = createAsyncThunk(
   'instructor/adminFetchUsers',

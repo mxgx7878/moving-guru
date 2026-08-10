@@ -1,10 +1,6 @@
 import { getInitials } from '../../utils/getInitials';
 import { AVATAR_TONES } from '../../constants/theme';
 
-// Initials-based avatar shared across every user/studio/instructor display.
-// Pass `src` to render an image instead (falls back to initials if it fails).
-// `tone` picks the brand colour; `shape` switches between circle and
-// rounded-square. Sizes map to the heights used in the app today.
 const SIZE = {
   xs: 'w-7 h-7 text-[9px]',
   sm: 'w-9 h-9 text-[10px]',

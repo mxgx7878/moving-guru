@@ -3,12 +3,6 @@ import axiosInstance from '../../config/axiosInstance';
 import { API_ENDPOINTS } from '../../constants/apiConstants';
 import { getErrorMessage } from '../../utils/errorUtils';
 
-/**
- * GET /users/:id/reviews?direction=...
- * Public — fetches reviews about a single user plus summary stats.
- * Returns { userId, direction, payload } so the slice can bucket results
- * by userId without relying on request ordering.
- */
 export const fetchUserReviews = createAsyncThunk(
   'review/fetchForUser',
   async ({ userId, direction }, { rejectWithValue }) => {
@@ -78,7 +72,6 @@ export const fetchEligibleReviews = createAsyncThunk(
     }
   },
 );
-
 
 export const fetchAdminReviews = createAsyncThunk(
   'review/adminFetchAll',

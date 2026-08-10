@@ -17,15 +17,6 @@ import { Section, InfoTile, Button, SocialLinksRow } from '../../components/ui';
 import { ReviewList } from '../../features/reviews';
 import { formatDateRange } from '../../utils/formatters';
 
-/**
- * InstructorDetail
- * -----------------------------------------------------------------
- * Full-page view of a single instructor (studio-side). Surfaces all
- * of the fields the instructor has filled out on their own profile
- * so studios can decide whether to reach out.
- *
- * Route: /studio/instructors/:id
- */
 export default function InstructorDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -58,9 +49,6 @@ export default function InstructorDetail() {
     setSavingToggle(false);
   };
 
-  // Opens the Messages screen with this instructor's thread. If no
-  // conversation exists yet, a draft thread opens and the real one is
-  // created on the first send.
   const handleMessage = () => {
     if (!inst) return;
     navigate('/studio/messages', {
@@ -117,7 +105,6 @@ export default function InstructorDetail() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      {/* Back + actions */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <Button variant="ghost" size="sm" icon={ArrowLeft} onClick={() => navigate(-1)}
           className="!text-ink-muted hover:!text-ink !bg-transparent !border-transparent">
@@ -150,7 +137,6 @@ export default function InstructorDetail() {
         </div>
       </div>
 
-      {/* Hero card */}
       <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
         <div className="h-36 relative" style={heroBg}>
           {backgroundImage && (
@@ -192,19 +178,12 @@ export default function InstructorDetail() {
                     Verified
                   </span>
                 )}
-                {/* {detail.plan && (
-                  <span className="px-3 py-1 rounded-full text-[10px] font-semibold bg-[#4E7A1B]/10 text-[#4E7A1B] capitalize">
-                    {detail.plan} plan
-                  </span>
-                )} */}
               </div>
             </div>
           </div>
 
-          {/* Social icons */}
           <SocialLinksRow social={detail.social_links} className="mb-4" />
 
-          {/* Info grid */}
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
             {location && (
               <InfoTile
@@ -261,7 +240,6 @@ export default function InstructorDetail() {
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
-        {/* Left: about + disciplines + gallery */}
         <div className="md:col-span-2 space-y-6">
           {bio && (
             <Section title="About">
@@ -316,7 +294,6 @@ export default function InstructorDetail() {
           </Section>
         </div>
 
-        {/* Right sidebar */}
         <div className="space-y-6">
           {openTo.length > 0 && (
             <Section title="Open To">

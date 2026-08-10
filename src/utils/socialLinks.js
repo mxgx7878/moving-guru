@@ -1,6 +1,3 @@
-// Social links come from the API as an array of single-key objects, e.g.
-//   [{ instagram: "https://..." }, { linkedin: "https://..." }]
-// Older code paths sometimes pass a flat object, so handle both shapes.
 export const SOCIAL_PLATFORM_ORDER = [
   'instagram',
   'facebook',

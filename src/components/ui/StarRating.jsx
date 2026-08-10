@@ -1,12 +1,5 @@
 import { Star } from 'lucide-react';
 
-/**
- * StarRating
- * -----------------------------------------------------------------
- * Read-only by default. Pass `interactive` + `onChange` to turn it
- * into an input (used by ReviewForm). `size` is the pixel size of
- * each star icon.
- */
 export default function StarRating({
   value = 0,
   max = 5,

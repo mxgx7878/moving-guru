@@ -51,7 +51,6 @@ export default function StudioDashboard() {
         )}
       />
 
-      {/* KPI grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiTile icon={Briefcase}     label="Active Listings" value={kpis.active_listings ?? 0}
           sub={`${kpis.total_listings ?? 0} total`}           color="#B4FF5A" loading={loading} />
@@ -63,7 +62,6 @@ export default function StudioDashboard() {
           sub="Active instructors"                            color="#B4FF5A" loading={loading} />
       </div>
 
-      {/* Charts row */}
       <div className="grid lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 bg-white rounded-2xl p-5 border border-[#E5E0D8]">
           <div className="flex items-center justify-between mb-4">
@@ -85,7 +83,6 @@ export default function StudioDashboard() {
         </div>
       </div>
 
-      {/* Quick actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[
           { to: '/studio/jobs',     icon: Briefcase, color: '#B4FF5A', title: 'Manage Listings',  desc: 'Post and edit your job openings' },
@@ -109,7 +106,6 @@ export default function StudioDashboard() {
         ))}
       </div>
 
-      {/* Recent activity */}
       <div className="grid lg:grid-cols-2 gap-4">
         <ActivityList
           title="Recent Applications"
