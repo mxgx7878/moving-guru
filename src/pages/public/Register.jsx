@@ -1,8 +1,3 @@
-// TODO (yup+RHF migration): this is the final remaining hand-rolled
-// form. It's a multi-step wizard with role-specific branches, file
-// upload, and conditional fields — migrating it needs its own PR
-// with manual UX testing. Until then it uses useState + validators.js.
-// See features/forms/schemas/* for the pattern the rest of the app uses.
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -32,7 +27,6 @@ import { Input, SelectField, Button } from "../../components/ui";
 import { formatDateRange } from "../../utils/formatters";
 import { fetchPlans } from "../../store/actions/subscriptionAction";
 
-// ─── Steps ──────────────────────────────────────────────────────
 const STEPS_INSTRUCTOR = [
   { id: 1, label: "Account", icon: User },
   { id: 2, label: "Personal", icon: User },
@@ -50,7 +44,6 @@ const STEPS_STUDIO = [
   { id: 5, label: "Plan", icon: CreditCard },
 ];
 
-// ─── Constants ──────────────────────────────────────────────────
 const PRONOUNS = [
   "He/Him",
   "She/Her",
@@ -90,7 +83,6 @@ const STUDIO_SIZES = [
 
 const MIN_AGE = 16;
 
-// ─── Main ────────────────────────────────────────────────────────
 export default function Register() {
   const [role, setRole] = useState("");
   const [step, setStep] = useState(0);
@@ -107,7 +99,6 @@ export default function Register() {
     avatar: null,
     avatarPreview: null,
     photoFiles: [],
-    // instructor
     age: "",
     pronouns: "",
     studio: "",
@@ -120,7 +111,6 @@ export default function Register() {
     disciplines: [],
     languages: [],
     lookingFor: "",
-    // studio
     studioName: "",
     contactName: "",
     phone: "",
@@ -173,7 +163,6 @@ export default function Register() {
   const theme = role === "studio" ? ROLE_THEME.studio : ROLE_THEME.instructor;
   const accentColor = theme?.accent || "#4E7A1B";
 
-  // ── Validation ───────────────────────────────────────────────
   const validate = () => {
     const e = {};
     if (step === 1) {
@@ -210,12 +199,11 @@ export default function Register() {
   };
 
   const next = () => {
-    // ── Child-safety age gate (instructor) ──
     if (role === "instructor" && step === 2) {
       const ageNum = parseInt(form.age, 10);
       if (!Number.isNaN(ageNum) && ageNum < MIN_AGE) {
         setShowAgeGate(true);
-        return; // block — minimum age se kam pe aage nahi badh sakte
+        return;
       }
     }
     if (validate()) setStep((s) => s + 1);
@@ -253,23 +241,22 @@ export default function Register() {
 
     const fd = new FormData();
 
-    // Common
     fd.append("role", role);
     fd.append("name", form.name);
     fd.append("email", form.email);
     fd.append("password", form.password);
     fd.append("bio", form.bio || "");
-    fd.append("profileStatus", form.profileStatus || "active"); // ✅ camelCase
+    fd.append("profileStatus", form.profileStatus || "active");
     fd.append("plan", form.plan || "monthly");
 
     (form.openTo || []).forEach(
-      (o, i) => fd.append(`openTo[${i}]`, o), // ✅ camelCase
+      (o, i) => fd.append(`openTo[${i}]`, o),
     );
     (form.disciplines || []).forEach((d, i) =>
       fd.append(`disciplines[${i}]`, d),
     );
 
-    if (form.avatar) fd.append("profile_picture", form.avatar); // media — snake_case OK (file field)
+    if (form.avatar) fd.append("profile_picture", form.avatar);
     (form.photoFiles || []).forEach((f, i) =>
       fd.append(`gallery_photos[${i}]`, f),
     );
@@ -279,26 +266,25 @@ export default function Register() {
       fd.append("pronouns", form.pronouns || "");
       fd.append("studio", form.studio || "");
       fd.append("location", form.location || "");
-      fd.append("countryFrom", form.countryFrom || ""); // ✅ camelCase
-      fd.append("travelingTo", form.travelingTo || ""); // ✅ camelCase
-      fd.append("availableFrom", form.availableFrom || ""); // ✅ camelCase
-      fd.append("availableTo", form.availableTo || ""); // ✅ camelCase
+      fd.append("countryFrom", form.countryFrom || "");
+      fd.append("travelingTo", form.travelingTo || "");
+      fd.append("availableFrom", form.availableFrom || "");
+      fd.append("availableTo", form.availableTo || "");
       fd.append(
         "availability",
         formatDateRange(form.availableFrom, form.availableTo),
       );
-      fd.append("flexibleDates", form.flexibleDates ? "1" : "0"); // ✅ camelCase
-      fd.append("lookingFor", form.lookingFor || ""); // ✅ camelCase
+      fd.append("flexibleDates", form.flexibleDates ? "1" : "0");
+      fd.append("lookingFor", form.lookingFor || "");
       (form.languages || []).forEach((l, i) => fd.append(`languages[${i}]`, l));
     } else {
-      // studio
-      fd.append("studioName", form.studioName || ""); // ✅ camelCase
-      fd.append("contactName", form.contactName || form.name); // ✅ camelCase
+      fd.append("studioName", form.studioName || "");
+      fd.append("contactName", form.contactName || form.name);
       fd.append("location", form.location || "");
       fd.append("country", form.country || "");
       fd.append("phone", form.phone || "");
       fd.append("website", form.website || "");
-      fd.append("studioSize", form.studioSize || ""); // ✅ camelCase
+      fd.append("studioSize", form.studioSize || "");
     }
 
     sessionStorage.setItem('pending_subscription_plan_id', String(form.plan));
@@ -321,7 +307,6 @@ export default function Register() {
   const inp =
     "w-full bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none transition-all";
 
-  // ── STEP 0: Role picker ─────────────────────────────────────
   if (step === 0) {
     return (
       <div className="min-h-screen bg-[#FFFFFF] flex items-center justify-center font-['DM_Sans'] p-4">
@@ -388,7 +373,6 @@ export default function Register() {
     );
   }
 
-  // ── STEP 1+: Multi-step form ────────────────────────────────
   return (
     <div className="min-h-screen bg-[#FFFFFF] font-['DM_Sans'] py-8 px-4">
       <div className="max-w-2xl mx-auto mb-8 flex items-center justify-between">
@@ -411,7 +395,6 @@ export default function Register() {
 
       <div className="max-w-2xl mx-auto">
         <div className="bg-white rounded-2xl shadow-sm border border-[#E5E0D8] overflow-hidden">
-          {/* Stepper header */}
           <div className="px-6 py-5" style={{ backgroundColor: accentColor }}>
             <div className="flex items-center gap-2 mb-5">
               {role === "studio" ? (
@@ -469,7 +452,6 @@ export default function Register() {
             </div>
           </div>
 
-          {/* Step content */}
           <div className="p-6 space-y-5">
             {apiError && (
               <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-xl">
@@ -477,7 +459,6 @@ export default function Register() {
               </div>
             )}
 
-            {/* ── STEP 1: Account (shared) ── */}
             {step === 1 && (
               <div className="space-y-5">
                 <div>
@@ -526,7 +507,6 @@ export default function Register() {
               </div>
             )}
 
-            {/* ── STEP 2 INSTRUCTOR: Personal ── */}
             {step === 2 && role === "instructor" && (
               <div className="space-y-5">
                 <div>
@@ -537,7 +517,6 @@ export default function Register() {
                     Tell the community about yourself
                   </p>
                 </div>
-                {/* Avatar */}
                 <div>
                   <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">
                     Profile Photo
@@ -624,7 +603,6 @@ export default function Register() {
               </div>
             )}
 
-            {/* ── STEP 2 STUDIO: Studio Info ── */}
             {step === 2 && role === "studio" && (
               <div className="space-y-5">
                 <div>
@@ -759,7 +737,6 @@ export default function Register() {
               onClose={() => setShowAgeGate(false)}
             />
 
-            {/* ── STEP 3 INSTRUCTOR: Location & Travel ── */}
             {step === 3 && role === "instructor" && (
               <div className="space-y-5">
                 <div>
@@ -810,7 +787,6 @@ export default function Register() {
                   </div>
                 </div>
 
-                {/* Availability date range */}
                 <div>
                   <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">
                     Availability Dates *
@@ -918,7 +894,6 @@ export default function Register() {
               </div>
             )}
 
-            {/* ── DISCIPLINES (Step 3 studio / Step 4 instructor) ── */}
             {((step === 3 && role === "studio") ||
               (step === 4 && role === "instructor")) && (
               <div className="space-y-4">
@@ -987,7 +962,6 @@ export default function Register() {
               </div>
             )}
 
-            {/* ── STEP 5 INSTRUCTOR: Bio & Photos ── */}
             {step === 5 && role === "instructor" && (
               <div className="space-y-5">
                 <div>
@@ -1057,7 +1031,6 @@ export default function Register() {
               </div>
             )}
 
-            {/* ── STEP 4 STUDIO: About ── */}
             {step === 4 && role === "studio" && (
               <div className="space-y-5">
                 <div>
@@ -1133,7 +1106,6 @@ export default function Register() {
               </div>
             )}
 
-            {/* ── LAST STEP: Plan ── */}
             {((step === 6 && role === "instructor") ||
               (step === 5 && role === "studio")) && (
               <div className="space-y-5">
@@ -1200,15 +1172,10 @@ export default function Register() {
                 {errors.plan && (
                   <p className="text-xs text-red-600">{errors.plan}</p>
                 )}
-                {/* <div className="bg-[#F5FDA6]/30 rounded-xl p-4 border border-[#F5FDA6]">
-                  <p className="text-[#3E3D38] text-xs font-semibold mb-1">🎉 Launch Promo Active</p>
-                  <p className="text-[#6B6B66] text-xs">First 3 months for $2. First 100 studios get 6 months free. Founding member pricing locked in forever.</p>
-                </div> */}
               </div>
             )}
           </div>
 
-          {/* Navigation */}
           <div className="px-6 pb-6 flex items-center justify-between">
             {step > 1 ? (
               <Button

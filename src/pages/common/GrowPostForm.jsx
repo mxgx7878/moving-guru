@@ -26,8 +26,6 @@ import { postToGrowForm as postToForm } from '../../utils/postToForm';
 import { validateGrowForm } from '../../utils/validators';
 import { ALL_DISCIPLINES } from '../../data/disciplines';
 
-
-// Read a File as base64 — backend accepts strings under images[].
 const fileToBase64 = (file) => new Promise((resolve, reject) => {
   const reader = new FileReader();
   reader.onload  = () => resolve(reader.result);
@@ -56,10 +54,9 @@ export default function GrowPostForm() {
   const [form, setForm]           = useState(EMPTY_FORM);
   const [errors, setErrors]       = useState({});
   const [loading, setLoading]     = useState(isEditing);
-  const [linkModal, setLinkModal] = useState(false);   // missing-link confirm
-  const [payModal, setPayModal]   = useState(false);   // payment gate (create only)
+  const [linkModal, setLinkModal] = useState(false);
+  const [payModal, setPayModal]   = useState(false);
 
-  // ── Load existing post when editing ────────────────────────────
   const existingPost = useMemo(() => {
     if (!id) return null;
     return (
@@ -98,7 +95,6 @@ export default function GrowPostForm() {
     }
   }, [submitStatus, dispatch, navigate, basePath]);
 
-  // ── Handlers ──────────────────────────────────────────────────
   const update = (k, v) => {
     setForm((f) => ({ ...f, [k]: v }));
     if (errors[k]) setErrors((prev) => ({ ...prev, [k]: '' }));
@@ -116,7 +112,6 @@ export default function GrowPostForm() {
  const handleImagePick = (e) => {
   const file = e.target.files?.[0];
   if (!file) return;
-  // Basic safety check — match the Laravel validation we'll add on the backend.
   if (!file.type.startsWith('image/')) {
     toast.error('Please choose an image file (jpg, png, gif, or webp).');
     return;
@@ -125,18 +120,16 @@ export default function GrowPostForm() {
     toast.error('Image must be under 5 MB.');
     return;
   }
-  // Revoke the previous blob URL so we don't leak memory on repeated picks.
   if (form.cover_image && form.cover_image.startsWith('blob:')) {
     URL.revokeObjectURL(form.cover_image);
   }
   setForm((f) => ({
     ...f,
-    cover_image:      URL.createObjectURL(file),  // preview only
-    cover_image_file: file,                       // the real File to send
+    cover_image:      URL.createObjectURL(file),
+    cover_image_file: file,
   }));
 };
 
-// Also tighten `clearImage` so it marks for removal on edit.
 const clearImage = () => {
   if (form.cover_image && form.cover_image.startsWith('blob:')) {
     URL.revokeObjectURL(form.cover_image);
@@ -145,11 +138,10 @@ const clearImage = () => {
     ...f,
     cover_image:        null,
     cover_image_file:   null,
-    remove_cover_image: true, // tells backend to wipe the existing image on save
+    remove_cover_image: true,
   }));
 };
 
-  // ── Validate + decide whether to show link / payment modals ───
   const runPreSubmitChecks = () => {
     const errs = validateGrowForm(form);
     if (form.date_from && form.date_to && form.date_from > form.date_to) {
@@ -171,13 +163,6 @@ const clearImage = () => {
     return true;
   };
 
-  // Submit flow:
-  //   1. validate
-  //   2. if no external_url → show MissingLinkConfirmModal
-  //      └─ "Go back" (cancel)  |  "Submit without link" (continue)
-  //   3. if creating (not editing) → show GrowPaymentModal (pick tier, pay)
-  //      └─ on success, sends the verified PaymentIntent ID with the post
-  //   4. if editing → dispatch updateGrowPost directly (no payment)
   const handleSubmit = (e) => {
     e?.preventDefault?.();
     if (!runPreSubmitChecks()) return;
@@ -197,12 +182,10 @@ const clearImage = () => {
     }
   };
 
-  // Build the API payload and dispatch create or update.
 const dispatchSave = ({ expiry_date = null, paymentIntentId = null }) => {
   const showSpots = !!form.show_spots;
   const fd = new FormData();
 
-  // Scalars
   fd.append('type',        form.type);
   fd.append('title',       form.title.trim());
   fd.append('subtitle',    form.subtitle.trim());
@@ -210,31 +193,24 @@ const dispatchSave = ({ expiry_date = null, paymentIntentId = null }) => {
   fd.append('location',    form.location.trim());
   fd.append('price',       String(form.price || '').trim());
 
-  // Nullable fields — only append when present so backend sees them as
-  // "not supplied" rather than empty string.
   if (form.date_from)       fd.append('date_from',    form.date_from);
   if (form.date_to)         fd.append('date_to',      form.date_to);
   if (form.external_url?.trim()) fd.append('external_url', form.external_url.trim());
   if (expiry_date)          fd.append('expiry_date',  expiry_date);
   if (paymentIntentId)      fd.append('payment_intent_id', paymentIntentId);
 
-  // Spots — only sent when the author opted in.
   if (showSpots) {
     if (form.spots      !== '') fd.append('spots',      String(Number(form.spots)));
     if (form.spots_left !== '') fd.append('spots_left', String(Number(form.spots_left)));
   }
 
-  // Arrays — bracket notation, same as profile updateProfile FormData build.
   (form.disciplines || []).forEach((d, i) => fd.append(`disciplines[${i}]`, d));
   const tags = form.tags_raw.split(',').map((t) => t.trim()).filter(Boolean);
   tags.forEach((t, i) => fd.append(`tags[${i}]`, t));
 
-  // Cover image — the actual File object, mirror of profile_picture handling.
   if (form.cover_image_file instanceof File) {
     fd.append('cover_image', form.cover_image_file);
   }
-  // Signal removal on edit when the user cleared the existing image without
-  // picking a new one.
   if (form.remove_cover_image) {
     fd.append('remove_cover_image', '1');
   }
@@ -243,11 +219,8 @@ const dispatchSave = ({ expiry_date = null, paymentIntentId = null }) => {
   else           dispatch(createGrowPost(fd));
 };
 
-
-
   const isSaving = submitStatus === STATUS.LOADING;
 
-  // ── Render ────────────────────────────────────────────────────
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -271,7 +244,6 @@ const dispatchSave = ({ expiry_date = null, paymentIntentId = null }) => {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
 
-      {/* Header */}
       <div className="flex items-center gap-3">
         <button
           onClick={() => navigate(basePath)}
@@ -294,12 +266,10 @@ const dispatchSave = ({ expiry_date = null, paymentIntentId = null }) => {
         </div>
       </div>
 
-      {/* Form */}
       <form
         onSubmit={handleSubmit}
         className="bg-white rounded-2xl border border-[#E5E0D8] p-6 space-y-5">
 
-        {/* Type */}
         <Field label="Type *">
           <TabBar
             tabs={GROW_TYPES}
@@ -310,7 +280,6 @@ const dispatchSave = ({ expiry_date = null, paymentIntentId = null }) => {
           />
         </Field>
 
-        {/* Cover image */}
         <Field
           label="Cover image"
           hint="Shown at the top of your post preview and on the full detail view."
@@ -420,7 +389,6 @@ const dispatchSave = ({ expiry_date = null, paymentIntentId = null }) => {
             className={inp} />
         </Field>
 
-        {/* Spots toggle */}
         <div className="pt-1">
           <label className="flex items-start gap-3 cursor-pointer select-none">
             <input
@@ -501,7 +469,6 @@ const dispatchSave = ({ expiry_date = null, paymentIntentId = null }) => {
             className={inp} />
         </Field>
 
-        {/* Submit */}
         <div className="flex items-center justify-end gap-3 pt-2">
           <Button type="button" variant="secondary" onClick={() => navigate(basePath)}>
             Cancel
@@ -512,14 +479,12 @@ const dispatchSave = ({ expiry_date = null, paymentIntentId = null }) => {
         </div>
       </form>
 
-      {/* Missing-link confirmation */}
       <MissingLinkConfirmModal
         open={linkModal}
         onCancel={() => setLinkModal(false)}
         onConfirm={() => { setLinkModal(false); proceedToPaymentOrSave(); }}
       />
 
-      {/* Payment gate (create only) */}
       <GrowPaymentModal
         open={payModal}
         role={role}

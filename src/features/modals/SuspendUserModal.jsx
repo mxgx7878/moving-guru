@@ -4,9 +4,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Modal, Button, RHFInput } from '../../components/ui';
 import { reasonSchema } from '../forms';
 
-// Dialog used by AdminUsers to capture a suspension reason before
-// calling the suspend API. Now validated via yup so we don't hit the
-// backend with an empty string.
 export default function SuspendUserModal({ onCancel, onConfirm, busy = false }) {
   const { control, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(reasonSchema),

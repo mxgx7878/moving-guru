@@ -1,13 +1,3 @@
-// Small pill-shaped selector used inside groups (disciplines,
-// languages, open-to, studio size, position type, etc.).
-//
-// Unlike `Button`, this is a radio-/checkbox-style affordance where
-// the "active" appearance is the selected state and the rest are
-// unselected siblings. Designed to go in a `flex flex-wrap gap-*`
-// container — typically via the companion `ChipGroup` below.
-//
-// Pair with `onRemove` to render a small X inside the chip (for
-// summary strips where removing the chip deselects the option).
 import { X } from 'lucide-react';
 
 const TONE = {
@@ -27,7 +17,6 @@ const TONE = {
     active:   'bg-chartreuse text-ink border-chartreuse',
     inactive: 'bg-white border-edge text-ink-muted hover:border-ink',
   },
-  // Soft active (e.g. summary chips that aren't in a radio group)
   softBlue: {
     active:   'bg-sky-soft text-sky-mg border-sky-soft',
     inactive: 'bg-white border-edge text-ink-muted hover:border-sky-mg',

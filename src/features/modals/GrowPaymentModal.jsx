@@ -84,7 +84,6 @@ export function GrowStripePaymentControls({
         pricingTierId,
         postId,
         paymentMethodId: selectedId,
-        // Promo codes apply to listing fees only; ignored server-side for boosts.
         ...(promoCode ? { promoCode } : {}),
       });
       const payment = data.data;
@@ -184,7 +183,7 @@ export default function GrowPaymentModal({ open, onCancel, onPaid, role = 'instr
   const [tierId, setTierId] = useState(null);
   const [loadingTiers, setLoadingTiers] = useState(false);
   const [working, setWorking] = useState(false);
-  const [promo, setPromo] = useState(null); // server price preview for an applied Grow promo code
+  const [promo, setPromo] = useState(null);
   const tier = tiers.find((item) => String(item.id) === String(tierId)) || tiers[0];
 
   const listPrice  = Number(tier?.price ?? 0);

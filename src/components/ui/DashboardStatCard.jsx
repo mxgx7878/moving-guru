@@ -1,22 +1,6 @@
 import { TrendingUp, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-// Universal dashboard stat card. Superset of every inline "stat card"
-// pattern that dashboard pages used to redeclare. Supports:
-//
-//   - `icon`    — lucide component
-//   - `color`   — raw hex (e.g. "#4E7A1B") OR one of the named enums
-//                 ('blue' | 'coral' | 'green' | 'purple' | 'orange')
-//   - `delta`   — signed percentage; positive shows emerald "+N%", negative
-//                 shows red "-N%" with a rotated arrow
-//   - `to`      — optional route; when present, the card renders as a
-//                 <Link> with a hover hint arrow
-//   - `label` / `value` / `sub` — the three text rows
-//
-// Intentionally distinct from:
-//   StatCard       — basic card with icon + coral/orange/default enum
-//   StatTile       — tiny drawer tile with cream background
-//   StatTileGroup  — strip of value-first KPIs (no icon)
 const ENUM_COLORS = {
   blue:   '#4E7A1B',
   coral:  '#4E7A1B',
