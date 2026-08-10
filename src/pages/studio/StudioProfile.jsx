@@ -16,8 +16,6 @@ import { studioProfileSchema, flattenYupErrors } from '../../features/forms';
 const OPEN_TO = ['Direct Hire', 'Swaps'];
 const STUDIO_SIZES = ['1–5 instructors', '6–15 instructors', '16–30 instructors', '30+ instructors'];
 
-// ── Position types match the JobListings form so the same vocabulary
-//    is used everywhere a studio describes who they're hiring.
 const POSITION_TYPES = [
   { id: 'permanent',     label: 'Permanent'                   },
   { id: 'temporary',     label: 'Temporary'                   },
@@ -28,9 +26,6 @@ const POSITION_TYPES = [
 
 const POSITION_LABELS = POSITION_TYPES.reduce((acc, p) => ({ ...acc, [p.id]: p.label }), {});
 
-// ── Qualification levels — ordered roughly low → high.
-//    Used by both Studio Profile (active hiring box) and JobListings,
-//    so any change here propagates to the whole app + the DB enum.
 export const QUALIFICATION_LEVELS = [
   { id: 'none',                  label: 'Not required'                          },
   { id: 'intermediate',          label: 'Intermediate / High School'            },
@@ -71,10 +66,8 @@ export default function StudioProfile() {
     profileStatus: user?.profile_status || user?.profileStatus || 'active',
     avatarPreview: user?.profile_picture || null,
     photos: user?.gallery_photos || [],
-    // new file objects
     avatarFile: null,
     photoFiles: [],
-    // ── Active hiring details (only relevant when profileStatus === 'active')
     hiringRoleDescription:    user?.hiring_role_description    || user?.hiringRoleDescription    || '',
     hiringPositionType:       user?.hiring_position_type       || user?.hiringPositionType       || 'permanent',
     hiringStartDate:          user?.hiring_start_date          || user?.hiringStartDate          || '',
@@ -104,14 +97,8 @@ export default function StudioProfile() {
     update('photos', files.map(f => URL.createObjectURL(f)));
   };
 
-  // useCallback so the memoised closure doesn't capture stale `form`
-  // state if it ever gets passed to a memoised child. Schema validates
-  // shared primitives (studio name, contact name, social URLs) before
-  // we spend a network round-trip.
   const handleSave = useCallback(async () => {
-    // Schema validation (runs first so we don't build a FormData we'll throw away).
     try {
-      // Map our form keys to the schema's keys.
       await studioProfileSchema.validate(
         { ...form, name: form.contactName, description: form.bio },
         { abortEarly: false },
@@ -125,7 +112,6 @@ export default function StudioProfile() {
       return;
     }
 
-    // When the studio is actively hiring, the role description is required.
     if (form.profileStatus === 'active' && !form.hiringRoleDescription.trim()) {
       toast.error('Please describe the role you’re hiring for, or switch to Not Hiring.');
       return;
@@ -150,9 +136,6 @@ export default function StudioProfile() {
     if (form.avatarFile) fd.append('profile_picture', form.avatarFile);
     (form.photoFiles  || []).forEach((f, i) => fd.append(`gallery_photos[${i}]`, f));
 
-    // ── Active hiring details ──────────────────────────────────────
-    // Always send the keys so toggling Not Hiring → server can clear them.
-    // Backend accepts both snake_case and camelCase; we send snake_case.
     const isHiring = form.profileStatus === 'active';
     fd.append('hiring_role_description',    isHiring ? (form.hiringRoleDescription || '') : '');
     fd.append('hiring_position_type',       isHiring ? (form.hiringPositionType    || '') : '');
@@ -179,13 +162,11 @@ export default function StudioProfile() {
 
   return (
     <div className="max-w-6xl mx-auto">
-      {/* ── Header ── */}
       <div className="mb-6">
         <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Studio Profile</h1>
         <p className="text-[#9A9A94] text-sm mt-1">How instructors see your studio on Moving Guru</p>
       </div>
 
-      {/* ── Preview modal — shows the studio exactly as instructors will see it ── */}
       {preview && (
         <StudioPreviewModal
           form={form}
@@ -195,15 +176,10 @@ export default function StudioProfile() {
         />
       )}
 
-      {/* ══════════════════════════════════════
-           2-COLUMN LAYOUT
-         ══════════════════════════════════════ */}
       <div className="grid lg:grid-cols-3 gap-6">
 
-        {/* ─────── LEFT COLUMN — Form cards ─────── */}
         <div className="lg:col-span-2 space-y-6">
 
-          {/* Basic info */}
           <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 space-y-5">
             <h2 className="font-unbounded text-sm font-black text-[#3E3D38]">Studio Info</h2>
 
@@ -281,7 +257,6 @@ export default function StudioProfile() {
             </Field>
           </div>
 
-          {/* About */}
           <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 space-y-5">
             <h2 className="font-unbounded text-sm font-black text-[#3E3D38]">About the Studio</h2>
 
@@ -326,10 +301,6 @@ export default function StudioProfile() {
             </label>
             </Field>
 
-            {/* ── Active hiring details ──
-                When studio toggles "Actively Hiring" on, surface a box
-                where they describe the role in detail (start date, position
-                type, qualification, etc). Hidden when "Not Hiring". */}
             {form.profileStatus === 'active' && (
               <div className="rounded-2xl border border-[#B4FF5A] bg-[#B4FF5A]/10 p-5 space-y-4">
                 <div className="flex items-center gap-2.5">
@@ -413,7 +384,6 @@ export default function StudioProfile() {
             )}
           </div>
 
-          {/* Disciplines */}
           <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 space-y-5">
             <div className="flex items-center justify-between flex-wrap gap-3">
               <h2 className="font-unbounded text-sm font-black text-[#3E3D38]">Disciplines Offered</h2>
@@ -424,7 +394,6 @@ export default function StudioProfile() {
               )}
             </div>
 
-            {/* Selected chips */}
             {(form.disciplines || []).length > 0 && (
               <div className="flex flex-wrap gap-2 p-3 bg-sky-soft rounded-xl border border-sky-mg/20">
                 {form.disciplines.map((d) => (
@@ -442,7 +411,6 @@ export default function StudioProfile() {
               </div>
             )}
 
-            {/* Search */}
             <div className="flex items-center gap-2 bg-warm-bg border border-edge rounded-xl px-3 py-2">
               <Search size={14} className="text-ink-soft" />
               <input
@@ -459,7 +427,6 @@ export default function StudioProfile() {
               )}
             </div>
 
-            {/* Category list */}
             <div className="space-y-5 max-h-96 overflow-y-auto pr-1">
               {filteredDisciplines.map((cat) => (
                 <div key={cat.id}>
@@ -480,9 +447,6 @@ export default function StudioProfile() {
             </div>
           </div>
 
-          {/* ══════════════════════════════════════
-               REVIEWS FROM INSTRUCTORS
-             ══════════════════════════════════════ */}
           <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="font-unbounded text-sm font-black text-[#3E3D38]">Reviews from Instructors</h2>
@@ -499,11 +463,9 @@ export default function StudioProfile() {
 
         </div>
 
-        {/* ─────── RIGHT COLUMN — Sticky sidebar ─────── */}
         <aside className="lg:col-span-1">
           <div className="lg:sticky lg:top-6 space-y-5">
 
-            {/* Avatar card */}
             <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
               <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-3">
                 Studio Photo
@@ -540,7 +502,6 @@ export default function StudioProfile() {
               )}
             </div>
 
-            {/* Hiring status toggle */}
             <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
               <p className="text-[10px] font-bold text-white tracking-widest uppercase mb-3">
                 Hiring Status
@@ -573,7 +534,6 @@ export default function StudioProfile() {
               </p>
             </div>
 
-            {/* Gallery mini-grid */}
             <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
               <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-3">
                 Gallery ({(form.photos || []).length}/4)
@@ -602,7 +562,6 @@ export default function StudioProfile() {
               <p className="text-[10px] text-[#9A9A94] text-center mt-2">Click any slot to upload 4 photos</p>
             </div>
 
-            {/* Action buttons — sticky Save */}
             <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5 space-y-2">
               {Object.keys(errors).length > 0 && (
                 <div className="mb-2 bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700 space-y-0.5" role="alert">

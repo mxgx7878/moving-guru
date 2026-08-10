@@ -78,8 +78,6 @@ export default function AdminPostForm({
 
   const type = watch('type');
 
-  // Push server-side field errors (from Laravel) into RHF's state so the
-  // same <Input errors={…}/> binding shows them inline.
   useEffect(() => {
     if (!fieldErrors) return;
     Object.entries(fieldErrors).forEach(([field, message]) => {

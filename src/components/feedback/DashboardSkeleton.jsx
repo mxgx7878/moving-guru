@@ -2,15 +2,10 @@ import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { SKELETON_PROPS } from '../../constants/theme';
 
-// Matches AdminDashboard layout exactly:
-// - header row (title block + signups-today stat)
-// - 6 stat tiles in a 1/2/3-column grid
-// - 4 activity cards in a 1/2-column grid, each with header + 5 rows
 export default function DashboardSkeleton() {
   return (
     <div className="max-w-6xl mx-auto space-y-6">
 
-      {/* Header */}
       <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 flex items-center justify-between flex-wrap gap-4">
         <div className="flex-1 min-w-[240px]">
           <Skeleton width={130} height={10} {...SKELETON_PROPS} />
@@ -30,7 +25,6 @@ export default function DashboardSkeleton() {
         </div>
       </div>
 
-      {/* Stat tiles */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
@@ -46,7 +40,6 @@ export default function DashboardSkeleton() {
         ))}
       </div>
 
-      {/* Activity cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {Array.from({ length: 4 }).map((_, i) => <ActivityCardSkeleton key={i} />)}
       </div>
@@ -68,7 +61,6 @@ function ActivityCardSkeleton() {
         <Skeleton width={60} height={10} {...SKELETON_PROPS} />
       </div>
 
-      {/* 5 placeholder rows — matches `items.slice(0, 5)` in the real component */}
       <div className="divide-y divide-[#F0EBE3]">
         {Array.from({ length: 5 }).map((_, r) => (
           <div key={r} className="px-5 py-3 flex items-center gap-3">

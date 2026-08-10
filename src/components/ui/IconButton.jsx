@@ -1,14 +1,3 @@
-// Icon-only button — used everywhere a bare icon needs to be clickable
-// (modal close, row actions like view/approve/suspend/delete, bookmark
-// toggles, edit pencils, chip-remove X, etc.)
-//
-// `tone`   — colour family for border + hover
-// `size`   — xs | sm | md (matches Button size scale: icon 12/14/16)
-// `variant`
-//   'outline'  — default, bordered square (for table rows / inline actions)
-//   'plain'    — no border, just hover bg (for modal X close / headers)
-//   'soft'     — tinted background (for prominent heart/save toggles)
-// `active`  — for toggle buttons, renders the pressed state
 const TONE = {
   default: {
     outline: 'border-edge text-ink-muted hover:border-ink',
@@ -42,7 +31,6 @@ const TONE = {
   },
 };
 
-// Legacy alias — old callers pass tone="green-active" as a pre-mixed state.
 const LEGACY_TONE = {
   'green-active': { cls: TONE.green.active, variant: 'outline' },
 };
@@ -66,7 +54,6 @@ export default function IconButton({
   className = '',
   ...rest
 }) {
-  // Support legacy tone="green-active" by flipping to `active` internally.
   let toneKey = tone;
   let effectiveActive = active;
   if (LEGACY_TONE[tone]) {
@@ -79,7 +66,6 @@ export default function IconButton({
     ? toneSet.active
     : toneSet[variant] || toneSet.outline;
 
-  // Outline variant keeps a border at all times; plain/soft have no border.
   const borderCls = (variant === 'outline' || effectiveActive) ? 'border' : 'border-0';
 
   const sizeCls = SIZE[size] || SIZE.sm;

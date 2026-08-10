@@ -2,9 +2,6 @@ import { Clock, Pin, MapPin, Calendar, ExternalLink } from 'lucide-react';
 import { POST_TYPE_META } from '../../constants/postConstants';
 import { formatShortDate } from '../../utils/formatters';
 
-// Public-portal card used on the Announcements page. Distinct from
-// PostCard (admin moderation grid) — this is the reader-facing version
-// with hero image, action link, and author byline.
 export default function AnnouncementCard({ post, pinned = false }) {
   const meta = POST_TYPE_META[post.type] || POST_TYPE_META.announcement;
   const TypeIcon = meta.icon;

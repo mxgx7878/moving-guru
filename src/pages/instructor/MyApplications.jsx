@@ -16,7 +16,6 @@ import {
 import { ApplicationCard } from '../../features/applications';
 import { ConfirmModal, ReviewFormModal } from '../../features/modals';
 
-// Local-only to this page — no universal value elsewhere.
 const FILTER_TABS = [
   { id: 'all',      label: 'All' },
   { id: 'pending',  label: 'Pending' },
@@ -43,7 +42,6 @@ export default function MyApplications() {
     dispatch(fetchMyReviews());
   }, [dispatch]);
 
-  // O(1) lookup of reviews I've already posted, keyed by (reviewee, listing).
   const reviewedKeys = useMemo(() => {
     const s = new Set();
     myReviews.forEach((r) => s.add(`${r.reviewee_id}:${r.job_listing_id || 'null'}`));

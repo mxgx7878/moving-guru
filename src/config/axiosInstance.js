@@ -1,17 +1,14 @@
 import axios from 'axios';
 import { BASE_URL, API_ENDPOINTS } from '../constants/apiConstants';
 
-// Store reference — injected from main.jsx to avoid circular imports
 let store;
-let authActions; // { setToken, resetAuth }
+let authActions;
 
 export const injectStore = (_store, _authActions) => {
   store = _store;
   authActions = _authActions;
 };
 
-// Routes that should NEVER trigger token refresh on 401
-// (these are public/auth routes — 401 here means bad credentials, not expired token)
 const SKIP_REFRESH_ROUTES = [
   API_ENDPOINTS.LOGIN,
   API_ENDPOINTS.REGISTER,
@@ -28,7 +25,6 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-// Prevent multiple refresh calls at the same time
 let isRefreshing = false;
 let failedQueue = [];
 
@@ -43,7 +39,6 @@ const processQueue = (error, token = null) => {
   failedQueue = [];
 };
 
-// Request interceptor — attach token to every request
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('access_token');
@@ -55,7 +50,6 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-// Response interceptor — handle 401 (token expired) with auto-refresh
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -70,7 +64,6 @@ axiosInstance.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // Only handle 401 — skip if already retried or if it's a public route
     const requestUrl = originalRequest.url || '';
     const isPublicRoute = SKIP_REFRESH_ROUTES.some((route) => requestUrl.includes(route));
 
@@ -78,7 +71,6 @@ axiosInstance.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // If refresh is in progress, queue this request until it finishes
     if (isRefreshing) {
       return new Promise((resolve, reject) => {
         failedQueue.push({ resolve, reject });
@@ -92,7 +84,6 @@ axiosInstance.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      // Use plain axios (NOT axiosInstance) to avoid infinite interceptor loop
       const { data } = await axios.post(
         `${BASE_URL}/refresh`,
         {},
@@ -110,22 +101,17 @@ axiosInstance.interceptors.response.use(
         throw new Error('No token returned from refresh');
       }
 
-      // 1. Update localStorage
       localStorage.setItem('access_token', newToken);
 
-      // 2. Update Redux store (keeps UI in sync)
       if (store && authActions) {
         store.dispatch(authActions.setToken(newToken));
       }
 
-      // 3. Retry all queued requests with new token
       processQueue(null, newToken);
 
-      // 4. Retry the original failed request
       originalRequest.headers.Authorization = `Bearer ${newToken}`;
       return axiosInstance(originalRequest);
     } catch (refreshError) {
-      // Refresh failed — clear auth, let ProtectedRoute redirect to /login
       localStorage.removeItem('access_token');
 
       if (store && authActions) {
