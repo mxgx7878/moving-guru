@@ -71,6 +71,18 @@ export default function PortalLayout() {
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
           <Outlet />
         </main>
+
+        <footer className="flex-shrink-0 border-t border-[#E5E0D8] bg-white px-4 py-3 text-center text-xs text-[#6B6B66]">
+          Powered by{' '}
+          <a
+            href="https://graphicpty.com.au/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-[#3E3D38] hover:text-coral transition-colors"
+          >
+            Graphics Pty Ltd
+          </a>
+        </footer>
       </div>
     </div>
   );
