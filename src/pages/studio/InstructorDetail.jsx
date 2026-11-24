@@ -1,3 +1,6 @@
+import PageHeader from '../../components/ui/PageHeader';
+import Spinner from '../../components/feedback/Spinner';
+import usePageLoading from '../../hooks/usePageLoading';
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,7 +25,7 @@ export default function InstructorDetail() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { selectedInstructor, savedIds, status } = useSelector((s) => s.instructor);
+  const { selectedInstructor, savedIds, detailStatus } = useSelector((s) => s.instructor);
   const { user: currentUser } = useSelector((s) => s.auth);
 
   const [savingToggle, setSavingToggle] = useState(false);
@@ -32,7 +35,7 @@ export default function InstructorDetail() {
     if (id) dispatch(fetchInstructorDetail(id));
   }, [id, dispatch]);
 
-  const loading = status === STATUS.LOADING && !selectedInstructor;
+  const loading = usePageLoading(detailStatus);
   const inst = selectedInstructor;
   const isSaved = inst ? savedIds.includes(inst.id) : false;
 
@@ -63,7 +66,7 @@ export default function InstructorDetail() {
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto flex items-center justify-center py-20">
-        <Loader2 size={28} className="animate-spin text-[#4E7A1B]" />
+        <Spinner size={28} />
       </div>
     );
   }
@@ -105,6 +108,7 @@ export default function InstructorDetail() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
+      <PageHeader eyebrow="Profile" title="Instructor Profile" description="Profile details and contact information" className="mb-6" />
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <Button variant="ghost" size="sm" icon={ArrowLeft} onClick={() => navigate(-1)}
           className="!text-ink-muted hover:!text-ink !bg-transparent !border-transparent">
@@ -145,19 +149,19 @@ export default function InstructorDetail() {
         </div>
         <div className="px-6 pb-6 relative">
           <div className="flex items-end gap-4 mb-4">
-            <div className="-mt-12 w-24 h-24 rounded-full border-4 border-white shadow-md overflow-hidden bg-gradient-to-br from-[#4E7A1B] to-[#9BE63D] flex items-center justify-center flex-shrink-0">
+            <div className="-mt-12 w-24 h-24 rounded-full border-4 border-white shadow-md overflow-hidden bg-coral text-black flex items-center justify-center flex-shrink-0">
               {profilePicture ? (
                 <img src={profilePicture} alt={inst.name} className="w-full h-full object-cover" />
               ) : (
-                <span className="font-unbounded text-2xl font-black text-white">
+                <span className="font-unbounded text-2xl font-black text-black">
                   {(inst.name || '?').split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()}
                 </span>
               )}
             </div>
             <div className="flex-1 min-w-0 pt-3">
-              <h1 className="font-unbounded text-xl font-black text-[#3E3D38] truncate">
+              <h2 className="font-unbounded text-xl font-black text-[#3E3D38] truncate">
                 {inst.name}
-              </h1>
+              </h2>
               <div className="flex items-center gap-2 mt-1 text-xs text-[#6B6B66] flex-wrap">
                 {detail.age && <span>{detail.age} yrs</span>}
                 {detail.pronouns && <span>· {detail.pronouns}</span>}
@@ -168,7 +172,7 @@ export default function InstructorDetail() {
                   className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold
                     ${profileStatus === 'active'
                       ? 'bg-[#B4FF5A]/20 text-[#3E3D38]'
-                      : 'bg-[#FAFEE0] text-[#9A9A94]'}`}
+                      : 'bg-[#FAFEE0] text-ink-muted'}`}
                 >
                   <span className={`w-1.5 h-1.5 rounded-full ${profileStatus === 'active' ? 'bg-[#B4FF5A]' : 'bg-[#9A9A94]'}`} />
                   {profileStatus === 'active' ? 'Actively Seeking' : 'Not Seeking'}
@@ -315,13 +319,13 @@ export default function InstructorDetail() {
               <div className="space-y-2 text-xs text-[#6B6B66]">
                 {(detail.availableFrom || detail.available_from) && (
                   <div>
-                    <p className="text-[10px] uppercase tracking-wider text-[#9A9A94] font-bold">From</p>
+                    <p className="text-[10px] uppercase tracking-wider text-ink-muted font-bold">From</p>
                     <p className="text-[#3E3D38] font-medium">{detail.availableFrom || detail.available_from}</p>
                   </div>
                 )}
                 {(detail.availableTo || detail.available_to) && (
                   <div>
-                    <p className="text-[10px] uppercase tracking-wider text-[#9A9A94] font-bold">To</p>
+                    <p className="text-[10px] uppercase tracking-wider text-ink-muted font-bold">To</p>
                     <p className="text-[#3E3D38] font-medium">{detail.availableTo || detail.available_to}</p>
                   </div>
                 )}

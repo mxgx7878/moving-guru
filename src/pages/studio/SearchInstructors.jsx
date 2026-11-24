@@ -1,3 +1,5 @@
+import usePageLoading from '../../hooks/usePageLoading';
+import PageHeader from '../../components/ui/PageHeader';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { Search, MapPin, Calendar, Filter, X, Heart, MessageCircle, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -46,7 +48,7 @@ export default function SearchInstructors() {
     };
     if (debouncedQuery) params.search = debouncedQuery;
     if (debouncedFilters.discipline) params.discipline = debouncedFilters.discipline;
-    if (debouncedFilters.openTo) params.open_to = debouncedFilters.openTo;
+    if (debouncedFilters.openTo) params.openTo = debouncedFilters.openTo;
     if (debouncedFilters.location) params.location = debouncedFilters.location;
     
     dispatch(fetchInstructors(params));
@@ -76,30 +78,26 @@ export default function SearchInstructors() {
   const clearFilters = () => { setFilters({ discipline: '', openTo: '', location: '' }); setQuery(''); };
   const hasActiveFilters = query || filters.discipline || filters.openTo || filters.location;
   const isSearching = query !== debouncedQuery || JSON.stringify(filters) !== JSON.stringify(debouncedFilters);
-  const loading = (status === STATUS.LOADING || isSearching) && instructors.length === 0;
+  const loading = usePageLoading(status) || isSearching;
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      <div>
-        <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Find Instructors</h1>
-        <p className="text-[#9A9A94] text-sm mt-1">Browse {instructors.length} active instructors seeking opportunities</p>
-      </div>
+      <PageHeader title="Find Instructors" description={<> Browse {instructors.length} active instructors seeking opportunities </>} className="" />
 
       <div className="bg-white rounded-2xl border border-[#E5E0D8] p-4 space-y-4">
         <div className="flex gap-3">
           <div className="flex-1 flex items-center gap-2 bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl px-4 py-2.5">
-            <Search size={16} className="text-[#9A9A94] flex-shrink-0" />
+            <Search size={16} className="text-ink-muted flex-shrink-0" />
             <input type="text" value={query} onChange={e => setQuery(e.target.value)}
               placeholder="Search by name, discipline, location..."
-              className="flex-1 bg-transparent border-none outline-none text-sm text-[#3E3D38] placeholder-[#C4BCB4]" />
+              className="flex-1 bg-transparent border-none outline-none text-sm text-[#3E3D38] placeholder-ink-muted" />
             {query && (
-              <IconButton variant="plain" size="xs" onClick={() => setQuery('')} aria-label="Clear search" className="!text-ink-soft hover:!text-coral">
+              <IconButton size="xs" onClick={() => setQuery('')} aria-label="Clear search" className="!text-ink-soft hover:!text-brand-ink">
                 <X size={14} />
               </IconButton>
             )}
           </div>
           <Button
-            variant={showFilters ? 'primary' : 'secondary'}
             size="md"
             icon={Filter}
             onClick={() => setShowFilters(!showFilters)}
@@ -143,15 +141,14 @@ export default function SearchInstructors() {
         {hasActiveFilters && (
           <div className="flex items-center justify-between pt-2 border-t border-[#E5E0D8]">
             <div className="flex items-center gap-2">
-              <p className="text-[#9A9A94] text-xs">{filtered.length} result{filtered.length !== 1 ? 's' : ''} found</p>
+              <p className="text-ink-muted text-xs">{filtered.length} result{filtered.length !== 1 ? 's' : ''} found</p>
               {isSearching && <ButtonLoader size={12} color="#4E7A1B" />}
             </div>
             <Button
-              variant="ghost"
               size="xs"
               icon={X}
               onClick={clearFilters}
-              className="!text-coral hover:!underline"
+              className="!text-brand-ink hover:!underline"
             >
               Clear all
             </Button>
@@ -163,10 +160,10 @@ export default function SearchInstructors() {
 
       {!loading && filtered.length === 0 && (
         <div className="bg-white rounded-2xl border border-[#E5E0D8] p-12 text-center">
-          <Search size={32} className="text-[#C4BCB4] mx-auto mb-3" />
+          <Search size={32} className="text-ink-muted mx-auto mb-3" />
           <p className="text-[#3E3D38] font-semibold">No instructors found</p>
-          <p className="text-[#9A9A94] text-sm mt-1">Try adjusting your filters</p>
-          <Button variant="ghost" size="sm" onClick={clearFilters} className="!text-sky-mg hover:!underline mt-4">
+          <p className="text-ink-muted text-sm mt-1">Try adjusting your filters</p>
+          <Button size="sm" onClick={clearFilters} className="!text-sky-mg hover:!underline mt-4">
             Clear filters
           </Button>
         </div>
@@ -190,24 +187,27 @@ export default function SearchInstructors() {
                 <div className="bg-gradient-to-br from-[#FFFFFF] to-[#F5FDA6]/20 px-5 pt-5 pb-4">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <Avatar
-                        name={inst.name}
-                        src={inst?.detail?.profile_picture_url || inst?.detail?.profile_picture}
-                        size="md"
-                        tone="coral"
-                      />
+                      <button type="button" onClick={(e) => { e.stopPropagation(); navigate(`/studio/instructors/${inst.id}`); }}
+                        aria-label={`View ${inst.name}'s profile`}>
+                        <Avatar
+                          name={inst.name}
+                          src={inst?.detail?.profile_picture_url || inst?.detail?.profile_picture}
+                          size="md"
+                          tone="coral"
+                        />
+                      </button>
                       <div>
-                        <p className="font-unbounded text-sm font-black text-[#3E3D38]">{inst.name}</p>
-                        <p className="text-[#9A9A94] text-[10px]">{inst.detail.pronouns}</p>
+                        <button type="button" onClick={(e) => { e.stopPropagation(); navigate(`/studio/instructors/${inst.id}`); }}
+                          className="font-unbounded text-sm font-black text-[#3E3D38] hover:underline">{inst.name}</button>
+                        <p className="text-ink-muted text-[10px]">{inst.detail.pronouns}</p>
                       </div>
                     </div>
                     <IconButton
-                      variant="plain"
                       tone="coral"
                       disabled={savingId === inst.id}
                       onClick={(e) => toggleSave(inst.id, e)}
                       title={isSaved ? 'Remove from saved' : 'Save instructor'}
-                      className={isSaved ? '' : '!text-ink-faint hover:!text-coral'}
+                      className={isSaved ? '' : '!text-ink-faint hover:!text-brand-ink'}
                     >
                       {savingId === inst.id
                         ? <ButtonLoader size={16} color="#4E7A1B" />
@@ -226,18 +226,18 @@ export default function SearchInstructors() {
                       <span key={d} className="px-2 py-0.5 bg-[#FAFEE0] text-[#6B6B66] text-[10px] rounded-full">{d}</span>
                     ))}
                     {(inst.detail.disciplines || []).length > 3 && (
-                      <span className="px-2 py-0.5 bg-[#FAFEE0] text-[#9A9A94] text-[10px] rounded-full">+{inst.detail.disciplines.length - 3}</span>
+                      <span className="px-2 py-0.5 bg-[#FAFEE0] text-ink-muted text-[10px] rounded-full">+{inst.detail.disciplines.length - 3}</span>
                     )}
                   </div>
 
                   <div className="space-y-1.5">
                     <div className="flex items-center gap-1.5 text-xs text-[#6B6B66]">
-                      <MapPin size={11} className="text-[#9A9A94]" />
-                      <span className="text-[#9A9A94]">From</span> {countryFrom}
+                      <MapPin size={11} className="text-ink-muted" />
+                      <span className="text-ink-muted">From</span> {countryFrom}
                       {travelingTo && <> → <span className="font-medium">{travelingTo}</span></>}
                     </div>
                     <div className="flex items-center gap-1.5 text-xs text-[#6B6B66]">
-                      <Calendar size={11} className="text-[#9A9A94]" />
+                      <Calendar size={11} className="text-ink-muted" />
                       <span>{inst?.detail.availability}</span>
                     </div>
                   </div>
@@ -245,15 +245,15 @@ export default function SearchInstructors() {
                   <div className="flex flex-wrap gap-1">
                     {openTo.map(o => (
                       <span key={o} className={`px-2 py-0.5 text-[10px] rounded-full font-medium
-                        ${o === 'Direct Hire'     ? 'bg-coral/10 text-coral' :
-                          o === 'Swaps'           ? 'bg-[#9BE63D]/15 text-[#9BE63D]' :
+                        ${o === 'Direct Hire'     ? 'bg-coral/10 text-brand-ink' :
+                          o === 'Swaps'           ? 'bg-[#9BE63D]/15 text-brand-ink' :
                           'bg-[#B4FF5A]/15 text-[#3E3D38]'}`}>
                         {o}
                       </span>
                     ))}
                   </div>
 
-                  <p className="text-[#9A9A94] text-xs line-clamp-2">{inst?.detail.bio}</p>
+                  <p className="text-ink-muted text-xs line-clamp-2">{inst?.detail.bio}</p>
 
                   <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
                     <Button
@@ -262,7 +262,7 @@ export default function SearchInstructors() {
                       icon={Eye}
                       fullWidth
                       onClick={() => setSelectedInstructor(inst)}
-                      className="hover:border-coral hover:text-coral"
+                      className="hover:border-coral hover:text-brand-ink"
                     >
                       Quick View
                     </Button>

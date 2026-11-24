@@ -51,7 +51,9 @@ export default function InstructorProfileModal({ instructor, isSaved, onClose, o
       }
     >
       <div className="flex items-start gap-4 mb-5">
-        <Avatar name={instructor.name} src={profilePicture} size="xl" tone="coral" />
+        <button type="button" onClick={goFullProfile} aria-label={`View ${instructor.name}'s full profile`}>
+          <Avatar name={instructor.name} src={profilePicture} size="xl" tone="coral" />
+        </button>
         <div className="flex-1 min-w-0 space-y-2">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold bg-[#B4FF5A]/20 text-[#3E3D38]">
             <span className="w-1.5 h-1.5 rounded-full bg-[#B4FF5A]" />
@@ -73,10 +75,10 @@ export default function InstructorProfileModal({ instructor, isSaved, onClose, o
         )}
         {openTo.length > 0 && (
           <div className="bg-[#FAFEE0]/50 rounded-xl p-3">
-            <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold mb-1">Open To</p>
+            <p className="text-[8px] text-ink-muted uppercase tracking-wider font-bold mb-1">Open To</p>
             <div className="flex flex-wrap gap-1">
               {openTo.map(o => (
-                <span key={o} className="px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-coral/10 text-coral">{o}</span>
+                <span key={o} className="px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-coral/10 text-brand-ink">{o}</span>
               ))}
             </div>
           </div>
@@ -85,10 +87,10 @@ export default function InstructorProfileModal({ instructor, isSaved, onClose, o
 
       {(instructorDetail.disciplines || []).length > 0 && (
         <div className="mb-4">
-          <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-bold mb-2">Disciplines</p>
+          <p className="text-[10px] text-ink-muted uppercase tracking-wider font-bold mb-2">Disciplines</p>
           <div className="flex flex-wrap gap-1.5">
             {instructorDetail?.disciplines.map(d => (
-              <span key={d} className="px-2.5 py-1 bg-coral/10 text-coral text-[10px] font-medium rounded-full">{d}</span>
+              <span key={d} className="px-2.5 py-1 bg-coral/10 text-brand-ink text-[10px] font-medium rounded-full">{d}</span>
             ))}
           </div>
         </div>
@@ -96,7 +98,7 @@ export default function InstructorProfileModal({ instructor, isSaved, onClose, o
 
       {instructorDetail.bio && (
         <div className="mb-2">
-          <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-bold mb-2">About</p>
+          <p className="text-[10px] text-ink-muted uppercase tracking-wider font-bold mb-2">About</p>
           <p className="text-[#6B6B66] text-sm leading-relaxed line-clamp-4">{instructorDetail.bio}</p>
         </div>
       )}
@@ -107,9 +109,9 @@ export default function InstructorProfileModal({ instructor, isSaved, onClose, o
 function InfoTile({ label, value, icon }) {
   return (
     <div className="bg-[#FAFEE0]/50 rounded-xl p-3">
-      <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold mb-1">{label}</p>
+      <p className="text-[8px] text-ink-muted uppercase tracking-wider font-bold mb-1">{label}</p>
       <p className="text-[#3E3D38] text-xs font-medium flex items-center gap-1">
-        {icon && <span className="text-[#9A9A94]">{icon}</span>} {value}
+        {icon && <span className="text-ink-muted">{icon}</span>} {value}
       </p>
     </div>
   );

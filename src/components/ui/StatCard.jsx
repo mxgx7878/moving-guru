@@ -1,14 +1,16 @@
+import { CardSkeleton } from '../feedback';
 import { TrendingUp } from 'lucide-react';
 
-export default function StatCard({ icon: Icon, label, value, sub, color = 'default', trend }) {
+export default function StatCard({ icon: Icon, label, value, sub, color = 'default', trend, loading = false }) {
+  if (loading) return <CardSkeleton count={1} />;
   const bgMap = {
     coral: 'bg-coral/10',
     orange: 'bg-[#9BE63D]/10',
     default: 'bg-[#FAFEE0]',
   };
   const iconMap = {
-    coral: 'text-coral',
-    orange: 'text-[#9BE63D]',
+    coral: 'text-brand-ink',
+    orange: 'text-brand-ink',
     default: 'text-[#6B6B66]',
   };
 
@@ -19,14 +21,14 @@ export default function StatCard({ icon: Icon, label, value, sub, color = 'defau
           <Icon size={16} className={iconMap[color] || iconMap.default} />
         </div>
         {trend && (
-          <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+          <span className="flex items-center gap-1 text-[10px] font-semibold text-brand-ink bg-emerald-50 px-2 py-0.5 rounded-full">
             <TrendingUp size={9} /> +{trend}%
           </span>
         )}
       </div>
       <p className="font-unbounded text-2xl font-black text-[#3E3D38] mb-1">{value}</p>
       <p className="text-xs font-semibold text-[#6B6B66]">{label}</p>
-      {sub && <p className="text-[10px] text-[#9A9A94] mt-0.5">{sub}</p>}
+      {sub && <p className="text-[10px] text-ink-muted mt-0.5">{sub}</p>}
     </div>
   );
 }

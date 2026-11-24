@@ -20,6 +20,7 @@ const initialState = {
   pagination: null,
   adminPagination: null,
   status: STATUS.IDLE,
+  myPostsStatus: STATUS.IDLE,
   adminStatus: STATUS.IDLE,
   submitStatus: STATUS.IDLE,
   moderationStatus: STATUS.IDLE,
@@ -60,24 +61,35 @@ const growSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
-      .addCase(fetchGrowPosts.pending, (state) => {
+      .addCase(fetchGrowPosts.pending, (state, { meta }) => {
+        state.requestIds ??= {};
+        state.requestIds.fetchGrowPosts = meta.requestId;
         state.status = STATUS.LOADING;
         state.error = null;
       })
-      .addCase(fetchGrowPosts.fulfilled, (state, { payload }) => {
+      .addCase(fetchGrowPosts.fulfilled, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchGrowPosts !== meta.requestId) return;
         state.status = STATUS.SUCCEEDED;
         state.posts = Array.isArray(payload?.data) ? payload.data : [];
         state.pagination = payload?.meta || null;
       })
-      .addCase(fetchGrowPosts.rejected, (state, { payload }) => {
+      .addCase(fetchGrowPosts.rejected, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchGrowPosts !== meta.requestId) return;
         state.status = STATUS.FAILED;
         state.error = payload;
       })
 
-      .addCase(fetchMyGrowPosts.fulfilled, (state, { payload }) => {
+      .addCase(fetchMyGrowPosts.pending, (state, { meta }) => {
+        state.requestIds ??= {};
+        state.requestIds.fetchMyGrowPosts = meta.requestId; state.myPostsStatus = STATUS.LOADING; })
+      .addCase(fetchMyGrowPosts.fulfilled, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchMyGrowPosts !== meta.requestId) return;
+        state.myPostsStatus = STATUS.SUCCEEDED;
         state.myPosts = Array.isArray(payload?.data) ? payload.data : [];
       })
-      .addCase(fetchMyGrowPosts.rejected, (state, { payload }) => {
+      .addCase(fetchMyGrowPosts.rejected, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchMyGrowPosts !== meta.requestId) return;
+        state.myPostsStatus = STATUS.FAILED;
         state.error = payload;
       })
 
@@ -125,16 +137,20 @@ const growSlice = createSlice({
         state.error = payload;
       })
 
-      .addCase(fetchAdminGrowPosts.pending, (state) => {
+      .addCase(fetchAdminGrowPosts.pending, (state, { meta }) => {
+        state.requestIds ??= {};
+        state.requestIds.fetchAdminGrowPosts = meta.requestId;
         state.adminStatus = STATUS.LOADING;
         state.adminError = null;
       })
-      .addCase(fetchAdminGrowPosts.fulfilled, (state, { payload }) => {
+      .addCase(fetchAdminGrowPosts.fulfilled, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchAdminGrowPosts !== meta.requestId) return;
         state.adminStatus = STATUS.SUCCEEDED;
         state.adminPosts = Array.isArray(payload?.data) ? payload.data : [];
         state.adminPagination = payload?.meta || null;
       })
-      .addCase(fetchAdminGrowPosts.rejected, (state, { payload }) => {
+      .addCase(fetchAdminGrowPosts.rejected, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchAdminGrowPosts !== meta.requestId) return;
         state.adminStatus = STATUS.FAILED;
         state.adminError = payload;
       })

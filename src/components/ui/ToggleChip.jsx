@@ -3,23 +3,23 @@ import { X } from 'lucide-react';
 const TONE = {
   coral: {
     active:   'bg-coral text-black border-coral',
-    inactive: 'bg-white border-edge text-ink-muted hover:border-coral',
+    inactive: 'bg-white text-[#6B6B66] border-[#E5E0D8] hover:border-[#4E7A1B] hover:text-[#3E3D38]',
   },
   blue: {
-    active:   'bg-sky-mg text-white border-sky-mg',
-    inactive: 'bg-white border-edge text-ink-muted hover:border-sky-mg',
+    active:   'bg-coral text-black border-coral',
+    inactive: 'bg-white text-[#6B6B66] border-[#E5E0D8] hover:border-[#4E7A1B] hover:text-[#3E3D38]',
   },
   ink: {
-    active:   'bg-ink text-white border-ink',
-    inactive: 'bg-white border-edge text-ink-muted hover:border-ink',
+    active:   'bg-coral text-black border-coral',
+    inactive: 'bg-white text-[#6B6B66] border-[#E5E0D8] hover:border-[#4E7A1B] hover:text-[#3E3D38]',
   },
   chartreuse: {
-    active:   'bg-chartreuse text-ink border-chartreuse',
-    inactive: 'bg-white border-edge text-ink-muted hover:border-ink',
+    active:   'bg-coral text-black border-coral',
+    inactive: 'bg-white text-[#6B6B66] border-[#E5E0D8] hover:border-[#4E7A1B] hover:text-[#3E3D38]',
   },
   softBlue: {
-    active:   'bg-sky-soft text-sky-mg border-sky-soft',
-    inactive: 'bg-white border-edge text-ink-muted hover:border-sky-mg',
+    active:   'bg-coral text-black border-coral',
+    inactive: 'bg-white text-[#6B6B66] border-[#E5E0D8] hover:border-[#4E7A1B] hover:text-[#3E3D38]',
   },
 };
 

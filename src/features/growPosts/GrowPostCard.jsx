@@ -57,7 +57,7 @@ export default function GrowPostCard({
               {post.title}
             </h3>
             {post.subtitle && (
-              <p className="text-[#9A9A94] text-xs mt-0.5">{post.subtitle}</p>
+              <p className="text-ink-muted text-xs mt-0.5">{post.subtitle}</p>
             )}
           </div>
         </div>
@@ -65,18 +65,18 @@ export default function GrowPostCard({
         <div className="flex flex-wrap gap-2 mb-3">
           {post.location && (
             <span className="flex items-center gap-1 text-xs text-[#6B6B66]">
-              <MapPin size={11} className="text-[#9A9A94]" /> {post.location}
+              <MapPin size={11} className="text-ink-muted" /> {post.location}
             </span>
           )}
           {(post.date_from || post.date_label || post.dates) && (
             <span className="flex items-center gap-1 text-xs text-[#6B6B66]">
-              <Calendar size={11} className="text-[#9A9A94]" />
+              <Calendar size={11} className="text-ink-muted" />
               {post.date_label || post.dates || `${post.date_from} – ${post.date_to || ''}`}
             </span>
           )}
           {(post.spots_left ?? post.spotsLeft) != null && (post.spots_left ?? post.spotsLeft) !== '' && (
             <span className="flex items-center gap-1 text-xs text-[#6B6B66]">
-              <Users size={11} className="text-[#9A9A94]" />
+              <Users size={11} className="text-ink-muted" />
               {post.spots_left ?? post.spotsLeft} spots left
             </span>
           )}
@@ -94,7 +94,7 @@ export default function GrowPostCard({
 
         <div className="flex items-center justify-between pt-3 border-t border-[#F0EBE3] gap-3 flex-wrap">
           <div className="min-w-0">
-            <p className="text-[10px] text-[#9A9A94] uppercase tracking-wide">Posted by</p>
+            <p className="text-[10px] text-ink-muted uppercase tracking-wide">Posted by</p>
             <p className="text-xs font-semibold text-[#3E3D38] truncate">{postedBy}</p>
             {post.price && (
               <p className="text-xs font-bold mt-0.5 text-[#1A1A1A]" >
@@ -110,7 +110,7 @@ export default function GrowPostCard({
                 size="sm"
                 icon={Zap}
                 onClick={(e) => { e.stopPropagation(); onBoost(post); }}
-                className="hover:border-[#9BE63D] hover:text-[#9BE63D]"
+                className="hover:border-[#9BE63D] hover:text-brand-ink"
               >
                 Boost
               </Button>

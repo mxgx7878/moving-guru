@@ -30,7 +30,7 @@ export default function StarRating({
           >
             <Star
               size={size}
-              className={filled ? 'text-[#9BE63D]' : 'text-[#E5E0D8]'}
+              className={filled ? 'text-brand-ink' : 'text-[#E5E0D8]'}
               fill={filled ? '#9BE63D' : 'transparent'}
             />
           </button>

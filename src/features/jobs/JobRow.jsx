@@ -29,7 +29,7 @@ export default function JobRow({ job, busy = false, onPreview, onActivate, onDea
             <PrimaryIcon size={14} style={{ color: primary.color }} />
           </div>
           <div className="min-w-0">
-            <p className="font-semibold text-[#3E3D38] text-xs line-clamp-1">{job.title } {eeOpen && <span className="text-[9px] text-[#9A9A94] mt-0.5">+ Energy exchange</span>}</p>
+            <p className="font-semibold text-[#3E3D38] text-xs line-clamp-1">{job.title } {eeOpen && <span className="text-[9px] text-ink-muted mt-0.5">+ Energy exchange</span>}</p>
             <div className="flex items-center gap-1 mt-0.5 flex-wrap">
               {typesInfo.map((info) => (
                 <span
@@ -41,7 +41,7 @@ export default function JobRow({ job, busy = false, onPreview, onActivate, onDea
                 </span>
               ))}
               {job.role_type && (
-                <span className="text-[10px] text-[#9A9A94]">
+                <span className="text-[10px] text-ink-muted">
                   · {ROLE_TYPE_LABELS[job.role_type] || job.role_type}
                 </span>
               )}
@@ -52,7 +52,7 @@ export default function JobRow({ job, busy = false, onPreview, onActivate, onDea
 
       <td className="py-3 px-4">
         <div className="flex items-center gap-1.5 text-xs text-[#3E3D38]">
-          <Building2 size={11} className="text-[#9A9A94]" />
+          <Building2 size={11} className="text-ink-muted" />
           <span className="truncate max-w-[140px]">{studioName}</span>
         </div>
       </td>
@@ -62,15 +62,15 @@ export default function JobRow({ job, busy = false, onPreview, onActivate, onDea
           <span className="flex items-center gap-1 text-xs text-[#6B6B66]">
             <MapPin size={11} /> {job.location}
           </span>
-        ) : <span className="text-xs text-[#C4BCB4]">—</span>}
+        ) : <span className="text-xs text-ink-muted">—</span>}
       </td>
 
       <td className="py-3 px-4">
         <span className="flex items-center gap-1 text-xs text-[#6B6B66]">
-          <Users size={11} className="text-[#9A9A94]" />
+          <Users size={11} className="text-ink-muted" />
           {applicants} {applicants === 1 ? 'applicant' : 'applicants'}
         </span>
-        <span className="text-[10px] text-[#9A9A94]">{filled}/{vacancies} filled</span>
+        <span className="text-[10px] text-ink-muted">{filled}/{vacancies} filled</span>
       </td>
 
       <td className="py-3 px-4">

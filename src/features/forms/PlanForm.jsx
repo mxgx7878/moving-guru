@@ -1,10 +1,11 @@
 import { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
 import { Check, Plus, X } from 'lucide-react';
 
 import { Modal, Button, RHFInput, SelectField, Toggle } from '../../components/ui';
+import { showFormValidationErrors } from '../../utils/formValidation';
+import { buildPlanSchema } from './schemas/planSchema';
 
 const CURRENCY_OPTIONS = [
   { value: 'USD', label: 'USD — US Dollar' },
@@ -39,29 +40,6 @@ const cycleFromPlan = (p) => {
   return match?.value || 'month-1';
 };
 
-const buildSchema = (isEdit) => yup.object({
-  id: isEdit
-    ? yup.string()
-    : yup.string().required('ID is required')
-        .matches(/^[a-z0-9][a-z0-9_-]*$/, 'Lowercase letters, numbers, hyphens or underscores only')
-        .max(32, 'Max 32 characters'),
-  name:            yup.string().trim().required('Name is required').max(64),
-  description:     yup.string().nullable().max(255),
-  price:           yup.number().typeError('Must be a number').required('Price is required').min(0),
-  billingCycle:    yup.string().required().oneOf(BILLING_CYCLES.map((c) => c.value)),
-  trialPeriodDays: yup.number()
-    .typeError('Must be a number')
-    .integer('Whole days only')
-    .min(0, 'Cannot be negative')
-    .max(365, 'Maximum 365 days'),
-  features:        yup.array().of(yup.string().max(140)),
-  isActive:        yup.boolean(),
-  sortOrder:       yup.number().typeError('Must be a number').integer().min(0).max(9999),
-  discountType:  yup.string().oneOf(['', 'percent', 'fixed']).nullable(),
-  discountValue: yup.number().typeError('Must be a number').min(0, 'Cannot be negative').nullable(),
-  discountDuration: yup.string().oneOf(['', 'once', 'repeating', 'forever']).nullable(),
-  discountMonths:   yup.number().typeError('Must be a number').nullable().integer().min(1).max(36),
-});
   const DISCOUNT_TYPES = [
   { value: '',        label: 'No discount' },
   { value: 'percent', label: 'Percent (%)' },
@@ -96,12 +74,14 @@ const planToForm = (p) => ({
 
 export default function PlanForm({ plan, saving = false, onCancel, onSubmit }) {
   const isEditing = Boolean(plan);
-  const schema = useMemo(() => buildSchema(isEditing), [isEditing]);
+  const schema = useMemo(() => buildPlanSchema(isEditing, BILLING_CYCLES.map((c) => c.value)), [isEditing]);
 
   const {
     control, handleSubmit, watch, setValue,
     formState: { errors },
   } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     resolver: yupResolver(schema),
     defaultValues: plan ? planToForm(plan) : EMPTY_FORM,
   });
@@ -158,13 +138,13 @@ export default function PlanForm({ plan, saving = false, onCancel, onSubmit }) {
       footer={(
         <>
           <Button variant="secondary" onClick={onCancel}>Cancel</Button>
-          <Button variant="primary" icon={Check} loading={saving} onClick={handleSubmit(submit)}>
+          <Button variant="primary" icon={Check} loading={saving} onClick={handleSubmit(submit, showFormValidationErrors)}>
             {isEditing ? 'Save Changes' : 'Create Plan'}
           </Button>
         </>
       )}
     >
-      <form onSubmit={handleSubmit(submit)} className="space-y-5">
+      <form onSubmit={handleSubmit(submit, showFormValidationErrors)} className="space-y-5">
 
         <div className="grid sm:grid-cols-2 gap-4">
           <RHFInput
@@ -183,7 +163,7 @@ export default function PlanForm({ plan, saving = false, onCancel, onSubmit }) {
 
         <RHFInput
           control={control} errors={errors}
-          name="description" label="Description"
+          name="description" label={isEditing ? "Description" : "Description *"}
           placeholder="One-line description shown to subscribers"
           textarea rows={2}
         />
@@ -233,7 +213,7 @@ export default function PlanForm({ plan, saving = false, onCancel, onSubmit }) {
             </>
           ) : (
             <div className="sm:col-span-2 flex items-start pt-6">
-              <p className="text-[11px] text-[#9A9A94]">No discount — subscribers pay the full price above.</p>
+              <p className="text-[11px] text-ink-muted">No discount — subscribers pay the full price above.</p>
             </div>
           )}
 
@@ -289,7 +269,7 @@ export default function PlanForm({ plan, saving = false, onCancel, onSubmit }) {
             </Button>
           </div>
           {features.length === 0 ? (
-            <p className="text-xs text-[#9A9A94] italic">No features yet — add bullet points subscribers will see.</p>
+            <p className="text-xs text-ink-muted italic">No features yet — add bullet points subscribers will see.</p>
           ) : (
             <div className="space-y-2">
               {features.map((feat, i) => (
@@ -317,7 +297,7 @@ export default function PlanForm({ plan, saving = false, onCancel, onSubmit }) {
                   checked={field.value}
                   onChange={field.onChange}
                 />
-                <p className="text-[10px] text-[#9A9A94] mt-1">
+                <p className="text-[10px] text-ink-muted mt-1">
                   When off, plan is archived — hidden from new users.
                   Existing subscribers stay on it until they cancel or switch.
                 </p>

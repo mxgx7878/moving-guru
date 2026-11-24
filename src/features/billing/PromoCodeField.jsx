@@ -35,11 +35,11 @@ export default function PromoCodeField({ onApplied, className = '' }) {
     return (
       <div className={`flex items-center justify-between gap-2 bg-[#B4FF5A]/30 border border-[#B4FF5A] rounded-xl px-3 py-2 ${className}`}>
         <div className="flex items-center gap-2 text-sm text-[#3E3D38] min-w-0">
-          <CheckCircle2 size={16} className="text-emerald-600 flex-shrink-0" />
+          <CheckCircle2 size={16} className="text-brand-ink flex-shrink-0" />
           <span className="font-semibold font-mono truncate">{applied.code}</span>
           <span className="text-[#6B6B66] flex-shrink-0">— {label}</span>
         </div>
-        <button onClick={clear} aria-label="Remove promo code" className="text-[#9A9A94] hover:text-[#3E3D38] flex-shrink-0">
+        <button onClick={clear} aria-label="Remove promo code" className="text-ink-muted hover:text-[#3E3D38] flex-shrink-0">
           <X size={16} />
         </button>
       </div>

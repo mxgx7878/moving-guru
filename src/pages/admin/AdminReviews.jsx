@@ -1,3 +1,4 @@
+import usePageLoading from '../../hooks/usePageLoading';
 import { useEffect, useState, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'sonner';
@@ -90,10 +91,11 @@ export default function AdminReviews() {
     await dispatch(adminDeleteReview({ id, reason }));
   };
 
-  const loading  = adminReviewsStatus === STATUS.LOADING && adminReviews.length === 0;
+  const pageLoading = usePageLoading(adminReviewsStatus);
   const total    = adminReviewsMeta?.total ?? adminReviews.length;
   const hasMore  = (adminReviewsMeta?.page ?? 1) < (adminReviewsMeta?.last_page ?? 1);
   const [loadingMore, setLoadingMore] = useState(false);
+  const loading = pageLoading && !loadingMore;
 
   const loadMore = async () => {
     setLoadingMore(true);
@@ -107,11 +109,9 @@ export default function AdminReviews() {
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       <PageHeader
-        icon={Star}
-        iconBg="#4E7A1B1A"
-        iconColor="#4E7A1B"
+        
         eyebrow="Admin / Reviews"
-        eyebrowColor="#4E7A1B"
+        
         title="Review Moderation"
         description="Remove reviews that violate community guidelines. Use the rating filter to surface low-star reviews quickly."
       />
@@ -136,7 +136,7 @@ export default function AdminReviews() {
         }]}
       >
         <div className="flex items-center gap-2 ml-auto">
-          <span className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase">
+          <span className="text-[10px] font-bold text-ink-muted tracking-widest uppercase">
             Sort
           </span>
           <div className="min-w-[180px]">
@@ -150,7 +150,7 @@ export default function AdminReviews() {
         </div>
       </Toolbar>
 
-      <div className="text-xs text-[#9A9A94]">
+      <div className="text-xs text-ink-muted">
         {total} review{total === 1 ? '' : 's'} match{total === 1 ? 'es' : ''} your filters
       </div>
 
@@ -182,7 +182,7 @@ export default function AdminReviews() {
             size="md"
             loading={loadingMore}
             onClick={loadMore}
-            className="hover:border-coral hover:text-coral"
+            className="hover:border-coral hover:text-brand-ink"
           >
             Load more reviews
           </Button>

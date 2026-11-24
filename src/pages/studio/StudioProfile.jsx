@@ -1,3 +1,4 @@
+import PageHeader from '../../components/ui/PageHeader';
 import { useCallback, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateProfile } from '../../store/actions/authAction';
@@ -162,10 +163,7 @@ export default function StudioProfile() {
 
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="mb-6">
-        <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Studio Profile</h1>
-        <p className="text-[#9A9A94] text-sm mt-1">How instructors see your studio on Moving Guru</p>
-      </div>
+      <PageHeader title="Studio Profile" description={<> How instructors see your studio on Moving Guru </>} className="mb-6" />
 
       {preview && (
         <StudioPreviewModal
@@ -294,7 +292,7 @@ export default function StudioProfile() {
               />
               <span className="text-xs text-[#6B6B66] leading-snug">
                 Open to energy exchange options
-                <span className="block text-[10px] text-[#9A9A94] mt-0.5">
+                <span className="block text-[10px] text-ink-muted mt-0.5">
                   Optional — exchange opportunities for when other paths aren't viable.
                 </span>
               </span>
@@ -367,7 +365,7 @@ export default function StudioProfile() {
 
                 <Field label="Minimum Qualification">
                   <div className="relative">
-                    <GraduationCap size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none" />
+                    <GraduationCap size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted pointer-events-none" />
                     <select
                       value={form.hiringQualificationLevel}
                       onChange={e => update('hiringQualificationLevel', e.target.value)}
@@ -377,7 +375,7 @@ export default function StudioProfile() {
                         <option key={q.id} value={q.id}>{q.label}</option>
                       ))}
                     </select>
-                    <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none" />
+                    <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-muted pointer-events-none" />
                   </div>
                 </Field>
               </div>
@@ -388,7 +386,7 @@ export default function StudioProfile() {
             <div className="flex items-center justify-between flex-wrap gap-3">
               <h2 className="font-unbounded text-sm font-black text-[#3E3D38]">Disciplines Offered</h2>
               {(form.disciplines || []).length > 0 && (
-                <span className="text-[10px] font-bold text-coral bg-coral/10 px-2.5 py-1 rounded-full">
+                <span className="text-[10px] font-bold text-brand-ink bg-coral/10 px-2.5 py-1 rounded-full">
                   {form.disciplines.length} selected
                 </span>
               )}
@@ -422,7 +420,7 @@ export default function StudioProfile() {
               />
               {disciplineSearch && (
                 <IconButton variant="plain" size="xs" onClick={() => setDisciplineSearch('')} aria-label="Clear">
-                  <X size={12} className="text-coral" />
+                  <X size={12} className="text-brand-ink" />
                 </IconButton>
               )}
             </div>
@@ -451,7 +449,7 @@ export default function StudioProfile() {
             <div className="flex items-center justify-between">
               <h2 className="font-unbounded text-sm font-black text-[#3E3D38]">Reviews from Instructors</h2>
             </div>
-            <p className="text-xs text-[#9A9A94]">
+            <p className="text-xs text-ink-muted">
               Feedback from instructors you've hired. Instructors can review you after an accepted job application.
             </p>
             <ReviewList
@@ -467,7 +465,7 @@ export default function StudioProfile() {
           <div className="lg:sticky lg:top-6 space-y-5">
 
             <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
-              <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-3">
+              <p className="text-[10px] font-bold text-ink-muted tracking-widest uppercase mb-3">
                 Studio Photo
               </p>
               <div
@@ -483,11 +481,11 @@ export default function StudioProfile() {
                   </>
                 ) : (
                   <div className="text-center p-4">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-coral to-[#3F6216] flex items-center justify-center text-white font-unbounded font-black text-lg mx-auto mb-3">
+                    <div className="w-16 h-16 rounded-2xl bg-coral text-black flex items-center justify-center text-black font-unbounded font-black text-lg mx-auto mb-3">
                       {initials}
                     </div>
-                    <Upload size={18} className="text-[#C4BCB4] mx-auto mb-1" />
-                    <p className="text-[10px] text-[#9A9A94]">Click to upload</p>
+                    <Upload size={18} className="text-ink-muted mx-auto mb-1" />
+                    <p className="text-[10px] text-ink-muted">Click to upload</p>
                   </div>
                 )}
               </div>
@@ -496,14 +494,14 @@ export default function StudioProfile() {
                 {form.studioName || 'Your Studio'}
               </p>
               {(form.location || form.country) && (
-                <p className="text-center text-[10px] text-[#9A9A94] mt-0.5 truncate">
+                <p className="text-center text-[10px] text-ink-muted mt-0.5 truncate">
                   {[form.location, form.country].filter(Boolean).join(', ')}
                 </p>
               )}
             </div>
 
             <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
-              <p className="text-[10px] font-bold text-white tracking-widest uppercase mb-3">
+              <p className="text-[10px] font-bold text-ink-muted tracking-widest uppercase mb-3">
                 Hiring Status
               </p>
               <div className="flex gap-2">
@@ -527,7 +525,7 @@ export default function StudioProfile() {
                   Not Hiring
                 </ToggleChip>
               </div>
-              <p className="text-[10px] text-[#9A9A94] mt-2 leading-relaxed">
+              <p className="text-[10px] text-ink-muted mt-2 leading-relaxed">
                 {form.profileStatus === 'active'
                   ? 'Visible to instructors looking for work'
                   : 'Hidden from the instructor feed'}
@@ -535,7 +533,7 @@ export default function StudioProfile() {
             </div>
 
             <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
-              <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-3">
+              <p className="text-[10px] font-bold text-ink-muted tracking-widest uppercase mb-3">
                 Gallery ({(form.photos || []).length}/4)
               </p>
               <div className="grid grid-cols-2 gap-2">
@@ -553,13 +551,13 @@ export default function StudioProfile() {
                         </div>
                       </>
                     ) : (
-                      <Upload size={16} className="text-[#C4BCB4]" />
+                      <Upload size={16} className="text-ink-muted" />
                     )}
                   </div>
                 ))}
               </div>
               <input ref={photosRef} type="file" accept="image/*" multiple onChange={handlePhotos} className="hidden" />
-              <p className="text-[10px] text-[#9A9A94] text-center mt-2">Click any slot to upload 4 photos</p>
+              <p className="text-[10px] text-ink-muted text-center mt-2">Click any slot to upload 4 photos</p>
             </div>
 
             <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5 space-y-2">
@@ -589,7 +587,7 @@ export default function StudioProfile() {
                 icon={Eye}
                 fullWidth
                 onClick={() => setPreview(true)}
-                className="hover:border-coral hover:text-coral"
+                className="hover:border-coral hover:text-brand-ink"
               >
                 Preview
               </Button>

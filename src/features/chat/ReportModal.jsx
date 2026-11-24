@@ -125,7 +125,7 @@ export default function ReportModal({
           rows={3}
           maxLength={2000}
           placeholder="Add anything that helps us understand the issue..."
-          className="w-full resize-none rounded-xl border border-[#E5E0D8] bg-white px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-[#4E7A1B]"
+          className="w-full resize-none rounded-xl border border-[#E5E0D8] bg-white px-4 py-3 text-sm text-[#3E3D38] placeholder-ink-muted focus:outline-none focus:border-[#4E7A1B]"
         />
       </div>
 

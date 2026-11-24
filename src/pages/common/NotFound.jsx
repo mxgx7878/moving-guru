@@ -16,9 +16,9 @@ export default function NotFound() {
     <div className="min-h-screen flex items-center justify-center bg-cream px-6 font-dm">
       <div className="max-w-md w-full bg-white rounded-2xl border border-edge shadow-sm p-8 text-center">
         <div className="w-14 h-14 mx-auto rounded-2xl bg-coral-soft flex items-center justify-center mb-4">
-          <Compass size={26} className="text-coral" />
+          <Compass size={26} className="text-brand-ink" />
         </div>
-        <p className="font-unbounded text-xs tracking-widest uppercase text-coral mb-2">
+        <p className="font-unbounded text-xs tracking-widest uppercase text-brand-ink mb-2">
           Error 404
         </p>
         <h1 className="font-unbounded text-2xl font-black text-ink mb-2">

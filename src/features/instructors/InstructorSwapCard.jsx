@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { MapPin, MessageCircle, RefreshCw, Eye } from 'lucide-react';
+import { MapPin, MessageCircle, RefreshCw, Eye, ExternalLink } from 'lucide-react';
 import { Avatar, Button, Chip } from '../../components/ui';
 
 export default function InstructorSwapCard({ instructor, onMessage }) {
@@ -14,24 +14,35 @@ export default function InstructorSwapCard({ instructor, onMessage }) {
   return (
     <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5 hover:border-[#9BE63D]/40 hover:shadow-sm transition-all">
       <div className="flex items-start gap-4">
-        <Avatar name={inst.name} src={profilePic} size="lg" tone="coral" />
+        <Link to={`/portal/instructors/${inst.id}`} aria-label={`View ${inst.name}'s profile`}>
+          <Avatar name={inst.name} src={profilePic} size="lg" tone="coral" />
+        </Link>
 
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-3 flex-wrap">
             <div className="min-w-0">
-              <h3 className="font-unbounded text-sm font-black text-[#3E3D38] truncate">
+            <div className="flex items-center gap-1.5">
+              <Link to={`/portal/instructors/${inst.id}`} className=" font-unbounded text-sm font-black text-[#3E3D38] truncate">
                 {inst.name}
-              </h3>
+              
+              </Link>
+              <ExternalLink
+                size={16}
+                className="text-[#000] hover:text-[#4E7A1B] transition-colors cursor-pointer"
+                aria-label={`View ${inst.name}'s profile`}
+              />
+              </div>
               {(countryFrom || travelingTo) && (
-                <p className="text-[#9A9A94] text-xs mt-0.5 flex items-center gap-1">
+                <p className="text-ink-muted text-xs mt-0.5 flex items-center gap-1">
                   <MapPin size={11} />
                   <span className="truncate">
                     {countryFrom}{travelingTo && ` → ${travelingTo}`}
                   </span>
                 </p>
               )}
+              
             </div>
-            <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold text-white bg-[#9BE63D]">
+            <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold text-[#1A1A1A] bg-[#9BE63D]">
               <RefreshCw size={10} /> Open to Swap
             </span>
           </div>
@@ -52,11 +63,11 @@ export default function InstructorSwapCard({ instructor, onMessage }) {
           )}
 
           <div className="flex gap-2 mt-4 pt-3 border-t border-[#E5E0D8]">
-            <Link to={`/portal/instructors/${inst.id}`} className="flex-1">
+            {/* <Link to={`/portal/instructors/${inst.id}`} className="flex-1">
               <Button variant="secondary" size="sm" icon={Eye} fullWidth>
                 View Profile
               </Button>
-            </Link>
+            </Link> */}
             <Button
               variant="primary"
               size="sm"

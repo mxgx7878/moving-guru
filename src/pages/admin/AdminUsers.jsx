@@ -1,3 +1,4 @@
+import usePageLoading from '../../hooks/usePageLoading';
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -74,7 +75,7 @@ export default function AdminUsers() {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { users, usersStatus, userDetail, userMutating, message, error } =
+  const { users, usersStatus, userDetail, userDetailStatus, userMutating, message, error } =
     useSelector((s) => s.instructor);
 
   const initialRole = searchParams.get("role") || "all";
@@ -117,6 +118,7 @@ export default function AdminUsers() {
     else dispatch(clearUserDetail());
   }, [previewId, dispatch]);
 
+
   useEffect(() => {
     if (message) {
       toast.success(message);
@@ -129,13 +131,6 @@ export default function AdminUsers() {
       dispatch(clearInstructorError());
     }
   }, [error, dispatch]);
-
-  useEffect(() => {
-    if (userMutating === STATUS.SUCCEEDED) {
-      setFormOpen(false);
-      setEditingUser(null);
-    }
-  }, [userMutating]);
 
   const counts = useMemo(
     () => ({
@@ -164,9 +159,28 @@ export default function AdminUsers() {
   };
 
   const handleSubmitForm = async (payload) => {
-    if (editingUser)
-      await dispatch(updateAdminUser({ id: editingUser.id, ...payload }));
-    else await dispatch(createAdminUser(payload));
+    if (editingUser) {
+      const result = await dispatch(updateAdminUser({ id: editingUser.id, ...payload }));
+      if (!updateAdminUser.fulfilled.match(result)) return;
+    } else {
+      const result = await dispatch(createAdminUser(payload));
+      if (!createAdminUser.fulfilled.match(result)) return;
+    }
+    setFormOpen(false);
+    setEditingUser(null);
+  };
+
+  const handleUpdateSubscription = async (payload) => {
+    if (!editingUser) return;
+    const result = await dispatch(updateAdminUser({ id: editingUser.id, ...payload }));
+    if (updateAdminUser.fulfilled.match(result) && result.payload?.data?.user) {
+      setEditingUser(result.payload.data.user);
+    } else if (!updateAdminUser.fulfilled.match(result)) {
+      const fresh = await dispatch(fetchAdminUserDetail(editingUser.id));
+      if (fetchAdminUserDetail.fulfilled.match(fresh) && fresh.payload?.data?.user) {
+        setEditingUser(fresh.payload.data.user);
+      }
+    }
   };
 
   const handleApprove = (u) => dispatch(approveAdminUser(u.id));
@@ -202,17 +216,15 @@ export default function AdminUsers() {
 
   console.log(userDetail, "userDetail");
 
-  const isLoading = usersStatus === STATUS.LOADING && users.length === 0;
+  const isLoading = usePageLoading(usersStatus);
   const busy = userMutating === STATUS.LOADING;
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       <PageHeader
-        icon={Users}
-        iconBg="#4E7A1B1A"
-        iconColor="#4E7A1B"
+        
         eyebrow="Admin / User Management"
-        eyebrowColor="#4E7A1B"
+        
         title="Instructors & Studios"
         description="Approve signups, verify studios, suspend or remove accounts."
         actions={
@@ -220,7 +232,6 @@ export default function AdminUsers() {
             variant="primary"
             icon={Plus}
             onClick={openCreate}
-            style={{ backgroundColor: "#4E7A1B", borderColor: "#4E7A1B", width: '100%' }}
           >
             New User
           </Button>
@@ -262,7 +273,7 @@ export default function AdminUsers() {
             icon={Zap}
             onClick={handleRunSweep}
             loading={sweeping}
-            className="ml-auto hover:border-coral hover:text-coral"
+            className="ml-auto hover:border-coral hover:text-brand-ink"
           >
             Run sweep now
           </Button>
@@ -299,7 +310,8 @@ export default function AdminUsers() {
 
       {previewId && (
         <UserDetailDrawer
-          user={userDetail || users.find((u) => u.id === previewId)}
+          user={userDetail?.id === previewId ? userDetail : null}
+          loading={userDetailStatus === STATUS.LOADING || userDetail?.id !== previewId}
           busy={busy}
           onClose={() => setPreviewId(null)}
           onEdit={openEdit}
@@ -321,6 +333,7 @@ export default function AdminUsers() {
             setEditingUser(null);
           }}
           onSubmit={handleSubmitForm}
+          onUpdateSubscription={handleUpdateSubscription}
         />
       )}
 

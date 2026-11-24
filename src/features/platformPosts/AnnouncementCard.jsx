@@ -27,7 +27,7 @@ export default function AnnouncementCard({ post, pinned = false }) {
               <Pin size={10} /> Pinned
             </span>
           )}
-          <span className="text-[10px] text-[#9A9A94] flex items-center gap-1 ml-auto">
+          <span className="text-[10px] text-ink-muted flex items-center gap-1 ml-auto">
             <Clock size={10} /> {formatShortDate(publishedAt)}
           </span>
         </div>
@@ -38,7 +38,7 @@ export default function AnnouncementCard({ post, pinned = false }) {
           <div className="bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl p-3 flex flex-wrap gap-4 text-xs text-[#3E3D38]">
             {post.event_date && (
               <span className="flex items-center gap-1.5">
-                <Calendar size={12} className="text-[#9BE63D]" />
+                <Calendar size={12} className="text-brand-ink" />
                 {new Date(post.event_date).toLocaleString([], {
                   dateStyle: 'medium', timeStyle: 'short',
                 })}
@@ -46,7 +46,7 @@ export default function AnnouncementCard({ post, pinned = false }) {
             )}
             {post.event_location && (
               <span className="flex items-center gap-1.5">
-                <MapPin size={12} className="text-[#9BE63D]" /> {post.event_location}
+                <MapPin size={12} className="text-brand-ink" /> {post.event_location}
               </span>
             )}
           </div>
@@ -69,7 +69,7 @@ export default function AnnouncementCard({ post, pinned = false }) {
         )}
 
         {post.author?.name && (
-          <p className="text-[10px] text-[#9A9A94] pt-1 border-t border-[#F0EBE3]">
+          <p className="text-[10px] text-ink-muted pt-1 border-t border-[#F0EBE3]">
             Posted by {post.author.name}
           </p>
         )}

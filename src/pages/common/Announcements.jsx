@@ -1,3 +1,5 @@
+import Spinner from '../../components/feedback/Spinner';
+import usePageLoading from '../../hooks/usePageLoading';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Megaphone } from 'lucide-react';
@@ -46,19 +48,16 @@ export default function Announcements() {
     return { pinned: p, others: o };
   }, [announcements]);
 
-  const tabs = TYPE_TABS.map((t) => ({ ...t, color: theme.accent }));
+  const tabs = TYPE_TABS.map((t) => ({ ...t, color: '#3D5E16' }));
 
-  const isLoading = announcementsStatus === STATUS.LOADING && announcements.length === 0;
+  const isLoading = usePageLoading(announcementsStatus);
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
 
       <PageHeader
-        icon={Megaphone}
-        iconBg={`${theme.accent}15`}
-        iconColor={theme.accent}
         eyebrow={theme.label}
-        eyebrowColor={theme.accent}
+        
         title="Announcements"
         description="Platform updates, events and news from the Moving Guru team."
       />
@@ -79,10 +78,7 @@ export default function Announcements() {
 
       {isLoading ? (
         <div className="bg-white rounded-2xl border border-[#E5E0D8] flex items-center justify-center py-16">
-          <div
-            className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin"
-            style={{ borderColor: theme.accent, borderTopColor: 'transparent' }}
-          />
+          <Spinner />
         </div>
       ) : announcements.length === 0 ? (
         <div className="bg-white rounded-2xl border border-[#E5E0D8]">
@@ -96,12 +92,12 @@ export default function Announcements() {
         <div className="space-y-4">
           {pinned.length > 0 && (
             <>
-              <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase px-2">
+              <p className="text-[10px] font-bold text-ink-muted tracking-widest uppercase px-2">
                 Pinned
               </p>
               {pinned.map((p) => <AnnouncementCard key={p.id} post={p} pinned />)}
               {others.length > 0 && (
-                <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase px-2 pt-2">
+                <p className="text-[10px] font-bold text-ink-muted tracking-widest uppercase px-2 pt-2">
                   Latest
                 </p>
               )}

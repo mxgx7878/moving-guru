@@ -7,6 +7,8 @@ import { applyJobSchema } from '../forms';
 
 export default function ApplyJobModal({ job, submitting, onClose, onSubmit }) {
   const { control, handleSubmit, formState: { errors } } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     resolver: yupResolver(applyJobSchema),
     defaultValues: { message: '' },
   });

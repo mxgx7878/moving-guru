@@ -29,7 +29,7 @@ export default function ReviewList({ userId, direction, compact = false, emptyLa
     setDeleteTarget(null);
   };
 
-  if (loading && reviews.length === 0) {
+  if (loading) {
     return (
       <div className="space-y-3">
         <CardSkeleton count={2} />
@@ -45,7 +45,7 @@ export default function ReviewList({ userId, direction, compact = false, emptyLa
             {summary.count > 0 ? summary.average.toFixed(1) : '—'}
           </p>
           <StarRating value={summary.average} size={12} className="mt-1" />
-          <p className="text-[10px] text-[#9A9A94] mt-1">
+          <p className="text-[10px] text-ink-muted mt-1">
             {summary.count} review{summary.count !== 1 ? 's' : ''}
           </p>
         </div>
@@ -57,11 +57,11 @@ export default function ReviewList({ userId, direction, compact = false, emptyLa
               return (
                 <div key={n} className="flex items-center gap-2 text-[10px] text-[#6B6B66]">
                   <span className="w-3 text-right">{n}</span>
-                  <Star size={10} className="text-[#9BE63D]" fill="#9BE63D" />
+                  <Star size={10} className="text-brand-ink" fill="#9BE63D" />
                   <div className="flex-1 bg-white rounded-full h-1.5 overflow-hidden">
                     <div className="h-full bg-[#9BE63D]" style={{ width: `${pct}%` }} />
                   </div>
-                  <span className="w-5 text-[#9A9A94]">{c}</span>
+                  <span className="w-5 text-ink-muted">{c}</span>
                 </div>
               );
             })}
@@ -70,7 +70,7 @@ export default function ReviewList({ userId, direction, compact = false, emptyLa
       </div>
 
       {reviews.length === 0 ? (
-        <div className="text-center py-6 text-[#9A9A94] text-xs">
+        <div className="text-center py-6 text-ink-muted text-xs">
           {emptyLabel || 'No reviews yet.'}
         </div>
       ) : (
@@ -84,7 +84,7 @@ export default function ReviewList({ userId, direction, compact = false, emptyLa
             return (
               <div key={r.id} className="bg-white rounded-xl border border-[#E5E0D8] p-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-coral to-[#3F6216] flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-coral text-black flex items-center justify-center text-black text-[10px] font-bold flex-shrink-0">
                     {reviewer.detail?.profile_picture || reviewer.profile_picture ? (
                       <img
                         src={reviewer.detail?.profile_picture || reviewer.profile_picture}
@@ -101,7 +101,7 @@ export default function ReviewList({ userId, direction, compact = false, emptyLa
                         </p>
                         <div className="flex items-center gap-2 mt-0.5">
                           <StarRating value={r.rating} size={11} />
-                          <span className="text-[10px] text-[#9A9A94]">
+                          <span className="text-[10px] text-ink-muted">
                             {new Date(r.created_at).toLocaleDateString(undefined, {
                               month: 'short', day: 'numeric', year: 'numeric',
                             })}

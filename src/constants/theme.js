@@ -12,11 +12,11 @@ export const MONTHS_SHORT = [
 ];
 
 export const AVATAR_TONES = {
-  coral:  'bg-coral text-black',
-  blue:   'bg-sky-mg text-white',
-  purple: 'bg-purple-mg text-white',
-  dark:   'bg-ink text-white',
-  muted:  'bg-tile-neutral text-ink-muted',
+  coral: 'bg-coral text-black',
+  blue: 'bg-coral text-black',
+  purple: 'bg-coral text-black',
+  dark: 'bg-coral text-black',
+  muted: 'bg-coral text-black',
 };
 
 export const ROLE_AVATAR_TONE = {

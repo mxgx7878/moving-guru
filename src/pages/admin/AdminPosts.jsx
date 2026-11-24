@@ -1,3 +1,5 @@
+import Spinner from '../../components/feedback/Spinner';
+import usePageLoading from '../../hooks/usePageLoading';
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'sonner';
@@ -89,17 +91,15 @@ export default function AdminPosts() {
     return dispatch(action(post.id));
   };
 
-  const isLoading = postsStatus === STATUS.LOADING && posts.length === 0;
+  const isLoading = usePageLoading(postsStatus);
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
 
       <PageHeader
-        icon={FileText}
-        iconBg="#C9A2271A"
-        iconColor="#C9A227"
+        
         eyebrow="Admin / Announcements"
-        eyebrowColor="#C9A227"
+        
         title="Platform Announcements"
         description="Broadcast announcements, news and events to instructors and studios."
         actions={(
@@ -132,7 +132,7 @@ export default function AdminPosts() {
 
       {isLoading ? (
         <div className="bg-white rounded-2xl border border-[#E5E0D8] flex items-center justify-center py-16">
-          <div className="w-6 h-6 border-2 border-[#C9A227] border-t-transparent rounded-full animate-spin" />
+          <Spinner />
         </div>
       ) : posts.length === 0 ? (
         <div className="bg-white rounded-2xl border border-[#E5E0D8]">

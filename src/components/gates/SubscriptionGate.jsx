@@ -5,7 +5,7 @@ import { Lock, Sparkles, ArrowRight } from 'lucide-react';
 import { ROLE_THEME } from '../../config/portalConfig';
 import { Button } from '../../components/ui';
 
-const FEATURE_LABELS = {
+export const FEATURE_LABELS = {
   messaging:          'Messaging',
   job_applications:   'Job Applications',
   post_jobs:          'Job Posting',
@@ -38,14 +38,14 @@ export default function SubscriptionGate({ featureKey }) {
         className="w-20 h-20 rounded-3xl flex items-center justify-center"
         style={{ backgroundColor: `${theme.accent}18` }}
       >
-        <Lock size={32} style={{ color: theme.accent }} />
+        <Lock size={32} style={{ color: '#3D5E16' }} />
       </div>
 
       <div className="space-y-2">
         <h2 className="font-unbounded text-xl font-black text-[#3E3D38]">
           Upgrade required
         </h2>
-        <p className="text-[#9A9A94] text-sm max-w-sm">
+        <p className="text-ink-muted text-sm max-w-sm">
           {message} Upgrade your plan to unlock it.
         </p>
       </div>
@@ -61,7 +61,7 @@ export default function SubscriptionGate({ featureKey }) {
 
       <button
         onClick={() => navigate(-1)}
-        className="text-xs text-[#9A9A94] hover:text-[#3E3D38] transition-colors inline-flex items-center gap-1"
+        className="text-xs text-ink-muted hover:text-[#3E3D38] transition-colors inline-flex items-center gap-1"
       >
         <ArrowRight size={11} className="rotate-180" />
         Go back

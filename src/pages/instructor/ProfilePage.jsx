@@ -1,3 +1,4 @@
+import PageHeader from '../../components/ui/PageHeader';
 import { useCallback, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -188,10 +189,7 @@ export default function ProfilePage() {
   return (
     <div className="max-w-6xl mx-auto">
 
-      <div className="mb-6">
-        <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Edit Profile</h1>
-        <p className="text-[#9A9A94] text-sm mt-1">Manage how studios and instructors find you</p>
-      </div>
+      <PageHeader title="Edit Profile" description={<> Manage how studios and instructors find you </>} className="mb-6" />
 
       <div className="grid lg:grid-cols-3 gap-6">
 
@@ -200,9 +198,9 @@ export default function ProfilePage() {
           {showPreview && (
             <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
               <div className="px-6 py-4 border-b border-[#E5E0D8] flex items-center gap-2">
-                <Eye size={15} className="text-[#9A9A94]" />
+                <Eye size={15} className="text-ink-muted" />
                 <h3 className="font-unbounded text-xs font-bold text-[#3E3D38] tracking-wider uppercase">Profile Preview</h3>
-                <span className="text-[10px] text-[#9A9A94] ml-auto">How others see your profile</span>
+                <span className="text-[10px] text-ink-muted ml-auto">How others see your profile</span>
               </div>
               <div className="p-6">
                 <div className="max-w-sm mx-auto bg-gradient-to-br from-[#FFFFFF] to-[#F5FDA6]/30 rounded-2xl border border-[#E5E0D8]">
@@ -218,10 +216,10 @@ export default function ProfilePage() {
                     <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 z-10">
                       <button onClick={() => setShowAvatarModal(true)}>
                         <ScallopedFrame size={80} borderWidth={2}>
-                          <div className="w-full h-full bg-gradient-to-br from-coral to-[#9BE63D] flex items-center justify-center">
+                          <div className="w-full h-full bg-coral text-black flex items-center justify-center">
                             {form.avatarPreview
                               ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
-                              : <span className="font-unbounded text-xl font-black text-white">{initials}</span>}
+                              : <span className="font-unbounded text-xl font-black text-black">{initials}</span>}
                           </div>
                         </ScallopedFrame>
                       </button>
@@ -230,15 +228,15 @@ export default function ProfilePage() {
 
                   <div className="pt-12 pb-5 px-5 text-center">
                     <h2 className="font-unbounded text-base font-black text-[#3E3D38]">{form.name || 'Your Name'}</h2>
-                    <div className="flex items-center justify-center gap-2 mt-1 text-[#9A9A94] text-xs">
+                    <div className="flex items-center justify-center gap-2 mt-1 text-ink-muted text-xs">
                       {form.age && <span>{form.age}</span>}
                       {form.pronouns && <span>· {form.pronouns}</span>}
                     </div>
-                    {form.studio && <p className="text-coral text-xs font-semibold mt-1">{form.studio}</p>}
+                    {form.studio && <p className="text-brand-ink text-xs font-semibold mt-1">{form.studio}</p>}
 
                     <div className="flex items-center justify-center gap-2 mt-3">
                       <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold
-                        ${form.profileStatus === 'active' ? 'bg-[#B4FF5A]/20 text-[#3E3D38]' : 'bg-[#FAFEE0] text-[#9A9A94]'}`}>
+                        ${form.profileStatus === 'active' ? 'bg-[#B4FF5A]/20 text-[#3E3D38]' : 'bg-[#FAFEE0] text-ink-muted'}`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${form.profileStatus === 'active' ? 'bg-[#B4FF5A]' : 'bg-[#9A9A94]'}`} />
                         {form.profileStatus === 'active' ? 'Actively Seeking' : 'Not Seeking'}
                       </span>
@@ -247,31 +245,31 @@ export default function ProfilePage() {
                     <div className="grid grid-cols-2 gap-2 mt-4">
                       {form.bio && (
                         <div className="bg-[#FAFEE0]/50 rounded-xl p-2.5 col-span-2 text-left">
-                          <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold">Bio</p>
+                          <p className="text-[8px] text-ink-muted uppercase tracking-wider font-bold">Bio</p>
                           <p className="text-[#3E3D38] text-[11px] mt-0.5 line-clamp-3">{form.bio.slice(0, 140)}{form.bio.length > 140 ? '...' : ''}</p>
                         </div>
                       )}
                       {(form.languages || []).length > 0 && (
                         <div className="bg-[#FAFEE0]/50 rounded-xl p-2.5">
-                          <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold">Languages</p>
+                          <p className="text-[8px] text-ink-muted uppercase tracking-wider font-bold">Languages</p>
                           <p className="text-[#3E3D38] text-[11px] mt-0.5">{(form.languages || []).join(', ')}</p>
                         </div>
                       )}
                       {(form.countryFrom || form.travelingTo) && (
                         <div className="bg-[#FAFEE0]/50 rounded-xl p-2.5">
-                          <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold">Country From → To</p>
+                          <p className="text-[8px] text-ink-muted uppercase tracking-wider font-bold">Country From → To</p>
                           <p className="text-[#3E3D38] text-[11px] mt-0.5">{form.countryFrom || '—'} → {form.travelingTo || '—'}</p>
                         </div>
                       )}
                       {availabilityDisplay && (
                         <div className="bg-[#FAFEE0]/50 rounded-xl p-2.5">
-                          <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold">Availability</p>
+                          <p className="text-[8px] text-ink-muted uppercase tracking-wider font-bold">Availability</p>
                           <p className="text-[#3E3D38] text-[11px] mt-0.5">{availabilityDisplay}</p>
                         </div>
                       )}
                       {(form.openTo || []).length > 0 && (
                         <div className="bg-[#FAFEE0]/50 rounded-xl p-2.5">
-                          <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold">Open To</p>
+                          <p className="text-[8px] text-ink-muted uppercase tracking-wider font-bold">Open To</p>
                           <p className="text-[#3E3D38] text-[11px] mt-0.5">{(form.openTo || []).join(', ')}</p>
                         </div>
                       )}
@@ -297,7 +295,7 @@ export default function ProfilePage() {
               <div className="flex flex-col items-center flex-shrink-0">
                 <div className="cursor-pointer group" onClick={() => fileRef.current?.click()}>
                   <ScallopedFrame size={96} borderWidth={2}>
-                    <div className="w-full h-full bg-gradient-to-br from-[#B4FF5A] to-[#82CC28] flex items-center justify-center relative">
+                    <div className="w-full h-full bg-coral text-black flex items-center justify-center relative">
                       {form.avatarPreview
                         ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
                         : <span className="font-unbounded text-2xl font-black text-[#3E3D38]">{initials}</span>}
@@ -308,7 +306,7 @@ export default function ProfilePage() {
                   </ScallopedFrame>
                 </div>
                 <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatar} />
-                <p className="text-[10px] text-[#9A9A94] text-center mt-2">Click to change</p>
+                <p className="text-[10px] text-ink-muted text-center mt-2">Click to change</p>
               </div>
 
               <div className="flex-1 space-y-4">
@@ -515,7 +513,7 @@ export default function ProfilePage() {
                   />
                   <span className="text-xs text-[#6B6B66] leading-snug">
                     Open to energy exchange options
-                    <span className="block text-[10px] text-[#9A9A94] mt-0.5">
+                    <span className="block text-[10px] text-ink-muted mt-0.5">
                       Optional — exchange opportunities for when other paths aren't viable.
                     </span>
                   </span>
@@ -606,7 +604,7 @@ export default function ProfilePage() {
           </Section>
 
           <Section title="Gallery Photos" icon={Upload}>
-            <p className="text-xs text-[#9A9A94] mb-3">Add up to 4 photos showing your teaching, studio, or travels</p>
+            <p className="text-xs text-ink-muted mb-3">Add up to 4 photos showing your teaching, studio, or travels</p>
             <div className="grid grid-cols-4 gap-3 mb-3">
               {(form.photos || []).map((p, i) => (
                 <div key={i} className="aspect-square rounded-xl overflow-hidden bg-[#FAFEE0] relative group">
@@ -630,11 +628,11 @@ export default function ProfilePage() {
               )}
             </div>
             <input ref={photosRef} type="file" accept="image/*" multiple className="hidden" onChange={handlePhotos} />
-            <p className="text-[10px] text-[#9A9A94] text-center">Up to 4 gallery photos + 1 main profile photo</p>
+            <p className="text-[10px] text-ink-muted text-center">Up to 4 gallery photos + 1 main profile photo</p>
           </Section>
 
           <Section title="Reviews from Studios" icon={Star}>
-            <p className="text-xs text-[#9A9A94] mb-4">
+            <p className="text-xs text-ink-muted mb-4">
               Feedback from studios who've hired you. Studios can review you after an accepted job application.
             </p>
             <ReviewList
@@ -650,16 +648,16 @@ export default function ProfilePage() {
           <div className="lg:sticky lg:top-6 space-y-5">
 
             <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
-              <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-3">
+              <p className="text-[10px] font-bold text-ink-muted tracking-widest uppercase mb-3">
                 Profile Photo
               </p>
               <div className="flex flex-col items-center">
                 <div className="cursor-pointer group" onClick={() => fileRef.current?.click()}>
                   <ScallopedFrame size={140} borderWidth={2.5}>
-                    <div className="w-full h-full bg-gradient-to-br from-coral to-[#9BE63D] flex items-center justify-center relative">
+                    <div className="w-full h-full bg-coral text-black flex items-center justify-center relative">
                       {form.avatarPreview
                         ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
-                        : <span className="font-unbounded text-3xl font-black text-white">{initials}</span>}
+                        : <span className="font-unbounded text-3xl font-black text-black">{initials}</span>}
                       <div className="absolute inset-0 bg-[#3E3D38]/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <Upload size={22} className="text-white" />
                       </div>
@@ -670,16 +668,16 @@ export default function ProfilePage() {
                   {form.name || 'Your Name'}
                 </p>
                 {form.studio && (
-                  <p className="text-center text-[10px] text-coral font-semibold mt-0.5 truncate max-w-full">
+                  <p className="text-center text-[10px] text-brand-ink font-semibold mt-0.5 truncate max-w-full">
                     {form.studio}
                   </p>
                 )}
-                <p className="text-[10px] text-[#9A9A94] text-center mt-2">Click photo to change</p>
+                <p className="text-[10px] text-ink-muted text-center mt-2">Click photo to change</p>
               </div>
             </div>
 
             <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
-              <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-3">
+              <p className="text-[10px] font-bold text-ink-muted tracking-widest uppercase mb-3">
                 Profile Status
               </p>
               <div className="flex gap-2">
@@ -689,7 +687,7 @@ export default function ProfilePage() {
                   className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold border transition-all
                     ${form.profileStatus === 'active'
                       ? 'bg-[#B4FF5A]/20 border-[#B4FF5A] text-[#3E3D38]'
-                      : 'border-[#E5E0D8] text-[#9A9A94] hover:border-[#B4FF5A]'}`}
+                      : 'border-[#E5E0D8] text-ink-muted hover:border-[#B4FF5A]'}`}
                 >
                   <span className={`w-1.5 h-1.5 rounded-full ${form.profileStatus === 'active' ? 'bg-[#B4FF5A]' : 'bg-[#9A9A94]'}`} />
                   Active
@@ -700,12 +698,12 @@ export default function ProfilePage() {
                   className={`flex-1 py-2.5 rounded-xl text-xs font-semibold border transition-all
                     ${form.profileStatus === 'inactive'
                       ? 'bg-[#FAFEE0] border-[#9A9A94] text-[#6B6B66]'
-                      : 'border-[#E5E0D8] text-[#9A9A94] hover:border-[#9A9A94]'}`}
+                      : 'border-[#E5E0D8] text-ink-muted hover:border-[#9A9A94]'}`}
                 >
                   Inactive
                 </button>
               </div>
-              <p className="text-[10px] text-[#9A9A94] mt-2 leading-relaxed">
+              <p className="text-[10px] text-ink-muted mt-2 leading-relaxed">
                 {form.profileStatus === 'active'
                   ? 'Visible to studios in search results'
                   : 'Hidden from search'}
@@ -713,7 +711,7 @@ export default function ProfilePage() {
             </div>
 
             <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
-              <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-3">
+              <p className="text-[10px] font-bold text-ink-muted tracking-widest uppercase mb-3">
                 Gallery ({(form.photos || []).length}/4)
               </p>
               <div className="grid grid-cols-2 gap-2">
@@ -769,7 +767,7 @@ export default function ProfilePage() {
                 fullWidth
                 icon={showPreview ? EyeOff : Eye}
                 onClick={() => setShowPreview(!showPreview)}
-                className="hover:border-coral hover:text-coral"
+                className="hover:border-coral hover:text-brand-ink"
               >
                 {showPreview ? 'Hide Preview' : 'Show Preview'}
               </Button>
@@ -788,10 +786,10 @@ export default function ProfilePage() {
               <X size={14} className="text-[#3E3D38]" />
             </button>
             <ScallopedFrame size={280} borderWidth={2.5}>
-              <div className="w-full h-full bg-gradient-to-br from-coral to-[#9BE63D] flex items-center justify-center">
+              <div className="w-full h-full bg-coral text-black flex items-center justify-center">
                 {form.avatarPreview
                   ? <img src={form.avatarPreview} alt="" className="w-full h-full object-cover" />
-                  : <span className="font-unbounded text-5xl font-black text-white">{initials}</span>}
+                  : <span className="font-unbounded text-5xl font-black text-black">{initials}</span>}
               </div>
             </ScallopedFrame>
             <p className="text-center mt-5 font-unbounded text-lg font-black text-white">{form.name}</p>

@@ -1,3 +1,4 @@
+import Spinner from '../../components/feedback/Spinner';
 import { Link } from 'react-router-dom';
 import { Loader2, CheckCircle2, ArrowRight } from 'lucide-react';
 
@@ -24,18 +25,18 @@ export default function ActivityCard({
               className="w-9 h-9 rounded-xl flex items-center justify-center"
               style={{ backgroundColor: `${accent}15` }}
             >
-              <Icon size={15} style={{ color: accent }} />
+              <Icon size={15} style={{ color: '#3D5E16' }} />
             </div>
           )}
           <div>
             <p className="font-unbounded text-xs font-bold text-[#3E3D38]">{title}</p>
-            <p className="text-[10px] text-[#9A9A94]">{subtitle}</p>
+            <p className="text-[10px] text-ink-muted">{subtitle}</p>
           </div>
         </div>
         {to && (
           <Link
             to={to}
-            className="text-[10px] font-semibold text-[#9A9A94] hover:text-[#3E3D38] flex items-center gap-1"
+            className="text-[10px] font-semibold text-ink-muted hover:text-[#3E3D38] flex items-center gap-1"
           >
             View all <ArrowRight size={10} />
           </Link>
@@ -43,14 +44,14 @@ export default function ActivityCard({
       </div>
 
       <div className="divide-y divide-[#F0EBE3]">
-        {loading && !hasItems ? (
+        {loading ? (
           <div className="flex items-center justify-center py-10">
-            <Loader2 size={20} className="animate-spin text-[#9A9A94]" />
+            <Spinner size={20} />
           </div>
         ) : !hasItems ? (
           <div className="py-10 text-center">
-            <CheckCircle2 size={20} className="mx-auto text-[#C4BCB4] mb-1.5" />
-            <p className="text-[11px] text-[#9A9A94]">{empty}</p>
+            <CheckCircle2 size={20} className="mx-auto text-ink-muted mb-1.5" />
+            <p className="text-[11px] text-ink-muted">{empty}</p>
           </div>
         ) : (
           items.slice(0, limit).map((item, i) => (

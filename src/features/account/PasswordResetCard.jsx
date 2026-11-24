@@ -42,8 +42,8 @@ export default function PasswordResetCard() {
 
         {success && (
           <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5 flex items-center gap-2" role="status">
-            <Check size={13} className="text-emerald-600" />
-            <p className="text-emerald-700 text-xs font-medium">Reset link sent to {user?.email}</p>
+            <Check size={13} className="text-brand-ink" />
+            <p className="text-brand-ink text-xs font-medium">Reset link sent to {user?.email}</p>
           </div>
         )}
 

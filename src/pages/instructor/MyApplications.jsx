@@ -1,3 +1,4 @@
+import usePageLoading from '../../hooks/usePageLoading';
 import { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -76,17 +77,14 @@ export default function MyApplications() {
     await dispatch(withdrawApplication(id));
   };
 
-  const loading = myApplicationsStatus === STATUS.LOADING && myApplications.length === 0;
+  const loading = usePageLoading(myApplicationsStatus);
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
 
       <PageHeader
-        variant="gradient"
-        gradientFrom="#FFFFFF"
-        gradientTo="#4E7A1B10"
         eyebrow="Applications"
-        eyebrowColor="#4E7A1B"
+        
         title="My Applications"
         description="Track where you've applied and leave reviews for studios you've worked with"
       />
@@ -147,6 +145,7 @@ export default function MyApplications() {
                     recipientAvatar: studio.detail?.profile_picture || studio.profile_picture,
                   } : undefined,
                 })}
+                onViewProfile={() => studio.id && navigate(`/portal/studios/${studio.id}`)}
               />
             );
           })}

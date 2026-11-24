@@ -31,16 +31,8 @@ export default function TabBar({
         const active = activeId === t.id;
         const count  = counts ? counts[t.id] : t.count;
 
-        const activeStyle = active && t.color
-          ? {
-              backgroundColor: t.color,
-              borderColor:     t.color,
-              color:           t.activeText || (isPill ? '#3E3D38' : 'black'),
-            }
-          : undefined;
-
         const activeCls = active
-          ? (isPill ? 'shadow-sm' : 'text-white bg-coral border-transparent')
+          ? 'text-black bg-coral border-coral shadow-sm'
           : resting;
 
         return (
@@ -49,7 +41,6 @@ export default function TabBar({
             type="button"
             onClick={() => onChange(t.id)}
             className={`${base} ${activeCls}`}
-            style={activeStyle}
           >
             {Icon && <Icon size={13} className={isPill ? 'inline -mt-0.5 mr-1.5' : ''} />}
             {t.label}

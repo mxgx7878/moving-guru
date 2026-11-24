@@ -33,16 +33,20 @@ const reportSlice = createSlice({
         state.error = payload;
       })
 
-      .addCase(fetchAdminReports.pending, (state) => {
+      .addCase(fetchAdminReports.pending, (state, { meta }) => {
+        state.requestIds ??= {};
+        state.requestIds.fetchAdminReports = meta.requestId;
         state.adminStatus = STATUS.LOADING;
         state.error = null;
       })
-      .addCase(fetchAdminReports.fulfilled, (state, { payload }) => {
+      .addCase(fetchAdminReports.fulfilled, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchAdminReports !== meta.requestId) return;
         state.adminStatus = STATUS.SUCCEEDED;
         state.adminReports = payload.data?.reports || [];
         state.meta = payload.data?.meta || null;
       })
-      .addCase(fetchAdminReports.rejected, (state, { payload }) => {
+      .addCase(fetchAdminReports.rejected, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchAdminReports !== meta.requestId) return;
         state.adminStatus = STATUS.FAILED;
         state.error = payload;
       })

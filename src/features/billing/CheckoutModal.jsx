@@ -1,3 +1,4 @@
+import Spinner from '../../components/feedback/Spinner';
 import { useState } from 'react';
 import { Elements, CardElement } from '@stripe/react-stripe-js';
 import { CreditCard, Lock, Loader2 } from 'lucide-react';
@@ -90,8 +91,8 @@ function CheckoutInner({ clientSecret, title, ctaLabel, accent, onClose, onSucce
       <div className="space-y-4">
         {!elementReady && (
           <div className="flex flex-col items-center justify-center py-8 gap-3">
-            <Loader2 size={24} className="animate-spin text-[#9A9A94]" />
-            <p className="text-xs text-[#9A9A94]">Loading payment form…</p>
+            <Spinner size={24} />
+            <p className="text-xs text-ink-muted">Loading payment form…</p>
           </div>
         )}
 
@@ -102,7 +103,7 @@ function CheckoutInner({ clientSecret, title, ctaLabel, accent, onClose, onSucce
         </div>
 
         {elementReady && (
-          <div className="flex items-center gap-2 text-xs text-[#9A9A94]">
+          <div className="flex items-center gap-2 text-xs text-ink-muted">
             <Lock size={12} />
             <span>Processed securely by Stripe. Your card details never touch our servers.</span>
           </div>

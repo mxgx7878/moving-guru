@@ -19,6 +19,9 @@ import {
 const initialState = {
   plans:               [],
   currentSubscription: null,
+  currentStatus: STATUS.IDLE,
+  currentError: null,
+  currentRequestId: null,
   allowedFeatures:     [],
   status:              STATUS.IDLE,
   error:               null,
@@ -49,6 +52,7 @@ const subscriptionSlice = createSlice({
   name: 'subscription',
   initialState,
   reducers: {
+    resetSubscription() { return initialState; },
     clearSubscriptionError(state)   { state.error   = null; },
     clearSubscriptionMessage(state) { state.message = null; },
   },
@@ -63,8 +67,25 @@ const subscriptionSlice = createSlice({
       })
       .addCase(fetchPlans.rejected,  (s, { payload }) => { s.status = STATUS.FAILED; s.error = payload; });
 
-    builder.addCase(fetchCurrentSubscription.fulfilled, (s, { payload }) => {
-      const sub = payload.data?.subscription || payload.data || null;
+    builder
+      .addCase(fetchCurrentSubscription.pending, (s, { meta }) => {
+        if (!meta.arg?.background || s.currentStatus !== STATUS.SUCCEEDED) {
+          s.currentStatus = STATUS.LOADING;
+        }
+        s.currentError = null;
+        s.currentRequestId = meta.requestId;
+      })
+      .addCase(fetchCurrentSubscription.rejected, (s, { payload, meta }) => {
+        if (s.currentRequestId !== meta.requestId) return;
+        s.currentStatus = STATUS.FAILED;
+        s.currentError = payload || 'Unable to check your subscription.';
+        s.currentRequestId = null;
+      })
+      .addCase(fetchCurrentSubscription.fulfilled, (s, { payload, meta }) => {
+      if (s.currentRequestId !== meta.requestId) return;
+      s.currentStatus = STATUS.SUCCEEDED;
+      s.currentRequestId = null;
+      const sub = payload.data?.subscription ?? null;
       s.currentSubscription = sub;
       s.allowedFeatures = Array.isArray(sub?.plan?.featureKeys) ? sub.plan.featureKeys : [];
     });
@@ -172,5 +193,5 @@ const subscriptionSlice = createSlice({
   },
 });
 
-export const { clearSubscriptionError, clearSubscriptionMessage } = subscriptionSlice.actions;
+export const { resetSubscription, clearSubscriptionError, clearSubscriptionMessage } = subscriptionSlice.actions;
 export default subscriptionSlice.reducer;

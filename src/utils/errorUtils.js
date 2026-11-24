@@ -1,11 +1,10 @@
 export const getErrorMessage = (error) => {
   const res = error.response?.data;
-  if (res?.message) return res.message;
   if (res?.errors) {
-    const firstErrors = Object.values(res.errors).map((arr) =>
-      Array.isArray(arr) ? arr[0] : arr,
-    );
-    return firstErrors.join(', ');
+    const messages = Object.values(res.errors)
+      .flatMap((entry) => Array.isArray(entry) ? entry : [entry])
+      .filter((entry) => typeof entry === 'string' && entry.trim());
+    if (messages.length) return messages.join(' ');
   }
-  return error.message || 'Something went wrong';
+  return res?.message || error.message || 'Something went wrong';
 };

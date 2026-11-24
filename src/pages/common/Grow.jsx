@@ -1,3 +1,6 @@
+import usePageLoading from '../../hooks/usePageLoading';
+import { CardSkeleton } from '../../components/feedback';
+import PageHeader from '../../components/ui/PageHeader';
 import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -22,7 +25,7 @@ export default function Grow() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((s) => s.auth);
-  const { posts, myPosts, status, message, error } = useSelector((s) => s.grow);
+  const { posts, myPosts, status, myPostsStatus, message, error } = useSelector((s) => s.grow);
 
   const role     = user?.role || 'instructor';
   const theme    = ROLE_THEME[role] || ROLE_THEME.instructor;
@@ -51,6 +54,7 @@ export default function Grow() {
   }, [error, dispatch]);
 
   const isMine      = activeType === 'my';
+  const loading = usePageLoading(isMine ? myPostsStatus : status);
 const sourcePosts = isMine
   ? myPosts
   : posts.filter((p) => (p.user_id ?? p.user?.id) !== user?.id);
@@ -107,7 +111,7 @@ const sourcePosts = isMine
   const statTiles = GROW_TYPES.map((t) => ({
     label:   t.label,
     value:  publicFeed.filter((p) => p.type === t.id).length,
-    color:   `text-[${t.color}]`,
+    color: 'text-brand-ink',
     active:  activeType === t.id,
     onClick: () => setActiveType(activeType === t.id ? 'all' : t.id),
   }));
@@ -128,25 +132,13 @@ const typeCounts = GROW_FILTER_TABS.reduce((acc, t) => ({
     : 'Upskill, deepen your practice, and connect with the global wellness community.';
 
   return (
-    <div className="-m-4 lg:-m-6 p-4 lg:p-6 min-h-full bg-[#B4FF5A]">
+    <div className="-m-4 lg:-m-6 p-4 lg:p-6 min-h-full">
     <div className="max-w-5xl mx-auto space-y-6">
 
-      <div className="rounded-2xl p-6 border border-[#E5E0D8] bg-white relative overflow-hidden">
-        <div className="relative z-10">
-          <p className="text-[#6B6B66] text-xs font-semibold tracking-widest uppercase mb-2">Grow</p>
-          <h1 className="font-['Unbounded'] text-2xl font-black text-[#1A1A1A] mb-1">{heroTitle}</h1>
-          <p className="text-[#6B6B66] text-sm max-w-lg">{heroBlurb}</p>
-          {canPost && (
-            <Button variant="accent" size="sm" icon={Plus} onClick={goNew} className="mt-4">
-              Post an Opportunity
-            </Button>
-          )}
-        </div>
-        <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-[#B4FF5A]/20" />
-        <div className="absolute -right-2 -bottom-6 w-20 h-20 rounded-full bg-[#B4FF5A]/10" />
-      </div>
+      <PageHeader eyebrow="Grow" title={heroTitle} description={heroBlurb}
+        actions={canPost && <Button variant="primary" size="sm" icon={Plus} onClick={goNew}>Post an Opportunity</Button>} />
 
-      {!isMine && <StatTileGroup tiles={statTiles} columns={3} />}
+      {!loading && !isMine && <StatTileGroup tiles={statTiles} columns={3} />}
 
       <Toolbar
         search={{
@@ -162,7 +154,7 @@ const typeCounts = GROW_FILTER_TABS.reduce((acc, t) => ({
           toggleLabel: 'Filter',
           children: (
             <div>
-              <label className="block text-[#9A9A94] text-[10px] uppercase tracking-wider font-semibold mb-1.5">
+              <label className="block text-ink-muted text-[10px] uppercase tracking-wider font-semibold mb-1.5">
                 Filter by Discipline
               </label>
               <div className="flex flex-wrap gap-2">
@@ -180,7 +172,7 @@ const typeCounts = GROW_FILTER_TABS.reduce((acc, t) => ({
             </div>
           ),
         }}
-        resultCount={hasFilters ? filtered.length : null}
+        resultCount={!loading && hasFilters ? filtered.length : null}
         resultNoun="result"
         onClear={hasFilters ? clearFilters : null}
         hasActiveFilters={hasFilters}
@@ -190,17 +182,13 @@ const typeCounts = GROW_FILTER_TABS.reduce((acc, t) => ({
           tabs={canPost ? GROW_FILTER_TABS : GROW_FILTER_TABS.filter((t) => t.id !== 'my')}
           activeId={activeType}
           onChange={setActiveType}
-          counts={typeCounts}
+          counts={loading ? undefined : typeCounts}
         />
       </Toolbar>
 
-      {status === STATUS.LOADING && (
-        <div className="flex items-center justify-center py-16">
-          <Loader2 size={28} className="animate-spin text-coral" />
-        </div>
-      )}
+      {loading && <CardSkeleton count={4} />}
 
-      {status !== STATUS.LOADING && filtered.length === 0 && (
+      {!loading && filtered.length === 0 && (
         <div className="bg-white rounded-2xl border border-[#E5E0D8]">
           <EmptyState
             icon={BookOpen}
@@ -210,7 +198,7 @@ const typeCounts = GROW_FILTER_TABS.reduce((acc, t) => ({
         </div>
       )}
 
-      {filtered.length > 0 && (
+      {!loading && filtered.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {filtered.map((post) => {
             const isOwn = isMine

@@ -1,3 +1,4 @@
+import Spinner from '../../components/feedback/Spinner';
 import { Loader2 } from 'lucide-react';
 import {
   ShieldCheck, AlertCircle, XCircle, Sparkles, Edit3,
@@ -19,6 +20,7 @@ const HEADER_BG = {
 export default function UserDetailDrawer({
   user,
   busy = false,
+  loading = false,
   onClose,
   onEdit,
   onApprove,
@@ -28,13 +30,13 @@ export default function UserDetailDrawer({
   onVerify,
   onDelete,
 }) {
-  if (!user) {
+  if (loading || !user) {
     return (
       <Drawer
         open
         onClose={onClose}
         loading
-        loadingSpinner={<Loader2 size={26} className="animate-spin text-coral" />}
+        loadingSpinner={<Spinner size={26} />}
       />
     );
   }
@@ -96,7 +98,7 @@ export default function UserDetailDrawer({
           icon={ShieldCheck}
           onClick={() => onVerify?.(user)}
           disabled={busy}
-          className={user.is_verified ? '' : 'hover:border-emerald-500 hover:text-emerald-600'}
+          className={user.is_verified ? '' : 'hover:border-emerald-500 hover:text-brand-ink'}
         >
           {user.is_verified ? 'Verified' : 'Mark Verified'}
         </Button>
@@ -110,7 +112,7 @@ export default function UserDetailDrawer({
           </Button>
         ) : !isRejected && (
           <Button variant="secondary" size="sm" icon={CheckCircle2} onClick={() => onActivate?.(user)} disabled={busy}
-            className="hover:border-emerald-500 hover:text-emerald-600">
+            className="hover:border-emerald-500 hover:text-brand-ink">
             Activate
           </Button>
         )
@@ -210,7 +212,7 @@ export default function UserDetailDrawer({
 
 const CALLOUT_TONE = {
   red:    'bg-red-50 border-red-100 text-red-700',
-  yellow: 'bg-yellow-50 border-yellow-200 text-yellow-700',
+  yellow: 'bg-yellow-50 border-yellow-200 text-brand-ink',
 };
 
 function StatusCallout({ tone = 'red', icon: Icon, title, body }) {

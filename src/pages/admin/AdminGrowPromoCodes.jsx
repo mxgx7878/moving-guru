@@ -1,3 +1,4 @@
+import usePageLoading from '../../hooks/usePageLoading';
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'sonner';
@@ -97,16 +98,14 @@ export default function AdminGrowPromoCodes() {
     await dispatch(deleteGrowPromoCode(target.id));
   };
 
-  const isLoading = status === STATUS.LOADING && promoCodes.length === 0;
+  const isLoading = usePageLoading(status);
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       <PageHeader
-        icon={Ticket}
-        iconBg="#4E7A1B1A"
-        iconColor="#4E7A1B"
+        
         eyebrow="Admin / Grow Promo Codes"
-        eyebrowColor="#4E7A1B"
+        
         title="Grow Promo Codes"
         description="Discount codes for Grow listing fees. Separate from subscription promo codes. Limited by a total usage cap and expiry only — no per-person limit."
         actions={(
@@ -115,10 +114,10 @@ export default function AdminGrowPromoCodes() {
       />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={Ticket}       label="Total codes"  value={stats.total} />
-        <StatCard icon={CheckCircle2} label="Active"       value={stats.active}   color="default" />
-        <StatCard icon={XCircle}      label="Inactive"     value={stats.inactive} color="coral" />
-        <StatCard icon={Users}        label="Redemptions"  value={stats.redemptions} sub="Total uses" />
+        <StatCard loading={isLoading} icon={Ticket}       label="Total codes"  value={stats.total} />
+        <StatCard loading={isLoading} icon={CheckCircle2} label="Active"       value={stats.active}   color="default" />
+        <StatCard loading={isLoading} icon={XCircle}      label="Inactive"     value={stats.inactive} color="coral" />
+        <StatCard loading={isLoading} icon={Users}        label="Redemptions"  value={stats.redemptions} sub="Total uses" />
       </div>
 
       <Toolbar
@@ -141,7 +140,7 @@ export default function AdminGrowPromoCodes() {
               </td>
               <td className="px-4 py-3 text-sm text-[#3E3D38]">{discountLabel(p)}</td>
               <td className="px-4 py-3 text-right text-sm text-[#3E3D38]">{used} {limit}</td>
-              <td className="px-4 py-3 text-sm text-[#9A9A94]">{fmtDate(p.expires_at)}</td>
+              <td className="px-4 py-3 text-sm text-ink-muted">{fmtDate(p.expires_at)}</td>
               <td className="px-4 py-3">
                 <button
                   onClick={() => handleToggle(p)}
@@ -149,8 +148,8 @@ export default function AdminGrowPromoCodes() {
                   title={p.is_active ? 'Click to deactivate' : 'Click to activate'}
                   className={`text-xs font-semibold px-2 py-1 rounded-full transition-all hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed ${
                     p.is_active
-                      ? 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100'
-                      : 'text-[#9A9A94] bg-[#F5F2EC] hover:bg-[#E5E0D8]'
+                      ? 'text-brand-ink bg-emerald-50 hover:bg-emerald-100'
+                      : 'text-ink-muted bg-[#F5F2EC] hover:bg-[#E5E0D8]'
                   }`}
                 >
                   {p.is_active ? '● Active' : '○ Inactive'}

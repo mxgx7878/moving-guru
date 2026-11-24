@@ -47,7 +47,7 @@ export default function StudioJobCard({
       ${isActive ? "border-[#E5E0D8]" : "border-[#E5E0D8] opacity-80"}`}
     >
       {isFull && (
-        <div className="bg-emerald-50 border-b border-emerald-100 px-5 py-2 flex items-center gap-2 text-xs text-emerald-700">
+        <div className="bg-emerald-50 border-b border-emerald-100 px-5 py-2 flex items-center gap-2 text-xs text-brand-ink">
           <Lock size={12} />
           <span className="font-semibold">
             Closed — all {vacancies} vacancy{vacancies !== 1 ? "ies" : ""}{" "}
@@ -85,13 +85,13 @@ export default function StudioJobCard({
                 );
               })}
               {!isActive && !isFull && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FAFEE0] text-[#9A9A94]">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FAFEE0] text-ink-muted">
                   Inactive
                 </span>
               )}
               <span
                 className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold
-                  ${isFull ? "bg-emerald-50 text-emerald-600" : "bg-coral/10 text-coral"}`}
+                  ${isFull ? "bg-emerald-50 text-brand-ink" : "bg-coral/10 text-brand-ink"}`}
               >
                 <UserCheck size={10} /> {filled} of {vacancies} filled
               </span>
@@ -149,17 +149,17 @@ export default function StudioJobCard({
         <div className="flex flex-wrap items-center gap-4 mt-3">
           {job.location && (
             <div className="flex items-center gap-1.5 text-xs text-[#6B6B66]">
-              <MapPin size={12} className="text-[#9A9A94]" /> {job.location}
+              <MapPin size={12} className="text-ink-muted" /> {job.location}
             </div>
           )}
           {job.start_date && (
             <div className="flex items-center gap-1.5 text-xs text-[#6B6B66]">
-              <Calendar size={12} className="text-[#9A9A94]" /> {job.start_date}
+              <Calendar size={12} className="text-ink-muted" /> {job.start_date}
             </div>
           )}
           {job.duration && (
             <div className="flex items-center gap-1.5 text-xs text-[#6B6B66]">
-              <Clock size={12} className="text-[#9A9A94]" /> {job.duration}
+              <Clock size={12} className="text-ink-muted" /> {job.duration}
             </div>
           )}
           {job.compensation && (
@@ -180,7 +180,7 @@ export default function StudioJobCard({
         )}
 
         <div className="flex items-center justify-between gap-3 mt-4 pt-3 border-t border-[#E5E0D8]">
-          <div className="flex items-center gap-1.5 text-xs text-[#9A9A94]">
+          <div className="flex items-center gap-1.5 text-xs text-ink-muted">
             <Users size={12} />
             {applicantCount} applicant{applicantCount !== 1 ? "s" : ""}
           </div>

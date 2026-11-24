@@ -44,10 +44,10 @@ export default function Sidebar({ mobileOpen, onClose }) {
         lg:translate-x-0 lg:static lg:z-auto
       `}>
         <div className="px-6 py-6 border-b border-[#E5E0D8]">
-          <a href="/" className="flex items-center justify-center gap-1">
+          <a href="https://movingguru.co/" className="flex items-center justify-center gap-1" rel="noopener noreferrer">
             <img src={logo} alt="Moving Guru" height={100} width={100} />
           </a>
-          <p className="text-[10px] text-[#9A9A94] mt-1 tracking-widest uppercase">{theme.label}</p>
+          <p className="text-[10px] text-ink-muted mt-1 tracking-widest uppercase">{theme.label}</p>
         </div>
 
         <Link to={theme.profilePath} className="px-4 py-4 border-b border-[#E5E0D8]">
@@ -62,7 +62,7 @@ export default function Sidebar({ mobileOpen, onClose }) {
               <p className="text-[#3E3D38] text-xs font-semibold truncate">{displayName}</p>
               <div className="flex items-center gap-1 mt-0.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#B4FF5A]" />
-                <p className="text-[#9A9A94] text-[10px] capitalize">{role}</p>
+                <p className="text-ink-muted text-[10px] capitalize">{role}</p>
               </div>
             </div>
           </div>
@@ -85,12 +85,12 @@ export default function Sidebar({ mobileOpen, onClose }) {
               >
                 {({ isActive }) => (
                   <>
-                    <Icon size={16} className={isActive ? 'text-white' : 'text-[#9A9A94] group-hover:text-[#6B6B66]'} />
+                    <Icon size={16} className={isActive ? 'text-white' : 'text-ink-muted group-hover:text-[#6B6B66]'} />
                     <span className="flex-1">{label}</span>
                     {isMessages && messageUnread > 0 ? (
                       <span
                         className={`min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center
-                          ${isActive ? 'bg-white text-[#3E3D38]' : 'bg-coral text-white'}`}
+                          ${isActive ? 'bg-white text-[#3E3D38]' : 'bg-coral text-ink'}`}
                       >
                         {messageUnread > 99 ? '99+' : messageUnread}
                       </span>

@@ -1,3 +1,5 @@
+import PageHeader from '../../components/ui/PageHeader';
+import Spinner from '../../components/feedback/Spinner';
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -93,7 +95,7 @@ export default function StudioDetail() {
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto flex items-center justify-center py-20">
-        <Loader2 size={28} className="animate-spin text-[#4E7A1B]" />
+        <Spinner size={28} />
       </div>
     );
   }
@@ -255,6 +257,7 @@ export default function StudioDetail() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
+      <PageHeader eyebrow="Profile" title="Studio Profile" description="Profile details and contact information" className="mb-6" />
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <Button
           variant="ghost"
@@ -293,7 +296,7 @@ export default function StudioDetail() {
 
         <div className="px-6 pb-6 relative">
           <div className="flex items-center gap-4  mb-4">
-            <div className="w-20 h-20 rounded-full border-4 border-white shadow-md overflow-hidden bg-gradient-to-br from-[#4E7A1B] to-[#3F6216] flex items-center justify-center flex-shrink-0">
+            <div className="w-20 h-20 rounded-full border-4 border-white shadow-md overflow-hidden bg-coral text-black flex items-center justify-center flex-shrink-0">
               {profilePicture ? (
                 <img
                   src={profilePicture}
@@ -301,17 +304,17 @@ export default function StudioDetail() {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <span className="font-unbounded text-xl font-black text-white">
+                <span className="font-unbounded text-xl font-black text-black">
                   {initials}
                 </span>
               )}
             </div>
 
             <div className="flex-1 min-w-0 pb-1">
-              <h1 className="font-unbounded text-xl font-black text-[#3E3D38] truncate">
+              <h2 className="font-unbounded text-xl font-black text-[#3E3D38] truncate">
                 {studioName}
-              </h1>
-              <div className="flex items-center gap-2 mt-1 text-xs text-[#9A9A94] flex-wrap">
+              </h2>
+              <div className="flex items-center gap-2 mt-1 text-xs text-ink-muted flex-wrap">
                 {contactName && <span>Managed by {contactName}</span>}
                 {studioSize && <span>· {studioSize}</span>}
               </div>
@@ -554,7 +557,7 @@ export default function StudioDetail() {
               <div className="space-y-4">
                 {lookingFor.length > 0 && (
                   <div>
-                    <p className="text-[10px] uppercase tracking-wide text-[#9A9A94] mb-2">
+                    <p className="text-[10px] uppercase tracking-wide text-ink-muted mb-2">
                       Looking For
                     </p>
                     <TagList items={lookingFor} />
@@ -562,7 +565,7 @@ export default function StudioDetail() {
                 )}
                 {travellingTo.length > 0 && (
                   <div>
-                    <p className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-[#9A9A94] mb-2">
+                    <p className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-ink-muted mb-2">
                       <Plane size={10} /> Travelling To
                     </p>
                     <TagList items={travellingTo} />

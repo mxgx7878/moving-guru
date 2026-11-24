@@ -5,8 +5,8 @@ import {
 import { Modal, Button } from '../../components/ui';
 
 const OPEN_TO_COLORS = {
-  'Direct Hire':     { bg: 'bg-coral/10', text: 'text-coral' },
-  'Swaps':           { bg: 'bg-[#9BE63D]/15', text: 'text-[#9BE63D]' },
+  'Direct Hire':     { bg: 'bg-coral/10', text: 'text-brand-ink' },
+  'Swaps':           { bg: 'bg-[#9BE63D]/15', text: 'text-brand-ink' },
   'Energy Exchange': { bg: 'bg-[#B4FF5A]/20', text: 'text-[#3E3D38]' },
 };
 
@@ -51,10 +51,10 @@ export default function StudioPreviewModal({
           Preview
         </span>
         <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 z-10">
-          <div className="w-20 h-20 rounded-full border-4 border-white shadow-md overflow-hidden bg-gradient-to-br from-coral to-[#3F6216] flex items-center justify-center">
+          <div className="w-20 h-20 rounded-full border-4 border-white shadow-md overflow-hidden bg-coral text-black flex items-center justify-center">
             {form.avatarPreview
               ? <img src={form.avatarPreview} alt={form.studioName} className="w-full h-full object-cover" />
-              : <span className="font-unbounded text-xl font-black text-white">{initials}</span>}
+              : <span className="font-unbounded text-xl font-black text-black">{initials}</span>}
           </div>
         </div>
       </div>
@@ -64,7 +64,7 @@ export default function StudioPreviewModal({
           <h2 className="font-unbounded text-lg font-black text-[#3E3D38]">
             {form.studioName || 'Your Studio Name'}
           </h2>
-          <div className="flex items-center justify-center gap-2 mt-1 text-[#9A9A94] text-xs">
+          <div className="flex items-center justify-center gap-2 mt-1 text-ink-muted text-xs">
             {form.contactName && <span>Managed by {form.contactName}</span>}
             {form.studioSize && <span>· {form.studioSize}</span>}
           </div>
@@ -88,7 +88,7 @@ export default function StudioPreviewModal({
               <a
                 href={form.website.startsWith('http') ? form.website : `https://${form.website}`}
                 target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-semibold bg-coral/10 text-coral hover:bg-coral/20"
+                className="flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-semibold bg-coral/10 text-brand-ink hover:bg-coral/20"
               >
                 <Globe size={11} /> Website <ExternalLink size={9} />
               </a>
@@ -108,7 +108,7 @@ export default function StudioPreviewModal({
           )}
           {form.openTo?.length > 0 && (
             <div className="bg-[#FAFEE0]/60 rounded-xl p-3">
-              <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold mb-1">Open To</p>
+              <p className="text-[8px] text-ink-muted uppercase tracking-wider font-bold mb-1">Open To</p>
               <div className="flex flex-wrap gap-1 mt-0.5">
                 {form.openTo.map(o => {
                   const c = OPEN_TO_COLORS[o] || { bg: 'bg-[#FAFEE0]', text: 'text-[#6B6B66]' };
@@ -165,10 +165,10 @@ export default function StudioPreviewModal({
 
         {form.disciplines?.length > 0 && (
           <div className="mb-4">
-            <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-bold mb-2">Disciplines Offered</p>
+            <p className="text-[10px] text-ink-muted uppercase tracking-wider font-bold mb-2">Disciplines Offered</p>
             <div className="flex flex-wrap gap-1.5">
               {form.disciplines.map(d => (
-                <span key={d} className="px-2.5 py-1 bg-coral/10 text-coral text-[10px] font-medium rounded-full">{d}</span>
+                <span key={d} className="px-2.5 py-1 bg-coral/10 text-brand-ink text-[10px] font-medium rounded-full">{d}</span>
               ))}
             </div>
           </div>
@@ -176,14 +176,14 @@ export default function StudioPreviewModal({
 
         {form.bio && (
           <div className="mb-4">
-            <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-bold mb-2">About the Studio</p>
+            <p className="text-[10px] text-ink-muted uppercase tracking-wider font-bold mb-2">About the Studio</p>
             <p className="text-[#6B6B66] text-sm leading-relaxed whitespace-pre-line">{form.bio}</p>
           </div>
         )}
 
         {photos.length > 0 && (
           <div className="mb-5">
-            <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-bold mb-2">Gallery</p>
+            <p className="text-[10px] text-ink-muted uppercase tracking-wider font-bold mb-2">Gallery</p>
             <div className="grid grid-cols-4 gap-2">
               {photos.map((p, i) => (
                 <div key={i} className="aspect-square rounded-xl overflow-hidden bg-[#FAFEE0]">
@@ -208,9 +208,9 @@ export default function StudioPreviewModal({
 function InfoTile({ label, value, icon }) {
   return (
     <div className="bg-[#FAFEE0]/60 rounded-xl p-3">
-      <p className="text-[8px] text-[#9A9A94] uppercase tracking-wider font-bold mb-1">{label}</p>
+      <p className="text-[8px] text-ink-muted uppercase tracking-wider font-bold mb-1">{label}</p>
       <p className="text-[#3E3D38] text-xs font-medium flex items-center gap-1">
-        {icon && <span className="text-[#9A9A94]">{icon}</span>} {value}
+        {icon && <span className="text-ink-muted">{icon}</span>} {value}
       </p>
     </div>
   );

@@ -7,7 +7,7 @@ export default function BarChart({ data }) {
         const isLast = i === data.length - 1;
         return (
           <div key={d.month} className="flex-1 flex flex-col items-center gap-1.5">
-            <span className={`text-[10px] font-semibold transition-all ${isLast ? 'text-[#3E3D38]' : 'text-[#9A9A94]'}`}>
+            <span className={`text-[10px] font-semibold transition-all ${isLast ? 'text-[#3E3D38]' : 'text-ink-muted'}`}>
               {d.views}
             </span>
             <div className="w-full relative group">
@@ -17,7 +17,7 @@ export default function BarChart({ data }) {
                 style={{ height: `${Math.max(height * 0.8, 6)}px` }}
               />
             </div>
-            <span className="text-[9px] text-[#9A9A94] tracking-wider">{d.month}</span>
+            <span className="text-[9px] text-ink-muted tracking-wider">{d.month}</span>
           </div>
         );
       })}

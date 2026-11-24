@@ -1,3 +1,5 @@
+import Spinner from '../../components/feedback/Spinner';
+import PageHeader from '../../components/ui/PageHeader';
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -224,7 +226,7 @@ const dispatchSave = ({ expiry_date = null, paymentIntentId = null }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 size={28} className="animate-spin text-coral" />
+        <Spinner size={28} />
       </div>
     );
   }
@@ -244,27 +246,9 @@ const dispatchSave = ({ expiry_date = null, paymentIntentId = null }) => {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
 
-      <div className="flex items-center gap-3">
-        <button
-          onClick={() => navigate(basePath)}
-          className="p-2 rounded-xl border border-[#E5E0D8] text-[#6B6B66] hover:border-[#3E3D38] hover:text-[#3E3D38] transition-colors"
-          aria-label="Back to Grow">
-          <ArrowLeft size={16} />
-        </button>
-        <div>
-          <p className="text-[#9A9A94] text-xs font-semibold tracking-widest uppercase">
-            Grow
-          </p>
-          <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">
-            {isEditing ? 'Edit Post' : 'Post an Opportunity'}
-          </h1>
-          <p className="text-[#6B6B66] text-xs mt-0.5">
-            {isEditing
-              ? 'Update your post. Every edit is reviewed before going live again.'
-              : 'Fill in the details. Payment is collected after you review your post.'}
-          </p>
-        </div>
-      </div>
+      <PageHeader eyebrow="Grow" title={isEditing ? 'Edit Post' : 'Post an Opportunity'}
+        description={isEditing ? 'Update your post. Every edit is reviewed before going live again.' : 'Fill in the details. Payment is collected after you review your post.'}
+        actions={<Button variant="secondary" icon={ArrowLeft} onClick={() => navigate(basePath)}>Back to Grow</Button>} />
 
       <form
         onSubmit={handleSubmit}
@@ -316,7 +300,7 @@ const dispatchSave = ({ expiry_date = null, paymentIntentId = null }) => {
                 <p className="text-xs text-[#3E3D38]/50 mt-2 font-medium">
                   Click to upload a cover image
                 </p>
-                <p className="text-[10px] text-[#9A9A94] mt-0.5">
+                <p className="text-[10px] text-ink-muted mt-0.5">
                   JPG or PNG recommended
                 </p>
               </div>
@@ -401,7 +385,7 @@ const dispatchSave = ({ expiry_date = null, paymentIntentId = null }) => {
               <p className="text-sm font-semibold text-[#3E3D38]">
                 Show spots left on this post
               </p>
-              <p className="text-xs text-[#9A9A94] mt-0.5">
+              <p className="text-xs text-ink-muted mt-0.5">
                 Turn this on if you can keep the spots-left number up to date.
                 Leave it off to hide the spots information entirely.
               </p>
@@ -441,7 +425,7 @@ const dispatchSave = ({ expiry_date = null, paymentIntentId = null }) => {
                   type="button"
                   onClick={() => toggleDiscipline(d)}
                   className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
-                    ${active ? 'text-white border-transparent' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#3E3D38]'}`}
+                    ${active ? 'text-ink border-transparent' : 'border-[#E5E0D8] text-[#6B6B66] hover:border-[#3E3D38]'}`}
                   style={active ? { backgroundColor: theme.accent } : {}}>
                   {d}
                 </button>
@@ -474,7 +458,7 @@ const dispatchSave = ({ expiry_date = null, paymentIntentId = null }) => {
             Cancel
           </Button>
           <Button type="submit" variant="primary" loading={isSaving}>
-            {isEditing ? 'Save changes' : 'Review & pay'}
+            {isEditing ? 'Save changes' : 'Review & submit'}
           </Button>
         </div>
       </form>
@@ -497,3 +481,5 @@ const dispatchSave = ({ expiry_date = null, paymentIntentId = null }) => {
     </div>
   );
 }
+
+

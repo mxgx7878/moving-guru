@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom';
 const ENUM_COLORS = {
   blue:   '#4E7A1B',
   coral:  '#4E7A1B',
-  green:  '#B4FF5A',
+  green:  '#3D5E16',
   purple: '#4E7A1B',
-  orange: '#9BE63D',
+  orange: '#3D5E16',
 };
 
 export default function DashboardStatCard({
@@ -36,7 +36,7 @@ export default function DashboardStatCard({
         {typeof delta === 'number' && delta !== 0 && (
           <span
             className={`flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full
-              ${delta > 0 ? 'text-emerald-600 bg-emerald-50' : 'text-red-600 bg-red-50'}`}
+              ${delta > 0 ? 'text-brand-ink bg-emerald-50' : 'text-red-600 bg-red-50'}`}
           >
             <TrendingUp size={9} className={delta < 0 ? 'rotate-180' : ''} />
             {delta > 0 ? '+' : ''}{delta}%
@@ -45,9 +45,9 @@ export default function DashboardStatCard({
       </div>
       <p className="font-unbounded text-2xl font-black text-[#3E3D38] mb-1">{display}</p>
       <p className="text-xs font-semibold text-[#6B6B66]">{label}</p>
-      {sub && <p className="text-[10px] text-[#9A9A94] mt-0.5">{sub}</p>}
+      {sub && <p className="text-[10px] text-ink-muted mt-0.5">{sub}</p>}
       {to && (
-        <span className="mt-3 inline-flex items-center gap-1 text-[10px] font-semibold text-[#9A9A94] group-hover:text-[#3E3D38]">
+        <span className="mt-3 inline-flex items-center gap-1 text-[10px] font-semibold text-ink-muted group-hover:text-[#3E3D38]">
           Open <ArrowRight size={10} />
         </span>
       )}

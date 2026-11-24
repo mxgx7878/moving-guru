@@ -21,7 +21,7 @@ export const jobSchema = yup.object({
     .min(1, 'At least one vacancy is required')
     .integer('Vacancies must be a whole number')
     .default(1),
-  description:  yup.string().max(4000, 'Keep the description under 4000 characters').nullable(),
+  description:  yup.string().trim().required('Role description is required').max(4000, 'Keep the description under 4000 characters'),
   requirements: yup.string().max(4000, 'Keep requirements under 4000 characters').nullable(),
 });
 
@@ -31,9 +31,9 @@ export const userSchema = yup.object({
   role:    yup.string().required('Role is required').oneOf(['instructor', 'studio', 'admin']),
   password: yup.string().when('$isEdit', {
     is:   true,
-    then: (s) => s.nullable().test('optional-min', 'Password must be at least 6 characters',
-            (v) => !v || v.length >= 6),
-    otherwise: (s) => s.required('Password is required').min(6, 'Password must be at least 6 characters'),
+    then: (s) => s.nullable().test('optional-min', 'Password must be at least 12 characters',
+            (v) => !v || v.length >= 12),
+    otherwise: (s) => s.required('Password is required').min(12, 'Password must be at least 12 characters'),
   }),
 });
 

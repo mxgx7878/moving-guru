@@ -1,3 +1,4 @@
+import Spinner from '../../components/feedback/Spinner';
 import {
   MapPin, Loader2, Eye, CheckCircle2, AlertCircle, Star, Trash2,
   Clock, Zap, ZapOff,
@@ -84,7 +85,7 @@ export default function GrowPostRow({
             {expiresAt && (
               <p
                 className={`flex items-center gap-1 text-[10px] mt-1 font-semibold ${
-                  isExpired ? 'text-[#1A1A1A]' : 'text-[#9A9A94]'
+                  isExpired ? 'text-[#1A1A1A]' : 'text-ink-muted'
                 }`}
                 title={expiresAt.toLocaleString()}
               >
@@ -110,7 +111,7 @@ export default function GrowPostRow({
 
               {hasExpiredBoost && !isCurrentlyFeatured && (
                 <span
-                  className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#F3F0EA] text-[#9A9A94] uppercase tracking-wider"
+                  className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#F3F0EA] text-ink-muted uppercase tracking-wider"
                   title={`Boost ran out ${formatShortDate(boostUntil)}`}
                 >
                   <ZapOff size={9} /> Boost expired
@@ -133,7 +134,7 @@ export default function GrowPostRow({
       <td className="py-3 px-4">
         <p className="text-xs font-semibold text-[#3E3D38]">{postedBy}</p>
         {(post.user?.email || post.contact_email) && (
-          <p className="text-[10px] text-[#9A9A94]">{post.user?.email || post.contact_email}</p>
+          <p className="text-[10px] text-ink-muted">{post.user?.email || post.contact_email}</p>
         )}
       </td>
 
@@ -153,10 +154,10 @@ export default function GrowPostRow({
                 title="Approve"
                 onClick={() => onApprove?.(post)}
                 disabled={isActing}
-                className="border-coral text-coral hover:bg-coral/10"
+                className="border-coral text-brand-ink hover:bg-coral/10"
               >
                 {isActing
-                  ? <Loader2 size={14} className="animate-spin" />
+                  ? <Spinner size={14} />
                   : <CheckCircle2 size={14} />}
               </IconButton>
               <IconButton

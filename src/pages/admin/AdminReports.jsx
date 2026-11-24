@@ -1,3 +1,4 @@
+import usePageLoading from '../../hooks/usePageLoading';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Flag, Eye, RefreshCw } from 'lucide-react';
@@ -10,7 +11,7 @@ import {
 } from '../../components/ui';
 
 const REASON_META = {
-  harassment:       { label: 'Harassment',     cls: 'bg-amber-100 text-amber-700'  },
+  harassment:       { label: 'Harassment',     cls: 'bg-amber-100 text-brand-ink'  },
   spam:             { label: 'Spam',           cls: 'bg-gray-100 text-gray-600'    },
   sexual_content:   { label: 'Sexual content', cls: 'bg-red-100 text-red-700'      },
   hate_speech:      { label: 'Hate speech',    cls: 'bg-red-100 text-red-700'      },
@@ -20,8 +21,8 @@ const REASON_META = {
 };
 
 const STATUS_META = {
-  pending:   { label: 'Pending',   cls: 'bg-coral/15 text-coral'         },
-  reviewed:  { label: 'Reviewed',  cls: 'bg-blue-100 text-blue-700'      },
+  pending:   { label: 'Pending',   cls: 'bg-coral/15 text-brand-ink'         },
+  reviewed:  { label: 'Reviewed',  cls: 'bg-blue-100 text-brand-ink'      },
   resolved:  { label: 'Resolved',  cls: 'bg-[#DBFFA9] text-[#3F6216]'    },
   dismissed: { label: 'Dismissed', cls: 'bg-gray-100 text-gray-500'      },
 };
@@ -127,16 +128,14 @@ export default function AdminReports() {
     }
   };
 
-  const isLoading = adminStatus === STATUS.LOADING && adminReports.length === 0;
+  const isLoading = usePageLoading(adminStatus);
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       <PageHeader
-        icon={Flag}
-        iconBg="#FEE2E2"
-        iconColor="#DC2626"
+        
         eyebrow="Admin / Reports"
-        eyebrowColor="#DC2626"
+        
         title="Reports & Moderation"
         description="Review user reports on messages and profiles. Mark them reviewed, resolved, or dismissed."
         actions={
@@ -193,7 +192,7 @@ export default function AdminReports() {
                   <Avatar name={personName(r.reported_user)} src={personAvatar(r.reported_user)} size="sm" />
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-[#3E3D38] truncate">{personName(r.reported_user)}</p>
-                    <p className="text-[11px] text-[#9A9A94] capitalize">{r.reported_user?.role || '—'}</p>
+                    <p className="text-[11px] text-ink-muted capitalize">{r.reported_user?.role || '—'}</p>
                   </div>
                 </div>
               </td>
@@ -209,7 +208,7 @@ export default function AdminReports() {
                 <span className="text-sm text-[#3E3D38]">{personName(r.reporter)}</span>
               </td>
               <td className="px-4 py-3">
-                <span className="text-xs text-[#9A9A94]">{timeAgo(r.created_at)}</span>
+                <span className="text-xs text-ink-muted">{timeAgo(r.created_at)}</span>
               </td>
               <td className="px-4 py-3">
                 <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${st.cls}`}>
@@ -287,13 +286,13 @@ function ReportDetailModal({ report, busy, onUpdateStatus, onClose }) {
             { tag: 'Reported by',   u: report.reporter     },
           ].map(({ tag, u }) => (
             <div key={tag} className="rounded-xl border border-[#E5E0D8] p-3">
-              <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">{tag}</p>
+              <p className="text-[10px] font-bold text-ink-muted tracking-widest uppercase mb-2">{tag}</p>
               <div className="flex items-center gap-2.5">
                 <Avatar name={personName(u)} src={personAvatar(u)} size="sm" />
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-[#3E3D38] truncate">{personName(u)}</p>
-                  <p className="text-[11px] text-[#9A9A94] truncate">{u?.email || '—'}</p>
-                  <p className="text-[11px] text-[#9A9A94] capitalize">{u?.role}</p>
+                  <p className="text-[11px] text-ink-muted truncate">{u?.email || '—'}</p>
+                  <p className="text-[11px] text-ink-muted capitalize">{u?.role}</p>
                 </div>
               </div>
             </div>
@@ -301,7 +300,7 @@ function ReportDetailModal({ report, busy, onUpdateStatus, onClose }) {
         </div>
 
         <div>
-          <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-1.5">Reason</p>
+          <p className="text-[10px] font-bold text-ink-muted tracking-widest uppercase mb-1.5">Reason</p>
           <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${reason.cls}`}>
             {reason.label}
           </span>
@@ -314,17 +313,17 @@ function ReportDetailModal({ report, busy, onUpdateStatus, onClose }) {
 
         {report.reportedMessage && (
           <div>
-            <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-1.5">Reported message</p>
+            <p className="text-[10px] font-bold text-ink-muted tracking-widest uppercase mb-1.5">Reported message</p>
             <div className="rounded-xl border border-red-200 bg-red-50 p-3">
               <p className="text-sm text-[#3E3D38] whitespace-pre-wrap">{report.reportedMessage.body}</p>
-              <p className="mt-1 text-[10px] text-[#9A9A94]">{fmtFull(report.reportedMessage.createdAt)}</p>
+              <p className="mt-1 text-[10px] text-ink-muted">{fmtFull(report.reportedMessage.createdAt)}</p>
             </div>
           </div>
         )}
 
         {ctx.length > 0 && (
           <div>
-            <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">
+            <p className="text-[10px] font-bold text-ink-muted tracking-widest uppercase mb-2">
               Conversation context · last {ctx.length} messages
             </p>
             <div className="space-y-2 rounded-xl border border-[#E5E0D8] p-3 bg-white">
@@ -340,12 +339,12 @@ function ReportDetailModal({ report, busy, onUpdateStatus, onClose }) {
                           ? 'bg-[#F4F0EA] text-[#3E3D38]'
                           : 'bg-[#F5FDA6]/40 border border-[#F5FDA6] text-[#3E3D38]'}`}
                     >
-                      <p className="text-[10px] font-semibold text-[#9A9A94] mb-0.5">
+                      <p className="text-[10px] font-semibold text-ink-muted mb-0.5">
                         {fromReported ? personName(report.reported_user) : personName(report.reporter)}
                         {isReported && <span className="ml-1.5 text-red-600">· reported</span>}
                       </p>
                       <p className="whitespace-pre-wrap">{m.body}</p>
-                      <p className="text-[10px] text-[#9A9A94] mt-0.5">{fmtFull(m.createdAt)}</p>
+                      <p className="text-[10px] text-ink-muted mt-0.5">{fmtFull(m.createdAt)}</p>
                     </div>
                   </div>
                 );

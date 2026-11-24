@@ -25,6 +25,7 @@ export const fetchCurrentSubscription = createAsyncThunk(
       return rejectWithValue(getErrorMessage(error));
     }
   },
+  { condition: (_, { getState }) => !getState().subscription.currentRequestId },
 );
 
 export const changePlan = createAsyncThunk(

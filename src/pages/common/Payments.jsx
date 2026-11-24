@@ -1,3 +1,5 @@
+import usePageLoading from '../../hooks/usePageLoading';
+import PageHeader from '../../components/ui/PageHeader';
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from "sonner";
@@ -16,10 +18,10 @@ import { TableSkeleton, CardSkeleton } from "../../components/feedback";
 import { Button, IconButton } from "../../components/ui";
 
 const STATUS_CONFIG = {
-  paid:    { label: "Paid",    cls: "text-emerald-600 bg-emerald-50", Icon: CheckCircle },
+  paid:    { label: "Paid",    cls: "text-brand-ink bg-emerald-50", Icon: CheckCircle },
   failed:  { label: "Failed",  cls: "text-rose-600 bg-rose-50",       Icon: XCircle    },
-  pending: { label: "Pending", cls: "text-amber-600 bg-amber-50",     Icon: CreditCard },
-  refunded:{ label: "Refunded",cls: "text-[#9A9A94] bg-[#F5F2EC]",   Icon: CreditCard },
+  pending: { label: "Pending", cls: "text-brand-ink bg-amber-50",     Icon: CreditCard },
+  refunded:{ label: "Refunded",cls: "text-ink-muted bg-[#F5F2EC]",   Icon: CreditCard },
 };
 
 export default function Payments() {
@@ -47,17 +49,11 @@ export default function Payments() {
     }
   };
 
-  if (status === STATUS.LOADING && payments.length === 0) {
+  const pageLoading = usePageLoading(status);
+  if (pageLoading) {
     return (
       <div className="max-w-3xl mx-auto space-y-6">
-        <div>
-          <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">
-            Payment History
-          </h1>
-          <p className="text-[#9A9A94] text-sm mt-1">
-            Your billing history and invoices
-          </p>
-        </div>
+        <PageHeader title="Payment History" description={<> Your billing history and invoices </>} className="" />
         <CardSkeleton count={3} />
         <TableSkeleton rows={4} cols={3} />
       </div>
@@ -66,35 +62,28 @@ export default function Payments() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
-      <div>
-        <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">
-          Payment History
-        </h1>
-        <p className="text-[#9A9A94] text-sm mt-1">
-          Your billing history and invoices
-        </p>
-      </div>
+      <PageHeader title="Payment History" description={<> Your billing history and invoices </>} className="" />
 
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-white rounded-2xl p-4 border border-[#E5E0D8] text-center">
           <DollarSign
             size={16}
-            style={{ color: theme.accent }}
+            style={{ color: '#3D5E16' }}
             className="mx-auto mb-2"
           />
           <p className="font-unbounded text-xl font-black text-[#3E3D38]">
             ${parseFloat(total).toFixed(2)}
           </p>
-          <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider mt-1">
+          <p className="text-[10px] text-ink-muted uppercase tracking-wider mt-1">
             Total Paid
           </p>
         </div>
         <div className="bg-white rounded-2xl p-4 border border-[#E5E0D8] text-center">
-          <CreditCard size={16} className="text-[#9BE63D] mx-auto mb-2" />
+          <CreditCard size={16} className="text-brand-ink mx-auto mb-2" />
           <p className="font-unbounded text-xl font-black text-[#3E3D38]">
             {payments.length}
           </p>
-          <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider mt-1">
+          <p className="text-[10px] text-ink-muted uppercase tracking-wider mt-1">
             Payments
           </p>
         </div>
@@ -126,7 +115,7 @@ export default function Payments() {
                       size={14}
                       className={
                         p.status === "paid"
-                          ? "text-emerald-500"
+                          ? "text-brand-ink"
                           : "text-rose-400"
                       }
                     />
@@ -135,7 +124,7 @@ export default function Payments() {
                     <p className="text-sm font-semibold text-[#3E3D38]">
                       {p.plan} Subscription
                     </p>
-                    <p className="text-xs text-[#9A9A94]">
+                    <p className="text-xs text-ink-muted">
                       {p.date} · {p.invoice}
                     </p>
                   </div>
@@ -145,7 +134,7 @@ export default function Payments() {
                   <div className="text-right">
                     <p className="font-unbounded text-sm font-bold text-[#3E3D38]">
                       ${parseFloat(p.amount).toFixed(2)}{" "}
-                      <span className="text-[10px] font-normal text-[#9A9A94]">
+                      <span className="text-[10px] font-normal text-ink-muted">
                         {p.currency}
                       </span>
                     </p>
@@ -154,7 +143,6 @@ export default function Payments() {
                     </span>
                   </div>
                   <IconButton
-                    variant="plain"
                     aria-label="Download invoice"
                     title={
                       p.invoicePdfUrl || p.hostedInvoiceUrl
@@ -175,17 +163,17 @@ export default function Payments() {
         {payments.length === 0 && (
           <div className="px-6 py-12 text-center">
             <CreditCard size={32} className="text-[#E5E0D8] mx-auto mb-3" />
-            <p className="text-[#9A9A94] text-sm">No payments yet</p>
+            <p className="text-ink-muted text-sm">No payments yet</p>
           </div>
         )}
       </div>
 
-      <p className="text-center text-[#9A9A94] text-xs">
+      <p className="text-center text-ink-muted text-xs">
         Need a receipt or have billing questions? Contact{" "}
         <a
           href="mailto:admin@movingguru.co"
           className="hover:underline"
-          style={{ color: theme.accent }}
+          style={{ color: '#000' }}
         >
           admin@movingguru.co
         </a>

@@ -19,7 +19,7 @@ export default function SelectField({
   return (
     <div className={className}>
       {label && (
-        <label className="block text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase mb-2">
+        <label className="block text-[10px] font-bold text-ink-muted tracking-widest uppercase mb-2">
           {label}
         </label>
       )}
@@ -31,7 +31,7 @@ export default function SelectField({
           className={`w-full appearance-none border rounded-xl text-sm bg-white focus:outline-none transition-colors disabled:opacity-60
             ${padding}
             ${error ? 'border-red-400' : 'border-[#E5E0D8]'}
-            ${!value ? 'text-[#C4BCB4]' : 'text-[#3E3D38]'}`}
+            ${!value ? 'text-ink-muted' : 'text-[#3E3D38]'}`}
           onFocus={(e) => (e.currentTarget.style.borderColor = accent)}
           onBlur={(e) => (e.currentTarget.style.borderColor = '')}
         >
@@ -44,7 +44,7 @@ export default function SelectField({
         </select>
         <ChevronDown
           size={14}
-          className={`absolute ${size === 'sm' ? 'right-3' : 'right-4'} top-1/2 -translate-y-1/2 text-[#9A9A94] pointer-events-none`}
+          className={`absolute ${size === 'sm' ? 'right-3' : 'right-4'} top-1/2 -translate-y-1/2 text-ink-muted pointer-events-none`}
         />
       </div>
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}

@@ -10,12 +10,12 @@ export default function PlanPrice({ plan, className = '' }) {
   return (
     <div className={`flex items-baseline gap-2 ${className}`}>
       {hasDiscount && (
-        <span className="text-base text-[#9A9A94] line-through">{sym}{price.toFixed(2)}</span>
+        <span className="text-base text-ink-muted line-through">{sym}{price.toFixed(2)}</span>
       )}
       <span className="font-unbounded text-3xl font-black text-[#3E3D38]">
         {sym}{(hasDiscount ? discounted : price).toFixed(2)}
       </span>
-      {period && <span className="text-sm text-[#9A9A94]">{period}</span>}
+      {period && <span className="text-sm text-ink-muted">{period}</span>}
     </div>
   );
 }

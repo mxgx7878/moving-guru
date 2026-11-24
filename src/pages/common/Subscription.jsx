@@ -1,3 +1,6 @@
+import usePageLoading from '../../hooks/usePageLoading';
+import AccessCheckError from '../../components/gates/AccessCheckError';
+import PageHeader from '../../components/ui/PageHeader';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -60,10 +63,7 @@ const formatDate = (iso) => {
 function SubscriptionSkeleton({ message = 'Manage your Moving Guru plan' }) {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <div>
-        <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Subscription</h1>
-        <p className="text-[#9A9A94] text-sm mt-1">{message}</p>
-      </div>
+      <PageHeader title="Subscription" description={<> {message} </>} className="" />
       <CardSkeleton count={3} />
     </div>
   );
@@ -72,7 +72,7 @@ function SubscriptionSkeleton({ message = 'Manage your Moving Guru plan' }) {
 export default function Subscription() {
   const dispatch = useDispatch();
   const { user } = useSelector((s) => s.auth);
-  const { plans, currentSubscription, status, message, error } =
+  const { plans, currentSubscription, currentStatus, currentError, status, message, error } =
     useSelector((s) => s.subscription);
 
   const role         = user?.role || 'instructor';
@@ -131,6 +131,14 @@ export default function Subscription() {
   useEffect(() => {
     dispatch(fetchPlans());
     dispatch(fetchCurrentSubscription());
+    const refresh = () => {
+      if (document.visibilityState === 'visible') {
+        dispatch(fetchPlans());
+        dispatch(fetchCurrentSubscription());
+      }
+    };
+    window.addEventListener('focus', refresh);
+    return () => window.removeEventListener('focus', refresh);
   }, [dispatch]);
 
   useEffect(() => {
@@ -209,7 +217,11 @@ const priceFor = (p) => {
 
   const currentPlan = sortedPlans.find(
     (p) => String(p.id).toLowerCase() === currentPlanId,
-  );
+  ) || (hasUsableSubscription && currentSubscription?.plan ? {
+    ...currentSubscription.plan,
+    price: currentSubscription.plan.price,
+    period: currentSubscription.plan.period,
+  } : null);
 
   const subStatus          = currentSubscription?.status;
   const isTrialing         = subStatus === 'trialing';
@@ -358,9 +370,10 @@ const priceFor = (p) => {
     }
   };
 
-  const initialLoading =
-    status === STATUS.LOADING && plans.length === 0 && !currentSubscription;
+  const subscriptionLoading = usePageLoading(currentStatus);
+  const initialLoading = subscriptionLoading || status === STATUS.IDLE || (status === STATUS.LOADING && plans.length === 0);
 
+  if (currentError) return <AccessCheckError onRetry={() => dispatch(fetchCurrentSubscription())} />;
   if (initialLoading) return <SubscriptionSkeleton />;
   if (subscribing)    return <SubscriptionSkeleton message="Confirming your subscription…" />;
 
@@ -369,19 +382,10 @@ const priceFor = (p) => {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
 
-      <div className="flex items-end justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Subscription</h1>
-          <p className="text-[#9A9A94] text-sm mt-1">Manage your Moving Guru plan</p>
-        </div>
-        <Link
-          to={paymentsPath}
-          className="text-xs font-semibold inline-flex items-center gap-1.5 hover:underline"
-          style={{ color: theme.accent }}
-        >
+      <PageHeader title="Subscription" description="Manage your Moving Guru plan"
+        actions={<Link to={paymentsPath} className="text-brand-ink text-xs font-semibold inline-flex items-center gap-1.5 hover:underline">
           View Payment History <ArrowRight size={12} />
-        </Link>
-      </div>
+        </Link>} />
 
       <div
         className="rounded-2xl p-6 text-black"
@@ -417,31 +421,31 @@ const priceFor = (p) => {
         {currentPlan && (
           <div className="mt-5 pt-5 border-t border-white/20">
             {cancelsAtPeriodEnd && renewalDate ? (
-              <div className="flex items-start gap-2 text-xs text-white">
+              <div className="flex items-start gap-2 text-xs text-black">
                 <AlertTriangle size={14} className="flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="font-semibold">Your subscription will cancel on {renewalDate}</p>
-                  <p className="text-white/70 text-[11px] mt-0.5">
+                  <p className="text-black/80 text-[11px] mt-0.5">
                     You'll keep access until then. Resume any time before that.
                   </p>
                 </div>
               </div>
             ) : isTrialing && trialEndDate ? (
               <div className="space-y-1.5">
-                <div className="flex items-center gap-2 text-xs text-white/90">
+                <div className="flex items-center gap-2 text-xs text-black">
                   <Calendar size={12} />
                   <span>
                     <strong>Trial ends {trialEndDate}</strong>
                     {currentPlan && ` · then $${currentPlan.price}${currentPlan.period}`}
                   </span>
                 </div>
-                <p className="text-white/70 text-[10px] leading-relaxed">
+                <p className="text-black/80 text-[10px] leading-relaxed">
                   Cancel before {trialEndDate} and you won't be charged.
                   Each account gets one free trial across the platform.
                 </p>
               </div>
             ) : renewalDate ? (
-              <div className="flex items-center gap-2 text-xs text-white/80">
+              <div className="flex items-center gap-2 text-xs text-black">
                 <Calendar size={12} /> Next renewal · {renewalDate}
               </div>
             ) : null}
@@ -475,7 +479,7 @@ const priceFor = (p) => {
       <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5 sm:p-6">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[.16em] text-[#9A9A94]">
+            <p className="text-[10px] font-bold uppercase tracking-[.16em] text-ink-muted">
               Payment Method
             </p>
             <h2 className="font-unbounded text-sm font-black text-[#3E3D38] mt-1">
@@ -516,7 +520,7 @@ const priceFor = (p) => {
                     className={`rounded-xl border-2 p-4 flex items-center gap-3 ${isDefault ? 'border-emerald-500 bg-emerald-50/50' : 'border-[#E5E0D8] bg-white'}`}
                   >
                     <div className="w-10 h-10 rounded-xl bg-white border border-[#E5E0D8] flex items-center justify-center flex-shrink-0">
-                      <CreditCard size={18} className={isDefault ? 'text-emerald-700' : 'text-[#77736C]'} />
+                      <CreditCard size={18} className={isDefault ? 'text-brand-ink' : 'text-[#77736C]'} />
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
@@ -527,7 +531,7 @@ const priceFor = (p) => {
                           {paymentMethod.last4 ? ` •••• ${paymentMethod.last4}` : ''}
                         </p>
                         {isDefault && (
-                          <span className="rounded-full bg-emerald-100 text-emerald-700 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider">
+                          <span className="rounded-full bg-emerald-100 text-brand-ink px-2 py-0.5 text-[9px] font-black uppercase tracking-wider">
                             Default
                           </span>
                         )}
@@ -540,7 +544,7 @@ const priceFor = (p) => {
                     </div>
 
                     {isDefault ? (
-                      <Check size={18} strokeWidth={3} className="text-emerald-600 flex-shrink-0" />
+                      <Check size={18} strokeWidth={3} className="text-brand-ink flex-shrink-0" />
                     ) : (
                       <Button
                         variant="secondary"
@@ -558,7 +562,7 @@ const priceFor = (p) => {
             </div>
           ) : (
             <div className="rounded-xl border border-dashed border-[#D8D2C8] bg-[#FAF9F6] p-4 flex items-center gap-3">
-              <CreditCard size={18} className="text-[#9A9A94] flex-shrink-0" />
+              <CreditCard size={18} className="text-ink-muted flex-shrink-0" />
               <div>
                 <p className="text-sm font-semibold text-[#3E3D38]">No payment method saved</p>
                 <p className="text-xs text-[#8A857D] mt-0.5">Add a card before selecting a paid plan.</p>
@@ -576,10 +580,10 @@ const priceFor = (p) => {
         {sortedPlans.length === 0 ? (
           <div className="bg-white rounded-2xl border border-[#E5E0D8] p-10 text-center">
             <div className="w-12 h-12 rounded-2xl bg-[#F5F2EC] flex items-center justify-center mx-auto mb-3">
-              <Star size={20} className="text-[#9A9A94]" />
+              <Star size={20} className="text-ink-muted" />
             </div>
             <p className="font-semibold text-[#3E3D38] text-sm">No plans available</p>
-            <p className="text-[#9A9A94] text-xs mt-1 max-w-sm mx-auto">
+            <p className="text-ink-muted text-xs mt-1 max-w-sm mx-auto">
               Subscription plans haven't been set up yet. Please check back shortly.
             </p>
           </div>
@@ -608,12 +612,12 @@ const priceFor = (p) => {
                   {(isCurrent || p.highlighted || hasTrial) && (
                     <div className="flex justify-end gap-1.5 mb-2 flex-wrap">
                       {hasTrial && !isCurrent && (
-                        <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">
+                        <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider bg-emerald-50 text-brand-ink px-2 py-0.5 rounded-full">
                           <Gift size={9} /> {p.trialPeriodDays}-day trial
                         </span>
                       )}
                       {p.highlighted && !isCurrent && (
-                        <span className="text-[9px] font-bold uppercase tracking-wider bg-[#9BE63D]/10 text-[#9BE63D] px-2 py-0.5 rounded-full">
+                        <span className="text-[9px] font-bold uppercase tracking-wider bg-[#9BE63D]/10 text-brand-ink px-2 py-0.5 rounded-full">
                           Popular
                         </span>
                       )}
@@ -634,11 +638,11 @@ const priceFor = (p) => {
                         <span className="font-unbounded text-2xl font-black text-[#3E3D38] break-all">
                           {sym}{view.final.toFixed(2)}
                         </span>
-                        <span className="text-xs text-[#9A9A94]">{p.period}</span>
+                        <span className="text-xs text-ink-muted">{p.period}</span>
                       </div>
                       {view.discounted && (
                         <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                          <span className="text-xs text-[#9A9A94] line-through">{sym}{view.original.toFixed(2)}</span>
+                          <span className="text-xs text-ink-muted line-through">{sym}{view.original.toFixed(2)}</span>
                           <span className="text-[9px] font-bold uppercase tracking-wide bg-[#B4FF5A] text-[#1A1A18] px-1.5 py-0.5 rounded-full">
                             {view.badge}
                           </span>
@@ -651,7 +655,7 @@ const priceFor = (p) => {
             </div>
 
                     {hasTrial && !isCurrent && (
-                      <p className="text-[11px] text-emerald-700 font-semibold mt-1">
+                      <p className="text-[11px] text-brand-ink font-semibold mt-1">
                         Start with {p.trialPeriodDays} days free
                       </p>
                     )}
@@ -667,7 +671,7 @@ const priceFor = (p) => {
                     <ul className="mt-4 space-y-1.5 flex-1">
                       {p.features.map((f, i) => (
                         <li key={i} className="flex items-start gap-2 text-sm text-[#3E3D38]">
-                          <Check size={16} strokeWidth={4} className="flex-shrink-0 mt-0.5" style={{ color: theme.accent }} />
+                          <Check size={16} strokeWidth={4} className="flex-shrink-0 mt-0.5" style={{ color: '#3D5E16' }} />
                           <span>{f.label}</span>
                         </li>
                       ))}
@@ -711,9 +715,9 @@ const priceFor = (p) => {
         )}
       </div>
 
-      <p className="text-center text-[#9A9A94] text-xs">
+      <p className="text-center text-ink-muted text-xs">
         Questions about your plan?{' '}
-        <a href="mailto:admin@movingguru.co" className="text-coral hover:underline">
+        <a href="mailto:admin@movingguru.co" className="text-brand-ink hover:underline">
           admin@movingguru.co
         </a>
       </p>

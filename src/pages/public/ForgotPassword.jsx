@@ -20,6 +20,8 @@ export default function ForgotPassword() {
   const loading = status === STATUS.LOADING;
 
   const { control, handleSubmit, reset, formState: { errors }, watch } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     resolver: yupResolver(forgotPasswordSchema),
     defaultValues: { email: '' },
   });
@@ -40,16 +42,16 @@ export default function ForgotPassword() {
     <div className="min-h-screen bg-warm-bg flex items-center justify-center font-dm p-6">
       <div className="w-full max-w-sm">
         <div className="flex items-center gap-2 mb-8">
-          <Globe size={18} className="text-coral" />
+          <Globe size={18} className="text-brand-ink" />
           <span className="font-unbounded text-sm font-bold text-ink tracking-wider">
-            MOVING <em className="not-italic text-coral">GURU</em>
+            MOVING <em className="not-italic text-brand-ink">GURU</em>
           </span>
         </div>
 
         {submittedEmail ? (
           <div className="text-center">
             <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-5">
-              <CheckCircle size={28} className="text-emerald-500" />
+              <CheckCircle size={28} className="text-brand-ink" />
             </div>
             <h2 className="font-unbounded text-xl font-black text-ink mb-2">Check your email</h2>
             <p className="text-ink-soft text-sm mb-1">We sent a password reset link to</p>
@@ -62,7 +64,7 @@ export default function ForgotPassword() {
               variant="ghost"
               size="sm"
               onClick={() => { setSubmittedEmail(null); reset(); dispatch(clearMessage()); }}
-              className="!text-coral hover:!underline !bg-transparent"
+              className="!text-brand-ink hover:!underline !bg-transparent"
             >
               Try another email address
             </Button>

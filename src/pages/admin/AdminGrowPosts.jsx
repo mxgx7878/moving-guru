@@ -1,3 +1,4 @@
+import usePageLoading from '../../hooks/usePageLoading';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'sonner';
@@ -173,27 +174,25 @@ export default function AdminGrowPosts() {
     await dispatch(adminDeleteGrowPost(id));
   };
 
-  const isLoading = adminStatus === STATUS.LOADING;
+  const isLoading = usePageLoading(adminStatus);
   const isDeleting = actingId === deletingPost?.id && moderationStatus === STATUS.LOADING;
 
   const headerTiles = GROW_STATUS_TABS.slice(0, 3).map((s) => ({
     label: s.label,
     value: counts[s.id],
-    color: `text-[${s.color}]`,
+    color: 'text-brand-ink',
   }));
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
 
       <PageHeader
-        icon={Sprout}
-        iconBg="#4E7A1B1A"
-        iconColor="#4E7A1B"
+        
         eyebrow="Admin / Grow Posts"
-        eyebrowColor="#4E7A1B"
+        
         title="Moderation & Management"
         description="Approve, reject, boost, or remove retreats, trainings and events."
-        actions={<StatTileGroup tiles={headerTiles} columns={3} className="min-w-[280px]" />}
+        actions={<StatTileGroup loading={isLoading} tiles={headerTiles} columns={3} className="min-w-[280px]" />}
       />
 
       <section className="rounded-2xl border border-[#E5E0D8] bg-white p-5 space-y-4">

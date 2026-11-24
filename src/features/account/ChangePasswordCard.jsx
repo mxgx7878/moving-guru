@@ -16,6 +16,8 @@ export default function ChangePasswordCard() {
   const {
     control, handleSubmit, reset, formState: { errors, isSubmitting },
   } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     resolver: yupResolver(changePasswordSchema),
     defaultValues: {
       current_password: '',
@@ -40,7 +42,7 @@ export default function ChangePasswordCard() {
   return (
     <div className="bg-white rounded-2xl border border-edge overflow-hidden">
       <div className="px-5 py-3.5 border-b border-edge flex items-center gap-2.5">
-        <Lock size={14} className="text-coral" />
+        <Lock size={14} className="text-brand-ink" />
         <h3 className="font-unbounded text-[10px] font-bold text-ink tracking-wider uppercase">
           Change Password
         </h3>
@@ -53,8 +55,8 @@ export default function ChangePasswordCard() {
         )}
         {success && (
           <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5 flex items-center gap-2" role="status">
-            <Check size={13} className="text-emerald-600" />
-            <p className="text-emerald-700 text-xs font-medium">Password updated successfully!</p>
+            <Check size={13} className="text-brand-ink" />
+            <p className="text-brand-ink text-xs font-medium">Password updated successfully!</p>
           </div>
         )}
 
@@ -74,7 +76,7 @@ export default function ChangePasswordCard() {
             name="password"
             label="New Password"
             type="password"
-            placeholder="Min. 6 characters"
+            placeholder="Min. 12 characters"
             accent="#4E7A1B"
           />
           <RHFInput

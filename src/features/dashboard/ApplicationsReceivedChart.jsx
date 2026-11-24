@@ -7,7 +7,7 @@ export default function ApplicationsReceivedChart({ data = [], loading = false }
   if (loading) return <div className="h-48 bg-[#F0EBE3] animate-pulse rounded-lg" />;
   if (!data?.length) {
     return (
-      <div className="h-48 flex items-center justify-center text-xs text-[#9A9A94]">
+      <div className="h-48 flex items-center justify-center text-xs text-ink-muted">
         No applications data yet
       </div>
     );
@@ -31,7 +31,7 @@ export default function ApplicationsReceivedChart({ data = [], loading = false }
               fontSize: 11, padding: '6px 10px',
             }}
             labelStyle={{ color: '#fff', fontWeight: 600 }}
-            itemStyle={{ color: '#4E7A1B' }}
+            itemStyle={{ color: '#FFFFFF' }}
             formatter={(v) => [v, 'Applications']}
             cursor={{ fill: '#4E7A1B15' }}
           />

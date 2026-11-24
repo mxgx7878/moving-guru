@@ -4,7 +4,7 @@ import { SKELETON_PROPS } from '../../constants/theme';
 
 export default function PageLoader() {
   return (
-    <div className="max-w-5xl mx-auto space-y-6 animate-pulse">
+    <div role="status" aria-label="Loading" aria-busy="true" className="max-w-5xl mx-auto space-y-6 animate-pulse">
       <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6">
         <Skeleton width={200} height={20} {...SKELETON_PROPS} />
         <Skeleton width={300} height={12} {...SKELETON_PROPS} className="mt-2" />

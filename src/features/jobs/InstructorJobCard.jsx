@@ -110,7 +110,7 @@ export default function InstructorJobCard({
                 {job.studio?.id ? (
                   <Link
                     to={`/portal/studios/${job.studio.id}`}
-                    className="inline-flex items-center gap-1 text-[#9A9A94] text-xs mt-0.5 hover:text-coral hover:underline"
+                    className="inline-flex items-center gap-1 text-ink-muted text-xs mt-0.5 hover:text-brand-ink hover:underline"
                   >
                     {job.studio?.studio_name ||
                       job.studio?.name ||
@@ -119,7 +119,7 @@ export default function InstructorJobCard({
                     <ExternalLink size={10} />
                   </Link>
                 ) : (
-                  <p className="text-[#9A9A94] text-xs mt-0.5">
+                  <p className="text-ink-muted text-xs mt-0.5">
                     {job.studio?.name ||
                       job.studio?.detail?.studioName ||
                       "Posted by a studio on Moving Guru"}
@@ -154,7 +154,7 @@ export default function InstructorJobCard({
                   tone="coral"
                   onClick={onToggleSave}
                   title={isSaved ? "Remove from saved" : "Save listing"}
-                  className={isSaved ? "" : "!text-ink-faint hover:!text-coral"}
+                  className={isSaved ? "" : "!text-ink-faint hover:!text-brand-ink"}
                 >
                   {isSaved ? (
                     <BookmarkCheck size={16} />
@@ -176,7 +176,7 @@ export default function InstructorJobCard({
 
         {job.requirements && (
           <div className="bg-[#FAFEE0] rounded-xl px-4 py-2.5 mb-4">
-            <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-bold mb-1">
+            <p className="text-[10px] text-ink-muted uppercase tracking-wider font-bold mb-1">
               Requirements
             </p>
             <p className="text-[#6B6B66] text-xs leading-relaxed">
@@ -197,12 +197,12 @@ export default function InstructorJobCard({
 
         <div className="flex items-center gap-3 pt-3 border-t border-[#E5E0D8] flex-wrap">
           {isMatch && (
-            <div className="flex items-center gap-1.5 text-xs text-emerald-600 font-semibold bg-emerald-50 px-3 py-1.5 rounded-full">
+            <div className="flex items-center gap-1.5 text-xs text-brand-ink font-semibold bg-emerald-50 px-3 py-1.5 rounded-full">
               ✓ Matches your disciplines
             </div>
           )}
           {vacancies > 1 && !isFull && (
-            <div className="flex items-center gap-1.5 text-xs bg-coral/10 text-coral px-3 py-1.5 rounded-full">
+            <div className="flex items-center gap-1.5 text-xs bg-coral/10 text-brand-ink px-3 py-1.5 rounded-full">
               <Users size={12} /> {filled} of {vacancies} filled
             </div>
           )}
@@ -215,7 +215,7 @@ export default function InstructorJobCard({
             className={
               isSaved
                 ? "bg-coral/5"
-                : "hover:border-coral hover:text-coral"
+                : "hover:border-coral hover:text-brand-ink"
             }
           >
             {isSaved ? "Saved" : "Save"}
@@ -237,18 +237,18 @@ function JobMetaRow({ job }) {
     <div className="flex flex-wrap items-center gap-4 mb-4">
       {job.location && (
         <div className="flex items-center gap-1.5 text-xs text-[#6B6B66]">
-          <MapPin size={12} className="text-[#9A9A94]" /> {job.location}
+          <MapPin size={12} className="text-ink-muted" /> {job.location}
         </div>
       )}
       {job.start_date && (
         <div className="flex items-center gap-1.5 text-xs text-[#6B6B66]">
-          <Calendar size={12} className="text-[#9A9A94]" /> From{" "}
+          <Calendar size={12} className="text-ink-muted" /> From{" "}
           {job.start_date}
         </div>
       )}
       {job.duration && (
         <div className="flex items-center gap-1.5 text-xs text-[#6B6B66]">
-          <Clock size={12} className="text-[#9A9A94]" /> {job.duration}
+          <Clock size={12} className="text-ink-muted" /> {job.duration}
         </div>
       )}
       {job.compensation && (
@@ -257,7 +257,7 @@ function JobMetaRow({ job }) {
         </div>
       )}
       {(job.applicants_count || 0) > 0 && (
-        <div className="flex items-center gap-1.5 text-xs text-[#9A9A94]">
+        <div className="flex items-center gap-1.5 text-xs text-ink-muted">
           <Users size={12} /> {job.applicants_count} applied
         </div>
       )}
@@ -306,7 +306,7 @@ function ApplyButton({ state, application, isApplying, onApply }) {
         <Button variant="dangerSoft" size="md" state="static" icon={XCircle}>
           Not selected
         </Button>
-        <span className="flex items-center gap-1 text-[10px] text-[#9A9A94]">
+        <span className="flex items-center gap-1 text-[10px] text-ink-muted">
           <Clock3 size={10} /> Can re-apply after {dateStr}
         </span>
       </div>

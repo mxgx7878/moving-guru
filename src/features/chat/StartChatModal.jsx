@@ -38,7 +38,7 @@ export default function StartChatModal({ recipientId, recipientName, onClose }) 
       setSending(false);
       toast.success('Message sent');
       onClose?.();
-      navigate(messagesBase, { state: { conversationId } });
+      navigate(messagesBase, { state: { conversationId, recipientId, recipientName } });
     } catch (err) {
       setSending(false);
       toast.error(
@@ -72,7 +72,7 @@ export default function StartChatModal({ recipientId, recipientName, onClose }) 
       }
     >
       {isSelf ? (
-        <p className="text-sm text-[#9A9A94]">You can't message yourself.</p>
+        <p className="text-sm text-ink-muted">You can't message yourself.</p>
       ) : (
         <textarea
           value={text}
@@ -81,7 +81,7 @@ export default function StartChatModal({ recipientId, recipientName, onClose }) 
           autoFocus
           maxLength={5000}
           placeholder={`Write a message${recipientName ? ` to ${recipientName}` : ''}...`}
-          className="w-full bg-white border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-[#4E7A1B] resize-none"
+          className="w-full bg-white border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-ink-muted focus:outline-none focus:border-[#4E7A1B] resize-none"
         />
       )}
     </Modal>

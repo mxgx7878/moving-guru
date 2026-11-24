@@ -1,3 +1,4 @@
+import Spinner from '../../components/feedback/Spinner';
 import { useCallback, useEffect, useState } from 'react';
 import { CheckCircle2, CreditCard, Clock, Loader2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
@@ -33,6 +34,7 @@ export function GrowStripePaymentControls({
   const [working, setWorking] = useState(false);
   const [setupSecret, setSetupSecret] = useState(null);
   const [addingCard, setAddingCard] = useState(false);
+  const isFree = purpose === 'listing' && Number(amount) === 0;
 
   const setPaymentBusy = (value) => {
     setWorking(value);
@@ -60,7 +62,7 @@ export function GrowStripePaymentControls({
     }
   }, []);
 
-  useEffect(() => { loadCards(); }, [loadCards]);
+  useEffect(() => { if (!isFree) loadCards(); }, [loadCards, isFree]);
 
   const openCardForm = async () => {
     setPaymentBusy(true);
@@ -76,17 +78,22 @@ export function GrowStripePaymentControls({
   };
 
   const pay = async () => {
-    if (!selectedId || working) return;
+    if ((!isFree && !selectedId) || working) return;
     setPaymentBusy(true);
     try {
       const { data } = await axiosInstance.post(API_ENDPOINTS.GROW_PAYMENT_INTENTS, {
         purpose,
         pricingTierId,
         postId,
-        paymentMethodId: selectedId,
+        ...(!isFree ? { paymentMethodId: selectedId } : {}),
         ...(promoCode ? { promoCode } : {}),
       });
       const payment = data.data;
+      if (payment.isFree) {
+        onSuccess?.({ paymentIntentId: payment.checkoutReference, isFree: true });
+        return;
+      }
+      if (isFree) throw new Error('The listing price changed. Please review the total and try again.');
       const stripe = await loadStripeOnce();
       const { error, paymentIntent } = await stripe.confirmCardPayment(
         payment.clientSecret,
@@ -113,12 +120,21 @@ export function GrowStripePaymentControls({
     }
   };
 
+  if (isFree) return (
+    <div className="space-y-3 pt-4 border-t border-[#E5E0D8]">
+      <p className="text-sm text-[#3E3D38]">No card or payment is needed for this listing.</p>
+      <Button variant="primary" loading={working} onClick={pay} className="w-full">
+        Submit free listing
+      </Button>
+    </div>
+  );
+
   return (
     <div className="space-y-3 pt-4 border-t border-[#E5E0D8]">
       <p className="text-xs font-bold">Payment method</p>
       {loadingCards ? (
         <div className="flex items-center justify-center gap-2 py-5 text-xs text-[#6B6B66]">
-          <Loader2 size={16} className="animate-spin" /> Loading saved cards…
+          <Spinner size={16} /> Loading saved cards…
         </div>
       ) : cards.length > 0 ? (
         <div className="space-y-2 max-h-44 overflow-y-auto">
@@ -133,7 +149,7 @@ export function GrowStripePaymentControls({
               <CreditCard size={17} />
               <span className="flex-1 text-sm font-semibold">{cardName(card)}</span>
               {card.expMonth && <span className="text-[10px] text-[#6B6B66]">{card.expMonth}/{String(card.expYear).slice(-2)}</span>}
-              {card.isDefault && <span className="text-[9px] font-bold text-blue-700">DEFAULT</span>}
+              {card.isDefault && <span className="text-[9px] font-bold text-brand-ink">DEFAULT</span>}
             </button>
           ))}
         </div>
@@ -210,7 +226,7 @@ export default function GrowPaymentModal({ open, onCancel, onPaid, role = 'instr
       open
       size="md"
       title="Choose your post duration"
-      subtitle="Your card is charged now. The listing is published after admin approval."
+      subtitle={payAmount === 0 ? 'No payment is needed. The listing is published after admin approval.' : 'Your card is charged now. The listing is published after admin approval.'}
       onClose={working ? undefined : onCancel}
       dismissOnBackdrop={!working}
       zIndex="z-[60]"
@@ -218,7 +234,7 @@ export default function GrowPaymentModal({ open, onCancel, onPaid, role = 'instr
     >
       <div className="space-y-3">
         {loadingTiers && (
-          <div className="flex justify-center py-6"><Loader2 className="animate-spin" size={20} /></div>
+          <div className="flex justify-center py-6"><Spinner size={20} /></div>
         )}
         {!loadingTiers && tiers.map((item) => {
           const selected = item.id === tierId;
@@ -231,7 +247,7 @@ export default function GrowPaymentModal({ open, onCancel, onPaid, role = 'instr
               className={`w-full flex items-center justify-between gap-4 rounded-xl border p-4 text-left ${selected ? 'border-coral bg-coral/5' : 'border-[#E5E0D8]'}`}
             >
               <div className="flex items-start gap-3">
-                {selected ? <CheckCircle2 size={20} className="text-coral" /> : <Clock size={20} />}
+                {selected ? <CheckCircle2 size={20} className="text-brand-ink" /> : <Clock size={20} />}
                 <div>
                   <p className="font-['Unbounded'] text-sm font-black">{item.name}</p>
                   <p className="text-xs text-[#6B6B66] mt-0.5">{item.description || `${item.duration_days} days live`}</p>
@@ -243,7 +259,7 @@ export default function GrowPaymentModal({ open, onCancel, onPaid, role = 'instr
         })}
 
         <p className="text-[11px] text-[#6B6B66] leading-relaxed">
-          Payment is taken immediately. The purchased live period begins when an admin approves the post.
+          {payAmount === 0 ? 'Your free listing will be reviewed before it goes live.' : 'Payment is taken immediately. The purchased live period begins when an admin approves the post.'}
         </p>
 
         {tier && (
@@ -260,7 +276,7 @@ export default function GrowPaymentModal({ open, onCancel, onPaid, role = 'instr
             <div className="flex justify-between text-[#6B6B66]">
               <span>Subtotal</span><span>${listPrice.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between text-emerald-700">
+            <div className="flex justify-between text-brand-ink">
               <span>Discount ({promo.code})</span><span>−${discount.toFixed(2)}</span>
             </div>
             <div className="flex justify-between font-bold text-[#3E3D38] pt-1 border-t border-[#E5E0D8]">
@@ -276,9 +292,9 @@ export default function GrowPaymentModal({ open, onCancel, onPaid, role = 'instr
           promoCode={promo?.code || null}
           role={role}
           onBusyChange={setWorking}
-          ctaLabel={`Pay $${payAmount.toFixed(2)} & Submit`}
-          onSuccess={({ paymentIntentId }) => {
-            toast.success('Payment successful—submitting your post for approval.');
+          ctaLabel={`Pay ${payAmount.toFixed(2)} & Submit`}
+          onSuccess={({ paymentIntentId, isFree }) => {
+            toast.success(isFree ? 'Submitting your free post for approval.' : 'Payment successful—submitting your post for approval.');
             onPaid?.({ tierId: tier.id, paymentIntentId });
           }}
         />}
@@ -286,3 +302,5 @@ export default function GrowPaymentModal({ open, onCancel, onPaid, role = 'instr
     </Modal>
   );
 }
+
+

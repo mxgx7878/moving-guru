@@ -1,4 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import authReducer from "./slices/authSlice";
 import instructorReducer from "./slices/instructorSlice";
 import messageReducer from "./slices/messageSlice";
@@ -13,8 +13,7 @@ import reportReducer from "./slices/reportSlice";
 import promoReducer from './slices/promoCodeSlice';
 import growPromoReducer from './slices/growPromoSlice';
 
-const store = configureStore({
-  reducer: {
+const appReducer = combineReducers({
     auth: authReducer,
     instructor: instructorReducer,
     message: messageReducer,
@@ -28,7 +27,15 @@ const store = configureStore({
     report: reportReducer,
     promo: promoReducer,
     growPromo: growPromoReducer,
-  },
+});
+const rootReducer = (state, action) => {
+  if (['auth/resetAuth', 'auth/logout/pending', 'auth/logout/fulfilled', 'auth/logout/rejected', 'auth/login/pending', 'auth/register/pending'].includes(action.type)) {
+    state = state ? { auth: state.auth } : undefined;
+  }
+  return appReducer(state, action);
+};
+const store = configureStore({
+  reducer: rootReducer,
   devTools: import.meta.env.DEV,
 });
 

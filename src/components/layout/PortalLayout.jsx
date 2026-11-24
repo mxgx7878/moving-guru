@@ -1,19 +1,22 @@
 import { useState } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Sidebar from './Sidebar';
 import { Menu, Bell } from 'lucide-react';
 import { ROLE_THEME } from '../../config/portalConfig';
 import AccessBanner from './AccessBanner';
 import RealtimeListener from './RealtimeListener';
+import useSubscriptionRefresh from '../../hooks/useSubscriptionRefresh';
 import { Avatar, IconButton } from '../ui';
 
 export default function PortalLayout() {
+  const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user } = useSelector((s) => s.auth);
 
   const role = user?.role || 'instructor';
   const theme = ROLE_THEME[role] || ROLE_THEME.instructor;
+  useSubscriptionRefresh(role);
 
   const displayName = role === 'studio'
     ? (user?.studio_name || user?.studioName || user?.name || 'Studio')
@@ -40,7 +43,7 @@ export default function PortalLayout() {
           </IconButton>
 
           <span
-            className="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white"
+            className="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-[#000]"
             style={{ backgroundColor: theme.accent }}
           >
             {theme.label}
@@ -54,7 +57,7 @@ export default function PortalLayout() {
               className="flex items-center gap-2 text-sm hover:bg-[#FAFEE0] rounded-lg px-2 py-1 -mx-2 -my-1 transition-colors"
               title="View your profile"
             >
-              <span className="text-[#9A9A94] hidden sm:inline">Hi,</span>
+              <span className="text-ink-muted hidden sm:inline">Hi,</span>
               <Avatar
                 name={displayName}
                 src={user?.profile_picture_url || user?.profile_picture}
@@ -69,8 +72,20 @@ export default function PortalLayout() {
          <AccessBanner />
 
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
-          <Outlet />
+          <Outlet key={location.pathname} />
         </main>
+
+        <footer className="flex-shrink-0 border-t border-[#E5E0D8] bg-white px-4 py-3 text-center text-xs text-[#6B6B66]">
+          Powered by{' '}
+          <a
+            href="https://graphicpty.com.au/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-[#3E3D38] hover:text-brand-ink transition-colors"
+          >
+            Graphics Pty Ltd
+          </a>
+        </footer>
       </div>
     </div>
   );

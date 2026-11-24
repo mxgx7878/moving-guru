@@ -42,16 +42,20 @@ const postSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchPosts.pending, (state) => {
+      .addCase(fetchPosts.pending, (state, { meta }) => {
+        state.requestIds ??= {};
+        state.requestIds.fetchPosts = meta.requestId;
         state.status = STATUS.LOADING;
       })
-      .addCase(fetchPosts.fulfilled, (state, { payload }) => {
+      .addCase(fetchPosts.fulfilled, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchPosts !== meta.requestId) return;
         state.status = STATUS.SUCCEEDED;
         const apiData = payload?.data;
         state.posts = Array.isArray(apiData) ? apiData : [];
         state.pagination = payload?.meta || null;
       })
-      .addCase(fetchPosts.rejected, (state, { payload }) => {
+      .addCase(fetchPosts.rejected, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchPosts !== meta.requestId) return;
         state.status = STATUS.FAILED;
         state.error = payload;
       })
@@ -106,15 +110,19 @@ const postSlice = createSlice({
       })
       .addCase(unpublishPost.rejected, (state, { payload }) => { state.error = payload; })
 
-      .addCase(fetchAnnouncements.pending, (state) => {
+      .addCase(fetchAnnouncements.pending, (state, { meta }) => {
+        state.requestIds ??= {};
+        state.requestIds.fetchAnnouncements = meta.requestId;
         state.announcementsStatus = STATUS.LOADING;
       })
-      .addCase(fetchAnnouncements.fulfilled, (state, { payload }) => {
+      .addCase(fetchAnnouncements.fulfilled, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchAnnouncements !== meta.requestId) return;
         state.announcementsStatus = STATUS.SUCCEEDED;
         state.announcements = payload?.data?.posts || payload?.data || [];
         state.announcementsPagination = payload?.data?.meta || payload?.meta || null;
       })
-      .addCase(fetchAnnouncements.rejected, (state, { payload }) => {
+      .addCase(fetchAnnouncements.rejected, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchAnnouncements !== meta.requestId) return;
         state.announcementsStatus = STATUS.FAILED;
         state.error = payload;
       })

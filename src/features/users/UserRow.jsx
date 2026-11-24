@@ -40,13 +40,13 @@ export default function UserRow({
             <p className="font-semibold text-[#3E3D38] text-xs flex items-center gap-1.5">
               {display}
               {user.is_verified && (
-                <span title="Verified"><ShieldCheck size={11} className="text-emerald-600" /></span>
+                <span title="Verified"><ShieldCheck size={11} className="text-brand-ink" /></span>
               )}
             </p>
-            <p className="text-[10px] text-[#9A9A94] flex items-center gap-1">
+            <p className="text-[10px] text-ink-muted flex items-center gap-1">
               <Mail size={9} /> {user.email}
             </p>
-            <p className="text-[10px] text-[#9A9A94] mt-0.5">
+            <p className="text-[10px] text-ink-muted mt-0.5">
               {user.last_login_at
                 ? `Last seen ${new Date(user.last_login_at).toLocaleDateString()}`
                 : 'Never logged in'}
@@ -64,12 +64,12 @@ export default function UserRow({
           <span className="flex items-center gap-1 text-xs text-[#6B6B66]">
             <MapPin size={11} /> {user.location}
           </span>
-        ) : <span className="text-xs text-[#C4BCB4]">—</span>}
+        ) : <span className="text-xs text-ink-muted">—</span>}
       </td>
 
       <td className="py-3 px-4">
         <span className="flex items-center gap-1 text-xs text-[#6B6B66]">
-          <Calendar size={11} className="text-[#9A9A94]" />
+          <Calendar size={11} className="text-ink-muted" />
           {user.created_at ? new Date(user.created_at).toLocaleDateString() : '—'}
         </span>
 

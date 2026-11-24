@@ -50,10 +50,10 @@ export default function Toolbar({
             onClick={advanced.onToggle}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all
               ${advanced.open || advanced.hasActive
-                ? 'text-white'
+                ? 'text-ink'
                 : 'bg-white border-[#E5E0D8] text-[#6B6B66] hover:border-[#3E3D38]'}`}
             style={(advanced.open || advanced.hasActive) && advanced.accent
-              ? { backgroundColor: advanced.accent, borderColor: advanced.accent }
+              ? { backgroundColor: '#B4FF5A', borderColor: '#B4FF5A' }
               : undefined}
           >
             {advanced.toggleLabel || 'Filters'}
@@ -69,14 +69,14 @@ export default function Toolbar({
 
       {showFooter && (
         <div className="flex items-center justify-between pt-1 border-t border-[#E5E0D8]">
-          <p className="text-[#9A9A94] text-xs">
+          <p className="text-ink-muted text-xs">
             {resultCount} {resultNoun}{resultCount !== 1 ? 's' : ''} found
           </p>
           {onClear && (
             <button
               type="button"
               onClick={onClear}
-              className="text-xs text-coral hover:underline flex items-center gap-1"
+              className="text-xs text-brand-ink hover:underline flex items-center gap-1"
             >
               <X size={11} /> Clear all
             </button>

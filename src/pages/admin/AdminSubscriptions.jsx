@@ -1,3 +1,4 @@
+import usePageLoading from '../../hooks/usePageLoading';
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'sonner';
@@ -119,17 +120,15 @@ export default function AdminSubscriptions() {
     }));
   };
 
-  const isLoading = adminPlansStatus === STATUS.LOADING && adminPlans.length === 0;
+  const isLoading = usePageLoading(adminPlansStatus);
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
 
       <PageHeader
-        icon={Star}
-        iconBg="#4E7A1B1A"
-        iconColor="#4E7A1B"
+        
         eyebrow="Admin / Subscription Plans"
-        eyebrowColor="#4E7A1B"
+        
         title="Plan Catalog"
         description="Plans you create here appear in the user portal and are synced as Stripe Products & Prices. Click the status pill to activate or archive a plan."
         actions={(
@@ -150,10 +149,10 @@ export default function AdminSubscriptions() {
       />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={Star}         label="Total plans"  value={stats.total} />
-        <StatCard icon={CheckCircle2} label="Active"       value={stats.active}      color="default" />
-        <StatCard icon={XCircle}      label="Archived"     value={stats.archived}    color="coral" />
-        <StatCard icon={Users}        label="Subscribers"  value={stats.subscribers} sub="On any plan" />
+        <StatCard loading={isLoading} icon={Star}         label="Total plans"  value={stats.total} />
+        <StatCard loading={isLoading} icon={CheckCircle2} label="Active"       value={stats.active}      color="default" />
+        <StatCard loading={isLoading} icon={XCircle}      label="Archived"     value={stats.archived}    color="coral" />
+        <StatCard loading={isLoading} icon={Users}        label="Subscribers"  value={stats.subscribers} sub="On any plan" />
       </div>
 
       <Toolbar
@@ -184,7 +183,7 @@ export default function AdminSubscriptions() {
                 <div className="flex items-center gap-2">
                   <div>
                     <p className="text-sm font-semibold text-[#3E3D38]">{p.name}</p>
-                    <p className="text-xs text-[#9A9A94] font-mono">{p.id}</p>
+                    <p className="text-xs text-ink-muted font-mono">{p.id}</p>
                   </div>
                   {p.isFeatured && (
                     <span className="text-[10px] font-bold uppercase tracking-wider bg-[#F5FDA6] text-[#3E3D38] px-2 py-0.5 rounded-full">
@@ -196,7 +195,7 @@ export default function AdminSubscriptions() {
   <td className="px-4 py-3">
                 {p.hasDiscount ? (
                   <div className="flex items-baseline gap-1.5">
-                    <span className="text-xs text-[#9A9A94] line-through">${Number(p.price).toFixed(2)}</span>
+                    <span className="text-xs text-ink-muted line-through">${Number(p.price).toFixed(2)}</span>
                     <span className="font-unbounded text-sm font-bold text-[#3E3D38]">${Number(p.discountedPrice).toFixed(2)}</span>
                     <span className="text-[10px] font-bold uppercase tracking-wide bg-[#B4FF5A] text-[#1A1A18] px-1.5 py-0.5 rounded-full">
                       {p.discountType === 'percent' ? `-${Number(p.discountValue)}%` : `-$${Number(p.discountValue)}`}
@@ -205,7 +204,7 @@ export default function AdminSubscriptions() {
                 ) : (
                   <span className="font-unbounded text-sm font-bold text-[#3E3D38]">${Number(p.price).toFixed(2)}</span>
                 )}
-                <span className="text-xs text-[#9A9A94] ml-1">{p.currency}</span>
+                <span className="text-xs text-ink-muted ml-1">{p.currency}</span>
               </td>
 
               <td className="px-4 py-3 text-sm text-[#3E3D38]">
@@ -213,12 +212,12 @@ export default function AdminSubscriptions() {
               </td>
               <td className="px-4 py-3">
                 {trialDays > 0 ? (
-                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-brand-ink bg-emerald-50 px-2 py-0.5 rounded-full">
                     <Gift size={11} />
                     {trialDays} {trialDays === 1 ? 'day' : 'days'}
                   </span>
                 ) : (
-                  <span className="text-xs text-[#9A9A94]">—</span>
+                  <span className="text-xs text-ink-muted">—</span>
                 )}
               </td>
               <td className="px-4 py-3 text-right text-sm font-semibold text-[#3E3D38]">
@@ -232,8 +231,8 @@ export default function AdminSubscriptions() {
                   title={p.isActive ? 'Click to archive this plan' : 'Click to activate this plan'}
                   className={`text-xs font-semibold px-2 py-1 rounded-full transition-all hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed ${
                     p.isActive
-                      ? 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100'
-                      : 'text-[#9A9A94] bg-[#F5F2EC] hover:bg-[#E5E0D8]'
+                      ? 'text-brand-ink bg-emerald-50 hover:bg-emerald-100'
+                      : 'text-ink-muted bg-[#F5F2EC] hover:bg-[#E5E0D8]'
                   }`}
                 >
                   {p.isActive ? '● Active' : '○ Archived'}
@@ -248,7 +247,7 @@ export default function AdminSubscriptions() {
                     onClick={() => setFeaturesTarget(p)}
                     disabled={adminPlanMutating}
                   >
-                    <Sliders size={14} className="text-coral" />
+                    <Sliders size={14} className="text-brand-ink" />
                   </IconButton>
                   <IconButton
                     variant="plain"

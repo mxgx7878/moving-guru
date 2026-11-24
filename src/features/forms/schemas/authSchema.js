@@ -3,7 +3,7 @@ import * as yup from 'yup';
 const password = yup
   .string()
   .required('Password is required')
-  .min(6, 'Password must be at least 6 characters');
+  .min(12, 'Password must be at least 12 characters');
 
 export const loginSchema = yup.object({
   email:    yup.string().trim().required('Email is required').email('Enter a valid email'),

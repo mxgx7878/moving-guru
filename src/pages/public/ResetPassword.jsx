@@ -25,6 +25,8 @@ export default function ResetPassword() {
   const loading = status === STATUS.LOADING;
 
   const { control, handleSubmit, formState: { errors } } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     resolver: yupResolver(resetPasswordSchema),
     defaultValues: { password: '', password_confirmation: '' },
   });
@@ -48,13 +50,13 @@ export default function ResetPassword() {
       <div className="min-h-screen bg-warm-bg flex items-center justify-center font-dm p-6">
         <div className="w-full max-w-sm text-center">
           <div className="flex items-center gap-2 mb-8 justify-center">
-            <Globe size={18} className="text-coral" />
+            <Globe size={18} className="text-brand-ink" />
             <span className="font-unbounded text-sm font-bold text-ink tracking-wider">
-              MOVING <em className="not-italic text-coral">GURU</em>
+              MOVING <em className="not-italic text-brand-ink">GURU</em>
             </span>
           </div>
           <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-5">
-            <CheckCircle size={28} className="text-emerald-500" />
+            <CheckCircle size={28} className="text-brand-ink" />
           </div>
           <h2 className="font-unbounded text-xl font-black text-ink mb-2">Password reset!</h2>
           <p className="text-ink-soft text-sm mb-6">
@@ -73,16 +75,16 @@ export default function ResetPassword() {
     <div className="min-h-screen bg-warm-bg flex items-center justify-center font-dm p-6">
       <div className="w-full max-w-sm">
         <div className="flex items-center gap-2 mb-8">
-          <Globe size={18} className="text-coral" />
+          <Globe size={18} className="text-brand-ink" />
           <span className="font-unbounded text-sm font-bold text-ink tracking-wider">
-            MOVING <em className="not-italic text-coral">GURU</em>
+            MOVING <em className="not-italic text-brand-ink">GURU</em>
           </span>
         </div>
 
         <div className="mb-6">
           <h2 className="font-unbounded text-2xl font-black text-ink mb-2">Set new password</h2>
           <p className="text-ink-soft text-sm">
-            Your new password must be at least 6 characters.
+            Your new password must be at least 12 characters.
           </p>
         </div>
 
@@ -93,7 +95,7 @@ export default function ResetPassword() {
             name="password"
             type="password"
             label="New Password"
-            placeholder="Min. 6 characters"
+            placeholder="Min. 12 characters"
             iconLeft={<Lock size={14} />}
             autoComplete="new-password"
           />

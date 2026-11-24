@@ -1,3 +1,6 @@
+import Spinner from '../../components/feedback/Spinner';
+import usePageLoading from '../../hooks/usePageLoading';
+import PageHeader from '../../components/ui/PageHeader';
 import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation, Link } from "react-router-dom";
@@ -57,12 +60,20 @@ export default function Messages() {
   const [creating, setCreating] = useState(false);
 
   const scrollRef = useRef(null);
-  const deepLinkRef = useRef(false);
+  const deepLinkRef = useRef(null);
+  const retriedLinkRef = useRef(null);
 
   const activeConvo =
     !activeId && draftRecipient
       ? { id: null, participant: draftRecipient, isDraft: true }
       : conversations.find((c) => c.id === activeId) || null;
+  const participant = activeConvo?.participant;
+  const profilePath = participant?.role === 'studio'
+    ? `/${role === 'studio' ? 'studio' : 'portal'}/studios/${participant.id}`
+    : participant?.role === 'instructor'
+      ? `/${role === 'studio' ? 'studio' : 'portal'}/instructors/${participant.id}`
+      : null;
+  const HeaderProfile = profilePath ? Link : 'div';
   const sending = sendStatus === STATUS.LOADING || creating;
 
   useEffect(() => {
@@ -74,7 +85,8 @@ export default function Messages() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (location.state?.recipientId && !deepLinkRef.current) return;
+    if ((location.state?.recipientId || location.state?.conversationId)
+      && deepLinkRef.current !== location.key) return;
     if (draftRecipient) return;
     if (conversations.length > 0 && !activeId && window.innerWidth >= 768) {
       setActiveId(conversations[0].id);
@@ -82,18 +94,28 @@ export default function Messages() {
   }, [conversations, activeId, location.state, draftRecipient]);
 
   useEffect(() => {
-    const recipientId = location.state?.recipientId;
-    if (!recipientId || deepLinkRef.current) return;
+    const { recipientId, conversationId } = location.state || {};
+    if ((!recipientId && !conversationId) || deepLinkRef.current === location.key) return;
     if (status !== STATUS.SUCCEEDED) return;
-    deepLinkRef.current = true;
+    deepLinkRef.current = location.key;
 
-    const existing = conversations.find(
-      (c) => Number(c.participant?.id) === Number(recipientId),
+    const existing = conversations.find((c) =>
+      (conversationId && Number(c.id) === Number(conversationId)) ||
+      (recipientId && Number(c.participant?.id) === Number(recipientId)),
     );
     if (existing) {
       setDraftRecipient(null);
       setActiveId(existing.id);
-    } else {
+    } else if (conversationId) {
+      if (retriedLinkRef.current !== location.key) {
+        retriedLinkRef.current = location.key;
+        dispatch(fetchConversations());
+        deepLinkRef.current = null;
+      } else {
+        toast.error("Conversation could not be loaded. Please try again.");
+      }
+      return;
+    } else if (recipientId) {
       dispatch(clearMessages());
       dispatch(setActiveConversation(null));
       setActiveId(null);
@@ -104,7 +126,7 @@ export default function Messages() {
       });
     }
     setMobileView("chat");
-  }, [location.state, conversations, status, dispatch]);
+  }, [location.key, location.state, conversations, status, dispatch]);
 
   useEffect(() => {
     if (!activeId) return;
@@ -196,15 +218,11 @@ export default function Messages() {
       ? "Connect with instructors"
       : "Connect with studios and instructors";
 
-  if (status === STATUS.LOADING && conversations.length === 0) {
+  const pageLoading = usePageLoading(status);
+  if (pageLoading) {
     return (
       <div className="max-w-5xl mx-auto">
-        <div className="mb-6">
-          <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">
-            Messages
-          </h1>
-          <p className="text-[#9A9A94] text-sm mt-1">{subtitle}</p>
-        </div>
+        <PageHeader title="Messages" description={<> {subtitle} </>} className="mb-6" />
         <TableSkeleton rows={6} cols={3} />
       </div>
     );
@@ -212,12 +230,7 @@ export default function Messages() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="mb-4 sm:mb-6 hidden md:block">
-        <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">
-          Messages
-        </h1>
-        <p className="text-[#9A9A94] text-sm mt-1">{subtitle}</p>
-      </div>
+      <PageHeader title="Messages" description={<> {subtitle} </>} className="mb-6" />
 
       <div
         className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden"
@@ -233,29 +246,24 @@ export default function Messages() {
               w-full md:w-80 border-r border-[#E5E0D8] flex-col flex-shrink-0
             `}
           >
-            <div className="md:hidden px-4 pt-3 pb-1">
-              <h1 className="font-unbounded text-lg font-black text-[#3E3D38]">
-                Messages
-              </h1>
-              <p className="text-[#9A9A94] text-xs">{subtitle}</p>
-            </div>
+            
 
             <div className="p-3 border-b border-[#E5E0D8]">
               <div className="flex items-center gap-2 bg-[#FFFFFF] rounded-xl px-3 py-2 border border-[#E5E0D8]">
-                <Search size={14} className="text-[#9A9A94]" />
+                <Search size={14} className="text-ink-muted" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search messages..."
-                  className="flex-1 bg-transparent border-none outline-none text-sm text-[#3E3D38] placeholder-[#C4BCB4] min-w-0"
+                  className="flex-1 bg-transparent border-none outline-none text-sm text-[#3E3D38] placeholder-ink-muted min-w-0"
                 />
               </div>
             </div>
             <div className="flex-1 overflow-y-auto">
               {filteredConversations.length === 0 && (
                 <div className="p-6 text-center">
-                  <p className="text-[#9A9A94] text-sm">No conversations yet</p>
+                  <p className="text-ink-muted text-sm">No conversations yet</p>
                 </div>
               )}
               {filteredConversations.map((convo) => (
@@ -276,12 +284,12 @@ export default function Messages() {
                       <p className="text-sm font-semibold text-[#3E3D38] truncate">
                         {convoDisplayName(convo)}
                       </p>
-                      <span className="text-[10px] text-[#9A9A94] flex-shrink-0">
+                      <span className="text-[10px] text-ink-muted flex-shrink-0">
                         {formatStamp(convo.lastMessageAt)}
                       </span>
                     </div>
                     <div className="flex items-center justify-between gap-2 mt-0.5">
-                      <p className="text-xs text-[#9A9A94] truncate">
+                      <p className="text-xs text-ink-muted truncate">
                         {convo.lastMessage?.body || "No messages yet"}
                       </p>
                       {convo.unreadCount > 0 && (
@@ -314,16 +322,8 @@ export default function Messages() {
                   >
                     <ArrowLeft size={20} />
                   </button>
-                  <Link
-                    to={(() => {
-                      const p = activeConvo.participant;
-                      if (!p) return "#";
-                      if (p.role === "instructor")
-                        return `/studio/instructors/${p.id}`;
-                      if (p.role === "studio") return `/studio/studios/${p.id}`;
-                      return `/studio/instructors/${p.id}`;
-                    })()}
-                    onClick={(e) => e.stopPropagation()}
+                  <HeaderProfile
+                    {...(profilePath ? { to: profilePath } : {})}
                     className="flex items-center gap-3 min-w-0"
                   >
                     <Avatar
@@ -339,14 +339,14 @@ export default function Messages() {
                       </p>
                       <p
                         className="text-[10px] font-medium truncate capitalize"
-                        style={{ color: theme.accent }}
+                        style={{ color: '#3D5E16' }}
                       >
                         {activeConvo.participant?.role === "admin"
                           ? "Moving Guru"
                           : activeConvo.participant?.role}
                       </p>
                     </div>
-                  </Link>
+                  </HeaderProfile>
                 </div>
 
                 <div
@@ -355,11 +355,11 @@ export default function Messages() {
                 >
                   {activeId && messagesStatus === STATUS.LOADING ? (
                     <div className="h-full flex items-center justify-center">
-                      <div className="w-6 h-6 border-2 border-[#B4FF5A] border-t-transparent rounded-full animate-spin" />
+                      <Spinner />
                     </div>
                   ) : messages.length === 0 ? (
                     <div className="h-full flex items-center justify-center">
-                      <p className="text-[#9A9A94] text-sm">
+                      <p className="text-ink-muted text-sm">
                         No messages yet — say hi!
                       </p>
                     </div>
@@ -388,7 +388,7 @@ export default function Messages() {
                               {msg.body}
                             </div>
                             <p
-                              className={`text-[10px] text-[#9A9A94] mt-1 ${isMine ? "text-right" : ""}`}
+                              className={`text-[10px] text-ink-muted mt-1 ${isMine ? "text-right" : ""}`}
                             >
                               {formatStamp(msg.createdAt)}
                             </p>
@@ -430,16 +430,16 @@ export default function Messages() {
                     onChange={(e) => setMsgText(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSend()}
                     placeholder="Type a message..."
-                    className="flex-1 bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none transition-all min-w-0"
+                    className="flex-1 bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-ink-muted focus:outline-none transition-all min-w-0"
                     style={{ "--tw-ring-color": theme.accent }}
                   />
                   <button
                     onClick={handleSend}
                     disabled={sending || !msgText.trim()}
-                    className="w-11 h-11 rounded-xl flex items-center justify-center text-white transition-colors flex-shrink-0 disabled:opacity-50"
+                    className="w-11 h-11 rounded-xl flex items-center justify-center text-black transition-colors flex-shrink-0 disabled:opacity-50"
                     style={{ backgroundColor: theme.accent }}
                   >
-                    {sending ? <ButtonLoader size={16} /> : <Send size={16} />}
+                    {sending ? <ButtonLoader size={16} color="#000" /> : <Send size={16} />}
                   </button>
                 </div>
                 {report && (
@@ -454,7 +454,7 @@ export default function Messages() {
               </>
             ) : (
               <div className="flex-1 flex items-center justify-center p-6">
-                <p className="text-[#9A9A94] text-sm text-center">
+                <p className="text-ink-muted text-sm text-center">
                   Select a conversation to start messaging
                 </p>
               </div>

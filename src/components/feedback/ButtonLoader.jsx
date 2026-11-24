@@ -1,13 +1,4 @@
-export default function ButtonLoader({ size = 16, color = 'white' }) {
-  return (
-    <div
-      className="animate-spin rounded-full border-2"
-      style={{
-        width: size,
-        height: size,
-        borderColor: `${color}30`,
-        borderTopColor: color,
-      }}
-    />
-  );
+export default function ButtonLoader({ size = 16 }) {
+  return <span role="status" aria-label="Loading" className="inline-block animate-spin rounded-full border-2 border-current border-t-transparent"
+    style={{ width: size, height: size }} />;
 }

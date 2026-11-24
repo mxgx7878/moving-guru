@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import { Check } from 'lucide-react';
 
 import { Modal, Button, RHFInput, SelectField, Toggle } from '../../components/ui';
+import { showFormValidationErrors } from '../../utils/formValidation';
 
 const DISCOUNT_TYPES = [
   { value: 'percent', label: 'Percent (%)' },
@@ -56,6 +57,8 @@ const EMPTY = {
 export default function PromoCodeForm({ saving = false, onCancel, onSubmit }) {
   const resolver = useMemo(() => yupResolver(schema), []);
   const { control, handleSubmit, watch, formState: { errors } } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     resolver, defaultValues: EMPTY,
   });
 
@@ -86,13 +89,13 @@ export default function PromoCodeForm({ saving = false, onCancel, onSubmit }) {
       footer={(
         <>
           <Button variant="secondary" onClick={onCancel}>Cancel</Button>
-          <Button variant="primary" icon={Check} loading={saving} onClick={handleSubmit(submit)}>
+          <Button variant="primary" icon={Check} loading={saving} onClick={handleSubmit(submit, showFormValidationErrors)}>
             Create Code
           </Button>
         </>
       )}
     >
-      <form onSubmit={handleSubmit(submit)} className="space-y-5">
+      <form onSubmit={handleSubmit(submit, showFormValidationErrors)} className="space-y-5">
         <RHFInput
           control={control} errors={errors}
           name="code" label="Code"
@@ -157,7 +160,7 @@ export default function PromoCodeForm({ saving = false, onCancel, onSubmit }) {
             render={({ field }) => (
               <div>
                 <Toggle label="Active" checked={field.value} onChange={field.onChange} />
-                <p className="text-[10px] text-[#9A9A94] mt-1">Inactive codes are rejected at checkout.</p>
+                <p className="text-[10px] text-ink-muted mt-1">Inactive codes are rejected at checkout.</p>
               </div>
             )}
           />

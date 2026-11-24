@@ -68,7 +68,7 @@ export default function PostCard({
         </p>
 
         <div className="flex items-center justify-between pt-3 border-t border-[#F0EBE3]">
-          <span className="text-[10px] text-[#9A9A94] flex items-center gap-1">
+          <span className="text-[10px] text-ink-muted flex items-center gap-1">
             <Clock size={10} />
             {post.published_at
               ? new Date(post.published_at).toLocaleDateString()

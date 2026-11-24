@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Check, ImageIcon, X } from "lucide-react";
+import { showFormValidationErrors } from "../../utils/formValidation";
 
 import {
   Modal,
@@ -41,6 +42,8 @@ export default function JobForm({
     setValue,
     formState: { errors },
   } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     resolver: yupResolver(jobSchema),
     defaultValues: { ...EMPTY_JOB_FORM, ...initial },
   });
@@ -105,18 +108,18 @@ export default function JobForm({
             variant="primary"
             icon={Check}
             loading={saving}
-            onClick={handleSubmit(submit)}
+            onClick={handleSubmit(submit, showFormValidationErrors)}
           >
             {isEditing ? "Save Changes" : "Post Listing"}
           </Button>
         </>
       }
     >
-      <form onSubmit={handleSubmit(submit)} className="space-y-5">
+      <form onSubmit={handleSubmit(submit, showFormValidationErrors)} className="space-y-5">
         <div>
           <label className="block text-[10px] font-bold text-ink-soft tracking-widest uppercase mb-2">
             Cover Image
-            <span className="text-[#9A9A94] normal-case font-medium ml-1">
+            <span className="text-ink-muted normal-case font-medium ml-1">
               (optional)
             </span>
           </label>
@@ -150,7 +153,7 @@ export default function JobForm({
             ) : null}
           </FileDropzone>
 
-          <p className="text-[10px] text-[#9A9A94] mt-1.5">
+          <p className="text-[10px] text-ink-muted mt-1.5">
             JPG, PNG, or WebP. Recommended 1600×600 — appears as a banner on
             your job card.
           </p>
@@ -184,7 +187,7 @@ export default function JobForm({
                   }}
                   style={
                     active
-                      ? { borderColor: t.color, backgroundColor: t.color }
+                      ? { borderColor: '#B4FF5A', backgroundColor: '#B4FF5A', color: '#000000' }
                       : undefined
                   }
                 >
@@ -215,7 +218,7 @@ export default function JobForm({
           />
           <span className="text-xs text-[#6B6B66] leading-snug">
             Also open to energy exchange options
-            <span className="block text-[10px] text-[#9A9A94] mt-0.5">
+            <span className="block text-[10px] text-ink-muted mt-0.5">
               Optional — exchange opportunities for when other paths aren't
               viable.
             </span>
@@ -241,7 +244,7 @@ export default function JobForm({
           name="description"
           textarea
           rows={4}
-          label="Role Description"
+          label="Role Description *"
           placeholder="Describe the role, what you're looking for, and what the instructor can expect..."
           accent="#4E7A1B"
         />

@@ -1,3 +1,4 @@
+import Spinner from '../../components/feedback/Spinner';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Check, Loader2 } from 'lucide-react';
@@ -105,13 +106,13 @@ export default function PlanFeaturesModal({ plan, onClose }) {
     >
       {isLoading ? (
         <div className="flex items-center justify-center py-8">
-          <Loader2 size={24} className="animate-spin text-[#9A9A94]" />
+          <Spinner size={24} />
         </div>
       ) : (
         <div className="space-y-6">
           {grouped.map(({ role, label, items }) => (
             <div key={role}>
-              <p className="text-[10px] font-bold text-[#9A9A94] uppercase tracking-widest mb-3">
+              <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-3">
                 {label}
               </p>
               <div className="space-y-2">
@@ -133,11 +134,11 @@ export default function PlanFeaturesModal({ plan, onClose }) {
                           enabled ? 'bg-coral' : 'bg-[#F5F2EC] border border-[#E5E0D8]'
                         }`}
                       >
-                        {enabled && <Check size={11} className="text-white" strokeWidth={3} />}
+                        {enabled && <Check size={11} className="text-ink" strokeWidth={3} />}
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-[#3E3D38]">{feat.label}</p>
-                        <p className="text-[10px] text-[#9A9A94]">{feat.description}</p>
+                        <p className="text-[10px] text-ink-muted">{feat.description}</p>
                       </div>
                     </button>
                   );

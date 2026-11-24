@@ -6,10 +6,10 @@ const TONE = {
     active:  'border-ink bg-ink text-white',
   },
   green: {
-    outline: 'border-edge text-emerald-600 hover:bg-emerald-50 hover:border-emerald-500',
-    plain:   'text-emerald-600 hover:bg-emerald-50',
-    soft:    'bg-emerald-50 text-emerald-600 hover:bg-emerald-100',
-    active:  'border-emerald-500 bg-emerald-50 text-emerald-600',
+    outline: 'border-edge text-brand-ink hover:bg-emerald-50 hover:border-emerald-500',
+    plain:   'text-brand-ink hover:bg-emerald-50',
+    soft:    'bg-emerald-50 text-brand-ink hover:bg-emerald-100',
+    active:  'border-emerald-500 bg-emerald-50 text-brand-ink',
   },
   red: {
     outline: 'border-edge text-red-500 hover:bg-red-50 hover:border-red-500',
@@ -18,10 +18,10 @@ const TONE = {
     active:  'border-red-500 bg-red-50 text-red-500',
   },
   coral: {
-    outline: 'border-edge text-coral hover:bg-coral-soft hover:border-coral',
-    plain:   'text-coral hover:bg-coral-soft',
-    soft:    'bg-coral-soft text-coral hover:bg-coral/10',
-    active:  'border-coral bg-coral-soft text-coral',
+    outline: 'border-edge text-brand-ink hover:bg-coral-soft hover:border-coral',
+    plain:   'text-brand-ink hover:bg-coral-soft',
+    soft:    'bg-coral-soft text-brand-ink hover:bg-coral/10',
+    active:  'border-coral bg-coral-soft text-brand-ink',
   },
   blue: {
     outline: 'border-edge text-sky-mg hover:bg-sky-soft hover:border-sky-mg',

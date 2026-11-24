@@ -7,7 +7,7 @@ export default function MonthlyViewsChart({ data = [], loading = false, accent =
   if (loading) return <div className="h-48 bg-[#F0EBE3] animate-pulse rounded-lg" />;
   if (!data?.length) {
     return (
-      <div className="h-48 flex items-center justify-center text-xs text-[#9A9A94]">
+      <div className="h-48 flex items-center justify-center text-xs text-ink-muted">
         No view data yet
       </div>
     );
@@ -35,7 +35,7 @@ export default function MonthlyViewsChart({ data = [], loading = false, accent =
               fontSize: 11, padding: '6px 10px',
             }}
             labelStyle={{ color: '#fff', fontWeight: 600 }}
-            itemStyle={{ color: accent }}
+            itemStyle={{ color: '#FFFFFF' }}
             formatter={(v) => [v, 'Views']}
           />
           <Area type="monotone" dataKey="views" stroke={accent} strokeWidth={2.5}

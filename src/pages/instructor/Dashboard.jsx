@@ -1,3 +1,4 @@
+import usePageLoading from '../../hooks/usePageLoading';
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -26,7 +27,7 @@ export default function Dashboard() {
     dispatch(fetchInstructorDashboard());
   }, [dispatch]);
 
-  const loading = status === STATUS.LOADING && !data;
+  const loading = usePageLoading(status);
   const kpis = data?.kpis || {};
   const profileId = user?.id || user?.user_id;
   const seeking = (user?.profileStatus || user?.profile_status) === 'active';
@@ -35,12 +36,8 @@ export default function Dashboard() {
     <div className="space-y-6 max-w-5xl mx-auto">
 
       <PageHeader
-        variant="gradient"
-        gradientFrom="#FFFFFF"
-        gradientTo="#F5FDA6"
-        gradientAccent="#4E7A1B"
         eyebrow="Welcome back"
-        eyebrowColor="#4E7A1B"
+        
         title={user?.name?.split(' ')[0] || 'Instructor'}
         description={seeking
           ? 'Your profile is live and attracting studios'
@@ -48,7 +45,7 @@ export default function Dashboard() {
         actions={(
           <div className="flex flex-col gap-2 items-end">
             <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold
-              ${seeking ? 'bg-[#B4FF5A]/20 text-[#3E3D38]' : 'bg-[#FAFEE0] text-[#9A9A94]'}`}>
+              ${seeking ? 'bg-[#B4FF5A]/20 text-[#3E3D38]' : 'bg-[#FAFEE0] text-ink-muted'}`}>
               <span className={`w-1.5 h-1.5 rounded-full ${seeking ? 'bg-[#B4FF5A]' : 'bg-[#9A9A94]'}`} />
               {seeking ? 'Actively Seeking' : 'Not Seeking'}
             </div>
@@ -64,14 +61,14 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiTile icon={Eye}           label="Profile Views" value={kpis.profile_views_this_month ?? 0}
-          sub={`${kpis.profile_views_total ?? 0} all time`} color="#B4FF5A" loading={loading} />
+          sub={`${kpis.profile_views_total ?? 0} all time`} color="#3D5E16" loading={loading} />
         <KpiTile icon={MessageCircle} label="Active Apps"   value={kpis.applications_active ?? 0}
-          sub={`${kpis.applications_total ?? 0} total`}     color="#B4FF5A" loading={loading} />
+          sub={`${kpis.applications_total ?? 0} total`}     color="#3D5E16" loading={loading} />
         <KpiTile icon={Heart}         label="Favourited"    value={kpis.favourited_by_count ?? 0}
-          sub="By studios"                                  color="#B4FF5A " loading={loading} />
+          sub="By studios"                                  color="#3D5E16" loading={loading} />
         <KpiTile icon={Star}          label="Rating"
           value={kpis.rating_avg ? `${kpis.rating_avg}★` : '—'}
-          sub={`${kpis.rating_count ?? 0} reviews`}         color="#B4FF5A" loading={loading} />
+          sub={`${kpis.rating_count ?? 0} reviews`}         color="#3D5E16" loading={loading} />
       </div>
 
       <div className="grid lg:grid-cols-3 gap-4">
@@ -79,7 +76,7 @@ export default function Dashboard() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="font-unbounded text-sm font-bold text-[#3E3D38]">Profile Views</h3>
-              <p className="text-[10px] text-[#9A9A94]">Last 6 months</p>
+              <p className="text-[10px] text-ink-muted">Last 6 months</p>
             </div>
             <Chip size="xs" tone="coral">{kpis.profile_views_total ?? 0} total</Chip>
           </div>
@@ -89,7 +86,7 @@ export default function Dashboard() {
         <div className="bg-white rounded-2xl p-5 border border-[#E5E0D8]">
           <div className="mb-2">
             <h3 className="font-unbounded text-sm font-bold text-[#3E3D38]">Application Status</h3>
-            <p className="text-[10px] text-[#9A9A94]">Across all your applications</p>
+            <p className="text-[10px] text-ink-muted">Across all your applications</p>
           </div>
           <ApplicationStatusChart data={data?.application_status} loading={loading} />
         </div>
@@ -106,7 +103,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0 flex-1">
                 <p className="text-xs font-semibold text-[#3E3D38] truncate">{a.job_title}</p>
-                <p className="text-[10px] text-[#9A9A94]">{a.studio || '—'}</p>
+                <p className="text-[10px] text-ink-muted">{a.studio || '—'}</p>
               </div>
               <Chip size="xs" tone={
                 a.status === 'accepted' ? 'green' :
@@ -128,9 +125,9 @@ export default function Dashboard() {
                 tone={v.viewer_role === 'studio' ? 'blue' : 'coral'} />
               <div className="min-w-0 flex-1">
                 <p className="text-xs font-semibold text-[#3E3D38] truncate">{v.viewer_name || 'Someone'}</p>
-                <p className="text-[10px] text-[#9A9A94] capitalize">{v.viewer_role || '—'}</p>
+                <p className="text-[10px] text-ink-muted capitalize">{v.viewer_role || '—'}</p>
               </div>
-              <span className="text-[10px] text-[#9A9A94] whitespace-nowrap">
+              <span className="text-[10px] text-ink-muted whitespace-nowrap">
                 {formatRelative(v.created_at)}
               </span>
             </div>
@@ -152,8 +149,8 @@ function KpiTile({ icon: Icon, label, value, sub, color, loading }) {
         </div>
       </div>
       <p className="font-unbounded text-2xl font-black text-[#3E3D38]">{value}</p>
-      <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-semibold mt-1">{label}</p>
-      <p className="text-[10px] text-[#9A9A94] mt-0.5">{sub}</p>
+      <p className="text-[10px] text-ink-muted uppercase tracking-wider font-semibold mt-1">{label}</p>
+      <p className="text-[10px] text-ink-muted mt-0.5">{sub}</p>
     </div>
   );
 }
@@ -167,7 +164,7 @@ function ActivityList({ title, items, loading, empty, ctaTo, renderItem }) {
         {ctaTo && (
           <Button variant="ghost" size="xs" iconRight={ArrowRight}
             onClick={() => navigate(ctaTo)}
-            className="!text-coral hover:!underline">
+            className="text-[#000] hover:!underline">
             View all
           </Button>
         )}
@@ -175,7 +172,7 @@ function ActivityList({ title, items, loading, empty, ctaTo, renderItem }) {
       {loading ? (
         <CardSkeleton count={3} />
       ) : !items?.length ? (
-        <p className="text-xs text-[#9A9A94] py-6 text-center">{empty}</p>
+        <p className="text-xs text-ink-muted py-6 text-center">{empty}</p>
       ) : (
         <div className="space-y-3">
           {items.map((it) => <div key={it.id}>{renderItem(it)}</div>)}

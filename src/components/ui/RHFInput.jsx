@@ -18,6 +18,7 @@ export default function RHFInput({
       render={({ field }) => (
         <Input
           {...inputProps}
+          ref={field.ref}
           name={field.name}
           value={field.value ?? ''}
           onChange={field.onChange}

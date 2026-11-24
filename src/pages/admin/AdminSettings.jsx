@@ -1,3 +1,4 @@
+import PageHeader from '../../components/ui/PageHeader';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useSelector, useDispatch } from 'react-redux';
@@ -22,7 +23,7 @@ export default function AdminSettings() {
   const handleChangePassword = async () => {
     setPwError(''); setPwSuccess(false);
     if (!current) return setPwError('Enter your current password.');
-    if (next.length < 6) return setPwError('New password must be at least 6 characters.');
+    if (next.length < 12) return setPwError('New password must be at least 12 characters.');
     if (next !== confirm) return setPwError('Passwords do not match.');
 
     setPwLoading(true);
@@ -58,44 +59,31 @@ export default function AdminSettings() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 flex items-center gap-4">
-        <div className="w-12 h-12 bg-coral/10 rounded-2xl flex items-center justify-center">
-          <Settings size={22} className="text-coral" />
-        </div>
-        <div>
-          <p className="text-coral text-xs font-semibold tracking-widest uppercase mb-1">
-            Admin &nbsp;/&nbsp; Settings
-          </p>
-          <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Account &amp; Security</h1>
-          <p className="text-[#6B6B66] text-xs mt-0.5">
-            Manage your personal admin credentials.
-          </p>
-        </div>
-      </div>
+      <PageHeader eyebrow="Admin / Settings" title="Account & Security" description="Manage your personal admin credentials." />
 
       <div className="grid lg:grid-cols-2 gap-4">
         <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
           <div className="px-5 py-3.5 border-b border-[#E5E0D8] flex items-center gap-2.5">
-            <Mail size={14} className="text-coral" />
+            <Mail size={14} className="text-brand-ink" />
             <h3 className="font-unbounded text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Email</h3>
           </div>
           <div className="p-5 space-y-3">
             <Input label="Admin email" value={user?.email || ''} disabled />
-            <p className="text-[10px] text-[#9A9A94]">To change your admin email, contact the platform owner.</p>
+            <p className="text-[10px] text-ink-muted">To change your admin email, contact the platform owner.</p>
           </div>
         </div>
 
         <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
           <div className="px-5 py-3.5 border-b border-[#E5E0D8] flex items-center gap-2.5">
-            <Settings size={14} className="text-[#9BE63D]" />
+            <Settings size={14} className="text-brand-ink" />
             <h3 className="font-unbounded text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Password Reset</h3>
           </div>
           <div className="p-5 space-y-3">
             <p className="text-sm text-[#6B6B66]">Send a reset link to your email if you've forgotten your password.</p>
             {resetSuccess && (
               <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5 flex items-center gap-2">
-                <Check size={13} className="text-emerald-600" />
-                <p className="text-emerald-700 text-xs font-medium">Reset link sent to {user?.email}</p>
+                <Check size={13} className="text-brand-ink" />
+                <p className="text-brand-ink text-xs font-medium">Reset link sent to {user?.email}</p>
               </div>
             )}
             {!resetSuccess && (
@@ -109,7 +97,7 @@ export default function AdminSettings() {
 
       <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
         <div className="px-5 py-3.5 border-b border-[#E5E0D8] flex items-center gap-2.5">
-          <Lock size={14} className="text-coral" />
+          <Lock size={14} className="text-brand-ink" />
           <h3 className="font-unbounded text-[10px] font-bold text-[#3E3D38] tracking-wider uppercase">Change Password</h3>
         </div>
         <div className="p-5 space-y-4">
@@ -118,13 +106,13 @@ export default function AdminSettings() {
           )}
           {pwSuccess && (
             <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5 flex items-center gap-2">
-              <Check size={13} className="text-emerald-600" />
-              <p className="text-emerald-700 text-xs font-medium">Password updated.</p>
+              <Check size={13} className="text-brand-ink" />
+              <p className="text-brand-ink text-xs font-medium">Password updated.</p>
             </div>
           )}
           <div className="grid sm:grid-cols-3 gap-3">
             <Input label="Current password" type="password" value={current} onChange={(e) => setCurrent(e.target.value)} disabled={pwLoading} />
-            <Input label="New password" type="password" value={next} onChange={(e) => setNext(e.target.value)} placeholder="Min. 6 characters" disabled={pwLoading} />
+            <Input label="New password" type="password" value={next} onChange={(e) => setNext(e.target.value)} placeholder="Min. 12 characters" disabled={pwLoading} />
             <Input label="Confirm password" type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="Repeat new password" disabled={pwLoading} />
           </div>
           <Button

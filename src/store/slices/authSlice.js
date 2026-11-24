@@ -68,15 +68,16 @@ const authSlice = createSlice({
         state.error = payload;
       })
 
-      .addCase(getMe.pending, (state) => {
-        state.status = STATUS.LOADING;
+      .addCase(getMe.pending, (state, { meta }) => {
+        if (!meta.arg?.background || !state.user) state.status = STATUS.LOADING;
         state.error = null;
       })
       .addCase(getMe.fulfilled, (state, { payload }) => {
         state.status = STATUS.SUCCEEDED;
         state.user = flattenUser(payload.data?.user || payload.data) || null;
       })
-      .addCase(getMe.rejected, (state, { payload }) => {
+      .addCase(getMe.rejected, (state, { payload, meta }) => {
+        if (meta.arg?.background && state.user) return;
         state.status = STATUS.FAILED;
         state.error = payload;
         state.token = null;

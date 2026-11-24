@@ -13,6 +13,7 @@ import { fetchAudienceCounts, sendBroadcast } from '../../store/actions/emailAct
 import {
   PageHeader, RHFInput, Button, SelectField, Modal,
 } from '../../components/ui';
+import { showFormValidationErrors } from '../../utils/formValidation';
 
 const broadcastSchema = yup.object({
   subject: yup.string().trim().required('Subject is required').max(200, 'Keep subject under 200 characters'),
@@ -40,6 +41,8 @@ export default function AdminCommunications() {
   const {
     control, handleSubmit, watch, formState: { errors },
   } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     resolver: yupResolver(broadcastSchema),
     defaultValues: { subject: '', body: '' },
   });
@@ -101,16 +104,14 @@ export default function AdminCommunications() {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <PageHeader
-        icon={Mail}
-        iconBg="#4E7A1B1A"
-        iconColor="#4E7A1B"
+        
         eyebrow="Admin / Communications"
-        eyebrowColor="#4E7A1B"
+        
         title="Email Broadcast"
         description="Send announcements, updates, or re-engagement emails to platform users. Send a test to yourself first to preview."
       />
 
-      <form onSubmit={handleSubmit(onPrepareBroadcast)} className="space-y-5">
+      <form onSubmit={handleSubmit(onPrepareBroadcast, showFormValidationErrors)} className="space-y-5">
 
         <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5 space-y-4">
           <div>
@@ -128,7 +129,7 @@ export default function AdminCommunications() {
 
           {counts && (
             <div className="flex items-center gap-2 text-xs text-[#6B6B66] bg-coral/5 rounded-xl p-3 border border-coral/20">
-              <Users size={14} className="text-coral flex-shrink-0" />
+              <Users size={14} className="text-brand-ink flex-shrink-0" />
               <span>
                 This will send to <strong className="text-[#3E3D38]">{targetCount.toLocaleString()}</strong> recipient{targetCount === 1 ? '' : 's'}.
               </span>
@@ -157,8 +158,8 @@ export default function AdminCommunications() {
             accent="#4E7A1B"
           />
 
-          <p className="text-[10px] text-[#9A9A94] leading-relaxed flex items-start gap-1.5">
-            <Sparkles size={11} className="text-coral mt-0.5 flex-shrink-0" />
+          <p className="text-[10px] text-ink-muted leading-relaxed flex items-start gap-1.5">
+            <Sparkles size={11} className="text-brand-ink mt-0.5 flex-shrink-0" />
             Each recipient's email opens with "Hi [their name]," automatically — your body content goes below that greeting.
           </p>
         </div>
@@ -172,7 +173,7 @@ export default function AdminCommunications() {
             loading={testing}
             disabled={!subject || !body}
             onClick={onSendTest}
-            className="hover:border-coral hover:text-coral"
+            className="hover:border-coral hover:text-brand-ink"
           >
             Send test to me first
           </Button>
@@ -183,7 +184,6 @@ export default function AdminCommunications() {
             size="md"
             icon={Send}
             disabled={!subject || !body || targetCount === 0}
-            style={{ backgroundColor: '#4E7A1B' }}
           >
             Send to {targetCount.toLocaleString()} {targetCount === 1 ? 'user' : 'users'}
           </Button>
@@ -211,12 +211,12 @@ export default function AdminCommunications() {
         >
           <div className="space-y-3">
             <div className="bg-[#FFFFFF] rounded-xl border border-[#E5E0D8] p-4 space-y-2">
-              <div className="flex items-center gap-2 text-[10px] text-[#9A9A94] uppercase tracking-wider font-semibold">
+              <div className="flex items-center gap-2 text-[10px] text-ink-muted uppercase tracking-wider font-semibold">
                 <Mail size={11} /> Subject
               </div>
               <p className="text-sm font-semibold text-[#3E3D38]">{pendingPayload?.subject}</p>
 
-              <div className="flex items-center gap-2 text-[10px] text-[#9A9A94] uppercase tracking-wider font-semibold pt-2">
+              <div className="flex items-center gap-2 text-[10px] text-ink-muted uppercase tracking-wider font-semibold pt-2">
                 <Users size={11} /> Audience
               </div>
               <p className="text-sm text-[#3E3D38]">

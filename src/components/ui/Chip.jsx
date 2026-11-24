@@ -1,11 +1,11 @@
 const TONE = {
   neutral: 'bg-[#F5F0E8] text-[#6B6B66]',
-  coral:   'bg-coral/15 text-coral',
-  blue:    'bg-coral/15 text-coral',
-  purple:  'bg-coral/15 text-coral',
-  emerald: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+  coral:   'bg-coral text-black',
+  blue:    'bg-coral text-black',
+  purple:  'bg-coral text-black',
+  emerald: 'bg-emerald-50 text-brand-ink border border-emerald-200',
   red:     'bg-red-50 text-red-700 border border-red-200',
-  yellow:  'bg-yellow-50 text-yellow-700 border border-yellow-200',
+  yellow:  'bg-yellow-50 text-brand-ink border border-yellow-200',
 };
 
 const SIZE = {

@@ -28,15 +28,19 @@ export default function SavedInstructorCard({
       <div className="bg-gradient-to-br from-[#FFFFFF] to-coral/5 px-5 pt-5 pb-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <Avatar
-              name={inst.name}
-              src={instDetail?.profile_picture_url || instDetail?.profile_picture}
-              size="md"
-              tone="coral"
-            />
+            <button type="button" onClick={(e) => { e.stopPropagation(); onView?.(); }}
+              aria-label={`View ${inst.name}'s profile`}>
+              <Avatar
+                name={inst.name}
+                src={instDetail?.profile_picture_url || instDetail?.profile_picture}
+                size="md"
+                tone="coral"
+              />
+            </button>
             <div>
-              <p className="font-unbounded text-sm font-black text-[#3E3D38]">{inst.name}</p>
-              <p className="text-[#9A9A94] text-[10px]">
+              <button type="button" onClick={(e) => { e.stopPropagation(); onView?.(); }}
+                className="font-unbounded text-sm font-black text-[#3E3D38] hover:underline">{inst.name}</button>
+              <p className="text-ink-muted text-[10px]">
                 {instDetail.pronouns}{instDetail.age ? ` · ${instDetail.age} yrs` : ''}
               </p>
             </div>
@@ -47,7 +51,7 @@ export default function SavedInstructorCard({
             onClick={(e) => { e.stopPropagation(); onUnsave?.(); }}
             disabled={unsaving}
             title="Remove from saved"
-            className="!text-coral"
+            className="!text-brand-ink"
           >
             {unsaving ? <ButtonLoader size={16} color="#4E7A1B" /> : <Heart size={16} fill="currentColor" />}
           </IconButton>
@@ -73,7 +77,7 @@ export default function SavedInstructorCard({
         <div className="space-y-1.5">
           {(countryFrom || travelingTo) && (
             <div className="flex items-center gap-1.5 text-xs text-[#6B6B66]">
-              <MapPin size={11} className="text-[#9A9A94] flex-shrink-0" />
+              <MapPin size={11} className="text-ink-muted flex-shrink-0" />
               <span className="truncate">
                 {countryFrom}{travelingTo && ` → ${travelingTo}`}
               </span>
@@ -81,19 +85,19 @@ export default function SavedInstructorCard({
           )}
           {instDetail.availability && (
             <div className="flex items-center gap-1.5 text-xs text-[#6B6B66]">
-              <Calendar size={11} className="text-[#9A9A94] flex-shrink-0" />
+              <Calendar size={11} className="text-ink-muted flex-shrink-0" />
               <span className="truncate">{instDetail.availability}</span>
             </div>
           )}
           {languages.length > 0 && (
             <div className="flex items-center gap-1.5 text-xs text-[#6B6B66]">
-              <Globe size={11} className="text-[#9A9A94] flex-shrink-0" />
+              <Globe size={11} className="text-ink-muted flex-shrink-0" />
               <span className="truncate">{languages.join(', ')}</span>
             </div>
           )}
           {inst.stats?.applications_count !== undefined && (
             <div className="flex items-center gap-1.5 text-xs text-[#6B6B66]">
-              <Users size={11} className="text-[#9A9A94] flex-shrink-0" />
+              <Users size={11} className="text-ink-muted flex-shrink-0" />
               <span className="truncate">{inst.stats.applications_count} applications</span>
             </div>
           )}
@@ -112,7 +116,7 @@ export default function SavedInstructorCard({
           </div>
         )}
 
-        {instDetail.bio && <p className="text-[#9A9A94] text-xs line-clamp-2">{instDetail.bio}</p>}
+        {instDetail.bio && <p className="text-ink-muted text-xs line-clamp-2">{instDetail.bio}</p>}
 
         <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
           <Button variant="secondary" size="sm" icon={Eye} fullWidth onClick={onView}>

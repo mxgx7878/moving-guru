@@ -2,9 +2,9 @@ import { Mail } from 'lucide-react';
 import { Avatar } from '../../components/ui';
 
 const APPLICATION_STATUS = {
-  pending:   { label: 'Pending',   cls: 'bg-coral/10 text-coral' },
+  pending:   { label: 'Pending',   cls: 'bg-coral/10 text-brand-ink' },
   viewed:    { label: 'Viewed',    cls: 'bg-[#FAFEE0] text-[#6B6B66]'    },
-  accepted:  { label: 'Hired',     cls: 'bg-emerald-50 text-emerald-600' },
+  accepted:  { label: 'Hired',     cls: 'bg-emerald-50 text-brand-ink' },
   rejected:  { label: 'Declined',  cls: 'bg-red-50 text-red-500'         },
   withdrawn: { label: 'Withdrawn', cls: 'bg-gray-100 text-gray-500'      },
 };
@@ -28,7 +28,7 @@ export default function ApplicantRow({ app }) {
         <div className="min-w-0">
           <p className="font-semibold text-[#3E3D38] text-xs truncate">{name}</p>
           {user.email && (
-            <p className="text-[10px] text-[#9A9A94] flex items-center gap-1 truncate">
+            <p className="text-[10px] text-ink-muted flex items-center gap-1 truncate">
               <Mail size={9} /> {user.email}
             </p>
           )}
@@ -39,7 +39,7 @@ export default function ApplicantRow({ app }) {
           {cfg.label}
         </span>
         {app.created_at && (
-          <span className="text-[10px] text-[#9A9A94] hidden sm:inline">
+          <span className="text-[10px] text-ink-muted hidden sm:inline">
             {new Date(app.created_at).toLocaleDateString()}
           </span>
         )}

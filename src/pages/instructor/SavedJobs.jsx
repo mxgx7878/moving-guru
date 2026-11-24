@@ -1,3 +1,4 @@
+import usePageLoading from '../../hooks/usePageLoading';
 import { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'sonner';
@@ -43,17 +44,14 @@ export default function SavedJobs() {
     }
   };
 
-  const loading = status === STATUS.LOADING && jobs.length === 0;
+  const loading = usePageLoading(status);
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
 
       <PageHeader
-        variant="gradient"
-        gradientFrom="#FFFFFF"
-        gradientTo="#4E7A1B10"
         eyebrow="Saved Jobs"
-        eyebrowColor="#4E7A1B"
+        
         title="Your Shortlist"
         description={`${saved.length} saved listing${saved.length !== 1 ? 's' : ''} — apply when you're ready`}
       />

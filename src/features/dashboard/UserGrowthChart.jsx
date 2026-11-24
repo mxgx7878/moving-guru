@@ -9,7 +9,7 @@ export default function UserGrowthChart({ data = [], loading = false }) {
   }
   if (!data?.length) {
     return (
-      <div className="h-48 flex items-center justify-center text-xs text-[#9A9A94]">
+      <div className="h-48 flex items-center justify-center text-xs text-ink-muted">
         No signup data yet
       </div>
     );

@@ -14,7 +14,7 @@ const VARIANT = {
   infoSoft:    'bg-[#B4FF5A]/20 text-[#3F6216] border-[#B4FF5A]/50 hover:bg-[#B4FF5A]/30',
   dangerSoft:  'bg-[#F5FDA6]/50 text-[#7E811F] border-[#F5FDA6] hover:bg-[#F5FDA6]/70',
   successSoft: 'bg-[#B4FF5A]/20 text-[#3F6216] border-[#B4FF5A]/50 hover:bg-[#B4FF5A]/30',
-  mutedSoft:   'bg-[#FAFEE0] text-[#9A9A94] border-[#E5E0D8]',
+  mutedSoft:   'bg-[#FAFEE0] text-ink-muted border-[#E5E0D8]',
 };
 
 const SIZE = {

@@ -4,7 +4,7 @@ import { SKELETON_PROPS } from '../../constants/theme';
 
 export default function CardSkeleton({ count = 4 }) {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div role="status" aria-label="Loading" aria-busy="true" className="space-y-4 ">
       {Array.from({ length: count }).map((_, i) => (
         <div key={i} className="bg-white rounded-2xl p-5 border border-[#E5E0D8]">
           <Skeleton circle width={36} height={36} {...SKELETON_PROPS} className="mb-4" />

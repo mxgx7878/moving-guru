@@ -2,10 +2,10 @@ import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { toast } from 'sonner';
 import { Check } from 'lucide-react';
 
 import { Modal, Button, RHFInput, TabBar, Field } from '../../components/ui';
+import { showFormValidationErrors } from '../../utils/formValidation';
 import { POST_TYPES, POST_AUDIENCE_OPTIONS as AUDIENCE_OPTIONS } from '../../constants/postConstants';
 
 const AUDIENCE_TABS = AUDIENCE_OPTIONS.map((o) => ({ ...o, color: '#4E7A1B' }));
@@ -72,6 +72,8 @@ export default function AdminPostForm({
   const {
     control, handleSubmit, watch, setError, formState: { errors },
   } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     resolver: yupResolver(postSchema),
     defaultValues: post ? postToForm(post) : EMPTY_FORM,
   });
@@ -100,11 +102,6 @@ export default function AdminPostForm({
     });
   };
 
-  const onInvalid = (errs) => {
-    const first = Object.values(errs)[0]?.message;
-    if (first) toast.error(first);
-  };
-
   return (
     <Modal
       open
@@ -116,13 +113,13 @@ export default function AdminPostForm({
       footer={
         <>
           <Button variant="secondary" onClick={onCancel}>Cancel</Button>
-          <Button variant="primary" icon={Check} loading={saving} onClick={handleSubmit(submit, onInvalid)}>
+          <Button variant="primary" icon={Check} loading={saving} onClick={handleSubmit(submit, showFormValidationErrors)}>
             {isEditing ? 'Save Changes' : 'Create Post'}
           </Button>
         </>
       }
     >
-      <form onSubmit={handleSubmit(submit, onInvalid)} className="space-y-5">
+      <form onSubmit={handleSubmit(submit, showFormValidationErrors)} className="space-y-5">
         <Field label="Type *" error={errors.type?.message}>
           <Controller
             control={control}

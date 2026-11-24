@@ -1,10 +1,13 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
+import { fetchAdminPlans } from "../../store/actions/subscriptionAction";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { Check, User, Building2 } from "lucide-react";
 
 import { Modal, Button, RHFInput, SelectField } from "../../components/ui";
+import { showFormValidationErrors } from "../../utils/formValidation";
 
 const ROLE_OPTIONS = [
   { id: "instructor", label: "Instructor", icon: User, color: "#4E7A1B" },
@@ -13,15 +16,19 @@ const ROLE_OPTIONS = [
 
 const STATUS_OPTIONS = [
   { id: "active", label: "Active" },
+  { id: "pending_payment", label: "Pending payment" },
   { id: "pending", label: "Pending approval" },
   { id: "suspended", label: "Suspended" },
 ];
 
-const PLAN_OPTIONS = [
-  { id: "monthly", label: "Monthly — $15/mo" },
-  { id: "biannual", label: "6 Months — $45 (50% off)" },
-  { id: "annual", label: "12 Months — $60/yr (best value)" },
-];
+const billingInterval = (plan) => {
+  const count = Number(plan.intervalCount) || 1;
+  const interval = plan.interval || "month";
+  return count === 1 ? `per ${interval}` : `every ${count} ${interval}s`;
+};
+
+const planPrice = (plan) =>
+  `${String(plan.currency || "").toUpperCase()} ${Number(plan.price).toFixed(2)} ${billingInterval(plan)}`;
 
 const buildSchema = (isEdit) =>
   yup.object({
@@ -47,13 +54,13 @@ const buildSchema = (isEdit) =>
           .nullable()
           .test(
             "optional-min",
-            "Password must be at least 6 characters",
-            (v) => !v || v.length >= 6,
+            "Password must be at least 12 characters",
+            (v) => !v || v.length >= 12,
           )
       : yup
           .string()
           .required("Password is required")
-          .min(6, "Password must be at least 6 characters"),
+          .min(12, "Password must be at least 12 characters"),
     phone: yup.string().nullable(),
     location: yup.string().nullable(),
     bio: yup
@@ -62,7 +69,6 @@ const buildSchema = (isEdit) =>
       .nullable(),
     status: yup.string().required(),
     is_verified: yup.boolean(),
-    plan: yup.string().required().oneOf(["monthly", "biannual", "annual"]),
   });
 
 const EMPTY_FORM = {
@@ -74,9 +80,8 @@ const EMPTY_FORM = {
   phone: "",
   location: "",
   bio: "",
-  status: "active",
+  status: "pending_payment",
   is_verified: false,
-  plan: "monthly",
 };
 
 const userToForm = (u) => ({
@@ -90,11 +95,37 @@ const userToForm = (u) => ({
   bio: u.bio || u.description || "",
   status: u.status || (u.is_active === false ? "suspended" : "active"),
   is_verified: Boolean(u.is_verified),
-  plan: (u.plan || "monthly").toLowerCase(),
 });
 
-export default function UserForm({ user, saving = false, onCancel, onSubmit }) {
+export default function UserForm({ user, saving = false, onCancel, onSubmit, onUpdateSubscription }) {
   const isEditing = Boolean(user);
+  const dispatch = useDispatch();
+  const [plans, setPlans] = useState([]);
+  const [plansError, setPlansError] = useState(false);
+  const [plansRequest, setPlansRequest] = useState(0);
+  const [selectedPlanId, setSelectedPlanId] = useState("");
+  const currentPlanId = user?.plan_id || "";
+
+  useEffect(() => { setSelectedPlanId(""); }, [user?.id, currentPlanId]);
+
+  useEffect(() => {
+    if (!isEditing || !currentPlanId || user?.subscription_status !== "active") return;
+    let active = true;
+    setPlansError(false);
+    dispatch(fetchAdminPlans()).unwrap()
+      .then((catalog) => { if (active) setPlans(catalog); })
+      .catch(() => { if (active) setPlansError(true); });
+    return () => { active = false; };
+  }, [dispatch, isEditing, currentPlanId, user?.subscription_status, plansRequest]);
+
+  const currentPlan = useMemo(() => plans.find((p) => p.id === currentPlanId), [plans, currentPlanId]);
+  const selectablePlans = useMemo(() => {
+    const current = plans.find((p) => p.id === currentPlanId);
+    return plans
+      .filter((p) => p.id !== currentPlanId && current && p.isActive
+        && Number(p.price) > 0 && p.currency === current.currency)
+      .sort((a, b) => Number(a.sortOrder || 0) - Number(b.sortOrder || 0));
+  }, [plans, currentPlanId]);
 
   const schema = useMemo(() => buildSchema(isEditing), [isEditing]);
 
@@ -105,6 +136,8 @@ export default function UserForm({ user, saving = false, onCancel, onSubmit }) {
     setValue,
     formState: { errors },
   } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     resolver: yupResolver(schema),
     defaultValues: user ? userToForm(user) : EMPTY_FORM,
   });
@@ -130,7 +163,6 @@ export default function UserForm({ user, saving = false, onCancel, onSubmit }) {
       bio: (values.bio || "").trim() || null,
       status: values.status,
       is_verified: Boolean(values.is_verified),
-      plan: values.plan,
     };
     if (values.role === "studio")
       payload.studio_name = values.studio_name.trim();
@@ -138,6 +170,15 @@ export default function UserForm({ user, saving = false, onCancel, onSubmit }) {
 
     if (!isEditing && values.password) payload.password = values.password;
     onSubmit(payload);
+  };
+
+  const updateSubscription = () => {
+    if (!selectedPlanId || selectedPlanId === currentPlanId || saving) return;
+    onUpdateSubscription({
+      planId: selectedPlanId,
+      expectedPlanId: currentPlanId,
+      expectedSubscriptionUpdatedAt: user.subscription_updated_at,
+    });
   };
 
   return (
@@ -161,14 +202,14 @@ export default function UserForm({ user, saving = false, onCancel, onSubmit }) {
             variant="primary"
             icon={Check}
             loading={saving}
-            onClick={handleSubmit(submit)}
+            onClick={handleSubmit(submit, showFormValidationErrors)}
           >
             {isEditing ? "Save Changes" : "Create User"}
           </Button>
         </>
       }
     >
-      <form onSubmit={handleSubmit(submit)} className="space-y-5">
+      <form onSubmit={handleSubmit(submit, showFormValidationErrors)} className="space-y-5">
         {!isEditing && (
           <div>
             <label className="block text-[10px] font-bold text-ink-soft tracking-widest uppercase mb-2">
@@ -193,7 +234,7 @@ export default function UserForm({ user, saving = false, onCancel, onSubmit }) {
                         onClick={() => field.onChange(r.id)}
                         style={
                           active
-                            ? { backgroundColor: r.color, borderColor: r.color }
+                            ? { backgroundColor: '#B4FF5A', borderColor: '#B4FF5A', color: '#000000' }
                             : undefined
                         }
                       >
@@ -254,8 +295,8 @@ export default function UserForm({ user, saving = false, onCancel, onSubmit }) {
             name="password"
             type="password"
             label="Password *"
-            placeholder="At least 6 characters"
-            hint="Share this with the user — they can change it after first login."
+            placeholder="At least 12 characters"
+            hint="Use at least 12 characters. Share it with the user; they can change it after login."
             accent={accent}
           />
         )}
@@ -302,24 +343,7 @@ export default function UserForm({ user, saving = false, onCancel, onSubmit }) {
               />
             )}
           />
-
-          <Controller
-            control={control}
-            name="plan"
-            render={({ field }) => (
-              <SelectField
-                label="Subscription Plan"
-                value={field.value}
-                onChange={field.onChange}
-                options={PLAN_OPTIONS.map((p) => ({
-                  value: p.id,
-                  label: p.label,
-                }))}
-                placeholder="Select plan"
-                accent={accent}
-              />
-            )}
-          />
+          {!isEditing && <p className="text-xs text-ink-muted sm:col-span-2">New instructor and studio accounts need a subscription before platform access.</p>}
 
           {isStudio && (
             <Controller
@@ -339,6 +363,65 @@ export default function UserForm({ user, saving = false, onCancel, onSubmit }) {
             />
           )}
         </div>
+
+        {isEditing && (
+          <section className="rounded-2xl border border-[#E5E0D8] bg-[#FAFEE0]/40 p-4 space-y-4" aria-labelledby="subscription-heading">
+            <div>
+              <h3 id="subscription-heading" className="text-sm font-bold text-ink">Subscription</h3>
+              <p className="text-xs text-ink-soft">Manage this user’s plan separately from profile changes.</p>
+            </div>
+
+            <div className="rounded-xl border border-[#B4FF5A] bg-white p-4">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-ink-soft">Current plan</p>
+              <p className="mt-1 text-base font-bold text-ink">{user.plan_name || currentPlan?.name || "No active subscription"}</p>
+              {currentPlan && <p className="mt-1 text-xs text-ink-soft">{planPrice(currentPlan)}</p>}
+              {user.subscription_status && <p className="mt-1 text-xs text-ink-soft">Status: {user.subscription_status}</p>}
+            </div>
+
+            {currentPlanId && user.subscription_status === "active" && (
+              <div className="space-y-3">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-ink-soft">Change to</p>
+                {plansError ? (
+                  <button type="button" onClick={() => setPlansRequest((n) => n + 1)} className="text-xs underline">Retry loading plans</button>
+                ) : plans.length === 0 ? (
+                  <p className="text-xs text-ink-soft">Loading plans…</p>
+                ) : selectablePlans.length === 0 ? (
+                  <p className="text-xs text-ink-soft">No other compatible paid plans are available.</p>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {selectablePlans.map((plan) => (
+                      <button
+                        key={plan.id}
+                        type="button"
+                        disabled={saving}
+                        aria-pressed={selectedPlanId === plan.id}
+                        onClick={() => setSelectedPlanId(plan.id)}
+                        className={`rounded-xl border p-3 text-left transition-colors disabled:opacity-60 ${
+                          selectedPlanId === plan.id
+                            ? "border-[#4E7A1B] bg-[#B4FF5A]/30"
+                            : "border-[#E5E0D8] bg-white hover:border-[#4E7A1B]"
+                        }`}
+                      >
+                        <span className="block text-sm font-bold text-ink">{plan.name || plan.id}</span>
+                        <span className="block mt-1 text-xs text-ink-soft">{planPrice(plan)}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <p className="text-xs text-ink-soft">New plan access starts now. Its price applies on the existing next billing date, and the user receives an email.</p>
+                <Button
+                  type="button"
+                  variant="primary"
+                  loading={saving}
+                  disabled={!selectedPlanId}
+                  onClick={updateSubscription}
+                >
+                  Update Subscription
+                </Button>
+              </div>
+            )}
+          </section>
+        )}
       </form>
     </Modal>
   );

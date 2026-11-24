@@ -1,3 +1,4 @@
+import usePageLoading from '../../hooks/usePageLoading';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'sonner';
@@ -33,7 +34,7 @@ const STATUS_OPTIONS = [
 ];
 
 const TYPE_TABS = [
-  { id: 'all', label: 'All Listings', color: '#B4FF5A' },
+  { id: 'all', label: 'All Listings', color: '#3D5E16' },
   ...JOB_TYPES.map((t) => ({ id: t.id, label: t.label, icon: t.icon, color: t.color })),
 ];
 
@@ -50,7 +51,7 @@ export default function AdminJobs() {
   const dispatch = useDispatch();
   const {
     adminJobs, adminJobsStatus,
-    selectedJob,
+    selectedJob, selectedJobStatus,
     applicantsByJobId,
     message, error,
   } = useSelector((s) => s.job);
@@ -139,17 +140,15 @@ export default function AdminJobs() {
     await runMutation(deleteAdminJob(id));
   };
 
-  const isLoading = adminJobsStatus === STATUS.LOADING && adminJobs.length === 0;
+  const isLoading = usePageLoading(adminJobsStatus);
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
 
       <PageHeader
-        icon={Briefcase}
-        iconBg="#9BE63D1A"
-        iconColor="#9BE63D"
+        
         eyebrow="Admin / Job Management"
-        eyebrowColor="#9BE63D"
+        
         title="Platform Job Listings"
         description="Moderate listings posted by studios. View applicants, deactivate spam, or delete outright."
       />
@@ -198,7 +197,8 @@ export default function AdminJobs() {
 
       {previewId && (
         <JobDetailDrawer
-          job={selectedJob || adminJobs.find((j) => j.id === previewId)}
+          job={selectedJob?.id === previewId ? selectedJob : null}
+          loading={selectedJobStatus === STATUS.LOADING || selectedJob?.id !== previewId}
           applicants={applicants}
           applicantsStatus={applicantsStatus}
           busy={mutating}

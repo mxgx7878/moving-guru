@@ -1,23 +1,20 @@
-import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCurrentSubscription } from '../store/actions/subscriptionAction';
+import { STATUS } from '../constants/apiConstants';
 
 export function useFeatureGate(featureKey) {
-  const subscriptionState = useSelector((s) => s.subscription) || {};
-
-  const currentSubscription = subscriptionState.currentSubscription;
-  const allowedFeatures     = currentSubscription?.plan?.featureKeys || []; 
-  const status              = subscriptionState.status;
-
-  console.log(subscriptionState)
-
-  const hasSubscription =
-    !!currentSubscription &&
-    ['active', 'trialing', 'past_due'].includes(currentSubscription.status);
-
-  const allowed = hasSubscription && allowedFeatures.includes(featureKey);
-
+  const dispatch = useDispatch();
+  const { currentSubscription, currentStatus = STATUS.IDLE, currentError } = useSelector((s) => s.subscription);
+  useEffect(() => {
+    if (currentStatus === STATUS.IDLE) dispatch(fetchCurrentSubscription());
+  }, [dispatch, currentStatus]);
+  const hasSubscription = !!currentSubscription && ['active', 'trialing', 'past_due'].includes(currentSubscription.status);
   return {
-    allowed,
+    allowed: currentStatus === STATUS.SUCCEEDED && hasSubscription && (currentSubscription.plan?.featureKeys || []).includes(featureKey),
     hasSubscription,
-    loading: status === 'loading',
+    loading: currentStatus === STATUS.IDLE || currentStatus === STATUS.LOADING,
+    error: currentStatus === STATUS.FAILED ? currentError : null,
+    retry: () => dispatch(fetchCurrentSubscription()),
   };
 }

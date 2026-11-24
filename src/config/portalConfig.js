@@ -12,7 +12,7 @@ export const ROLE_THEME = {
   instructor: {
     accent: '#B4FF5A',
     accentLight: '#B4FF5A/10',
-    avatarGradient: 'from-[#B4FF5A] to-[#9BE63D]',
+    avatarGradient: 'from-coral to-coral',
     label: 'Member Portal',
     defaultPath: '/portal/dashboard',
     profilePath: '/portal/profile'
@@ -20,7 +20,7 @@ export const ROLE_THEME = {
   studio: {
     accent: '#B4FF5A',
     accentLight: '#B4FF5A/10',
-    avatarGradient: 'from-coral to-[#3F6216]',
+    avatarGradient: 'from-coral to-coral',
     label: 'Studio Portal',
     defaultPath: '/studio/dashboard',
     profilePath: '/studio/profile'
@@ -28,7 +28,7 @@ export const ROLE_THEME = {
   admin: {
     accent: '#B4FF5A',
     accentLight: '#B4FF5A/10',
-    avatarGradient: 'from-coral to-[#3F6216]',
+    avatarGradient: 'from-coral to-coral',
     label: 'Admin Portal',
     defaultPath: '/admin/dashboard',
     profilePath: '/admin/settings'

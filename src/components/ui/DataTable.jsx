@@ -1,3 +1,4 @@
+import Spinner from '../feedback/Spinner';
 import EmptyState from './EmptyState';
 
 export default function DataTable({
@@ -18,7 +19,7 @@ export default function DataTable({
       {loading ? (
         <div className="flex items-center justify-center py-16">
           {loadingContent || (
-            <div className="w-6 h-6 border-2 border-[#3E3D38] border-t-transparent rounded-full animate-spin" />
+            <Spinner />
           )}
         </div>
       ) : showEmpty ? (
@@ -27,7 +28,7 @@ export default function DataTable({
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-[#FFFFFF] text-left">
-              <tr className="text-[10px] text-[#9A9A94] uppercase tracking-wider">
+              <tr className="text-[10px] text-ink-muted uppercase tracking-wider">
                 {columns.map((c) => (
                   <th
                     key={c.key || c.label}

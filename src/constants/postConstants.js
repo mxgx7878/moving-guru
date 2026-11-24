@@ -4,7 +4,7 @@ import {
 
 export const POST_TYPES = [
   { id: 'announcement', label: 'Announcement', icon: Megaphone, color: '#4E7A1B' },
-  { id: 'event',        label: 'Event',        icon: Calendar,  color: '#9BE63D' },
+  { id: 'event',        label: 'Event',        icon: Calendar,  color: '#3D5E16' },
   { id: 'news',         label: 'News',         icon: Bell,      color: '#4E7A1B' },
 ];
 
@@ -25,6 +25,6 @@ export const POST_AUDIENCE_OPTIONS = [
 ];
 
 export const PUBLISH_STATUS_CONFIG = {
-  published: { label: 'Published', icon: Globe, cls: 'bg-green-50 text-green-700 border-green-200' },
+  published: { label: 'Published', icon: Globe, cls: 'bg-green-50 text-brand-ink border-green-200' },
   draft:     { label: 'Draft',     icon: Lock,  cls: 'bg-gray-50 text-gray-700 border-gray-200'     },
 };

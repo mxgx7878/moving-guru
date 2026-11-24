@@ -1,3 +1,5 @@
+import PageHeader from '../../components/ui/PageHeader';
+import usePageLoading from '../../hooks/usePageLoading';
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -11,13 +13,13 @@ import { SavedInstructorCard } from '../../features/instructors';
 export default function Favourites() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { instructors, savedIds, status } = useSelector((s) => s.instructor);
+  const { savedInstructors, savedIds, savedStatus } = useSelector((s) => s.instructor);
   const [query, setQuery] = useState('');
   const [unsavingId, setUnsavingId] = useState(null);
 
   useEffect(() => { dispatch(fetchSavedInstructors()); }, [dispatch]);
 
-  const saved = instructors.filter((i) => savedIds.includes(i.id));
+  const saved = savedInstructors.filter((i) => savedIds.includes(i.id));
   const filtered = saved.filter((inst) => {
     if (!query) return true;
     const q = query.toLowerCase();
@@ -34,18 +36,11 @@ export default function Favourites() {
     setUnsavingId(null);
   };
 
-  const loading = status === STATUS.LOADING && saved.length === 0;
-
-  console.log(instructors )
+  const loading = usePageLoading(savedStatus);
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      <div>
-        <h1 className="font-unbounded text-xl font-black text-[#3E3D38]">Saved Instructors</h1>
-        <p className="text-[#9A9A94] text-sm mt-1">
-          {saved.length} instructor{saved.length !== 1 ? 's' : ''} in your favourites
-        </p>
-      </div>
+      <PageHeader title="Saved Instructors" description={<> {saved.length} instructor{saved.length !== 1 ? 's' : ''} in your favourites </>} className="" />
 
       {saved.length > 0 && (
         <SearchBar
@@ -66,7 +61,7 @@ export default function Favourites() {
           <p className="font-unbounded text-sm font-black text-[#3E3D38] mb-2">
             No saved instructors yet
           </p>
-          <p className="text-[#9A9A94] text-sm">
+          <p className="text-ink-muted text-sm">
             Browse instructors and tap the heart icon to save them here
           </p>
           <Button
@@ -81,7 +76,7 @@ export default function Favourites() {
 
       {!loading && saved.length > 0 && filtered.length === 0 && (
         <div className="bg-white rounded-2xl border border-[#E5E0D8] p-10 text-center">
-          <p className="text-[#9A9A94] text-sm">No results match your search</p>
+          <p className="text-ink-muted text-sm">No results match your search</p>
           <Button variant="ghost" size="sm" onClick={() => setQuery('')} className="!text-sky-mg hover:!underline mt-3">
             Clear
           </Button>

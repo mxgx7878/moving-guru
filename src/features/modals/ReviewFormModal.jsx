@@ -18,6 +18,8 @@ export default function ReviewFormModal({
   const submitting = useSelector((s) => s.review.submitting);
 
   const { control, handleSubmit, watch, formState: { errors } } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     resolver: yupResolver(reviewSchema),
     defaultValues: { rating: 0, comment: '' },
   });

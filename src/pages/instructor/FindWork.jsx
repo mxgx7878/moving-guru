@@ -1,3 +1,5 @@
+import PageHeader from '../../components/ui/PageHeader';
+import usePageLoading from '../../hooks/usePageLoading';
 import { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -135,7 +137,7 @@ export default function FindWork() {
   const totalShown    = currentMeta?.total ?? currentList.length;
   const hasMore       = (currentMeta?.page ?? 1) < (currentMeta?.last_page ?? 1);
 
-  const initialLoading = currentStatus === STATUS.LOADING && currentList.length === 0;
+  const initialLoading = usePageLoading(currentStatus) && !loadingMore;
 
   const hasFilters = !!(query || filterType !== 'all' || filterDiscipline
     || filterCountry || filterCity || filterSuburb || sort !== 'recent');
@@ -148,26 +150,11 @@ export default function FindWork() {
   };
 
   return (
-    <div className="-m-4 lg:-m-6 p-4 lg:p-6 min-h-full bg-[#B4FF5A]">
+    <div className="-m-4 lg:-m-6 p-4 lg:p-6 min-h-full">
     <div className="max-w-5xl mx-auto space-y-4 sm:space-y-5">
 
-      <h2 className="font-unbounded text-2xl sm:text-3xl lg:text-4xl font-black text-[#1A1A1A] leading-tight">
-        Find work wherever you wander
-      </h2>
-
-      <div>
-        <p className="text-[#1A1A1A] text-[10px] sm:text-xs font-semibold tracking-widest uppercase mb-1.5">
-          Find Work
-        </p>
-        <h1 className="font-unbounded text-lg sm:text-xl font-black text-[#3E3D38]">
-          {viewIsSwaps ? 'Instructor Swaps' : 'Job Listings'}
-        </h1>
-        <p className="text-[#9A9A94] text-xs sm:text-sm mt-1">
-          {viewIsSwaps
-            ? `${totalShown} instructor${totalShown === 1 ? '' : 's'} open to swap matching your filters`
-            : `${totalShown} active opportunit${totalShown === 1 ? 'y' : 'ies'} from studios around the world`}
-        </p>
-      </div>
+      <PageHeader eyebrow="Find Work" title={viewIsSwaps ? 'Instructor Swaps' : 'Job Listings'}
+        description="Find work wherever you wander. Explore opportunities from studios around the world." />
 
       {iOfferSwap && (
         <div className="bg-white border border-[#E5E0D8] rounded-2xl p-1 inline-flex w-full sm:w-auto">
@@ -197,17 +184,17 @@ export default function FindWork() {
       <div className="bg-white rounded-2xl border border-[#E5E0D8] p-3 sm:p-4 space-y-3">
         <div className="flex items-center gap-2">
           <div className="flex-1 flex items-center gap-2 bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl px-3 py-2.5 min-w-0">
-            <Search size={16} className="text-[#9A9A94] flex-shrink-0" />
+            <Search size={16} className="text-ink-muted flex-shrink-0" />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={viewIsSwaps ? 'Search by name or discipline…' : 'Search title, discipline…'}
-              className="flex-1 bg-transparent border-none outline-none text-sm text-[#3E3D38] placeholder-[#C4BCB4] min-w-0"
+              className="flex-1 bg-transparent border-none outline-none text-sm text-[#3E3D38] placeholder-ink-muted min-w-0"
             />
             {query && (
               <IconButton variant="plain" size="xs" onClick={() => setQuery('')} aria-label="Clear">
-                <X size={14} className="text-[#9A9A94]" />
+                <X size={14} className="text-ink-muted" />
               </IconButton>
             )}
           </div>
@@ -228,7 +215,7 @@ export default function FindWork() {
 
         {hasFilters && (
           <div className="flex flex-wrap items-center gap-1.5 pt-1">
-            <span className="text-[10px] text-[#9A9A94] font-semibold uppercase tracking-wider">
+            <span className="text-[10px] text-ink-muted font-semibold uppercase tracking-wider">
               Active:
             </span>
             {filterDiscipline && (
@@ -256,7 +243,7 @@ export default function FindWork() {
             <button
               type="button"
               onClick={clearFilters}
-              className="text-[10px] text-coral font-bold hover:underline ml-auto"
+              className="text-[10px] text-brand-ink font-bold hover:underline ml-auto"
             >
               Clear all
             </button>
@@ -309,7 +296,7 @@ export default function FindWork() {
           </div>
         )}
         <div className="flex items-center gap-2 sm:ml-auto w-full sm:w-auto">
-          <span className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase whitespace-nowrap">
+          <span className="text-[10px] font-bold text-ink-muted tracking-widest uppercase whitespace-nowrap">
             Sort
           </span>
           <div className="flex-1 sm:flex-none sm:min-w-[160px]">
@@ -333,7 +320,7 @@ export default function FindWork() {
             message="Try adjusting your search or filters"
             action={hasFilters ? (
               <Button variant="ghost" size="sm" onClick={clearFilters}
-                className="!text-coral hover:!underline">
+                className="!text-brand-ink hover:!underline">
                 Clear filters
               </Button>
             ) : null}
@@ -351,7 +338,13 @@ export default function FindWork() {
               {viewIsSwaps ? (
                 <InstructorSwapCard
                   instructor={item}
-                  onMessage={() => navigate('/portal/messages')}
+                  onMessage={() => navigate('/portal/messages', {
+                    state: {
+                      recipientId: item.id,
+                      recipientName: item.name,
+                      recipientAvatar: item.detail?.profile_picture_url,
+                    },
+                  })}
                 />
               ) : (
                 <InstructorJobCard
@@ -373,7 +366,7 @@ export default function FindWork() {
                 size="md"
                 loading={loadingMore}
                 onClick={loadMore}
-                className="hover:border-coral hover:text-coral"
+                className="hover:border-coral hover:text-brand-ink"
               >
                 {viewIsSwaps ? 'Load more instructors' : 'Load more jobs'}
               </Button>

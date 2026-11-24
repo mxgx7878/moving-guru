@@ -42,6 +42,8 @@ export default function RejectReasonModal({
   const {
     control, handleSubmit, reset, watch, formState: { errors },
   } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     resolver: yupResolver(schema),
     defaultValues: { reason: '' },
   });
@@ -83,13 +85,13 @@ export default function RejectReasonModal({
         />
 
         <div className="mt-4">
-          <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase flex items-center gap-1.5 mb-2">
+          <p className="text-[10px] font-bold text-ink-muted tracking-widest uppercase flex items-center gap-1.5 mb-2">
             <Mail size={11} /> Message preview
           </p>
           <div className="bg-[#FAFEE0]/40 border border-[#E5E0D8] rounded-xl p-3 text-xs text-[#3E3D38] whitespace-pre-line leading-relaxed">
             {preview}
           </div>
-          <p className="text-[10px] text-[#9A9A94] mt-2">
+          <p className="text-[10px] text-ink-muted mt-2">
             Sent from <span className="font-semibold">GURU</span> to the author's inbox.
           </p>
         </div>

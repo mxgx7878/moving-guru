@@ -25,7 +25,7 @@ export default function MessageActionsMenu({ onReportMessage, onReportProfile })
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-label="Message options"
-        className="p-1 rounded-full text-[#C4BCB4] hover:text-[#3E3D38] hover:bg-[#F4F0EA] transition-colors opacity-100 "
+        className="p-1 rounded-full text-ink-muted hover:text-[#3E3D38] hover:bg-[#F4F0EA] transition-colors opacity-100 "
       >
         <MoreVertical size={16} />
       </button>
@@ -37,7 +37,7 @@ export default function MessageActionsMenu({ onReportMessage, onReportProfile })
             onClick={() => pick(onReportMessage)}
             className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-sm text-[#3E3D38] hover:bg-[#F4F0EA]"
           >
-            <Flag size={14} className="text-[#C4BCB4]" />
+            <Flag size={14} className="text-ink-muted" />
             Report message
           </button>
           <button
@@ -45,7 +45,7 @@ export default function MessageActionsMenu({ onReportMessage, onReportProfile })
             onClick={() => pick(onReportProfile)}
             className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-sm text-[#3E3D38] hover:bg-[#F4F0EA]"
           >
-            <ShieldAlert size={14} className="text-[#C4BCB4]" />
+            <ShieldAlert size={14} className="text-ink-muted" />
             Report profile
           </button>
         </div>

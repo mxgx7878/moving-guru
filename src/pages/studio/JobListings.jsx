@@ -1,3 +1,4 @@
+import usePageLoading from '../../hooks/usePageLoading';
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Plus, Briefcase } from 'lucide-react';
@@ -15,7 +16,7 @@ import { JobForm } from '../../features/forms';
 import { StudioJobCard } from '../../features/jobs';
 
 const FILTER_TABS = [
-  { id: 'all', label: 'All', color: '#B4FF5A' },
+  { id: 'all', label: 'All', color: '#3D5E16' },
   ...JOB_TYPES.map((t) => ({ id: t.id, label: t.label, icon: t.icon, color: t.color })),
 ];
 
@@ -98,7 +99,7 @@ const handleSubmit = async (payload) => {
       }), {}),
     };
 
-  const loading = myJobsStatus === STATUS.LOADING && myJobs.length === 0;
+  const loading = usePageLoading(myJobsStatus);
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -113,13 +114,13 @@ const handleSubmit = async (payload) => {
         )}
       />
 
-      <StatTileGroup
+      <StatTileGroup loading={loading}
         columns={4}
         tiles={[
           { label: 'Total',      value: myJobs.length },
-          { label: 'Active',     value: myJobs.filter((j) => j.is_active !== false).length, color: 'text-coral' },
-          { label: 'Hired',      value: myJobs.reduce((s, j) => s + (j.positions_filled || 0), 0), color: 'text-emerald-600' },
-          { label: 'Applicants', value: myJobs.reduce((sum, j) => sum + (j.applicants_count || 0), 0), color: 'text-[#9BE63D]' },
+          { label: 'Active',     value: myJobs.filter((j) => j.is_active !== false).length, color: 'text-brand-ink' },
+          { label: 'Hired',      value: myJobs.reduce((s, j) => s + (j.positions_filled || 0), 0), color: 'text-brand-ink' },
+          { label: 'Applicants', value: myJobs.reduce((sum, j) => sum + (j.applicants_count || 0), 0), color: 'text-brand-ink' },
         ]}
       />
 

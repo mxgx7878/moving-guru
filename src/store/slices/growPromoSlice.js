@@ -20,9 +20,13 @@ const growPromoSlice = createSlice({
     clearGrowPromoMessage(s) { s.message = null; },
   },
   extraReducers: (b) => {
-    b.addCase(fetchGrowPromoCodes.pending,   (s) => { s.status = STATUS.LOADING; s.error = null; })
-     .addCase(fetchGrowPromoCodes.fulfilled, (s, { payload }) => { s.status = STATUS.SUCCEEDED; s.promoCodes = payload || []; })
-     .addCase(fetchGrowPromoCodes.rejected,  (s, { payload }) => { s.status = STATUS.FAILED; s.error = payload; });
+    b.addCase(fetchGrowPromoCodes.pending,   (s, { meta }) => {
+        s.requestIds ??= {};
+        s.requestIds.fetchGrowPromoCodes = meta.requestId; s.status = STATUS.LOADING; s.error = null; })
+     .addCase(fetchGrowPromoCodes.fulfilled, (s, { meta, payload }) => {
+        if (s.requestIds?.fetchGrowPromoCodes !== meta.requestId) return; s.status = STATUS.SUCCEEDED; s.promoCodes = payload || []; })
+     .addCase(fetchGrowPromoCodes.rejected,  (s, { meta, payload }) => {
+        if (s.requestIds?.fetchGrowPromoCodes !== meta.requestId) return; s.status = STATUS.FAILED; s.error = payload; });
 
     b.addCase(createGrowPromoCode.pending,   (s) => { s.mutating = true; s.error = null; })
      .addCase(createGrowPromoCode.fulfilled, (s, { payload }) => {

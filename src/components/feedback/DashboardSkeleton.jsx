@@ -4,7 +4,7 @@ import { SKELETON_PROPS } from '../../constants/theme';
 
 export default function DashboardSkeleton() {
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div role="status" aria-label="Loading" aria-busy="true" className="max-w-6xl mx-auto space-y-6">
 
       <div className="bg-white rounded-2xl border border-[#E5E0D8] p-6 flex items-center justify-between flex-wrap gap-4">
         <div className="flex-1 min-w-[240px]">

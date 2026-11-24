@@ -54,7 +54,7 @@ export default function AdminReviewRow({ review, busy = false, onDelete }) {
             "{review.comment}"
           </p>
         ) : (
-          <span className="text-xs text-[#C4BCB4]">— No comment —</span>
+          <span className="text-xs text-ink-muted">— No comment —</span>
         )}
       </td>
 
@@ -64,7 +64,7 @@ export default function AdminReviewRow({ review, busy = false, onDelete }) {
             <Briefcase size={10} />
             <span className="truncate max-w-[140px]">{job.title}</span>
           </span>
-        ) : <span className="text-[10px] text-[#C4BCB4]">—</span>}
+        ) : <span className="text-[10px] text-ink-muted">—</span>}
       </td>
 
       <td className="py-3 px-4">

@@ -20,13 +20,17 @@ export default function Login() {
   const loading = status === STATUS.LOADING;
 
   const { control, handleSubmit, formState: { errors } } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     resolver: yupResolver(loginSchema),
     defaultValues: { email: '', password: '' },
   });
 
   useEffect(() => {
     if (token && user) {
-      navigate(user.role === ROLES.STUDIO ? '/studio/dashboard' : '/portal/dashboard');
+      navigate(user.role !== 'admin' && (user.status === 'pending_payment' || user.requires_subscription)
+        ? '/checkout'
+        : user.role === ROLES.STUDIO ? '/studio/dashboard' : '/portal/dashboard');
     }
   }, [token, user, navigate]);
 
@@ -51,35 +55,37 @@ export default function Login() {
 
         <div className="relative z-10">
           <div className="flex items-center justify-center gap-2 ">
-            <img src={logo} alt="Moving Guru Logo" height={300} width={300} className='brightness-0 invert' />
+            <a href="https://movingguru.co/"  rel="noopener noreferrer">
+              <img src={logo} alt="Moving Guru Logo" height={300} width={300}  />
+            </a>
           </div>
         </div>
 
         <div className="relative z-10">
-          <p className="text-[11px] text-white/50 tracking-widest uppercase mb-4">Global Wellness Network</p>
-          <h1 className="font-unbounded text-4xl xl:text-5xl font-black text-white leading-tight mb-6">
+          <p className="text-[11px] text-[#1A1A1A] tracking-widest uppercase mb-4">Global Wellness Network</p>
+          <h1 className="font-unbounded text-4xl xl:text-5xl font-black text-[#1A1A1A] leading-tight mb-6">
             YOUR WORLD.<br />YOUR WORK.<br />
-            <span className="text-lime">EVERYWHERE.</span>
+            <span>EVERYWHERE.</span>
           </h1>
-          <p className="text-white/70 text-base leading-relaxed max-w-xs">
+          <p className="text-[#1A1A1A] text-base leading-relaxed max-w-xs">
             Connect with studios globally. Travel, teach, and grow your wellness career without limits.
           </p>
         </div>
 
         <div className="relative z-10 flex items-center gap-6">
           <div className="text-center">
-            <p className="font-unbounded text-2xl font-black text-white">50+</p>
-            <p className="text-white/50 text-xs">Countries</p>
+            <p className="font-unbounded text-2xl font-black text-[#1A1A1A]">50+</p>
+            <p className="text-[#1A1A1A] text-xs">Countries</p>
           </div>
           <div className="w-px h-8 bg-white/20" />
           <div className="text-center">
-            <p className="font-unbounded text-2xl font-black text-white">1000+</p>
-            <p className="text-white/50 text-xs">Instructors</p>
+            <p className="font-unbounded text-2xl font-black text-[#1A1A1A]">1000+</p>
+            <p className="text-[#1A1A1A] text-xs">Instructors</p>
           </div>
           <div className="w-px h-8 bg-white/20" />
           <div className="text-center">
-            <p className="font-unbounded text-2xl font-black text-white">200+</p>
-            <p className="text-white/50 text-xs">Studios</p>
+            <p className="font-unbounded text-2xl font-black text-[#1A1A1A]">200+</p>
+            <p className="text-[#1A1A1A] text-xs">Studios</p>
           </div>
         </div>
       </div>
@@ -87,9 +93,9 @@ export default function Login() {
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-sm">
           <div className="lg:hidden flex items-center gap-2 mb-8">
-            <Globe size={18} className="text-coral" />
+            <Globe size={18} className="text-brand-ink" />
             <span className="font-unbounded text-sm font-bold text-ink tracking-wider">
-              MOVING <em className="not-italic text-coral">GURU</em>
+              MOVING <em className="not-italic text-brand-ink">GURU</em>
             </span>
           </div>
 
@@ -135,7 +141,7 @@ export default function Login() {
           </form>
 
           <p className="text-center mt-4">
-            <Link to="/forgot-password" className="text-ink-soft text-xs hover:text-coral transition-colors">
+            <Link to="/forgot-password" className="text-ink-soft text-xs hover:text-brand-ink transition-colors">
               Forgot your password?
             </Link>
           </p>
@@ -143,7 +149,7 @@ export default function Login() {
           <div className="border-t border-edge mt-6 pt-6 space-y-3">
             <p className="text-center text-ink-soft text-sm">New to Moving Guru?</p>
             <Link to="/register">
-              <Button  variant="outlineDanger" size="md" fullWidth className="border-2 mb-2 border-coral text-coral hover:bg-coral hover:text-white ">
+              <Button  variant="outlineDanger" size="md" fullWidth className="border-2 mb-2  border-coral text-brand-ink hover:bg-coral hover:text-ink ">
                 Join as Instructor
               </Button>
             </Link>
@@ -152,7 +158,7 @@ export default function Login() {
                 variant="secondary"
                 size="md"
                 fullWidth
-                className="border-2 border-coral text-coral hover:bg-coral hover:text-white"
+                className="border-2 border-coral text-brand-ink hover:bg-coral hover:text-ink"
               >
                 Join as Studio
               </Button>

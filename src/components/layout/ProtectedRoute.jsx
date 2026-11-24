@@ -1,3 +1,4 @@
+import Spinner from '../feedback/Spinner';
 import { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -22,7 +23,7 @@ export default function ProtectedRoute({ children, allowedRoles = [] }) {
     if (status === STATUS.IDLE || status === STATUS.LOADING) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-[#FFFFFF]">
-          <div className="w-8 h-8 border-2 border-coral/30 border-t-coral rounded-full animate-spin" />
+          <Spinner />
         </div>
       );
     }
@@ -31,18 +32,18 @@ export default function ProtectedRoute({ children, allowedRoles = [] }) {
 
   if (
     user.role !== 'admin'
-    && user.status === 'pending_payment'
+    && (user.status === 'pending_payment' || user.requires_subscription)
     && location.pathname !== '/checkout'
   ) {
     return <Navigate to="/checkout" replace />;
   }
 
-  if (location.pathname === '/checkout' && user.status !== 'pending_payment') {
+  if (location.pathname === '/checkout' && user.status !== 'pending_payment' && !user.requires_subscription) {
     return <Navigate to={ROLE_THEME[user.role]?.defaultPath || '/login'} replace />;
   }
 
   if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
-    if (user.status === 'pending_payment' && user.role !== 'admin') {
+    if ((user.status === 'pending_payment' || user.requires_subscription) && user.role !== 'admin') {
       return <Navigate to="/checkout" replace />;
     }
     return <Navigate to={ROLE_THEME[user.role]?.defaultPath || '/login'} replace />;

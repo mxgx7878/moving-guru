@@ -28,7 +28,7 @@ export default function MissingLinkConfirmModal({
     >
       <div className="flex items-start gap-3">
         <div className="w-10 h-10 rounded-xl bg-[#FAFEE0] flex items-center justify-center flex-shrink-0">
-          <Link2Off size={18} className="text-[#9BE63D]" />
+          <Link2Off size={18} className="text-brand-ink" />
         </div>
         <div className="text-sm text-[#3E3D38] leading-relaxed">
           <p>You have not included a link to your event.</p>

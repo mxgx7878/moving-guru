@@ -46,13 +46,16 @@ const reviewSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchUserReviews.pending, (state, { meta }) => {
+        state.requestIds ??= {};
+        state.requestIds[`fetchUserReviews:${meta.arg.userId}`] = meta.requestId;
         const { userId } = meta.arg;
         state.byUserId[userId] = {
           ...(state.byUserId[userId] || { reviews: [], summary: null }),
           status: STATUS.LOADING,
         };
       })
-      .addCase(fetchUserReviews.fulfilled, (state, { payload }) => {
+      .addCase(fetchUserReviews.fulfilled, (state, { meta, payload }) => {
+        if (state.requestIds?.[`fetchUserReviews:${meta.arg.userId}`] !== meta.requestId) return;
         const { userId, payload: resp } = payload;
         state.byUserId[userId] = {
           reviews: resp?.data?.reviews || [],
@@ -61,6 +64,7 @@ const reviewSlice = createSlice({
         };
       })
       .addCase(fetchUserReviews.rejected, (state, { meta, payload }) => {
+        if (state.requestIds?.[`fetchUserReviews:${meta.arg.userId}`] !== meta.requestId) return;
         const { userId } = meta.arg;
         state.byUserId[userId] = {
           ...(state.byUserId[userId] || { reviews: [], summary: null }),
@@ -130,39 +134,51 @@ const reviewSlice = createSlice({
         state.error = payload;
       })
 
-      .addCase(fetchMyReviews.pending, (state) => {
+      .addCase(fetchMyReviews.pending, (state, { meta }) => {
+        state.requestIds ??= {};
+        state.requestIds.fetchMyReviews = meta.requestId;
         state.myReviewsStatus = STATUS.LOADING;
       })
-      .addCase(fetchMyReviews.fulfilled, (state, { payload }) => {
+      .addCase(fetchMyReviews.fulfilled, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchMyReviews !== meta.requestId) return;
         state.myReviewsStatus = STATUS.SUCCEEDED;
         state.myReviews = unwrapList(payload, 'reviews');
       })
-      .addCase(fetchMyReviews.rejected, (state, { payload }) => {
+      .addCase(fetchMyReviews.rejected, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchMyReviews !== meta.requestId) return;
         state.myReviewsStatus = STATUS.FAILED;
         state.error = payload;
       })
 
-      .addCase(fetchEligibleReviews.pending, (state) => {
+      .addCase(fetchEligibleReviews.pending, (state, { meta }) => {
+        state.requestIds ??= {};
+        state.requestIds.fetchEligibleReviews = meta.requestId;
         state.eligibleStatus = STATUS.LOADING;
       })
-      .addCase(fetchEligibleReviews.fulfilled, (state, { payload }) => {
+      .addCase(fetchEligibleReviews.fulfilled, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchEligibleReviews !== meta.requestId) return;
         state.eligibleStatus = STATUS.SUCCEEDED;
         state.eligible = unwrapList(payload, 'eligible');
       })
-      .addCase(fetchEligibleReviews.rejected, (state, { payload }) => {
+      .addCase(fetchEligibleReviews.rejected, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchEligibleReviews !== meta.requestId) return;
         state.eligibleStatus = STATUS.FAILED;
         state.error = payload;
       })
 
-      .addCase(fetchAdminReviews.pending, (state) => {
+      .addCase(fetchAdminReviews.pending, (state, { meta }) => {
+        state.requestIds ??= {};
+        state.requestIds.fetchAdminReviews = meta.requestId;
         state.adminReviewsStatus = STATUS.LOADING;
       })
-      .addCase(fetchAdminReviews.fulfilled, (state, { payload }) => {
+      .addCase(fetchAdminReviews.fulfilled, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchAdminReviews !== meta.requestId) return;
         state.adminReviewsStatus = STATUS.SUCCEEDED;
         state.adminReviews = unwrapList(payload, 'reviews');
         state.adminReviewsMeta = payload?.meta || state.adminReviewsMeta;
       })
-      .addCase(fetchAdminReviews.rejected, (state, { payload }) => {
+      .addCase(fetchAdminReviews.rejected, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchAdminReviews !== meta.requestId) return;
         state.adminReviewsStatus = STATUS.FAILED;
         state.error = payload;
       })

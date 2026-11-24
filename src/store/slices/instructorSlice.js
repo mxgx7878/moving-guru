@@ -21,14 +21,19 @@ import {
 
 const initialState = {
   instructors: [],
+  savedInstructors: [],
+  savedStatus: STATUS.IDLE,
   savedIds: [],
   selectedInstructor: null,
+  detailStatus: STATUS.IDLE,
   pagination: null,
   status: STATUS.IDLE,
+  listRequestId: null,
   error: null,
 
   users: [],
   userDetail: null,
+  userDetailStatus: STATUS.IDLE,
   usersPagination: null,
   usersStatus: STATUS.IDLE,
   userMutating: STATUS.IDLE,
@@ -40,13 +45,6 @@ const replaceUser = (state, updated) => {
   const idx = state.users.findIndex((u) => u.id === updated.id);
   if (idx !== -1) state.users[idx] = updated;
   if (state.userDetail?.id === updated.id) state.userDetail = updated;
-};
-
-const upsertInstructor = (state, inst) => {
-  if (!inst || !inst.id) return;
-  const idx = state.instructors.findIndex((i) => i.id === inst.id);
-  if (idx === -1) state.instructors.push(inst);
-  else state.instructors[idx] = { ...state.instructors[idx], ...inst };
 };
 
 const unwrapInstructors = (payload) => {
@@ -75,11 +73,16 @@ const instructorSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchInstructors.pending, (state) => {
+      .addCase(fetchInstructors.pending, (state, { meta }) => {
+        state.requestIds ??= {};
+        state.requestIds.fetchInstructors = meta.requestId;
         state.status = STATUS.LOADING;
+        state.listRequestId = meta.requestId;
         state.error = null;
       })
-      .addCase(fetchInstructors.fulfilled, (state, { payload }) => {
+      .addCase(fetchInstructors.fulfilled, (state, { payload, meta }) => {
+        if (state.requestIds?.fetchInstructors !== meta.requestId) return;
+        if (meta.requestId !== state.listRequestId) return;
         state.status = STATUS.SUCCEEDED;
         const list = unwrapInstructors(payload);
 
@@ -103,23 +106,33 @@ const instructorSlice = createSlice({
         state.pagination =
           payload?.data?.meta || payload?.data?.pagination || null;
       })
-      .addCase(fetchInstructors.rejected, (state, { payload }) => {
+      .addCase(fetchInstructors.rejected, (state, { payload, meta }) => {
+        if (state.requestIds?.fetchInstructors !== meta.requestId) return;
+        if (meta.requestId !== state.listRequestId) return;
         state.status = STATUS.FAILED;
         state.error = payload;
       })
 
-      .addCase(fetchInstructorDetail.pending, (state) => {
-        state.status = STATUS.LOADING;
+      .addCase(fetchInstructorDetail.pending, (state, { meta }) => {
+        state.requestIds ??= {};
+        state.requestIds.fetchInstructorDetail = meta.requestId;
+        state.detailStatus = STATUS.LOADING;
+        state.selectedInstructor = null;
       })
-      .addCase(fetchInstructorDetail.fulfilled, (state, { payload }) => {
-        state.status = STATUS.SUCCEEDED;
+      .addCase(fetchInstructorDetail.fulfilled, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchInstructorDetail !== meta.requestId) return;
+        state.detailStatus = STATUS.SUCCEEDED;
         console.log(payload, "payload in slice");
         const inst = payload?.data?.user || payload?.data || null;
         state.selectedInstructor = inst;
-        if (inst) upsertInstructor(state, inst);
+        if (inst) {
+          const saved = state.savedInstructors.findIndex((i) => i.id === inst.id);
+          if (saved !== -1) state.savedInstructors[saved] = inst;
+        }
       })
-      .addCase(fetchInstructorDetail.rejected, (state, { payload }) => {
-        state.status = STATUS.FAILED;
+      .addCase(fetchInstructorDetail.rejected, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchInstructorDetail !== meta.requestId) return;
+        state.detailStatus = STATUS.FAILED;
         state.error = payload;
       })
 
@@ -129,37 +142,59 @@ const instructorSlice = createSlice({
       })
       .addCase(unsaveInstructor.fulfilled, (state, { meta }) => {
         state.savedIds = state.savedIds.filter((id) => id !== meta.arg);
+        state.savedInstructors = state.savedInstructors.filter((i) => i.id !== meta.arg);
       })
 
-      .addCase(fetchSavedInstructors.fulfilled, (state, { payload }) => {
+      .addCase(fetchSavedInstructors.pending, (state, { meta }) => {
+        state.requestIds ??= {};
+        state.requestIds.fetchSavedInstructors = meta.requestId;
+        state.savedStatus = STATUS.LOADING;
+      })
+      .addCase(fetchSavedInstructors.fulfilled, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchSavedInstructors !== meta.requestId) return;
+        state.savedStatus = STATUS.SUCCEEDED;
         const list = unwrapInstructors(payload);
         state.savedIds = list.map((i) => i.id);
-        list.forEach((inst) => upsertInstructor(state, inst));
+        state.savedInstructors = list;
+      })
+      .addCase(fetchSavedInstructors.rejected, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchSavedInstructors !== meta.requestId) return;
+        state.savedStatus = STATUS.FAILED;
+        state.error = payload;
       })
 
-      .addCase(fetchAdminUsers.pending, (state) => {
+      .addCase(fetchAdminUsers.pending, (state, { meta }) => {
+        state.requestIds ??= {};
+        state.requestIds.fetchAdminUsers = meta.requestId;
         state.usersStatus = STATUS.LOADING;
       })
-      .addCase(fetchAdminUsers.fulfilled, (state, { payload }) => {
+      .addCase(fetchAdminUsers.fulfilled, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchAdminUsers !== meta.requestId) return;
         state.usersStatus = STATUS.SUCCEEDED;
         state.users = Array.isArray(payload?.data) ? payload.data : [];
         state.usersPagination = payload?.meta || null;
       })
-      .addCase(fetchAdminUsers.rejected, (state, { payload }) => {
+      .addCase(fetchAdminUsers.rejected, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchAdminUsers !== meta.requestId) return;
         state.usersStatus = STATUS.FAILED;
         state.error = payload;
       })
 
-      .addCase(fetchAdminUserDetail.pending, (state) => {
-        state.userMutating = STATUS.LOADING;
+      .addCase(fetchAdminUserDetail.pending, (state, { meta }) => {
+        state.requestIds ??= {};
+        state.requestIds.fetchAdminUserDetail = meta.requestId;
+        state.userDetailStatus = STATUS.LOADING;
+        state.userDetail = null;
       })
-      .addCase(fetchAdminUserDetail.fulfilled, (state, { payload }) => {
-        state.userMutating = STATUS.SUCCEEDED;
+      .addCase(fetchAdminUserDetail.fulfilled, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchAdminUserDetail !== meta.requestId) return;
+        state.userDetailStatus = STATUS.SUCCEEDED;
         console.log(payload, "payload in user detail slice");
         if (payload?.data) state.userDetail = payload.data.user;
       })
       .addCase(fetchAdminUserDetail.rejected, (state, { meta, payload }) => {
-        state.userMutating = STATUS.FAILED;
+        if (state.requestIds?.fetchAdminUserDetail !== meta.requestId) return;
+        state.userDetailStatus = STATUS.FAILED;
         const id = meta.arg;
         const found = state.users.find((u) => u.id === id);
         if (found) state.userDetail = found;
@@ -171,7 +206,7 @@ const instructorSlice = createSlice({
       })
       .addCase(createAdminUser.fulfilled, (state, { payload }) => {
         state.userMutating = STATUS.SUCCEEDED;
-        const created = payload?.data;
+        const created = payload?.data?.user;
         if (created?.id) state.users.unshift(created);
         state.message = payload?.message || "User created.";
       })
@@ -185,7 +220,7 @@ const instructorSlice = createSlice({
       })
       .addCase(updateAdminUser.fulfilled, (state, { payload }) => {
         state.userMutating = STATUS.SUCCEEDED;
-        replaceUser(state, payload?.data);
+        replaceUser(state, payload?.data?.user);
         state.message = payload?.message || "User updated.";
       })
       .addCase(updateAdminUser.rejected, (state, { payload }) => {

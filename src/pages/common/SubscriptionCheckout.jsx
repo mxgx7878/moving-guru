@@ -1,3 +1,4 @@
+import Spinner from '../../components/feedback/Spinner';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -244,7 +245,7 @@ export default function SubscriptionCheckout() {
       const result = await dispatch(getMe());
       if (getMe.fulfilled.match(result)) {
         const refreshedUser = result.payload?.data?.user || result.payload?.data;
-        if (refreshedUser?.status === 'active') return true;
+        if (refreshedUser?.status === 'active' && !refreshedUser.requires_subscription) return true;
       }
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
@@ -411,7 +412,7 @@ const completeCheckout = async (
     return (
       <div className="min-h-screen bg-[#F7F5F0] flex items-center justify-center">
         <div className="text-center">
-          <Loader2 size={28} className="animate-spin mx-auto text-[#77736C]" />
+          <Spinner size={28} />
           <p className="text-sm text-[#77736C] mt-3">
             Checking your subscription…
           </p>
@@ -446,8 +447,9 @@ const completeCheckout = async (
       <header className="border-b border-[#E6E1D8] bg-white/90 backdrop-blur">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-
+            <a href="https://movingguru.co/"  rel="noopener noreferrer">
             <img src={logo} alt="Moving Guru" className="h-8 sm:h-10" />
+            </a>
           </div>
           <button
             type="button"
@@ -462,7 +464,7 @@ const completeCheckout = async (
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div className="max-w-3xl mx-auto text-center mb-8">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 text-emerald-700 px-3 py-1 text-xs font-bold mb-4">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 text-brand-ink px-3 py-1 text-xs font-bold mb-4">
             <CheckCircle2 size={14} /> Your account has been created
           </span>
           <h1 className="font-unbounded text-2xl sm:text-4xl font-black leading-tight">
@@ -474,7 +476,7 @@ const completeCheckout = async (
         </div>
 
         <div className="max-w-4xl mx-auto mb-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 flex items-start gap-3">
-          <AlertCircle size={20} className="text-amber-700 flex-shrink-0 mt-0.5" />
+          <AlertCircle size={20} className="text-brand-ink flex-shrink-0 mt-0.5" />
           <div>
             <p className="font-bold text-amber-900 text-sm">Subscription required to access your dashboard</p>
             <p className="text-amber-800/80 text-xs sm:text-sm mt-1">
@@ -490,7 +492,7 @@ const completeCheckout = async (
             ['3', 'Dashboard access', false],
           ].map(([number, label, done], index) => (
             <div key={number} className="flex items-center gap-2 min-w-0">
-              <div className={`w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold ${done ? 'bg-emerald-500 text-white' : index === 1 ? 'bg-[#302F2A] text-white' : 'bg-[#E6E1D8] text-[#8A857D]'}`}>
+              <div className={`w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold ${done ? 'bg-emerald-500 text-ink' : index === 1 ? 'bg-[#302F2A] text-white' : 'bg-[#E6E1D8] text-[#8A857D]'}`}>
                 {done ? <Check size={14} /> : number}
               </div>
               <span className="hidden sm:block text-xs font-semibold truncate">{label}</span>
@@ -535,7 +537,7 @@ const completeCheckout = async (
                           </div>
                           <p className="text-xs text-[#858078] mt-1 line-clamp-2">{plan.description}</p>
                           {plan.trialPeriodDays > 0 && (
-                            <p className="text-[11px] font-bold text-emerald-700 mt-1.5">
+                            <p className="text-[11px] font-bold text-brand-ink mt-1.5">
                               {plan.trialPeriodDays}-day free trial · then recurring billing
                             </p>
                           )}
@@ -557,7 +559,7 @@ const completeCheckout = async (
                 <div className="grid sm:grid-cols-2 gap-2">
                   {selectedPlan.features.slice(0, 8).map((feature, index) => (
                     <div key={feature.id || feature.key || index} className="flex items-center gap-2 text-xs text-[#5F5B55]">
-                      <Check size={14} className="text-emerald-500 flex-shrink-0" strokeWidth={3} />
+                      <Check size={14} className="text-brand-ink flex-shrink-0" strokeWidth={3} />
                       <span>{feature.label || feature.name || feature.key}</span>
                     </div>
                   ))}
@@ -591,7 +593,7 @@ const completeCheckout = async (
                     {selectedPlan.trialPeriodDays > 0 && (
                       <div className="flex justify-between gap-3">
                         <span className="text-[#77736C]">Free trial</span>
-                        <span className="font-semibold text-emerald-700">{selectedPlan.trialPeriodDays} days</span>
+                        <span className="font-semibold text-brand-ink">{selectedPlan.trialPeriodDays} days</span>
                       </div>
                     )}
                     <div className="flex justify-between gap-3 text-sm pt-2 border-t border-[#E5E0D8]">
@@ -612,7 +614,7 @@ const completeCheckout = async (
 
                 {savedCardLoading ? (
                   <div className="rounded-2xl border border-[#E6E1D8] p-5 text-center">
-                    <Loader2 size={22} className="animate-spin mx-auto text-[#8A857D]" />
+                    <Spinner size={22} />
                     <p className="text-xs text-[#858078] mt-2">Loading your saved payment method…</p>
                   </div>
                 ) : paymentMethods.length > 0 && !useNewCard ? (
@@ -661,7 +663,7 @@ const completeCheckout = async (
                   <div className="rounded-2xl border border-[#E6E1D8] p-5 text-center">
                     {setupLoading ? (
                       <>
-                        <Loader2 size={22} className="animate-spin mx-auto text-[#8A857D]" />
+                        <Spinner size={22} />
                         <p className="text-xs text-[#858078] mt-2">Preparing secure payment form…</p>
                       </>
                     ) : (
@@ -675,7 +677,7 @@ const completeCheckout = async (
 
                 <div className="mt-5 space-y-2">
                   <div className="flex items-center gap-2 text-[11px] text-[#77736C]">
-                    <ShieldCheck size={14} className="text-emerald-600" /> Secure payments powered by Stripe
+                    <ShieldCheck size={14} className="text-brand-ink" /> Secure payments powered by Stripe
                   </div>
                   <div className="flex items-center gap-2 text-[11px] text-[#77736C]">
                     <Lock size={14} /> Your card information never touches our servers
@@ -731,7 +733,7 @@ function PastDueRecoveryPage({
               <Globe size={18} />
             </div>
             <span className="font-unbounded text-sm sm:text-base font-black tracking-wide">
-              MOVING <span className="text-coral">GURU</span>
+              MOVING <span className="text-brand-ink">GURU</span>
             </span>
           </div>
           <button
@@ -806,7 +808,7 @@ function PastDueRecoveryPage({
 
             <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
               <div className="flex items-start gap-3">
-                <RefreshCw size={18} className="text-emerald-700 flex-shrink-0 mt-0.5" />
+                <RefreshCw size={18} className="text-brand-ink flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="text-sm font-bold text-emerald-900">What happens next?</p>
                   <ol className="mt-2 space-y-1.5 text-xs text-emerald-900/75 list-decimal pl-4">
@@ -834,7 +836,7 @@ function PastDueRecoveryPage({
 
             {savedCardLoading ? (
               <div className="rounded-2xl border border-[#E6E1D8] p-5 text-center">
-                <Loader2 size={22} className="animate-spin mx-auto text-[#8A857D]" />
+                <Spinner size={22} />
                 <p className="text-xs text-[#858078] mt-2">Loading your saved cards…</p>
               </div>
             ) : paymentMethods.length > 0 && !useNewCard ? (
@@ -876,7 +878,7 @@ function PastDueRecoveryPage({
               <div className="rounded-2xl border border-[#E6E1D8] p-5 text-center">
                 {setupLoading ? (
                   <>
-                    <Loader2 size={22} className="animate-spin mx-auto text-[#8A857D]" />
+                    <Spinner size={22} />
                     <p className="text-xs text-[#858078] mt-2">Preparing secure payment form…</p>
                   </>
                 ) : (
@@ -898,7 +900,7 @@ function PastDueRecoveryPage({
 
             <div className="mt-5 space-y-2">
               <div className="flex items-center gap-2 text-[11px] text-[#77736C]">
-                <ShieldCheck size={14} className="text-emerald-600" />
+                <ShieldCheck size={14} className="text-brand-ink" />
                 Secure payments powered by Stripe
               </div>
               <div className="flex items-center gap-2 text-[11px] text-[#77736C]">
@@ -944,7 +946,7 @@ function SavedPaymentMethods({
             >
               <div className="flex items-center gap-3">
                 <div className="w-11 h-11 rounded-xl bg-white border border-[#E6E1D8] flex items-center justify-center flex-shrink-0">
-                  <CreditCard size={20} className={selected ? 'text-emerald-700' : 'text-[#77736C]'} />
+                  <CreditCard size={20} className={selected ? 'text-brand-ink' : 'text-[#77736C]'} />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
@@ -952,7 +954,7 @@ function SavedPaymentMethods({
                       {brand}{paymentMethod.last4 ? ` •••• ${paymentMethod.last4}` : ''}
                     </p>
                     {paymentMethod.isDefault && (
-                      <span className="rounded-full bg-blue-50 text-blue-700 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider">
+                      <span className="rounded-full bg-blue-50 text-brand-ink px-2 py-0.5 text-[9px] font-black uppercase tracking-wider">
                         Default
                       </span>
                     )}
@@ -976,7 +978,7 @@ function SavedPaymentMethods({
         onClick={onContinue}
         className="w-full mt-5 rounded-xl bg-[#B4FF5A] hover:bg-[#A7F148] text-[#22221F] px-4 py-3.5 text-sm font-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
-        {processing && <Loader2 size={16} className="animate-spin" />}
+        {processing && <Spinner size={16} />}
         {processing ? 'Confirming your subscription…' : ctaLabel}
       </button>
 
@@ -1028,7 +1030,7 @@ function EmbeddedCardForm({
         onClick={submit}
         className="w-full mt-5 rounded-xl bg-[#B4FF5A] hover:bg-[#A7F148] text-[#22221F] px-4 py-3.5 text-sm font-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
-        {(processing || busy) && <Loader2 size={16} className="animate-spin" />}
+        {(processing || busy) && <Spinner size={16} />}
         {processing ? 'Confirming your subscription…' : ctaLabel}
       </button>
       <p className="text-[10px] text-center text-[#918C84] mt-3 leading-relaxed">

@@ -26,7 +26,7 @@ export default function PostPreviewModal({ post, onClose }) {
             <TypeIcon size={10} /> {typeMeta.label.toUpperCase()}
           </span>
           {post.status === 'published' ? (
-            <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-green-50 text-green-700 border-green-200">
+            <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-green-50 text-brand-ink border-green-200">
               <Globe size={9} /> Published
             </span>
           ) : (
@@ -73,7 +73,7 @@ export default function PostPreviewModal({ post, onClose }) {
 
           {post.link_url && (
             <a href={post.link_url} target="_blank" rel="noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-coral text-white text-xs font-bold hover:bg-coral">
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-coral text-ink text-xs font-bold hover:bg-coral">
               {post.link_label || 'Open link'} →
             </a>
           )}

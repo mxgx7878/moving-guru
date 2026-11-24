@@ -6,10 +6,10 @@ import { Avatar, Button } from '../../components/ui';
 import { formatShortDate } from '../../utils/formatters';
 
 const STATUS_META = {
-  accepted: { label: 'Accepted',          bg: 'bg-emerald-50',   text: 'text-emerald-600', icon: CheckCircle2 },
+  accepted: { label: 'Accepted',          bg: 'bg-emerald-50',   text: 'text-brand-ink', icon: CheckCircle2 },
   rejected: { label: 'Not selected',      bg: 'bg-red-50',       text: 'text-red-500',     icon: XCircle      },
   viewed:   { label: 'Studio has viewed', bg: 'bg-[#FAFEE0]',    text: 'text-[#6B6B66]',   icon: Clock        },
-  pending:  { label: 'Pending',           bg: 'bg-coral/10', text: 'text-coral',   icon: Clock3       },
+  pending:  { label: 'Pending',           bg: 'bg-coral/10', text: 'text-brand-ink',   icon: Clock3       },
 };
 
 export default function ApplicationCard({
@@ -22,6 +22,7 @@ export default function ApplicationCard({
   onReview,
   onWithdraw,
   onMessage,
+  onViewProfile,
 }) {
   const statusCfg = STATUS_META[app.status] || STATUS_META.pending;
   const StatusIcon = statusCfg.icon;
@@ -32,13 +33,16 @@ export default function ApplicationCard({
   return (
     <div className="bg-white rounded-2xl border border-[#E5E0D8] p-4 hover:border-coral/30 transition-colors">
       <div className="flex items-start gap-3">
-        <Avatar
-          name={studioName}
-          src={studio.detail?.profile_picture || studio.profile_picture}
-          size="md"
-          shape="square"
-          tone="blue"
-        />
+        <button type="button" onClick={onViewProfile} disabled={!studio?.id}
+          aria-label={`View ${studioName}'s profile`}>
+          <Avatar
+            name={studioName}
+            src={studio.detail?.profile_picture_url || studio.detail?.profile_picture || studio.profile_picture}
+            size="md"
+            shape="square"
+            tone="blue"
+          />
+        </button>
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
@@ -51,33 +55,34 @@ export default function ApplicationCard({
           </div>
 
           <div className="flex items-center gap-1.5 text-xs text-[#6B6B66] mt-1 flex-wrap">
-            <Building2 size={11} className="text-[#9A9A94]" />
-            <span className="font-semibold">{studioName}</span>
+            <Building2 size={11} className="text-ink-muted" />
+            <button type="button" onClick={onViewProfile} disabled={!studio?.id}
+              className="font-semibold hover:underline disabled:hover:no-underline">{studioName}</button>
             {job.location && (
               <>
-                <span className="text-[#C4BCB4]">·</span>
-                <MapPin size={11} className="text-[#9A9A94]" />
+                <span className="text-ink-muted">·</span>
+                <MapPin size={11} className="text-ink-muted" />
                 <span>{job.location}</span>
               </>
             )}
             {appliedOn && (
               <>
-                <span className="text-[#C4BCB4]">·</span>
-                <Calendar size={11} className="text-[#9A9A94]" />
-                <span className="text-[#9A9A94]">Applied {appliedOn}</span>
+                <span className="text-ink-muted">·</span>
+                <Calendar size={11} className="text-ink-muted" />
+                <span className="text-ink-muted">Applied {appliedOn}</span>
               </>
             )}
           </div>
 
           {app.status === 'rejected' && canReapplyAt && (
-            <p className="mt-2 text-[11px] text-[#9A9A94] flex items-center gap-1">
+            <p className="mt-2 text-[11px] text-ink-muted flex items-center gap-1">
               <Clock3 size={10} /> You can re-apply after {canReapplyAt}.
             </p>
           )}
 
           {app.message && (
             <details className="mt-2">
-              <summary className="text-[11px] text-[#9A9A94] cursor-pointer hover:text-[#6B6B66]">
+              <summary className="text-[11px] text-ink-muted cursor-pointer hover:text-[#6B6B66]">
                 View your message
               </summary>
               <p className="mt-1 text-[#6B6B66] text-xs leading-relaxed whitespace-pre-line bg-[#FAFEE0] rounded-xl px-3 py-2">

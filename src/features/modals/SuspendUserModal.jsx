@@ -6,6 +6,8 @@ import { reasonSchema } from '../forms';
 
 export default function SuspendUserModal({ onCancel, onConfirm, busy = false }) {
   const { control, handleSubmit, formState: { errors } } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     resolver: yupResolver(reasonSchema),
     defaultValues: { reason: '' },
   });

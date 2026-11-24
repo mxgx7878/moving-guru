@@ -2,8 +2,8 @@ import { Calendar, Gift } from 'lucide-react';
 import { formatShortDate } from '../../utils/formatters';
 
 const STATUS_CLS = {
-  active:    'bg-green-50 text-green-700',
-  trialing:  'bg-yellow-50 text-yellow-700',
+  active:    'bg-green-50 text-brand-ink',
+  trialing:  'bg-yellow-50 text-brand-ink',
   past_due:  'bg-orange-50 text-orange-700',
   cancelled: 'bg-red-50 text-red-700',
   canceled:  'bg-red-50 text-red-700',
@@ -25,7 +25,7 @@ export default function SubscriptionRow({ sub }) {
     <tr className="border-t border-[#F0EBE3] hover:bg-[#FFFFFF]">
       <td className="py-3 px-4">
         <p className="font-semibold text-[#3E3D38] text-xs">{user.name || user.studio_name || '—'}</p>
-        <p className="text-[10px] text-[#9A9A94]">{user.email || '—'}</p>
+        <p className="text-[10px] text-ink-muted">{user.email || '—'}</p>
       </td>
       <td className="py-3 px-4 text-xs text-[#3E3D38]">
         {plan.name || sub.plan_name || '—'}
@@ -41,7 +41,7 @@ export default function SubscriptionRow({ sub }) {
           <Calendar size={11} />
           <span>
             {formatShortDate(dateValue) || '—'}
-            <span className="text-[10px] text-[#9A9A94] ml-1">({dateLabel.toLowerCase()})</span>
+            <span className="text-[10px] text-ink-muted ml-1">({dateLabel.toLowerCase()})</span>
           </span>
         </span>
       </td>

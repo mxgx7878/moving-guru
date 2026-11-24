@@ -4,7 +4,7 @@ import { SKELETON_PROPS } from '../../constants/theme';
 
 export default function TableSkeleton({ rows = 5, cols = 4 }) {
   return (
-    <div className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
+    <div role="status" aria-label="Loading" aria-busy="true" className="bg-white rounded-2xl border border-[#E5E0D8] overflow-hidden">
       <div className="px-6 py-4 border-b border-[#E5E0D8]">
         <Skeleton width={160} height={14} {...SKELETON_PROPS} />
       </div>

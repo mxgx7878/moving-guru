@@ -74,7 +74,7 @@ export default function AdminDashboard() {
       delta: stats?.instructors?.growth,
       sub: `${stats?.instructors?.new_this_month ?? 0} this month`,
       icon: Users,
-      color: "#B4FF5A",
+      color: '#3D5E16',
       to: "/admin/users?role=instructor",
     },
     {
@@ -83,7 +83,7 @@ export default function AdminDashboard() {
       delta: stats?.studios?.growth,
       sub: `${stats?.studios?.new_this_month ?? 0} this month`,
       icon: Building2,
-      color: "#B4FF5A",
+      color: '#3D5E16',
       to: "/admin/users?role=studio",
     },
     {
@@ -97,7 +97,7 @@ export default function AdminDashboard() {
         ? "Demo data — Stripe not connected"
         : `$${Number(revenue?.this_month ?? 0).toLocaleString()} this month`,
       icon: DollarSign,
-      color: "#B4FF5A",
+      color: '#3D5E16',
       to: "/admin/dashboard",
     },
     {
@@ -105,7 +105,7 @@ export default function AdminDashboard() {
       value: stats?.grow_posts?.total,
       sub: `${stats?.grow_posts?.pending ?? 0} pending review`,
       icon: Sprout,
-      color: "#B4FF5A",
+      color: '#3D5E16',
       to: "/admin/grow",
     },
     {
@@ -113,7 +113,7 @@ export default function AdminDashboard() {
       value: stats?.jobs?.total,
       sub: `${stats?.jobs?.active ?? 0} active`,
       icon: Briefcase,
-      color: "#B4FF5A",
+      color: '#3D5E16',
       to: "/admin/jobs",
     },
     {
@@ -121,7 +121,7 @@ export default function AdminDashboard() {
       value: stats?.subscriptions?.active,
       sub: `${stats?.subscriptions?.trialing ?? 0} on trial`,
       icon: CreditCard,
-      color: "#B4FF5A",
+      color: '#3D5E16',
       to: "/admin/subscriptions",
     },
     {
@@ -129,7 +129,7 @@ export default function AdminDashboard() {
       value: stats?.platform_posts?.published,
       sub: `${stats?.platform_posts?.draft ?? 0} drafts`,
       icon: FileText,
-      color: "#B4FF5A",
+      color: '#3D5E16',
       to: "/admin/posts",
     },
   ];
@@ -141,7 +141,7 @@ export default function AdminDashboard() {
   const signupsAction = stats?.signups_today !== undefined && (
     <div className="flex items-center gap-3">
       <div className="text-right">
-        <p className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-semibold">
+        <p className="text-[10px] text-ink-muted uppercase tracking-wider font-semibold">
           Signups today
         </p>
         <p className="font-unbounded text-2xl font-black text-[#3E3D38]">
@@ -149,7 +149,7 @@ export default function AdminDashboard() {
         </p>
       </div>
       <div className="w-12 h-12 bg-coral/10 rounded-2xl flex items-center justify-center">
-        <TrendingUp size={22} className="text-coral" />
+        <TrendingUp size={22} className="text-brand-ink" />
       </div>
     </div>
   );
@@ -159,7 +159,7 @@ return (
 
     <PageHeader
       eyebrow="Admin Dashboard"
-      eyebrowColor="#4E7A1B"
+      
       title={`Welcome back, ${adminName}`}
       description="Platform health, recent activity and quick moderation actions."
       actions={signupsAction}
@@ -169,25 +169,25 @@ return (
 
       <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
         <div className="flex items-center justify-between mb-3">
-          <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase">Users</p>
-          <Users size={14} className="text-coral" />
+          <p className="text-[10px] font-bold text-ink-muted tracking-widest uppercase">Users</p>
+          <Users size={14} className="text-brand-ink" />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <Link to="/admin/users?role=instructor" className="hover:opacity-70 transition-opacity">
-            <p className="text-[10px] text-[#9A9A94] font-semibold">Instructors</p>
+            <p className="text-[10px] text-ink-muted font-semibold">Instructors</p>
             <p className="font-unbounded text-2xl font-black text-[#3E3D38] mt-0.5">
               {stats?.instructors?.total ?? '—'}
             </p>
-            <p className="text-[10px] text-coral mt-0.5 flex items-center gap-1">
+            <p className="text-[10px] text-brand-ink mt-0.5 flex items-center gap-1">
               <TrendingUp size={9} />+{stats?.instructors?.new_this_month ?? 0} this month
             </p>
           </Link>
           <Link to="/admin/users?role=studio" className="hover:opacity-70 transition-opacity">
-            <p className="text-[10px] text-[#9A9A94] font-semibold">Studios</p>
+            <p className="text-[10px] text-ink-muted font-semibold">Studios</p>
             <p className="font-unbounded text-2xl font-black text-[#3E3D38] mt-0.5">
               {stats?.studios?.total ?? '—'}
             </p>
-            <p className="text-[10px] text-coral mt-0.5 flex items-center gap-1">
+            <p className="text-[10px] text-brand-ink mt-0.5 flex items-center gap-1">
               <TrendingUp size={9} />+{stats?.studios?.new_this_month ?? 0} this month
             </p>
           </Link>
@@ -196,52 +196,52 @@ return (
 
       <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
         <div className="flex items-center justify-between mb-3">
-          <p className="text-[10px] font-bold text-[#9A9A94] tracking-widest uppercase">Content</p>
-          <Sprout size={14} className="text-coral" />
+          <p className="text-[10px] font-bold text-ink-muted tracking-widest uppercase">Content</p>
+          <Sprout size={14} className="text-brand-ink" />
         </div>
         <div className="grid grid-cols-3 gap-3">
           <Link to="/admin/grow" className="hover:opacity-70 transition-opacity">
-            <p className="text-[10px] text-[#9A9A94] font-semibold">Grow</p>
+            <p className="text-[10px] text-ink-muted font-semibold">Grow</p>
             <p className="font-unbounded text-2xl font-black text-[#3E3D38] mt-0.5">
               {stats?.grow_posts?.total ?? '—'}
             </p>
             <p className="text-[10px] text-[#C9A227] mt-0.5">{stats?.grow_posts?.pending ?? 0} pending</p>
           </Link>
           <Link to="/admin/jobs" className="hover:opacity-70 transition-opacity">
-            <p className="text-[10px] text-[#9A9A94] font-semibold">Jobs</p>
+            <p className="text-[10px] text-ink-muted font-semibold">Jobs</p>
             <p className="font-unbounded text-2xl font-black text-[#3E3D38] mt-0.5">
               {stats?.jobs?.total ?? '—'}
             </p>
-            <p className="text-[10px] text-coral mt-0.5">{stats?.jobs?.active ?? 0} active</p>
+            <p className="text-[10px] text-brand-ink mt-0.5">{stats?.jobs?.active ?? 0} active</p>
           </Link>
           <Link to="/admin/posts" className="hover:opacity-70 transition-opacity">
-            <p className="text-[10px] text-[#9A9A94] font-semibold">Posts</p>
+            <p className="text-[10px] text-ink-muted font-semibold">Posts</p>
             <p className="font-unbounded text-2xl font-black text-[#3E3D38] mt-0.5">
               {stats?.platform_posts?.published ?? '—'}
             </p>
-            <p className="text-[10px] text-[#9A9A94] mt-0.5">{stats?.platform_posts?.draft ?? 0} drafts</p>
+            <p className="text-[10px] text-ink-muted mt-0.5">{stats?.platform_posts?.draft ?? 0} drafts</p>
           </Link>
         </div>
       </div>
 
-      <div className="bg-gradient-to-br from-coral to-[#3F6216] rounded-2xl p-5 text-white">
+      <div className="bg-coral rounded-2xl p-5 text-black">
         <div className="flex items-center justify-between mb-3">
-          <p className="text-[10px] font-bold text-white/80 tracking-widest uppercase">Revenue</p>
-          <DollarSign size={14} className="text-white/80" />
+          <p className="text-[10px] font-bold text-black tracking-widest uppercase">Revenue</p>
+          <DollarSign size={14} className="text-black" />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <p className="text-[10px] text-white/80 font-semibold">Lifetime</p>
+            <p className="text-[10px] text-black font-semibold">Lifetime</p>
             <p className="font-unbounded text-2xl font-black mt-0.5">
               ${Number(revenue?.total_revenue ?? 0).toLocaleString()}
             </p>
           </div>
           <div>
-            <p className="text-[10px] text-white/80 font-semibold">MRR</p>
+            <p className="text-[10px] text-black font-semibold">MRR</p>
             <p className="font-unbounded text-2xl font-black mt-0.5">
               ${Number(revenue?.mrr ?? 0).toLocaleString()}
             </p>
-            <p className="text-[10px] text-white mt-0.5 flex items-center gap-1">
+            <p className="text-[10px] text-black mt-0.5 flex items-center gap-1">
               {(revenue?.growth ?? 0) >= 0 ? <TrendingUp size={9} /> : <TrendingDown size={9} />}
               {Math.abs(revenue?.growth ?? 0)}% MoM
             </p>
@@ -255,11 +255,11 @@ return (
       <div className="flex items-start justify-between gap-3 mb-4 flex-wrap">
         <div className="flex items-center gap-2">
           <div className="w-9 h-9 rounded-xl bg-coral/10 flex items-center justify-center">
-            <DollarSign size={16} className="text-coral" />
+            <DollarSign size={16} className="text-brand-ink" />
           </div>
           <div>
             <h3 className="font-unbounded text-sm font-bold text-[#3E3D38]">Revenue</h3>
-            <p className="text-[10px] text-[#9A9A94]">
+            <p className="text-[10px] text-ink-muted">
               {revenueView === 'cumulative' ? 'Lifetime accumulated' : 'Last 12 months'}
             </p>
           </div>
@@ -278,7 +278,7 @@ return (
       {revenueView === 'cumulative' && <RevenueCumulativeChart data={revenue?.monthly_breakdown} loading={loading} />}
 
       {revenue?.mock && (
-        <div className="mt-4 pt-3 border-t border-[#F0EBE3] text-[10px] text-[#9A9A94] text-center">
+        <div className="mt-4 pt-3 border-t border-[#F0EBE3] text-[10px] text-ink-muted text-center">
           Showing demo data — connect Stripe in subscription settings to see real revenue.
         </div>
       )}
@@ -287,11 +287,11 @@ return (
     <div className="bg-white rounded-2xl border border-[#E5E0D8] p-5">
       <div className="flex items-center gap-2 mb-4">
         <div className="w-9 h-9 rounded-xl bg-coral/10 flex items-center justify-center">
-          <TrendingUp size={16} className="text-coral" />
+          <TrendingUp size={16} className="text-brand-ink" />
         </div>
         <div>
           <h3 className="font-unbounded text-sm font-bold text-[#3E3D38]">User Growth</h3>
-          <p className="text-[10px] text-[#9A9A94]">New signups over the last 6 months</p>
+          <p className="text-[10px] text-ink-muted">New signups over the last 6 months</p>
         </div>
       </div>
 
@@ -312,11 +312,11 @@ return (
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0 flex-1">
               <p className="font-semibold text-[#3E3D38] text-xs truncate">{p.title}</p>
-              <p className="text-[10px] text-[#9A9A94]">
+              <p className="text-[10px] text-ink-muted">
                 {p.type?.toUpperCase()} · {p.posted_by || p.user?.name || '—'}
               </p>
             </div>
-            <span className="text-[10px] text-[#9A9A94] whitespace-nowrap">
+            <span className="text-[10px] text-ink-muted whitespace-nowrap">
               {formatRelative(p.created_at)}
             </span>
           </div>
@@ -339,7 +339,7 @@ return (
               <p className="font-semibold text-[#3E3D38] text-xs truncate">{u.name}</p>
               <Chip size="xs" tone={u.role === 'studio' ? 'blue' : 'coral'}>{u.role}</Chip>
             </div>
-            <span className="text-[10px] text-[#9A9A94] whitespace-nowrap">
+            <span className="text-[10px] text-ink-muted whitespace-nowrap">
               {formatRelative(u.created_at)}
             </span>
           </div>

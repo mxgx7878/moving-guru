@@ -18,16 +18,20 @@ const paymentSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchPayments.pending, (state) => {
+      .addCase(fetchPayments.pending, (state, { meta }) => {
+        state.requestIds ??= {};
+        state.requestIds.fetchPayments = meta.requestId;
         state.status = STATUS.LOADING;
         state.error = null;
       })
-      .addCase(fetchPayments.fulfilled, (state, { payload }) => {
+      .addCase(fetchPayments.fulfilled, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchPayments !== meta.requestId) return;
         state.status = STATUS.SUCCEEDED;
         const apiPayments = payload.data?.payments || payload.data;
         state.payments = Array.isArray(apiPayments) ? apiPayments : [];
       })
-      .addCase(fetchPayments.rejected, (state, { payload }) => {
+      .addCase(fetchPayments.rejected, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchPayments !== meta.requestId) return;
         state.status = STATUS.FAILED;
         state.error = payload;
       });

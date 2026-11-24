@@ -9,7 +9,7 @@ export default function RevenueTrendChart({ data = [], loading = false }) {
   }
   if (!data?.length) {
     return (
-      <div className="h-48 flex items-center justify-center text-xs text-[#9A9A94]">
+      <div className="h-48 flex items-center justify-center text-xs text-ink-muted">
         No revenue data yet
       </div>
     );
@@ -48,7 +48,7 @@ export default function RevenueTrendChart({ data = [], loading = false }) {
               padding: '6px 10px',
             }}
             labelStyle={{ color: '#fff', fontWeight: 600 }}
-            itemStyle={{ color: '#4E7A1B' }}
+            itemStyle={{ color: '#FFFFFF' }}
             formatter={(value) => [`$${Number(value).toLocaleString()}`, 'Revenue']}
           />
           <Area

@@ -37,25 +37,25 @@ export const DURATION_OPTIONS = [
 
 export const JOB_TYPES = [
   { id: 'hire',            label: 'Direct Hire',     icon: Briefcase, color: '#4E7A1B', bg: 'bg-coral/10' },
-  { id: 'swap',            label: 'Instructor Swap', icon: RefreshCw, color: '#9BE63D', bg: 'bg-[#9BE63D]/10' },
+  { id: 'swap',            label: 'Instructor Swap', icon: RefreshCw, color: '#3D5E16', bg: 'bg-[#9BE63D]/10' },
 ];
 
 export const JOB_FILTER_TABS = [
-  { id: 'all',             label: 'All Listings',    color: '#B4FF5A', bg: 'bg-[#B4FF5A]', activeText: '#3E3D38' },
-  { id: 'hire',            label: 'Direct Hire',     color: '#4E7A1B', bg: 'bg-coral', activeText: '#FFFFFF' },
-  { id: 'swap',            label: 'Instructor Swap', color: '#9BE63D', bg: 'bg-[#9BE63D]', activeText: '#FFFFFF' },
+  { id: 'all',             label: 'All Listings',    color: '#3D5E16', bg: 'bg-[#B4FF5A]', activeText: '#3E3D38' },
+  { id: 'hire',            label: 'Direct Hire',     color: '#4E7A1B', bg: 'bg-coral', activeText: '#1A1A1A' },
+  { id: 'swap',            label: 'Instructor Swap', color: '#3D5E16', bg: 'bg-[#9BE63D]', activeText: '#1A1A1A' },
 ];
 
 export const TYPE_STYLES = {
-  hire:            { icon: Briefcase, color: '#4E7A1B', bg: 'bg-coral/10', text: 'text-coral', label: 'Direct Hire'     },
-  swap:            { icon: RefreshCw, color: '#9BE63D', bg: 'bg-[#9BE63D]/15', text: 'text-[#9BE63D]', label: 'Instructor Swap' },
-  energy_exchange: { icon: Zap,       color: '#B4FF5A', bg: 'bg-[#B4FF5A]/20', text: 'text-[#3E3D38]', label: 'Energy Exchange' },
+  hire:            { icon: Briefcase, color: '#4E7A1B', bg: 'bg-coral/10', text: 'text-brand-ink', label: 'Direct Hire'     },
+  swap:            { icon: RefreshCw, color: '#3D5E16', bg: 'bg-[#9BE63D]/15', text: 'text-brand-ink', label: 'Instructor Swap' },
+  energy_exchange: { icon: Zap,       color: '#3D5E16', bg: 'bg-[#B4FF5A]/20', text: 'text-[#3E3D38]', label: 'Energy Exchange' },
 };
 
 export const JOB_STATUS_CONFIG = {
-  active:   { label: 'Active',        icon: CheckCircle2, cls: 'bg-green-50 text-green-700 border-green-200'     },
+  active:   { label: 'Active',        icon: CheckCircle2, cls: 'bg-green-50 text-brand-ink border-green-200'     },
   inactive: { label: 'Deactivated',   icon: Ban,          cls: 'bg-red-50 text-red-700 border-red-200'           },
-  full:     { label: 'Closed / Full', icon: Lock,         cls: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  full:     { label: 'Closed / Full', icon: Lock,         cls: 'bg-emerald-50 text-brand-ink border-emerald-200' },
 };
 
 export const isOpenToEnergyExchange = (job) =>

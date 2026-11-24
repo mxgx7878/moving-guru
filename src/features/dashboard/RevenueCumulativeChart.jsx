@@ -9,7 +9,7 @@ export default function RevenueCumulativeChart({ data = [], loading = false }) {
   }
   if (!data?.length) {
     return (
-      <div className="h-48 flex items-center justify-center text-xs text-[#9A9A94]">
+      <div className="h-48 flex items-center justify-center text-xs text-ink-muted">
         No revenue data yet
       </div>
     );
@@ -51,7 +51,7 @@ export default function RevenueCumulativeChart({ data = [], loading = false }) {
                 padding: '6px 10px',
               }}
               labelStyle={{ color: '#fff', fontWeight: 600 }}
-              itemStyle={{ color: '#4E7A1B' }}
+              itemStyle={{ color: '#FFFFFF' }}
               formatter={(value) => [`$${Number(value).toLocaleString()}`, 'Lifetime']}
             />
             <Area
@@ -68,8 +68,8 @@ export default function RevenueCumulativeChart({ data = [], loading = false }) {
       </div>
 
       <div className="text-center pt-1">
-        <span className="text-[10px] text-[#9A9A94] uppercase tracking-wider font-semibold">Lifetime · </span>
-        <span className="font-unbounded text-sm font-black text-coral">
+        <span className="text-[10px] text-ink-muted uppercase tracking-wider font-semibold">Lifetime · </span>
+        <span className="font-unbounded text-sm font-black text-brand-ink">
           ${Number(lifetime).toLocaleString()}
         </span>
       </div>

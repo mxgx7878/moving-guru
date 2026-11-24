@@ -82,31 +82,41 @@ const messageSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchConversations.pending, (state) => {
+      .addCase(fetchConversations.pending, (state, { meta }) => {
+        state.requestIds ??= {};
+        state.requestIds.fetchConversations = meta.requestId;
         state.status = STATUS.LOADING;
         state.error = null;
       })
-      .addCase(fetchConversations.fulfilled, (state, { payload }) => {
+      .addCase(fetchConversations.fulfilled, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchConversations !== meta.requestId) return;
         state.status = STATUS.SUCCEEDED;
         const apiData = payload.data?.conversations || payload.data;
         state.conversations = Array.isArray(apiData) ? apiData : [];
       })
-      .addCase(fetchConversations.rejected, (state, { payload }) => {
+      .addCase(fetchConversations.rejected, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchConversations !== meta.requestId) return;
         state.status = STATUS.FAILED;
         state.error = payload;
       })
 
-      .addCase(fetchMessages.pending, (state) => {
+      .addCase(fetchMessages.pending, (state, { meta }) => {
+        state.requestIds ??= {};
+        state.requestIds.fetchMessages = meta.requestId;
         state.messagesStatus = STATUS.LOADING;
       })
-      .addCase(fetchMessages.fulfilled, (state, { payload }) => {
+      .addCase(fetchMessages.fulfilled, (state, { payload, meta }) => {
+        if (state.requestIds?.fetchMessages !== meta.requestId) return;
+        if (Number(meta.arg) !== Number(state.activeConversationId)) return;
         state.messagesStatus = STATUS.SUCCEEDED;
         const apiMsgs = payload.data?.messages || payload.data;
         state.messages = Array.isArray(apiMsgs) ? apiMsgs : [];
         const convoId = payload.data?.conversationId;
         if (convoId) zeroUnread(state, convoId);
       })
-      .addCase(fetchMessages.rejected, (state, { payload }) => {
+      .addCase(fetchMessages.rejected, (state, { payload, meta }) => {
+        if (state.requestIds?.fetchMessages !== meta.requestId) return;
+        if (Number(meta.arg) !== Number(state.activeConversationId)) return;
         state.messagesStatus = STATUS.FAILED;
         state.error = payload;
       })

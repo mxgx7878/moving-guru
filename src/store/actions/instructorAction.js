@@ -5,11 +5,10 @@ import { getErrorMessage } from '../../utils/errorUtils';
 
 export const fetchInstructors = createAsyncThunk(
   'instructor/fetchAll',
-  async (params = {}, { rejectWithValue ,getState }) => {
+  async (params = {}, { rejectWithValue }) => {
     try {
       const { append = false, ...query } = params;
-      console.log(localStorage.getItem('access_token'))
-      const isAuthed = Boolean(getState()?.auth?.user);
+      const isAuthed = Boolean(localStorage.getItem('access_token'));
       const endpoint = isAuthed
         ? API_ENDPOINTS.ME_INSTRUCTORS
         : API_ENDPOINTS.INSTRUCTORS;

@@ -26,14 +26,14 @@ export const GROW_TYPE_BG = {
 };
 
 export const GROW_STATUS_CONFIG = {
-  pending:  { label: 'Pending',  icon: Clock,        cls: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
-  approved: { label: 'Approved', icon: CheckCircle2, cls: 'bg-green-50 text-green-700 border-green-200' },
+  pending:  { label: 'Pending',  icon: Clock,        cls: 'bg-yellow-50 text-brand-ink border-yellow-200' },
+  approved: { label: 'Approved', icon: CheckCircle2, cls: 'bg-green-50 text-brand-ink border-green-200' },
   rejected: { label: 'Rejected', icon: AlertCircle,  cls: 'bg-red-50 text-red-700 border-red-200' },
 };
 
 export const GROW_STATUS_PUBLIC_CONFIG = {
-  pending:  { label: 'Pending Approval', icon: Clock,        cls: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
-  approved: { label: 'Live',             icon: CheckCircle2, cls: 'bg-green-50 text-green-700 border-green-200' },
+  pending:  { label: 'Pending Approval', icon: Clock,        cls: 'bg-yellow-50 text-brand-ink border-yellow-200' },
+  approved: { label: 'Live',             icon: CheckCircle2, cls: 'bg-green-50 text-brand-ink border-green-200' },
   rejected: { label: 'Needs Changes',    icon: AlertCircle,  cls: 'bg-red-50 text-red-700 border-red-200' },
 };
 

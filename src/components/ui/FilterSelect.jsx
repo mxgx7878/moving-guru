@@ -9,7 +9,7 @@ export default function FilterSelect({
 }) {
   return (
     <div className={`flex items-center gap-2 bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl px-3 py-2 ${className}`}>
-      <Icon size={14} className="text-[#9A9A94]" />
+      <Icon size={14} className="text-ink-muted" />
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}

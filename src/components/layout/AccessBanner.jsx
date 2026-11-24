@@ -16,7 +16,7 @@ export default function AccessBanner() {
   const cfg = {
     incomplete: {
       bg:     'bg-[#9BE63D]',
-      text:   'text-white',
+      text:   'text-ink',
       icon:   AlertCircle,
       label:  'Complete your profile',
       body:   "Add the missing details so our team can review your account for platform access.",
@@ -24,7 +24,7 @@ export default function AccessBanner() {
     },
     pending: {
       bg:     'bg-coral',
-      text:   'text-white',
+      text:   'text-ink',
       icon:   Sparkles,
       label:  'Awaiting admin approval',
       body:   "Your profile is under review. You'll unlock all platform features once an admin approves your account.",

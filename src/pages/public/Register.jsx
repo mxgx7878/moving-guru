@@ -26,6 +26,7 @@ import {
 import { Input, SelectField, Button } from "../../components/ui";
 import { formatDateRange } from "../../utils/formatters";
 import { fetchPlans } from "../../store/actions/subscriptionAction";
+import { validateAccountFields, validateRegistrationStep, firstInvalidRegistrationStep } from "../../features/auth/registrationValidation";
 
 const STEPS_INSTRUCTOR = [
   { id: 1, label: "Account", icon: User },
@@ -143,7 +144,7 @@ export default function Register() {
   useEffect(() => {
     if (token && user) {
       navigate(
-        user.status === 'pending_payment'
+        (user.status === 'pending_payment' || user.requires_subscription)
           ? '/checkout'
           : ROLE_THEME[user.role]?.defaultPath || '/portal/dashboard',
         { replace: true },
@@ -152,7 +153,23 @@ export default function Register() {
   }, [token, user, navigate]);
   useEffect(() => () => dispatch(clearError()), [dispatch]);
 
-  const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+  const update = (k, v) => {
+    const nextForm = { ...form, [k]: v };
+    setForm(nextForm);
+    if (step === 1 && ["name", "email", "password", "confirmPassword"].includes(k)) {
+      const nextErrors = validateAccountFields(nextForm);
+      setErrors((previous) => ({
+        ...previous,
+        [k]: nextErrors[k],
+        ...(k === "password" && nextForm.confirmPassword
+          ? { confirmPassword: nextErrors.confirmPassword }
+          : {}),
+      }));
+    } else if (errors[k]) {
+      const nextErrors = validateRegistrationStep(nextForm, role, step, STEPS.length);
+      setErrors((previous) => ({ ...previous, [k]: nextErrors[k] }));
+    }
+  };
   const toggleItem = (k, v) =>
     setForm((f) => ({
       ...f,
@@ -164,38 +181,9 @@ export default function Register() {
   const accentColor = theme?.accent || "#4E7A1B";
 
   const validate = () => {
-    const e = {};
-    if (step === 1) {
-      if (!form.name.trim()) e.name = "Name is required";
-      if (!form.email.trim()) e.email = "Email is required";
-      if (!form.password || form.password.length < 6)
-        e.password = "Min 6 characters";
-      if (form.password !== form.confirmPassword)
-        e.confirmPassword = "Passwords do not match";
-    }
-    if (role === "instructor") {
-      if (step === 2 && !form.age) e.age = "Age is required";
-      if (step === 3 && !form.countryFrom)
-        e.countryFrom = "Please select your country";
-      if (step === 3 && !form.availableFrom)
-        e.availableFrom = "Please select a start date";
-      if (step === 4 && !form.disciplines.length)
-        e.disciplines = "Select at least one discipline";
-    }
-    if (role === "studio") {
-      if (step === 2 && !form.studioName.trim())
-        e.studioName = "Studio name is required";
-      if (step === 2 && !form.location.trim()) e.location = "City is required";
-      if (step === 2 && !form.country) e.country = "Country is required";
-      if (step === 3 && !form.disciplines.length)
-        e.disciplines = "Select at least one discipline";
-    }
-
-    if (step === STEPS.length && !form.plan) {
-      e.plan = "Please select a subscription plan";
-    }
-    setErrors(e);
-    return !Object.keys(e).length;
+    const nextErrors = validateRegistrationStep(form, role, step, STEPS.length);
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
   };
 
   const next = () => {
@@ -231,6 +219,13 @@ export default function Register() {
   };
 
   const handleSubmit = () => {
+    const firstInvalid = firstInvalidRegistrationStep(form, role, STEPS.length);
+    if (firstInvalid) {
+      setStep(firstInvalid.step);
+      setErrors(firstInvalid.errors);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
     if (role === "instructor") {
       const ageNum = parseInt(form.age, 10);
       if (Number.isNaN(ageNum) || ageNum < MIN_AGE) {
@@ -305,22 +300,22 @@ export default function Register() {
     form.availableTo,
   );
   const inp =
-    "w-full bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none transition-all";
+    "w-full bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl px-4 py-3 text-sm text-[#3E3D38] placeholder-ink-muted focus:outline-none transition-all";
 
   if (step === 0) {
     return (
       <div className="min-h-screen bg-[#FFFFFF] flex items-center justify-center font-['DM_Sans'] p-4">
         <div className="w-full max-w-lg">
           <div className="flex items-center justify-center gap-2 mb-10">
-            <Globe size={20} className="text-coral" />
+            <Globe size={20} className="text-brand-ink" />
             <span className="font-unbounded text-base font-bold text-[#3E3D38] tracking-wider">
-              MOVING <em className="not-italic text-coral">GURU</em>
+              MOVING <em className="not-italic text-brand-ink">GURU</em>
             </span>
           </div>
           <h1 className="font-unbounded text-2xl font-black text-[#3E3D38] text-center mb-2">
             Join Moving Guru
           </h1>
-          <p className="text-[#9A9A94] text-sm text-center mb-10">
+          <p className="text-ink-muted text-sm text-center mb-10">
             Are you joining as an instructor or a studio?
           </p>
           <div className="grid grid-cols-2 gap-4">
@@ -329,15 +324,15 @@ export default function Register() {
               className="group bg-white border-2 border-[#E5E0D8] rounded-2xl p-6 text-left hover:border-coral hover:shadow-md transition-all"
             >
               <div className="w-12 h-12 bg-coral/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-coral/20 transition-colors">
-                <User size={22} className="text-coral" />
+                <User size={22} className="text-brand-ink" />
               </div>
               <p className="font-unbounded text-sm font-black text-[#3E3D38] mb-1">
                 Instructor
               </p>
-              <p className="text-[#9A9A94] text-xs leading-relaxed">
+              <p className="text-ink-muted text-xs leading-relaxed">
                 I teach wellness disciplines and want to find work globally.
               </p>
-              <div className="flex items-center gap-1 mt-4 text-coral text-xs font-semibold">
+              <div className="flex items-center gap-1 mt-4 text-brand-ink text-xs font-semibold">
                 Join as instructor <ArrowRight size={12} />
               </div>
             </button>
@@ -346,24 +341,24 @@ export default function Register() {
               className="group bg-white border-2 border-[#E5E0D8] rounded-2xl p-6 text-left hover:border-coral hover:shadow-md transition-all"
             >
               <div className="w-12 h-12 bg-coral/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-coral/20 transition-colors">
-                <Building2 size={22} className="text-coral" />
+                <Building2 size={22} className="text-brand-ink" />
               </div>
               <p className="font-unbounded text-sm font-black text-[#3E3D38] mb-1">
                 Studio
               </p>
-              <p className="text-[#9A9A94] text-xs leading-relaxed">
+              <p className="text-ink-muted text-xs leading-relaxed">
                 I run a wellness studio and want to find travelling instructors.
               </p>
-              <div className="flex items-center gap-1 mt-4 text-coral text-xs font-semibold">
+              <div className="flex items-center gap-1 mt-4 text-brand-ink text-xs font-semibold">
                 Join as studio <ArrowRight size={12} />
               </div>
             </button>
           </div>
-          <p className="text-center text-[#9A9A94] text-sm mt-8">
+          <p className="text-center text-ink-muted text-sm mt-8">
             Already a member?{" "}
             <Link
               to="/login"
-              className="text-coral font-medium hover:underline"
+              className="text-brand-ink font-medium hover:underline"
             >
               Sign in
             </Link>
@@ -377,17 +372,17 @@ export default function Register() {
     <div className="min-h-screen bg-[#FFFFFF] font-['DM_Sans'] py-8 px-4">
       <div className="max-w-2xl mx-auto mb-8 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <Globe size={18} style={{ color: accentColor }} />
+          <Globe size={18} style={{ color: '#3D5E16' }} />
           <span className="font-unbounded text-sm font-bold text-[#3E3D38] tracking-wider">
             MOVING{" "}
-            <em className="not-italic" style={{ color: accentColor }}>
+            <em className="not-italic" style={{ color: '#3D5E16' }}>
               GURU
             </em>
           </span>
         </Link>
         <button
           onClick={() => setStep(0)}
-          className="text-xs text-[#9A9A94] hover:text-[#3E3D38] transition-colors"
+          className="text-xs text-ink-muted hover:text-[#3E3D38] transition-colors"
         >
           ← Change role
         </button>
@@ -398,11 +393,11 @@ export default function Register() {
           <div className="px-6 py-5" style={{ backgroundColor: accentColor }}>
             <div className="flex items-center gap-2 mb-5">
               {role === "studio" ? (
-                <Building2 size={16} className="text-white" />
+                <Building2 size={16} className="text-ink" />
               ) : (
-                <User size={16} className="text-white" />
+                <User size={16} className="text-ink" />
               )}
-              <h1 className="font-unbounded text-base font-black text-white">
+              <h1 className="font-unbounded text-base font-black text-ink">
                 Join as {role === "studio" ? "a Studio" : "an Instructor"}
               </h1>
             </div>
@@ -418,7 +413,7 @@ export default function Register() {
                     <div className="flex flex-col items-center gap-1">
                       <div
                         className={`w-8 h-8 rounded-full flex items-center justify-center transition-all
-                        ${done ? "bg-[#F5FDA6] text-[#3E3D38]" : active ? "bg-white text-[#3E3D38]" : "bg-white/15 text-white/40"}`}
+                        ${done ? "bg-[#F5FDA6] text-[#3E3D38]" : active ? "bg-white text-[#3E3D38]" : "bg-white/60 text-ink"}`}
                       >
                         {done ? (
                           <Check size={14} />
@@ -430,23 +425,23 @@ export default function Register() {
                       </div>
                       <span
                         className={`text-[9px] tracking-wider uppercase hidden sm:block
-                        ${active ? "text-white" : done ? "text-[#F5FDA6]" : "text-white/30"}`}
+                        ${active ? "text-ink" : done ? "text-ink" : "text-ink"}`}
                       >
                         {s.label}
                       </span>
                     </div>
                     {i < STEPS.length - 1 && (
                       <div
-                        className={`h-px flex-1 mx-1 transition-all ${step > s.id ? "bg-[#F5FDA6]" : "bg-white/20"}`}
+                        className={`h-px flex-1 mx-1 transition-all ${step > s.id ? "bg-[#F5FDA6]" : "bg-black/20"}`}
                       />
                     )}
                   </div>
                 );
               })}
             </div>
-            <div className="mt-4 h-1 bg-white/20 rounded-full overflow-hidden">
+            <div className="mt-4 h-1 bg-black/20 rounded-full overflow-hidden">
               <div
-                className="h-full bg-[#F5FDA6] rounded-full transition-all duration-500"
+                className="h-full bg-brand-ink rounded-full transition-all duration-500"
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -465,7 +460,7 @@ export default function Register() {
                   <h2 className="font-unbounded text-xl font-black text-[#3E3D38] mb-1">
                     Create your account
                   </h2>
-                  <p className="text-[#9A9A94] text-sm">
+                  <p className="text-ink-muted text-sm">
                     Your Moving Guru login credentials
                   </p>
                 </div>
@@ -493,7 +488,7 @@ export default function Register() {
                   form={form}
                   update={update}
                   errors={errors}
-                  placeholder="Min. 6 characters"
+                  placeholder="Min. 12 characters"
                 />
                 <Input
                   label="Confirm Password"
@@ -513,12 +508,12 @@ export default function Register() {
                   <h2 className="font-unbounded text-xl font-black text-[#3E3D38] mb-1">
                     Personal details
                   </h2>
-                  <p className="text-[#9A9A94] text-sm">
+                  <p className="text-ink-muted text-sm">
                     Tell the community about yourself
                   </p>
                 </div>
                 <div>
-                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">
+                  <label className="block text-ink-muted text-xs font-semibold tracking-wider uppercase mb-2">
                     Profile Photo
                   </label>
                   <div className="flex items-center gap-4">
@@ -533,7 +528,7 @@ export default function Register() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <Upload size={20} className="text-[#C4BCB4]" />
+                        <Upload size={20} className="text-ink-muted" />
                       )}
                     </div>
                     <input
@@ -543,14 +538,14 @@ export default function Register() {
                       onChange={handleAvatar}
                       className="hidden"
                     />
-                    <p className="text-[#9A9A94] text-xs">
+                    <p className="text-ink-muted text-xs">
                       Optional. Recommended square photo.
                     </p>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">
+                    <label className="block text-ink-muted text-xs font-semibold tracking-wider uppercase mb-2">
                       Age *
                     </label>
                     <input
@@ -583,7 +578,7 @@ export default function Register() {
                   errors={errors}
                 />
                 <div>
-                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">
+                  <label className="block text-ink-muted text-xs font-semibold tracking-wider uppercase mb-2">
                     Languages Spoken
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -593,7 +588,7 @@ export default function Register() {
                         type="button"
                         onClick={() => toggleItem("languages", l)}
                         className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
-                          ${form.languages.includes(l) ? "bg-coral border-coral text-white" : "border-[#E5E0D8] text-[#6B6B66] hover:border-coral"}`}
+                          ${form.languages.includes(l) ? "bg-coral border-coral text-ink" : "border-[#E5E0D8] text-[#6B6B66] hover:border-coral"}`}
                       >
                         {l}
                       </button>
@@ -609,7 +604,7 @@ export default function Register() {
                   <h2 className="font-unbounded text-xl font-black text-[#3E3D38] mb-1">
                     Studio details
                   </h2>
-                  <p className="text-[#9A9A94] text-sm">
+                  <p className="text-ink-muted text-sm">
                     Tell instructors about your studio
                   </p>
                 </div>
@@ -627,9 +622,9 @@ export default function Register() {
                     <div className="text-center">
                       <Upload
                         size={20}
-                        className="text-[#C4BCB4] mx-auto mb-1"
+                        className="text-ink-muted mx-auto mb-1"
                       />
-                      <p className="text-[#9A9A94] text-xs">
+                      <p className="text-ink-muted text-xs">
                         Studio main photo (optional)
                       </p>
                     </div>
@@ -643,7 +638,7 @@ export default function Register() {
                   className="hidden"
                 />
                 <div>
-                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">
+                  <label className="block text-ink-muted text-xs font-semibold tracking-wider uppercase mb-2">
                     Studio Name *
                   </label>
                   <input
@@ -668,7 +663,7 @@ export default function Register() {
                 />
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">
+                    <label className="block text-ink-muted text-xs font-semibold tracking-wider uppercase mb-2">
                       City / Location *
                     </label>
                     <input
@@ -712,7 +707,7 @@ export default function Register() {
                   />
                 </div>
                 <div>
-                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">
+                  <label className="block text-ink-muted text-xs font-semibold tracking-wider uppercase mb-2">
                     Studio Size
                   </label>
                   <div className="grid grid-cols-2 gap-2">
@@ -722,7 +717,7 @@ export default function Register() {
                         type="button"
                         onClick={() => update("studioSize", sz)}
                         className={`px-3 py-2.5 rounded-xl text-xs font-medium border transition-all text-left
-                          ${form.studioSize === sz ? "bg-coral border-coral text-white" : "border-[#E5E0D8] text-[#6B6B66] hover:border-coral"}`}
+                          ${form.studioSize === sz ? "bg-coral border-coral text-ink" : "border-[#E5E0D8] text-[#6B6B66] hover:border-coral"}`}
                       >
                         {sz}
                       </button>
@@ -743,7 +738,7 @@ export default function Register() {
                   <h2 className="font-unbounded text-xl font-black text-[#3E3D38] mb-1">
                     Location & Travel
                   </h2>
-                  <p className="text-[#9A9A94] text-sm">
+                  <p className="text-ink-muted text-sm">
                     Where are you from? Where are you heading?
                   </p>
                 </div>
@@ -768,7 +763,7 @@ export default function Register() {
                     error={errors.countryFrom}
                   />
                   <div>
-                    <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">
+                    <label className="block text-ink-muted text-xs font-semibold tracking-wider uppercase mb-2">
                       Traveling To
                     </label>
                     <SelectField
@@ -782,18 +777,18 @@ export default function Register() {
                       value={form.travelingTo}
                       onChange={(e) => update("travelingTo", e.target.value)}
                       placeholder="Or type: Italy, Bali, Thailand..."
-                      className="mt-2 w-full bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl px-4 py-2.5 text-xs text-[#3E3D38] placeholder-[#C4BCB4] focus:outline-none focus:border-coral transition-all"
+                      className="mt-2 w-full bg-[#FFFFFF] border border-[#E5E0D8] rounded-xl px-4 py-2.5 text-xs text-[#3E3D38] placeholder-ink-muted focus:outline-none focus:border-coral transition-all"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">
+                  <label className="block text-ink-muted text-xs font-semibold tracking-wider uppercase mb-2">
                     Availability Dates *
                   </label>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-xs text-[#9A9A94] mb-1.5 flex items-center gap-1">
+                      <p className="text-xs text-ink-muted mb-1.5 flex items-center gap-1">
                         <Calendar size={11} /> Available From
                       </p>
                       <input
@@ -812,7 +807,7 @@ export default function Register() {
                       )}
                     </div>
                     <div>
-                      <p className="text-xs text-[#9A9A94] mb-1.5 flex items-center gap-1">
+                      <p className="text-xs text-ink-muted mb-1.5 flex items-center gap-1">
                         <Calendar size={11} /> Available To
                       </p>
                       <input
@@ -829,8 +824,8 @@ export default function Register() {
                   </div>
                   {availabilityDisplay && (
                     <div className="mt-2 flex items-center gap-2 px-3 py-1.5 bg-coral/10 rounded-lg w-fit">
-                      <Calendar size={12} className="text-coral" />
-                      <span className="text-coral text-xs font-semibold">
+                      <Calendar size={12} className="text-brand-ink" />
+                      <span className="text-brand-ink text-xs font-semibold">
                         {availabilityDisplay}
                       </span>
                     </div>
@@ -851,7 +846,7 @@ export default function Register() {
                 </div>
 
                 <div>
-                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">
+                  <label className="block text-ink-muted text-xs font-semibold tracking-wider uppercase mb-2">
                     Open To
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -861,7 +856,7 @@ export default function Register() {
                         type="button"
                         onClick={() => toggleItem("openTo", opt)}
                         className={`px-4 py-2 rounded-full text-xs font-medium border transition-all
-                          ${form.openTo.includes(opt) ? "bg-coral text-white border-coral" : "border-[#E5E0D8] text-[#6B6B66] hover:border-coral"}`}
+                          ${form.openTo.includes(opt) ? "bg-coral text-ink border-coral" : "border-[#E5E0D8] text-[#6B6B66] hover:border-coral"}`}
                       >
                         {opt}
                       </button>
@@ -884,7 +879,7 @@ export default function Register() {
                     />
                     <span className="text-xs text-[#6B6B66] leading-snug">
                       Open to energy exchange options
-                      <span className="block text-[10px] text-[#9A9A94] mt-0.5">
+                      <span className="block text-[10px] text-ink-muted mt-0.5">
                         Optional — exchange opportunities for when other paths
                         aren't viable.
                       </span>
@@ -903,7 +898,7 @@ export default function Register() {
                       ? "Disciplines offered"
                       : "Your disciplines"}
                   </h2>
-                  <p className="text-[#9A9A94] text-sm">
+                  <p className="text-ink-muted text-sm">
                     {role === "studio"
                       ? "What does your studio teach?"
                       : "What do you teach?"}
@@ -921,7 +916,7 @@ export default function Register() {
                     {form.disciplines.map((d) => (
                       <span
                         key={d}
-                        className="flex items-center gap-1 px-2.5 py-1 bg-coral/10 text-coral rounded-full text-xs font-medium"
+                        className="flex items-center gap-1 px-2.5 py-1 bg-coral/10 text-brand-ink rounded-full text-xs font-medium"
                       >
                         {d}
                         <button
@@ -940,7 +935,7 @@ export default function Register() {
                 <div className="max-h-64 overflow-y-auto space-y-4 pr-1 border border-[#E5E0D8] rounded-xl p-3">
                   {filteredDisciplines.map((cat) => (
                     <div key={cat.label}>
-                      <p className="text-[9px] text-[#9A9A94] tracking-widest uppercase font-semibold mb-2">
+                      <p className="text-[9px] text-ink-muted tracking-widest uppercase font-semibold mb-2">
                         {cat.emoji} {cat.label}
                       </p>
                       <div className="flex flex-wrap gap-1.5">
@@ -950,7 +945,7 @@ export default function Register() {
                             type="button"
                             onClick={() => toggleItem("disciplines", d)}
                             className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
-                              ${form.disciplines.includes(d) ? "bg-coral border-coral text-white" : "border-[#E5E0D8] text-[#6B6B66] hover:border-coral"}`}
+                              ${form.disciplines.includes(d) ? "bg-coral border-coral text-ink" : "border-[#E5E0D8] text-[#6B6B66] hover:border-coral"}`}
                           >
                             {d}
                           </button>
@@ -968,12 +963,12 @@ export default function Register() {
                   <h2 className="font-unbounded text-xl font-black text-[#3E3D38] mb-1">
                     Bio & Photos
                   </h2>
-                  <p className="text-[#9A9A94] text-sm">
+                  <p className="text-ink-muted text-sm">
                     Help studios understand what makes you special
                   </p>
                 </div>
                 <div>
-                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-1.5">
+                  <label className="block text-ink-muted text-xs font-semibold tracking-wider uppercase mb-1.5">
                     About You
                   </label>
                   <textarea
@@ -985,7 +980,7 @@ export default function Register() {
                   />
                 </div>
                 <div>
-                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-1.5">
+                  <label className="block text-ink-muted text-xs font-semibold tracking-wider uppercase mb-1.5">
                     What I'm Looking For
                   </label>
                   <textarea
@@ -997,7 +992,7 @@ export default function Register() {
                   />
                 </div>
                 <div>
-                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">
+                  <label className="block text-ink-muted text-xs font-semibold tracking-wider uppercase mb-2">
                     Gallery Photos (up to 4, optional)
                   </label>
                   <div className="grid grid-cols-4 gap-2">
@@ -1014,7 +1009,7 @@ export default function Register() {
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <Upload size={16} className="text-[#C4BCB4]" />
+                          <Upload size={16} className="text-ink-muted" />
                         )}
                       </div>
                     ))}
@@ -1037,12 +1032,12 @@ export default function Register() {
                   <h2 className="font-unbounded text-xl font-black text-[#3E3D38] mb-1">
                     About your studio
                   </h2>
-                  <p className="text-[#9A9A94] text-sm">
+                  <p className="text-ink-muted text-sm">
                     Help instructors understand your studio
                   </p>
                 </div>
                 <div>
-                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-1.5">
+                  <label className="block text-ink-muted text-xs font-semibold tracking-wider uppercase mb-1.5">
                     About the Studio
                   </label>
                   <textarea
@@ -1054,7 +1049,7 @@ export default function Register() {
                   />
                 </div>
                 <div>
-                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">
+                  <label className="block text-ink-muted text-xs font-semibold tracking-wider uppercase mb-2">
                     Open To
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -1064,7 +1059,7 @@ export default function Register() {
                         type="button"
                         onClick={() => toggleItem("openTo", opt)}
                         className={`px-4 py-2 rounded-full text-xs font-medium border transition-all
-                          ${form.openTo.includes(opt) ? "bg-coral text-white border-coral" : "border-[#E5E0D8] text-[#6B6B66] hover:border-coral"}`}
+                          ${form.openTo.includes(opt) ? "bg-coral text-ink border-coral" : "border-[#E5E0D8] text-[#6B6B66] hover:border-coral"}`}
                       >
                         {opt}
                       </button>
@@ -1072,7 +1067,7 @@ export default function Register() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[#9A9A94] text-xs font-semibold tracking-wider uppercase mb-2">
+                  <label className="block text-ink-muted text-xs font-semibold tracking-wider uppercase mb-2">
                     Gallery Photos (up to 4, optional)
                   </label>
                   <div className="grid grid-cols-4 gap-2">
@@ -1089,7 +1084,7 @@ export default function Register() {
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <Upload size={16} className="text-[#C4BCB4]" />
+                          <Upload size={16} className="text-ink-muted" />
                         )}
                       </div>
                     ))}
@@ -1113,7 +1108,7 @@ export default function Register() {
                   <h2 className="font-unbounded text-xl font-black text-[#3E3D38] mb-1">
                     Choose your plan
                   </h2>
-                  <p className="text-[#9A9A94] text-sm">
+                  <p className="text-ink-muted text-sm">
                     Join the Moving Guru global network
                   </p>
                 </div>
@@ -1151,7 +1146,7 @@ export default function Register() {
                             <span className="font-unbounded text-base font-black text-[#3E3D38]">
                               ${plan.discountedPrice ?? plan.price}
                             </span>
-                            <span className="text-[#9A9A94] text-xs">
+                            <span className="text-ink-muted text-xs">
                               /{plan.interval || "month"}
                             </span>
                           </div>
@@ -1160,7 +1155,7 @@ export default function Register() {
                             {plan.description ? ` — ${plan.description}` : ""}
                           </p>
                           {Number(plan.trialPeriodDays || 0) > 0 && (
-                            <p className="text-emerald-700 text-[11px] font-semibold mt-1">
+                            <p className="text-brand-ink text-[11px] font-semibold mt-1">
                               Includes a {plan.trialPeriodDays}-day free trial
                             </p>
                           )}
@@ -1190,7 +1185,7 @@ export default function Register() {
               <button
                 type="button"
                 onClick={() => setStep(0)}
-                className="text-sm text-[#9A9A94] hover:text-[#3E3D38] transition-colors"
+                className="text-sm text-ink-muted hover:text-[#3E3D38] transition-colors"
               >
                 ← Change role
               </button>
@@ -1227,9 +1222,9 @@ export default function Register() {
           </div>
         </div>
 
-        <p className="text-center text-[#9A9A94] text-xs mt-6">
+        <p className="text-center text-ink-muted text-xs mt-6">
           Already a member?{" "}
-          <Link to="/login" className="text-coral hover:underline">
+          <Link to="/login" className="text-brand-ink hover:underline">
             Sign in
           </Link>
         </p>

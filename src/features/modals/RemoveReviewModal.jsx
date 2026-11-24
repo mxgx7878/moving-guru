@@ -11,6 +11,8 @@ const removeReviewSchema = yup.object({
 
 export default function RemoveReviewModal({ review, busy = false, onCancel, onConfirm }) {
   const { control, handleSubmit, formState: { errors } } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     resolver: yupResolver(removeReviewSchema),
     defaultValues: { reason: '' },
   });
@@ -39,7 +41,7 @@ export default function RemoveReviewModal({ review, busy = false, onCancel, onCo
       }
     >
       <div className="bg-[#FFFFFF] rounded-xl border border-[#E5E0D8] p-4 mb-4 space-y-2">
-        <div className="flex items-center gap-2 text-[10px] text-[#9A9A94] uppercase tracking-wider font-semibold">
+        <div className="flex items-center gap-2 text-[10px] text-ink-muted uppercase tracking-wider font-semibold">
           <span>{reviewer.name}</span>
           <Chip size="xs" tone={reviewer.role === 'studio' ? 'blue' : 'coral'}>
             {reviewer.role}

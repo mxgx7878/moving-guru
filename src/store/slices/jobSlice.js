@@ -40,6 +40,8 @@ const initialState = {
   adminJobsStatus: STATUS.IDLE,
   adminJobsPagination: null,
   selectedJob: null,
+  selectedJobStatus: STATUS.IDLE,
+  detailRequestId: null,
 
   jobsMeta: { page: 1, per_page: 10, total: 0, last_page: 1 },
 };
@@ -74,11 +76,14 @@ const jobSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchJobs.pending, (state) => {
+      .addCase(fetchJobs.pending, (state, { meta }) => {
+        state.requestIds ??= {};
+        state.requestIds.fetchJobs = meta.requestId;
         state.status = STATUS.LOADING;
         state.error = null;
       })
-      .addCase(fetchJobs.fulfilled, (state, { payload }) => {
+      .addCase(fetchJobs.fulfilled, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchJobs !== meta.requestId) return;
         state.status = STATUS.SUCCEEDED;
         const list = unwrapJobs(payload);
         const next = Array.isArray(list) ? list : [];
@@ -97,21 +102,26 @@ const jobSlice = createSlice({
           last_page: payload?.data?.meta?.last_page ?? 1,
         };
       })
-      .addCase(fetchJobs.rejected, (state, { payload }) => {
+      .addCase(fetchJobs.rejected, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchJobs !== meta.requestId) return;
         state.status = STATUS.FAILED;
         state.error = payload;
       })
 
-      .addCase(fetchMyJobs.pending, (state) => {
+      .addCase(fetchMyJobs.pending, (state, { meta }) => {
+        state.requestIds ??= {};
+        state.requestIds.fetchMyJobs = meta.requestId;
         state.myJobsStatus = STATUS.LOADING;
         state.error = null;
       })
-      .addCase(fetchMyJobs.fulfilled, (state, { payload }) => {
+      .addCase(fetchMyJobs.fulfilled, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchMyJobs !== meta.requestId) return;
         state.myJobsStatus = STATUS.SUCCEEDED;
         const list = unwrapJobs(payload);
         state.myJobs = Array.isArray(list) ? list : [];
       })
-      .addCase(fetchMyJobs.rejected, (state, { payload }) => {
+      .addCase(fetchMyJobs.rejected, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchMyJobs !== meta.requestId) return;
         state.myJobsStatus = STATUS.FAILED;
         state.error = payload;
       })
@@ -159,13 +169,16 @@ const jobSlice = createSlice({
       })
 
       .addCase(fetchJobApplicants.pending, (state, { meta }) => {
+        state.requestIds ??= {};
+        state.requestIds[`fetchJobApplicants:${meta.arg}`] = meta.requestId;
         const jobId = meta.arg;
         state.applicantsByJobId[jobId] = {
           ...(state.applicantsByJobId[jobId] || {}),
           status: STATUS.LOADING,
         };
       })
-      .addCase(fetchJobApplicants.fulfilled, (state, { payload }) => {
+      .addCase(fetchJobApplicants.fulfilled, (state, { meta, payload }) => {
+        if (state.requestIds?.[`fetchJobApplicants:${meta.arg}`] !== meta.requestId) return;
         const { jobId, payload: resp } = payload;
         const applicants = unwrapApplicants(resp);
         state.applicantsByJobId[jobId] = {
@@ -176,6 +189,7 @@ const jobSlice = createSlice({
         replaceInArr(state.myJobs, { id: jobId, applicants_count: applicants.length });
       })
       .addCase(fetchJobApplicants.rejected, (state, { meta, payload }) => {
+        if (state.requestIds?.[`fetchJobApplicants:${meta.arg}`] !== meta.requestId) return;
         const jobId = meta.arg;
         state.applicantsByJobId[jobId] = {
           ...(state.applicantsByJobId[jobId] || {}),
@@ -242,35 +256,52 @@ const jobSlice = createSlice({
         state.error = payload;
       })
 
-      .addCase(fetchMyApplications.pending, (state) => {
+      .addCase(fetchMyApplications.pending, (state, { meta }) => {
+        state.requestIds ??= {};
+        state.requestIds.fetchMyApplications = meta.requestId;
         state.myApplicationsStatus = STATUS.LOADING;
       })
-      .addCase(fetchMyApplications.fulfilled, (state, { payload }) => {
+      .addCase(fetchMyApplications.fulfilled, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchMyApplications !== meta.requestId) return;
         state.myApplicationsStatus = STATUS.SUCCEEDED;
         state.myApplications = payload?.data?.applications || payload?.data || [];
       })
-      .addCase(fetchMyApplications.rejected, (state, { payload }) => {
+      .addCase(fetchMyApplications.rejected, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchMyApplications !== meta.requestId) return;
         state.myApplicationsStatus = STATUS.FAILED;
         state.error = payload;
       })
-      .addCase(fetchAdminJobs.pending, (state) => {
+      .addCase(fetchAdminJobs.pending, (state, { meta }) => {
+        state.requestIds ??= {};
+        state.requestIds.fetchAdminJobs = meta.requestId;
         state.adminJobsStatus = STATUS.LOADING;
         state.error = null;
       })
-      .addCase(fetchAdminJobs.fulfilled, (state, { payload }) => {
+      .addCase(fetchAdminJobs.fulfilled, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchAdminJobs !== meta.requestId) return;
         state.adminJobsStatus = STATUS.SUCCEEDED;
         state.adminJobs = unwrapJobs(payload);
         state.adminJobsPagination = payload?.data?.meta || payload?.meta || null;
       })
-      .addCase(fetchAdminJobs.rejected, (state, { payload }) => {
+      .addCase(fetchAdminJobs.rejected, (state, { meta, payload }) => {
+        if (state.requestIds?.fetchAdminJobs !== meta.requestId) return;
         state.adminJobsStatus = STATUS.FAILED;
         state.error = payload;
       })
 
-      .addCase(fetchAdminJobDetail.fulfilled, (state, { payload }) => {
+      .addCase(fetchAdminJobDetail.pending, (state, { meta }) => {
+        state.selectedJobStatus = STATUS.LOADING;
+        state.selectedJob = null;
+        state.detailRequestId = meta.requestId;
+      })
+      .addCase(fetchAdminJobDetail.fulfilled, (state, { payload, meta }) => {
+        if (state.detailRequestId !== meta.requestId) return;
+        state.selectedJobStatus = STATUS.SUCCEEDED;
         state.selectedJob = unwrapJob(payload);
       })
       .addCase(fetchAdminJobDetail.rejected, (state, { meta, payload }) => {
+        if (state.detailRequestId !== meta.requestId) return;
+        state.selectedJobStatus = STATUS.FAILED;
         const found = state.adminJobs.find((j) => j.id === meta.arg);
         if (found) state.selectedJob = found;
         state.error = payload;

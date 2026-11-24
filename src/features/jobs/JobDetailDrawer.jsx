@@ -1,3 +1,4 @@
+import Spinner from '../../components/feedback/Spinner';
 import { Link } from 'react-router-dom';
 import {
   Users, UserCheck, MapPin, Calendar, Clock, DollarSign, GraduationCap,
@@ -19,18 +20,19 @@ export default function JobDetailDrawer({
   applicants = [],
   applicantsStatus = STATUS.IDLE,
   busy = false,
+  loading = false,
   onClose,
   onActivate,
   onDeactivate,
   onDelete,
 }) {
-  if (!job) {
+  if (loading || !job) {
     return (
       <Drawer
         open
         onClose={onClose}
         loading
-        loadingSpinner={<Loader2 size={26} className="animate-spin text-[#9BE63D]" />}
+        loadingSpinner={<Spinner size={26} />}
       />
     );
   }
@@ -96,7 +98,7 @@ export default function JobDetailDrawer({
         </Button>
       ) : (
         <Button variant="secondary" size="sm" icon={CheckCircle2} onClick={onActivate} disabled={busy}
-          className="hover:border-emerald-500 hover:text-emerald-600">
+          className="hover:border-emerald-500 hover:text-brand-ink">
           Activate
         </Button>
       )}
@@ -173,7 +175,7 @@ export default function JobDetailDrawer({
                 {job.studio.studio_name || job.studio.name}
               </p>
               {job.studio.email && (
-                <p className="text-[10px] text-[#9A9A94] flex items-center gap-1 truncate">
+                <p className="text-[10px] text-ink-muted flex items-center gap-1 truncate">
                   <Mail size={9} /> {job.studio.email}
                 </p>
               )}
@@ -181,7 +183,7 @@ export default function JobDetailDrawer({
           </div>
           <Link
             to="/admin/users?role=studio"
-            className="text-[11px] font-bold text-coral hover:underline flex items-center gap-1 flex-shrink-0"
+            className="text-[11px] font-bold text-brand-ink hover:underline flex items-center gap-1 flex-shrink-0"
           >
             View in users <ExternalLink size={10} />
           </Link>
@@ -191,10 +193,10 @@ export default function JobDetailDrawer({
       <LabeledBlock label={`Applicants (${applicants.length})`}>
         {applicantsStatus === STATUS.LOADING ? (
           <div className="py-6 flex items-center justify-center">
-            <Loader2 size={18} className="animate-spin text-[#9BE63D]" />
+            <Spinner size={18} />
           </div>
         ) : applicants.length === 0 ? (
-          <p className="text-xs text-[#9A9A94] py-3">No applications yet.</p>
+          <p className="text-xs text-ink-muted py-3">No applications yet.</p>
         ) : (
           <div className="space-y-2">
             {applicants.map((app) => <ApplicantRow key={app.id} app={app} />)}

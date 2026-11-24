@@ -1,4 +1,5 @@
 export const BASE_URL = 'https://movingguru.co/moving-guru-backend/public/api';
+// export const BASE_URL = 'http://localhost:8000/api';
 
 export const API_ENDPOINTS = {
   REGISTER: "/register",

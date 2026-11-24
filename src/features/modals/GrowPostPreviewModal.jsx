@@ -88,23 +88,23 @@ export default function GrowPostPreviewModal({ post, onClose }) {
 
       <div className="grid grid-cols-2 gap-3 pt-4 border-t border-[#F0EBE3] text-xs mt-4">
         <div>
-          <p className="text-[10px] text-[#9A9A94] uppercase tracking-wide">Posted by</p>
+          <p className="text-[10px] text-ink-muted uppercase tracking-wide">Posted by</p>
           <p className="font-semibold text-[#3E3D38]">{postedBy}</p>
         </div>
         {post.price && (
           <div>
-            <p className="text-[10px] text-[#9A9A94] uppercase tracking-wide">Price</p>
+            <p className="text-[10px] text-ink-muted uppercase tracking-wide">Price</p>
             <p className="font-semibold text-[#3E3D38]">{post.price}</p>
           </div>
         )}
         {hasExternal && (
           <div className="col-span-2">
-            <p className="text-[10px] text-[#9A9A94] uppercase tracking-wide">External link</p>
+            <p className="text-[10px] text-ink-muted uppercase tracking-wide">External link</p>
             <a
               href={externalUrl}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1 text-coral font-semibold hover:underline"
+              className="inline-flex items-center gap-1 text-brand-ink font-semibold hover:underline"
             >
               {externalUrl} <ExternalLink size={11} />
             </a>

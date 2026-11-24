@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { forwardRef, useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 
-export default function Input({
+const Input = forwardRef(function Input({
   label,
   name,
   type = 'text',
@@ -21,7 +21,7 @@ export default function Input({
   accent = '#4E7A1B',
   className = '',
   ...rest
-}) {
+}, ref) {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === 'password';
   const inputType = isPassword ? (showPassword ? 'text' : 'password') : type;
@@ -36,7 +36,7 @@ export default function Input({
   const fieldError = error ?? (errors && name ? errors[name] : undefined);
 
   const baseCls = [
-    'w-full bg-warm-bg border rounded-xl px-4 py-3 text-sm text-ink placeholder-ink-faint',
+    'w-full bg-warm-bg border rounded-xl px-4 py-3 text-sm text-ink placeholder-ink-muted',
     'focus:outline-none focus:border-[var(--focus)] transition-all',
     'disabled:opacity-60 disabled:cursor-not-allowed',
     fieldError ? 'border-red-400 focus:border-red-500' : 'border-edge',
@@ -63,6 +63,7 @@ export default function Input({
 
         {textarea ? (
           <textarea
+            ref={ref}
             id={name}
             name={name}
             value={currentValue}
@@ -79,6 +80,7 @@ export default function Input({
           />
         ) : (
           <input
+            ref={ref}
             id={name}
             name={name}
             type={inputType}
@@ -117,4 +119,6 @@ export default function Input({
       </div>
     </div>
   );
-}
+});
+
+export default Input;

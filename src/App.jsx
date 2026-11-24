@@ -1,3 +1,4 @@
+import Spinner from './components/feedback/Spinner';
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
@@ -81,14 +82,14 @@ function RoleRedirect() {
     if (status === STATUS.IDLE || status === STATUS.LOADING) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-[#FFFFFF]">
-          <div className="w-8 h-8 border-2 border-coral/30 border-t-coral rounded-full animate-spin" />
+          <Spinner />
         </div>
       );
     }
     return <Navigate to="/login" replace />;
   }
 
-  if (user.role !== 'admin' && user.status === 'pending_payment') {
+  if (user.role !== 'admin' && (user.status === 'pending_payment' || user.requires_subscription)) {
     return <Navigate to="/checkout" replace />;
   }
 

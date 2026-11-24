@@ -19,8 +19,9 @@ const dashboardSlice = createSlice({
     clearDashboardError: (state) => { state.error = null; },
   },
   extraReducers: (builder) => {
-    const handlePending = (state) => { state.status = STATUS.LOADING; };
-    const handleRejected = (state, { payload }) => {
+    const handlePending = (state, { meta }) => { state.status = STATUS.LOADING; state.requestId = meta.requestId; };
+    const handleRejected = (state, { payload, meta }) => {
+      if (state.requestId !== meta.requestId) return;
       state.status = STATUS.FAILED;
       state.error = payload;
     };
